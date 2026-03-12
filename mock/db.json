@@ -1,0 +1,1161 @@
+{
+  "kols": [
+    {
+      "id": "kol_001",
+      "displayName": "Amy Beauty",
+      "instagramHandle": "amybeauty.tw",
+      "industry": "美妝保養",
+      "tags": [
+        "美妝",
+        "保養"
+      ],
+      "categories": [
+        "美妝",
+        "保養"
+      ],
+      "platform": "Instagram",
+      "followers": 183000,
+      "engagementRate": 4.9,
+      "rating": 4.7,
+      "collaborations": 8,
+      "averagePrice": 52000,
+      "industryDistribution": [
+        "美妝(4)",
+        "保養(3)",
+        "食品(1)"
+      ],
+      "isFavorite": true,
+      "avatarUrl": "https://i.pravatar.cc/160?img=32",
+      "social": {
+        "instagram": 183000,
+        "youtube": 12000,
+        "tiktok": 54000
+      },
+      "city": "Taipei",
+      "notes": "女性 18-24 受眾集中",
+      "favoriteFolder": "家電專案",
+      "contact": {
+        "phone": "",
+        "email": ""
+      }
+    },
+    {
+      "id": "kol_002",
+      "displayName": "Tech Allen",
+      "instagramHandle": "techallen.review",
+      "industry": "3C 科技",
+      "tags": [
+        "3C",
+        "開箱"
+      ],
+      "categories": [
+        "3C",
+        "開箱"
+      ],
+      "platform": "YouTube",
+      "followers": 92000,
+      "engagementRate": 5.4,
+      "rating": 4.5,
+      "collaborations": 11,
+      "averagePrice": 61000,
+      "industryDistribution": [
+        "3C(7)",
+        "汽車(2)",
+        "家電(2)"
+      ],
+      "isFavorite": false,
+      "avatarUrl": "https://i.pravatar.cc/160?img=12",
+      "social": {
+        "instagram": 42000,
+        "youtube": 92000,
+        "tiktok": 18000
+      },
+      "city": "Taichung",
+      "notes": "轉換率穩定"
+    },
+    {
+      "id": "kol_003",
+      "displayName": "Gina",
+      "instagramHandle": "gina.life",
+      "industry": "母嬰親子",
+      "tags": [
+        "母嬰",
+        "親子",
+        "生活"
+      ],
+      "categories": [
+        "生活",
+        "母嬰"
+      ],
+      "platform": "Instagram",
+      "followers": 50000,
+      "engagementRate": 7.8,
+      "rating": 4.5,
+      "collaborations": 8,
+      "averagePrice": 48000,
+      "industryDistribution": [
+        "家電(3)",
+        "美妝(2)",
+        "食品(3)"
+      ],
+      "isFavorite": true,
+      "avatarUrl": "https://i.pravatar.cc/160?img=5",
+      "social": {
+        "instagram": 50000,
+        "youtube": 20000,
+        "tiktok": 32000
+      },
+      "contact": {
+        "phone": "0900-123-456",
+        "email": "gina.manager@example.com",
+        "manager": "Cindy"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_001",
+          "date": "2024-10-01",
+          "projectTitle": "案件 #12345 - Panasonic 洗碗機",
+          "clientName": "Panasonic",
+          "industry": "家電",
+          "price": 50000,
+          "services": "IG 貼文 + 限時動態",
+          "rating": 5,
+          "orderId": "io_001",
+          "metrics": {
+            "postViews": 80000,
+            "postLikes": 5000,
+            "postComments": 200,
+            "storyViews": 25000,
+            "storyLikes": 1200
+          }
+        },
+        {
+          "id": "ch_002",
+          "date": "2024-08-20",
+          "projectTitle": "案件 #12210 - 親子食品聯名",
+          "clientName": "Happy Food",
+          "industry": "食品",
+          "price": 46000,
+          "services": "IG Reels + 限時動態",
+          "rating": 4.6,
+          "orderId": "io_002",
+          "metrics": {
+            "postViews": 72000,
+            "postLikes": 4300,
+            "postComments": 140,
+            "storyViews": 21000,
+            "storyLikes": 980
+          }
+        },
+        {
+          "id": "ch_003",
+          "date": "2024-06-11",
+          "projectTitle": "案件 #11888 - 母嬰保養新品",
+          "clientName": "BabyCare",
+          "industry": "美妝",
+          "price": 47000,
+          "services": "IG 貼文 + 限時動態",
+          "rating": 4.4,
+          "metrics": {
+            "postViews": 68000,
+            "postLikes": 3900,
+            "postComments": 110,
+            "storyViews": 19000,
+            "storyLikes": 850
+          }
+        },
+        {
+          "id": "ch_004",
+          "date": "2024-03-05",
+          "projectTitle": "案件 #11320 - 家電清潔企劃",
+          "clientName": "Aqua Home",
+          "industry": "家電",
+          "price": 49000,
+          "services": "IG Reels + 限時動態",
+          "rating": 4.7,
+          "metrics": {
+            "postViews": 76000,
+            "postLikes": 4600,
+            "postComments": 170,
+            "storyViews": 23000,
+            "storyLikes": 1100
+          }
+        },
+        {
+          "id": "ch_005",
+          "date": "2023-12-17",
+          "projectTitle": "案件 #10987 - 年末親子活動",
+          "clientName": "FunKids",
+          "industry": "親子",
+          "price": 44000,
+          "services": "IG 貼文 + 限時動態",
+          "rating": 4.2,
+          "metrics": {
+            "postViews": 64000,
+            "postLikes": 3600,
+            "postComments": 120,
+            "storyViews": 18000,
+            "storyLikes": 770
+          }
+        },
+        {
+          "id": "ch_006",
+          "date": "2023-09-09",
+          "projectTitle": "案件 #10642 - 副食品導購",
+          "clientName": "Mama Choice",
+          "industry": "食品",
+          "price": 45000,
+          "services": "IG Reels",
+          "rating": 4.3,
+          "metrics": {
+            "postViews": 62000,
+            "postLikes": 3300,
+            "postComments": 90,
+            "storyViews": 16000,
+            "storyLikes": 690
+          }
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2023-09",
+          "price": 45000
+        },
+        {
+          "date": "2023-12",
+          "price": 44000
+        },
+        {
+          "date": "2024-03",
+          "price": 49000
+        },
+        {
+          "date": "2024-06",
+          "price": 47000
+        },
+        {
+          "date": "2024-08",
+          "price": 46000
+        },
+        {
+          "date": "2024-10",
+          "price": 50000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 75000,
+        "engagementRate": 7.8,
+        "averageViews": 68000,
+        "conversionRate": 3.9,
+        "platformPerformance": {
+          "instagram": 980,
+          "youtube": 620,
+          "tiktok": 740
+        }
+      },
+      "city": "Kaohsiung",
+      "notes": "短影音表現佳",
+      "favoriteFolder": "家電專案"
+    },
+    {
+      "id": "kol_004",
+      "displayName": "Chef Ken",
+      "instagramHandle": "chefken.home",
+      "industry": "美食",
+      "tags": [
+        "料理",
+        "居家"
+      ],
+      "categories": [
+        "美食",
+        "生活"
+      ],
+      "platform": "Instagram",
+      "followers": 68000,
+      "engagementRate": 3.9,
+      "rating": 4.1,
+      "collaborations": 5,
+      "isFavorite": false,
+      "avatarUrl": "https://i.pravatar.cc/160?img=14",
+      "social": {
+        "instagram": 68000,
+        "youtube": 34000,
+        "tiktok": 9000
+      },
+      "city": "Taipei"
+    },
+    {
+      "id": "kol_005",
+      "displayName": "Luna Fit",
+      "instagramHandle": "lunafit.training",
+      "industry": "健康運動",
+      "tags": [
+        "健身",
+        "女性"
+      ],
+      "categories": [
+        "運動",
+        "健康"
+      ],
+      "platform": "Instagram",
+      "followers": 134000,
+      "engagementRate": 5.1,
+      "rating": 4.3,
+      "collaborations": 9,
+      "isFavorite": false,
+      "avatarUrl": "https://i.pravatar.cc/160?img=25",
+      "social": {
+        "instagram": 134000,
+        "youtube": 22000,
+        "tiktok": 41000
+      },
+      "city": "Hsinchu",
+      "favoriteFolder": "美妝專案"
+    },
+    {
+      "id": "kol_006",
+      "displayName": "Nora Finance",
+      "instagramHandle": "nora.moneytalk",
+      "industry": "財經",
+      "tags": [
+        "投資",
+        "理財"
+      ],
+      "categories": [
+        "財經",
+        "教育"
+      ],
+      "platform": "YouTube",
+      "followers": 47000,
+      "engagementRate": 4.2,
+      "rating": 4,
+      "collaborations": 4,
+      "isFavorite": false,
+      "avatarUrl": "https://i.pravatar.cc/160?img=44",
+      "social": {
+        "instagram": 21000,
+        "youtube": 47000,
+        "tiktok": 7000
+      },
+      "city": "Taipei"
+    },
+    {
+      "id": "kol_007",
+      "displayName": "Zoe Family",
+      "instagramHandle": "zoefamily.fun",
+      "industry": "母嬰親子",
+      "tags": [
+        "親子",
+        "旅遊"
+      ],
+      "categories": [
+        "親子",
+        "旅遊"
+      ],
+      "platform": "Instagram",
+      "followers": 112000,
+      "engagementRate": 4.8,
+      "rating": 4.6,
+      "collaborations": 13,
+      "isFavorite": true,
+      "avatarUrl": "https://i.pravatar.cc/160?img=47",
+      "social": {
+        "instagram": 112000,
+        "youtube": 9000,
+        "tiktok": 38000
+      },
+      "city": "Tainan",
+      "favoriteFolder": "美妝專案"
+    },
+    {
+      "id": "kol_008",
+      "displayName": "Ray Auto",
+      "instagramHandle": "rayauto.lab",
+      "industry": "汽車",
+      "tags": [
+        "汽車",
+        "開箱"
+      ],
+      "categories": [
+        "汽車",
+        "3C"
+      ],
+      "platform": "YouTube",
+      "followers": 205000,
+      "engagementRate": 4.4,
+      "rating": 4.8,
+      "collaborations": 10,
+      "isFavorite": false,
+      "avatarUrl": "https://i.pravatar.cc/160?img=59",
+      "social": {
+        "instagram": 53000,
+        "youtube": 205000,
+        "tiktok": 12000
+      },
+      "city": "Taichung"
+    },
+    {
+      "id": "6524",
+      "displayName": "Emily",
+      "instagramHandle": "",
+      "industry": "待分類",
+      "tags": [
+        "母嬰",
+        "親子",
+        "旅遊"
+      ],
+      "categories": [
+        "母嬰",
+        "親子",
+        "旅遊"
+      ],
+      "platform": "Instagram",
+      "followers": 0,
+      "engagementRate": 0,
+      "rating": 0,
+      "collaborations": 0,
+      "averagePrice": 0,
+      "isFavorite": false,
+      "social": {
+        "instagram": 0,
+        "youtube": 0,
+        "tiktok": 0,
+        "facebook": 0
+      },
+      "contact": {
+        "phone": "090799999",
+        "email": "emily-cai@dactp.com.tw",
+        "manager": ""
+      },
+      "profile": {
+        "gender": "女",
+        "age": 23
+      },
+      "city": "Taipei",
+      "notes": "internal:",
+      "status": "active"
+    }
+  ],
+  "proposals": [
+    {
+      "id": "prop_001",
+      "title": "Q2 美妝新品聲量計畫",
+      "clientName": "Brand A",
+      "stage": "sent_to_client",
+      "budget": 800000,
+      "dueDate": "2026-03-15"
+    },
+    {
+      "id": "prop_002",
+      "title": "618 3C 導購整合提案",
+      "clientName": "Brand B",
+      "stage": "internal_review",
+      "budget": 1200000,
+      "dueDate": "2026-03-20"
+    }
+  ],
+  "insertionOrders": [
+    {
+      "id": "io_001",
+      "orderNo": "IO-2026-001",
+      "title": "Panasonic 洗碗機發表會",
+      "clientName": "Panasonic",
+      "industry": "家電",
+      "salesOwner": "Amy",
+      "kolManager": "John",
+      "kolCount": 5,
+      "status": "completed",
+      "totalBudget": 250000,
+      "avgRating": 4.5,
+      "totalReach": 450000,
+      "totalEngagement": 35000,
+      "startDate": "2026-01-05",
+      "endDate": "2026-01-30",
+      "projectName": "Panasonic 2025年秋季發表會",
+      "brand": "Panasonic",
+      "industryPath": "家電 > 廚房家電",
+      "documentUrl": "https://example.com/docs/io-2026-001.pdf",
+      "avgEngagementRate": 7.8,
+      "collaborations": [
+        {
+          "id": "ioc_001",
+          "kolId": "kol_003",
+          "name": "Gina",
+          "avatarUrl": "https://i.pravatar.cc/120?img=5",
+          "socialLinks": {
+            "instagram": "@gina.life",
+            "youtube": "20K 訂閱"
+          },
+          "price": 50000,
+          "services": "IG 貼文 + 限時動態",
+          "uploadDate": "2024-10-15",
+          "authorization": "6個月社群媒體使用",
+          "rating": 5,
+          "totalReach": 105000,
+          "totalEngagement": 8600,
+          "performanceItems": [
+            {
+              "id": "ioc001_pf1",
+              "title": "IG 貼文",
+              "thumbnails": [
+                "https://picsum.photos/seed/gina-post-1/220/140",
+                "https://picsum.photos/seed/gina-post-2/220/140",
+                "https://picsum.photos/seed/gina-post-3/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/gina-metric-1/220/140",
+                "https://picsum.photos/seed/gina-metric-2/220/140"
+              ],
+              "metrics": {
+                "impressions": 80000,
+                "reach": 65000,
+                "likes": 5000,
+                "comments": 200,
+                "shares": 150,
+                "saves": 800,
+                "engagementRate": 9.5
+              }
+            },
+            {
+              "id": "ioc001_pf2",
+              "title": "IG 限時動態",
+              "thumbnails": [
+                "https://picsum.photos/seed/gina-story-1/220/140",
+                "https://picsum.photos/seed/gina-story-2/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/gina-story-metric-1/220/140"
+              ],
+              "metrics": {
+                "impressions": 25000,
+                "reach": 21000,
+                "likes": 1200,
+                "comments": 40,
+                "shares": 55,
+                "saves": 180,
+                "engagementRate": 7.1
+              }
+            },
+            {
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 1000,
+                "reach": 800,
+                "likes": 50,
+                "comments": 5,
+                "engagementRate": 5.5
+              },
+              "id": "perf_1773304109095"
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv001",
+              "author": "Amy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=32",
+              "date": "2024-10-20",
+              "comment": "素材交付快、溝通順，且貼文互動超預期。",
+              "rating": 5,
+              "type": "external"
+            },
+            {
+              "id": "rv001_internal",
+              "author": "Amy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=32",
+              "date": "2024-10-20",
+              "comment": "KOL 配合度極高，建議列入優質名單。",
+              "rating": 5,
+              "type": "internal"
+            },
+            {
+              "id": "rv002",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=12",
+              "date": "2024-10-22",
+              "comment": "限動導流表現穩定，建議下次加碼短影音。",
+              "rating": 4.8,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_002",
+          "kolId": "kol_001",
+          "name": "Amy Beauty",
+          "avatarUrl": "https://i.pravatar.cc/120?img=32",
+          "socialLinks": {
+            "instagram": "@amybeauty.tw",
+            "youtube": "12K 訂閱"
+          },
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "uploadDate": "2024-10-16",
+          "authorization": "3個月廣告投放",
+          "rating": 4.6,
+          "totalReach": 92000,
+          "totalEngagement": 7100,
+          "performanceItems": [
+            {
+              "id": "ioc002_pf1",
+              "title": "IG Reels",
+              "thumbnails": [
+                "https://picsum.photos/seed/amy-r1/220/140",
+                "https://picsum.photos/seed/amy-r2/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/amy-m1/220/140"
+              ],
+              "metrics": {
+                "impressions": 70000,
+                "reach": 56000,
+                "likes": 4100,
+                "comments": 160,
+                "shares": 180,
+                "saves": 620,
+                "engagementRate": 8.2
+              }
+            },
+            {
+              "id": "ioc002_pf2",
+              "title": "IG 貼文",
+              "thumbnails": [
+                "https://picsum.photos/seed/amy-p1/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/amy-m2/220/140"
+              ],
+              "metrics": {
+                "impressions": 22000,
+                "reach": 18000,
+                "likes": 1400,
+                "comments": 75,
+                "shares": 50,
+                "saves": 210,
+                "engagementRate": 7.5
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv003",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=47",
+              "date": "2024-10-21",
+              "comment": "貼文質感佳，品牌訊息露出自然。",
+              "rating": 4.6,
+              "type": "external"
+            },
+            {
+              "author": "System User",
+              "comment": "external ok 1773304140266",
+              "rating": 4.5,
+              "type": "external",
+              "id": "rv_1773304140676",
+              "date": "2026-03-12"
+            },
+            {
+              "author": "System User",
+              "comment": "internal ok 1773304140266",
+              "rating": 4.5,
+              "type": "internal",
+              "id": "rv_1773304140853",
+              "date": "2026-03-12"
+            }
+          ]
+        },
+        {
+          "id": "ioc_003",
+          "kolId": "kol_004",
+          "name": "Chef Ken",
+          "avatarUrl": "https://i.pravatar.cc/120?img=14",
+          "socialLinks": {
+            "instagram": "@chefken.home",
+            "youtube": "34K 訂閱"
+          },
+          "price": 42000,
+          "services": "IG 貼文 + 限動",
+          "uploadDate": "2024-10-17",
+          "authorization": "6個月社群媒體使用",
+          "rating": 4.3,
+          "totalReach": 76000,
+          "totalEngagement": 5200,
+          "performanceItems": [
+            {
+              "id": "ioc003_pf1",
+              "title": "IG 貼文",
+              "thumbnails": [
+                "https://picsum.photos/seed/ken-p1/220/140",
+                "https://picsum.photos/seed/ken-p2/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/ken-m1/220/140"
+              ],
+              "metrics": {
+                "impressions": 58000,
+                "reach": 46000,
+                "likes": 3000,
+                "comments": 130,
+                "shares": 90,
+                "saves": 420,
+                "engagementRate": 7.1
+              }
+            },
+            {
+              "id": "ioc003_pf2",
+              "title": "IG 限時動態",
+              "thumbnails": [
+                "https://picsum.photos/seed/ken-s1/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/ken-m2/220/140"
+              ],
+              "metrics": {
+                "impressions": 18000,
+                "reach": 15000,
+                "likes": 760,
+                "comments": 30,
+                "shares": 28,
+                "saves": 95,
+                "engagementRate": 5.4
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv004",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=20",
+              "date": "2024-10-23",
+              "comment": "內容貼近情境，CTR 表現不錯。",
+              "rating": 4.2
+            }
+          ]
+        },
+        {
+          "id": "ioc_004",
+          "kolId": "kol_007",
+          "name": "Zoe Family",
+          "avatarUrl": "https://i.pravatar.cc/120?img=47",
+          "socialLinks": {
+            "instagram": "@zoefamily.fun",
+            "youtube": "9K 訂閱"
+          },
+          "price": 52000,
+          "services": "IG Reels + 限動",
+          "uploadDate": "2024-10-16",
+          "authorization": "12個月素材授權",
+          "rating": 4.7,
+          "totalReach": 98000,
+          "totalEngagement": 8300,
+          "performanceItems": [
+            {
+              "id": "ioc004_pf1",
+              "title": "IG Reels",
+              "thumbnails": [
+                "https://picsum.photos/seed/zoe-r1/220/140",
+                "https://picsum.photos/seed/zoe-r2/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/zoe-m1/220/140"
+              ],
+              "metrics": {
+                "impressions": 76000,
+                "reach": 61000,
+                "likes": 4700,
+                "comments": 210,
+                "shares": 160,
+                "saves": 690,
+                "engagementRate": 9.2
+              }
+            },
+            {
+              "id": "ioc004_pf2",
+              "title": "IG 限時動態",
+              "thumbnails": [
+                "https://picsum.photos/seed/zoe-s1/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/zoe-m2/220/140"
+              ],
+              "metrics": {
+                "impressions": 22000,
+                "reach": 18000,
+                "likes": 980,
+                "comments": 34,
+                "shares": 42,
+                "saves": 150,
+                "engagementRate": 6.7
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv005",
+              "author": "Amy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=32",
+              "date": "2024-10-24",
+              "comment": "親子受眾匹配度高，留言品質佳。",
+              "rating": 4.7
+            }
+          ]
+        },
+        {
+          "id": "ioc_005",
+          "kolId": "kol_002",
+          "name": "Tech Allen",
+          "avatarUrl": "https://i.pravatar.cc/120?img=12",
+          "socialLinks": {
+            "instagram": "@techallen.review",
+            "youtube": "92K 訂閱"
+          },
+          "price": 52000,
+          "services": "YouTube 短評 + IG 貼文",
+          "uploadDate": "2024-10-18",
+          "authorization": "6個月素材二次使用",
+          "rating": 4.4,
+          "totalReach": 79000,
+          "totalEngagement": 5800,
+          "performanceItems": [
+            {
+              "id": "ioc005_pf1",
+              "title": "YouTube Shorts",
+              "thumbnails": [
+                "https://picsum.photos/seed/allen-y1/220/140",
+                "https://picsum.photos/seed/allen-y2/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/allen-m1/220/140"
+              ],
+              "metrics": {
+                "impressions": 60000,
+                "reach": 48000,
+                "likes": 3200,
+                "comments": 120,
+                "shares": 100,
+                "saves": 330,
+                "engagementRate": 6.9
+              }
+            },
+            {
+              "id": "ioc005_pf2",
+              "title": "IG 貼文",
+              "thumbnails": [
+                "https://picsum.photos/seed/allen-p1/220/140"
+              ],
+              "performanceScreenshots": [
+                "https://picsum.photos/seed/allen-m2/220/140"
+              ],
+              "metrics": {
+                "impressions": 19000,
+                "reach": 15000,
+                "likes": 1100,
+                "comments": 55,
+                "shares": 36,
+                "saves": 140,
+                "engagementRate": 6.1
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv006",
+              "author": "Leo",
+              "avatarUrl": "https://i.pravatar.cc/80?img=60",
+              "date": "2024-10-25",
+              "comment": "3C 說服力強，家電訴求轉譯清楚。",
+              "rating": 4.4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "io_002",
+      "orderNo": "IO-2026-002",
+      "title": "新春親子食品導購",
+      "clientName": "Happy Food",
+      "industry": "食品",
+      "salesOwner": "Nina",
+      "kolManager": "Cindy",
+      "kolCount": 4,
+      "status": "in_progress",
+      "totalBudget": 320000,
+      "avgRating": 4.4,
+      "totalReach": 380000,
+      "totalEngagement": 29100,
+      "startDate": "2026-02-01",
+      "endDate": "2026-03-15"
+    },
+    {
+      "id": "io_003",
+      "orderNo": "IO-2026-003",
+      "title": "夏季保養新品檔期",
+      "clientName": "DermaLab",
+      "industry": "美妝",
+      "salesOwner": "Amy",
+      "kolManager": "Ivy",
+      "kolCount": 6,
+      "status": "planned",
+      "totalBudget": 410000,
+      "avgRating": 0,
+      "totalReach": 0,
+      "totalEngagement": 0,
+      "startDate": "2026-04-01",
+      "endDate": "2026-05-15"
+    },
+    {
+      "id": "io_004",
+      "orderNo": "IO-2026-004",
+      "title": "智慧家電口碑計畫",
+      "clientName": "Aqua Home",
+      "industry": "家電",
+      "salesOwner": "Leo",
+      "kolManager": "John",
+      "kolCount": 3,
+      "status": "in_progress",
+      "totalBudget": 210000,
+      "avgRating": 4.2,
+      "totalReach": 190000,
+      "totalEngagement": 14400,
+      "startDate": "2026-02-20",
+      "endDate": "2026-03-25"
+    },
+    {
+      "id": "io_005",
+      "orderNo": "IO-2026-005",
+      "title": "母嬰新品上線",
+      "clientName": "BabyCare",
+      "industry": "母嬰",
+      "salesOwner": "Nina",
+      "kolManager": "Mia",
+      "kolCount": 7,
+      "status": "completed",
+      "totalBudget": 560000,
+      "avgRating": 4.8,
+      "totalReach": 720000,
+      "totalEngagement": 61800,
+      "startDate": "2025-11-05",
+      "endDate": "2025-12-20"
+    },
+    {
+      "id": "io_006",
+      "orderNo": "IO-2026-006",
+      "title": "618 科技整合導購",
+      "clientName": "NovaTech",
+      "industry": "3C",
+      "salesOwner": "Leo",
+      "kolManager": "Allen",
+      "kolCount": 8,
+      "status": "planned",
+      "totalBudget": 880000,
+      "avgRating": 0,
+      "totalReach": 0,
+      "totalEngagement": 0,
+      "startDate": "2026-05-20",
+      "endDate": "2026-06-25"
+    },
+    {
+      "id": "io_007",
+      "orderNo": "IO-2026-007",
+      "title": "車用品社群擴散",
+      "clientName": "AutoMax",
+      "industry": "汽車",
+      "salesOwner": "Amy",
+      "kolManager": "Ray",
+      "kolCount": 4,
+      "status": "in_progress",
+      "totalBudget": 290000,
+      "avgRating": 4.1,
+      "totalReach": 240000,
+      "totalEngagement": 18200,
+      "startDate": "2026-02-10",
+      "endDate": "2026-04-01"
+    },
+    {
+      "id": "io_008",
+      "orderNo": "IO-2026-008",
+      "title": "開學季輕食推廣",
+      "clientName": "FitMeal",
+      "industry": "食品",
+      "salesOwner": "Nina",
+      "kolManager": "Zoey",
+      "kolCount": 5,
+      "status": "completed",
+      "totalBudget": 330000,
+      "avgRating": 4.6,
+      "totalReach": 410000,
+      "totalEngagement": 33800,
+      "startDate": "2025-09-01",
+      "endDate": "2025-10-10"
+    }
+  ],
+  "proposalKols": [
+    {
+      "id": "19c2",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "63b4",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "456f",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "320b",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "5015",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "ae00",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "ff8d",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "3213",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "f8bb",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "3a38",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "a62b",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "8b0d",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "a7ed",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "6eeb",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 0,
+      "role": "IG 貼文 x1",
+      "reason": "",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "275b",
+      "proposalId": "prop_001",
+      "kolId": "kol_001",
+      "kolName": "Amy Beauty",
+      "price": 52000,
+      "role": "待討論",
+      "reason": "根據您的需求「美妝」，該 KOL 的領域與標籤高度相關，且過往在類似專案中表現穩定。",
+      "status": "pending",
+      "feedbackText": ""
+    }
+  ],
+  "proposalFeedbacks": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}

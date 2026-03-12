@@ -1,0 +1,79 @@
+[probe] goto http://localhost:63992/insertion-orders/io_001
+[pageerror 2026-03-12T08:07:47.965Z] process is not defined
+{
+  "target": "http://localhost:63992/insertion-orders/io_001",
+  "results": [
+    {
+      "t0": "2026-03-12T08:07:48.186Z",
+      "label": "新增成效",
+      "clickError": null,
+      "urlBefore": "http://localhost:63992/insertion-orders/io_001",
+      "urlAfter": "http://localhost:63992/insertion-orders/io_001",
+      "urlChanged": false,
+      "activeBefore": {
+        "tag": "BODY",
+        "id": null,
+        "role": null,
+        "name": null,
+        "type": null,
+        "ariaLabel": null,
+        "text": "@media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-",
+        "className": null
+      },
+      "activeAfter": {
+        "tag": "BUTTON",
+        "id": null,
+        "role": null,
+        "name": null,
+        "type": "button",
+        "ariaLabel": null,
+        "text": "📊 新增成效",
+        "className": "mantine-focus-auto mantine-active m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root"
+      },
+      "modalDiag": {
+        "modalish": [],
+        "overlayish": [],
+        "fixedBig": []
+      },
+      "consoleEvents": [],
+      "pageErrors": [],
+      "requestFailed": []
+    },
+    {
+      "t0": "2026-03-12T08:07:51.969Z",
+      "label": "留下評價",
+      "clickError": null,
+      "urlBefore": "http://localhost:63992/insertion-orders/io_001",
+      "urlAfter": "http://localhost:63992/insertion-orders/io_001",
+      "urlChanged": false,
+      "activeBefore": {
+        "tag": "BUTTON",
+        "id": null,
+        "role": null,
+        "name": null,
+        "type": "button",
+        "ariaLabel": null,
+        "text": "📊 新增成效",
+        "className": "mantine-focus-auto mantine-active m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root"
+      },
+      "activeAfter": {
+        "tag": "BUTTON",
+        "id": null,
+        "role": null,
+        "name": null,
+        "type": "button",
+        "ariaLabel": null,
+        "text": "✍️ 留下評價",
+        "className": "mantine-focus-auto mantine-active m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root"
+      },
+      "modalDiag": {
+        "modalish": [],
+        "overlayish": [],
+        "fixedBig": []
+      },
+      "consoleEvents": [],
+      "pageErrors": [],
+      "requestFailed": []
+    }
+  ]
+}

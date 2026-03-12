@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-03-12T09:32:38.954Z",
+  "kol": {
+    "id": "kol_003",
+    "displayName": "Gina",
+    "instagramHandle": "gina.life",
+    "industry": "母嬰親子",
+    "followers": 50000,
+    "youtubeSubscribers": 20000,
+    "tags": [
+      "母嬰",
+      "親子",
+      "生活"
+    ]
+  },
+  "summary": {
+    "avgPrice": 48000,
+    "avgRating": 4.5,
+    "collaborations": 8
+  },
+  "recentCollaborations": [
+    {
+      "id": "ch_001",
+      "date": "2024-10-01",
+      "projectTitle": "案件 #12345 - Panasonic 洗碗機",
+      "clientName": "Panasonic",
+      "industry": "家電",
+      "price": 50000,
+      "services": "IG 貼文 + 限時動態",
+      "rating": 5,
+      "orderId": "io_001",
+      "metrics": {
+        "postViews": 80000,
+        "postLikes": 5000,
+        "postComments": 200,
+        "storyViews": 25000,
+        "storyLikes": 1200
+      }
+    },
+    {
+      "id": "ch_002",
+      "date": "2024-08-20",
+      "projectTitle": "案件 #12210 - 親子食品聯名",
+      "clientName": "Happy Food",
+      "industry": "食品",
+      "price": 46000,
+      "services": "IG Reels + 限時動態",
+      "rating": 4.6,
+      "orderId": "io_002",
+      "metrics": {
+        "postViews": 72000,
+        "postLikes": 4300,
+        "postComments": 140,
+        "storyViews": 21000,
+        "storyLikes": 980
+      }
+    },
+    {
+      "id": "ch_003",
+      "date": "2024-06-11",
+      "projectTitle": "案件 #11888 - 母嬰保養新品",
+      "clientName": "BabyCare",
+      "industry": "美妝",
+      "price": 47000,
+      "services": "IG 貼文 + 限時動態",
+      "rating": 4.4,
+      "metrics": {
+        "postViews": 68000,
+        "postLikes": 3900,
+        "postComments": 110,
+        "storyViews": 19000,
+        "storyLikes": 850
+      }
+    },
+    {
+      "id": "ch_004",
+      "date": "2024-03-05",
+      "projectTitle": "案件 #11320 - 家電清潔企劃",
+      "clientName": "Aqua Home",
+      "industry": "家電",
+      "price": 49000,
+      "services": "IG Reels + 限時動態",
+      "rating": 4.7,
+      "metrics": {
+        "postViews": 76000,
+        "postLikes": 4600,
+        "postComments": 170,
+        "storyViews": 23000,
+        "storyLikes": 1100
+      }
+    },
+    {
+      "id": "ch_005",
+      "date": "2023-12-17",
+      "projectTitle": "案件 #10987 - 年末親子活動",
+      "clientName": "FunKids",
+      "industry": "親子",
+      "price": 44000,
+      "services": "IG 貼文 + 限時動態",
+      "rating": 4.2,
+      "metrics": {
+        "postViews": 64000,
+        "postLikes": 3600,
+        "postComments": 120,
+        "storyViews": 18000,
+        "storyLikes": 770
+      }
+    }
+  ],
+  "performanceStats": {
+    "averageReach": 75000,
+    "engagementRate": 7.8,
+    "averageViews": 68000,
+    "conversionRate": 3.9,
+    "platformPerformance": {
+      "instagram": 980,
+      "youtube": 620,
+      "tiktok": 740
+    }
+  }
+}

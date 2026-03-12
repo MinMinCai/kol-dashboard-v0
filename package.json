@@ -1,0 +1,45 @@
+{
+  "name": "koldb-remix",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "remix dev",
+    "dev:mock": "json-server --watch mock/db.json --port 4000",
+    "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
+    "build": "remix build",
+    "start": "remix-serve build"
+  },
+  "dependencies": {
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
+    "@mantine/charts": "^7.17.8",
+    "@mantine/core": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
+    "@remix-run/node": "^2.16.1",
+    "@remix-run/react": "^2.16.1",
+    "@remix-run/serve": "^2.16.1",
+    "@tabler/icons-react": "^3.40.0",
+    "better-auth": "^1.5.5",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^3.4.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.4",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.16.1",
+    "@types/pg": "^8.18.0",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "concurrently": "^9.2.1",
+    "drizzle-kit": "^0.31.9",
+    "json-server": "^1.0.0-beta.3",
+    "playwright": "^1.58.2",
+    "typescript": "^5.9.2"
+  }
+}

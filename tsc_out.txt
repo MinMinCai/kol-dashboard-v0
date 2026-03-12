@@ -1,0 +1,54 @@
+app/root.tsx(1,31): error TS2307: Cannot find module '@remix-run/css-bundle' or its corresponding type declarations.
+node_modules/@remix-run/dev/dist/modules.d.ts(3,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(7,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(13,20): error TS2300: Duplicate identifier 'classes'.
+node_modules/@remix-run/dev/dist/modules.d.ts(25,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(33,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(37,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(61,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(65,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(69,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(83,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(87,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(91,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(95,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(99,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(103,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(115,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(119,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(127,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(131,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(135,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(139,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(143,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/modules.d.ts(147,20): error TS2300: Duplicate identifier 'src'.
+node_modules/@remix-run/dev/dist/vite/cloudflare-proxy-plugin.d.ts(3,66): error TS2307: Cannot find module 'wrangler' or its corresponding type declarations.
+node_modules/@remix-run/dev/dist/vite/plugin.d.ts(31,15): error TS2694: Namespace '"C:/Users/Emily Cai/code-practice/codex-koldb-test/node_modules/vite/dist/node/index"' has no exported member 'ResolvedDevEnvironmentOptions'.
+node_modules/@remix-run/dev/dist/vite/plugin.d.ts(32,28): error TS2724: '"C:/Users/Emily Cai/code-practice/codex-koldb-test/node_modules/vite/dist/node/index"' has no exported member named 'BuilderOptions'. Did you mean 'BuildOptions'?
+node_modules/@remix-run/dev/dist/vite/plugin.d.ts(49,19): error TS2694: Namespace '"C:/Users/Emily Cai/code-practice/codex-koldb-test/node_modules/vite/dist/node/index"' has no exported member 'ResolvedDevEnvironmentOptions'.
+node_modules/@remix-run/dev/dist/vite/plugin.d.ts(50,21): error TS2694: Namespace '"C:/Users/Emily Cai/code-practice/codex-koldb-test/node_modules/vite/dist/node/index"' has no exported member 'ResolvedBuildEnvironmentOptions'.
+node_modules/@remix-run/node/dist/upload/fileUploadHandler.d.ts(47,22): error TS2420: Class 'NodeOnDiskFile' incorrectly implements interface 'Omit<File, "constructor">'.
+  Property 'bytes' is missing in type 'NodeOnDiskFile' but required in type 'Omit<File, "constructor">'.
+node_modules/vite/client.d.ts(8,18): error TS2300: Duplicate identifier 'classes'.
+node_modules/vite/client.d.ts(63,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(67,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(71,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(87,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(91,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(95,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(99,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(103,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(109,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(113,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(117,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(121,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(125,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(129,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(133,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(141,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(155,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(159,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(163,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(167,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(171,18): error TS2300: Duplicate identifier 'src'.
+node_modules/vite/client.d.ts(177,18): error TS2300: Duplicate identifier 'src'.
