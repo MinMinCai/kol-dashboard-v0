@@ -2623,7 +2623,10 @@ function ProposalDetailPage() {
             placeholder: "\u8ACB\u8F38\u5165\u641C\u5C0B\u6307\u4EE4...",
             style: { flex: 1 },
             value: aiQuery,
-            onChange: (e) => setAiQuery(e.currentTarget.value)
+            onChange: (e) => setAiQuery(e.currentTarget.value),
+            onKeyDown: (e) => {
+              e.key === "Enter" && handleAiSearch();
+            }
           },
           void 0,
           !1,
@@ -2648,7 +2651,7 @@ function ProposalDetailPage() {
           !1,
           {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 196,
+            lineNumber: 201,
             columnNumber: 13
           },
           this
@@ -2675,82 +2678,82 @@ function ProposalDetailPage() {
           ")"
         ] }, void 0, !0, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 212,
+          lineNumber: 217,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV6(Button4, { type: "button", size: "xs", onClick: openAdd, children: "+ \u624B\u52D5\u65B0\u589E" }, void 0, !1, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 213,
+          lineNumber: 218,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-        lineNumber: 211,
+        lineNumber: 216,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV6(Table, { striped: !0, withTableBorder: !0, children: [
         /* @__PURE__ */ jsxDEV6(Table.Thead, { children: /* @__PURE__ */ jsxDEV6(Table.Tr, { children: [
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "KOL \u540D\u7A31" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 219,
+            lineNumber: 224,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u89D2\u8272/\u7248\u4F4D" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 220,
+            lineNumber: 225,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u9810\u4F30\u5831\u50F9" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 221,
+            lineNumber: 226,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u63A8\u85A6\u7406\u7531" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 222,
+            lineNumber: 227,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u72C0\u614B" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 223,
+            lineNumber: 228,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u5BA2\u6236\u53CD\u994B" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 224,
+            lineNumber: 229,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Th, { children: "\u64CD\u4F5C" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 225,
+            lineNumber: 230,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 218,
+          lineNumber: 223,
           columnNumber: 15
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 217,
+          lineNumber: 222,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV6(Table.Tbody, { children: candidates.length === 0 ? /* @__PURE__ */ jsxDEV6(Table.Tr, { children: /* @__PURE__ */ jsxDEV6(Table.Td, { colSpan: 7, align: "center", children: "\u5C1A\u672A\u52A0\u5165\u4EFB\u4F55\u5019\u9078\u4EBA" }, void 0, !1, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 231,
+          lineNumber: 236,
           columnNumber: 19
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 230,
+          lineNumber: 235,
           columnNumber: 17
         }, this) : candidates.map((c) => /* @__PURE__ */ jsxDEV6(Table.Tr, { children: [
           /* @__PURE__ */ jsxDEV6(Table.Td, { fw: 500, children: c.kolName }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 236,
+            lineNumber: 241,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: c.role }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 237,
+            lineNumber: 242,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: [
@@ -2758,51 +2761,51 @@ function ProposalDetailPage() {
             c.price.toLocaleString("zh-TW")
           ] }, void 0, !0, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 238,
+            lineNumber: 243,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", lineClamp: 2, children: c.reason }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 240,
+            lineNumber: 245,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 239,
+            lineNumber: 244,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: /* @__PURE__ */ jsxDEV6(Badge3, { color: statusColor[c.status], children: statusLabel[c.status] }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 243,
+            lineNumber: 248,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 242,
+            lineNumber: 247,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: c.feedbackText || "-" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 246,
+            lineNumber: 251,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 245,
+            lineNumber: 250,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Table.Td, { children: /* @__PURE__ */ jsxDEV6(Group3, { gap: 5, children: [
             /* @__PURE__ */ jsxDEV6(Form, { method: "post", style: { display: "inline" }, children: [
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "intent", value: "update_status" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 251,
+                lineNumber: 256,
                 columnNumber: 27
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "candidateId", value: c.id }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 252,
+                lineNumber: 257,
                 columnNumber: 27
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "status", value: "accepted" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 253,
+                lineNumber: 258,
                 columnNumber: 27
               }, this),
               /* @__PURE__ */ jsxDEV6(
@@ -2819,14 +2822,14 @@ function ProposalDetailPage() {
                 !1,
                 {
                   fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                  lineNumber: 254,
+                  lineNumber: 259,
                   columnNumber: 27
                 },
                 this
               )
             ] }, void 0, !0, {
               fileName: "app/routes/_app.proposals.$proposalId.tsx",
-              lineNumber: 250,
+              lineNumber: 255,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ jsxDEV6(
@@ -2843,41 +2846,41 @@ function ProposalDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 264,
+                lineNumber: 269,
                 columnNumber: 25
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 249,
+            lineNumber: 254,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 248,
+            lineNumber: 253,
             columnNumber: 21
           }, this)
         ] }, c.id, !0, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 235,
+          lineNumber: 240,
           columnNumber: 19
         }, this)) }, void 0, !1, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 228,
+          lineNumber: 233,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-        lineNumber: 216,
+        lineNumber: 221,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.proposals.$proposalId.tsx",
-      lineNumber: 210,
+      lineNumber: 215,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.proposals.$proposalId.tsx",
-      lineNumber: 209,
+      lineNumber: 214,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV6(
@@ -2893,7 +2896,7 @@ function ProposalDetailPage() {
         children: /* @__PURE__ */ jsxDEV6(Stack4, { gap: "md", children: [
           aiSearching && /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", children: "\u6B63\u5728\u5206\u6790\u8CC7\u6599\u5EAB\u4E26\u5339\u914D\u6700\u4F73\u4EBA\u9078..." }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 295,
+            lineNumber: 300,
             columnNumber: 27
           }, this),
           !aiSearching && aiResults.length === 0 && /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", children: [
@@ -2902,7 +2905,7 @@ function ProposalDetailPage() {
             "\u300D\u7684\u5019\u9078\u4EBA\uFF08Mock\uFF09\u3002"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 297,
+            lineNumber: 302,
             columnNumber: 13
           }, this),
           !aiSearching && aiResults.map((res) => /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, shadow: "xs", children: [
@@ -2930,7 +2933,7 @@ function ProposalDetailPage() {
                       !1,
                       {
                         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                        lineNumber: 314,
+                        lineNumber: 319,
                         columnNumber: 23
                       },
                       this
@@ -2940,7 +2943,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 304,
+                    lineNumber: 309,
                     columnNumber: 21
                   },
                   this
@@ -2948,7 +2951,7 @@ function ProposalDetailPage() {
                 /* @__PURE__ */ jsxDEV6("div", { children: [
                   /* @__PURE__ */ jsxDEV6(Text4, { fw: 700, children: res.displayName }, void 0, !1, {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 321,
+                    lineNumber: 326,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: [
@@ -2958,17 +2961,17 @@ function ProposalDetailPage() {
                     " \u7C89\u7D72"
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 322,
+                    lineNumber: 327,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                  lineNumber: 320,
+                  lineNumber: 325,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 303,
+                lineNumber: 308,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV6(Badge3, { color: "blue", variant: "filled", children: [
@@ -2977,12 +2980,12 @@ function ProposalDetailPage() {
                 "%"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 327,
+                lineNumber: 332,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.proposals.$proposalId.tsx",
-              lineNumber: 302,
+              lineNumber: 307,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV6(
@@ -2999,7 +3002,7 @@ function ProposalDetailPage() {
                 children: [
                   /* @__PURE__ */ jsxDEV6(Text4, { span: !0, fw: 700, c: "blue", children: "AI \u63A8\u85A6\u7406\u7531\uFF1A" }, void 0, !1, {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 342,
+                    lineNumber: 347,
                     columnNumber: 19
                   }, this),
                   " ",
@@ -3010,7 +3013,7 @@ function ProposalDetailPage() {
               !0,
               {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 332,
+                lineNumber: 337,
                 columnNumber: 17
               },
               this
@@ -3018,61 +3021,61 @@ function ProposalDetailPage() {
             /* @__PURE__ */ jsxDEV6(Group3, { justify: "flex-end", mt: "md", children: /* @__PURE__ */ jsxDEV6(Form, { method: "post", onSubmit: closeAiSearch, children: [
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "intent", value: "add_candidate" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 350,
+                lineNumber: 355,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "kolId", value: res.id }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 351,
+                lineNumber: 356,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "kolName", value: res.displayName }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 352,
+                lineNumber: 357,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "price", value: res.averagePrice || 0 }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 353,
+                lineNumber: 358,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "role", value: "\u5F85\u8A0E\u8AD6" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 354,
+                lineNumber: 359,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "reason", value: res.aiReason }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 355,
+                lineNumber: 360,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6(Button4, { size: "xs", type: "submit", children: "\u52A0\u5165\u5019\u9078\u540D\u55AE" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 356,
+                lineNumber: 361,
                 columnNumber: 21
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.proposals.$proposalId.tsx",
-              lineNumber: 349,
+              lineNumber: 354,
               columnNumber: 19
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.proposals.$proposalId.tsx",
-              lineNumber: 348,
+              lineNumber: 353,
               columnNumber: 17
             }, this)
           ] }, res.id, !0, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 301,
+            lineNumber: 306,
             columnNumber: 15
           }, this)),
           /* @__PURE__ */ jsxDEV6(Button4, { type: "button", fullWidth: !0, variant: "light", onClick: closeAiSearch, children: "\u95DC\u9589" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 364,
+            lineNumber: 369,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 294,
+          lineNumber: 299,
           columnNumber: 9
         }, this)
       },
@@ -3080,7 +3083,7 @@ function ProposalDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-        lineNumber: 284,
+        lineNumber: 289,
         columnNumber: 7
       },
       this
@@ -3104,7 +3107,7 @@ function ProposalDetailPage() {
             children: [
               /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "intent", value: "add_candidate" }, void 0, !1, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 387,
+                lineNumber: 392,
                 columnNumber: 11
               }, this),
               /* @__PURE__ */ jsxDEV6(Stack4, { children: [
@@ -3125,7 +3128,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 389,
+                    lineNumber: 394,
                     columnNumber: 13
                   },
                   this
@@ -3141,7 +3144,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 400,
+                    lineNumber: 405,
                     columnNumber: 13
                   },
                   this
@@ -3158,7 +3161,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 405,
+                    lineNumber: 410,
                     columnNumber: 13
                   },
                   this
@@ -3177,7 +3180,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 411,
+                    lineNumber: 416,
                     columnNumber: 13
                   },
                   this
@@ -3194,7 +3197,7 @@ function ProposalDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 419,
+                    lineNumber: 424,
                     columnNumber: 13
                   },
                   this
@@ -3214,24 +3217,24 @@ function ProposalDetailPage() {
                     !1,
                     {
                       fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                      lineNumber: 426,
+                      lineNumber: 431,
                       columnNumber: 15
                     },
                     this
                   ),
                   /* @__PURE__ */ jsxDEV6(Button4, { type: "submit", color: "blue", disabled: !manualKolId, children: "\u78BA\u8A8D\u52A0\u5165" }, void 0, !1, {
                     fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                    lineNumber: 436,
+                    lineNumber: 441,
                     columnNumber: 15
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                  lineNumber: 425,
+                  lineNumber: 430,
                   columnNumber: 13
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 388,
+                lineNumber: 393,
                 columnNumber: 11
               }, this)
             ]
@@ -3240,7 +3243,7 @@ function ProposalDetailPage() {
           !0,
           {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 380,
+            lineNumber: 385,
             columnNumber: 9
           },
           this
@@ -3250,7 +3253,7 @@ function ProposalDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-        lineNumber: 371,
+        lineNumber: 376,
         columnNumber: 7
       },
       this
@@ -3264,17 +3267,17 @@ function ProposalDetailPage() {
         children: /* @__PURE__ */ jsxDEV6(Form, { method: "post", onSubmit: () => setFeedbackCandidate(null), children: [
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "intent", value: "update_status" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 451,
+            lineNumber: 456,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "candidateId", value: feedbackCandidate?.id }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 452,
+            lineNumber: 457,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "status", value: "rejected" }, void 0, !1, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 453,
+            lineNumber: 458,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Stack4, { children: [
@@ -3290,24 +3293,24 @@ function ProposalDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.proposals.$proposalId.tsx",
-                lineNumber: 455,
+                lineNumber: 460,
                 columnNumber: 13
               },
               this
             ),
             /* @__PURE__ */ jsxDEV6(Button4, { type: "submit", color: "red", children: "\u78BA\u8A8D\u62D2\u7D55" }, void 0, !1, {
               fileName: "app/routes/_app.proposals.$proposalId.tsx",
-              lineNumber: 461,
+              lineNumber: 466,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.proposals.$proposalId.tsx",
-            lineNumber: 454,
+            lineNumber: 459,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.proposals.$proposalId.tsx",
-          lineNumber: 450,
+          lineNumber: 455,
           columnNumber: 9
         }, this)
       },
@@ -3315,7 +3318,7 @@ function ProposalDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.proposals.$proposalId.tsx",
-        lineNumber: 445,
+        lineNumber: 450,
         columnNumber: 7
       },
       this
@@ -10925,7 +10928,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-UBDDNUOG.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-XFKJYJC4.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-YEIDLYOX.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-Y3BGVQBD.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-BZO2TL3R.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-6VD5PVTB.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-DTXIX2E2.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-DEBTSRRE.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-ZXS5QGI5.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-L3GYX5VY.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-474JB7RK.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-T25VEPIM.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-DBLULRYV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-DYKBBVFX.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-WHSU7DBO.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-542UDDNX.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-KAUMFGCV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-P42TYE5Z.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-Z5XSGTK3.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-4J62JRLE.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-KUXT7IG6.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-2TDIHLPT.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "7aa8c1c2", hmr: { runtime: "/build/_shared\\chunk-YEIDLYOX.js", timestamp: 1773312145980 }, url: "/build/manifest-7AA8C1C2.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-UBDDNUOG.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-XFKJYJC4.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-YEIDLYOX.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-Y3BGVQBD.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-BZO2TL3R.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-6VD5PVTB.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-DTXIX2E2.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-DEBTSRRE.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-ZXS5QGI5.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-L3GYX5VY.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-474JB7RK.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-T25VEPIM.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-DBLULRYV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-DYKBBVFX.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-WHSU7DBO.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-IWMHOVJA.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-KAUMFGCV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-P42TYE5Z.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-Z5XSGTK3.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-4J62JRLE.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-KUXT7IG6.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-2TDIHLPT.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "82789f96", hmr: { runtime: "/build/_shared\\chunk-YEIDLYOX.js", timestamp: 1773642858127 }, url: "/build/manifest-82789F96.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

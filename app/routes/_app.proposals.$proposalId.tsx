@@ -192,6 +192,11 @@ export default function ProposalDetailPage() {
               style={{ flex: 1 }}
               value={aiQuery}
               onChange={(e) => setAiQuery(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleAiSearch();
+                }
+              }}
             />
             <Button
               type="button"
