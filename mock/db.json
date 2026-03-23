@@ -452,6 +452,14 @@
       "stage": "internal_review",
       "budget": 1200000,
       "dueDate": "2026-03-20"
+    },
+    {
+      "id": "92a0",
+      "title": "Ploom 新企劃",
+      "clientName": "Ploom",
+      "budget": 1000000,
+      "dueDate": "2026-05-30",
+      "stage": "draft"
     }
   ],
   "insertionOrders": [

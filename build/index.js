@@ -3525,41 +3525,11 @@ function InsertionOrderCreatePage() {
   return /* @__PURE__ */ jsxDEV7(Stack5, { gap: "md", children: [
     /* @__PURE__ */ jsxDEV7("script", { dangerouslySetInnerHTML: { __html: nativeDialogScript } }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 257,
+      lineNumber: 258,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV7("script", { dangerouslySetInnerHTML: {
       __html: `
-        (function bindKolDialog() {
-          function setup() {
-            // Open dialog button
-            var openBtns = document.querySelectorAll('[data-kol-dialog-open]');
-            openBtns.forEach(function(btn) {
-              btn.addEventListener('click', function() { kolDialogOpen(); });
-            });
-            // Close dialog buttons
-            var closeBtns = document.querySelectorAll('[data-kol-dialog-close]');
-            closeBtns.forEach(function(btn) {
-              btn.addEventListener('click', function() { kolDialogClose(); });
-            });
-            // Search input
-            var searchInput = document.getElementById('kol-dialog-search');
-            if (searchInput) {
-              searchInput.addEventListener('input', function() { kolDialogSearch(this.value); });
-            }
-            // Dialog toggle \u2014 populate list when dialog opens
-            var dlg = document.getElementById('kol-select-dialog');
-            if (dlg) {
-              dlg.addEventListener('toggle', function() { if (dlg.open) kolDialogSearch(''); });
-            }
-          }
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setup);
-          } else {
-            setup();
-          }
-        })();
-
         function handleExcelUpload(input) {
           var file = input.files && input.files[0];
           if (!file) return;
@@ -3608,73 +3578,33 @@ function InsertionOrderCreatePage() {
             // Reset input
             input.value = '';
           }, 600);
-        }
-
-        (function handleProposalPreFill() {
-          var data = ${proposalData ? JSON.stringify(proposalData) : "null"};
-          if (!data) return;
-
-          function runFilling() {
-            var setVal = function(name, val) {
-              var el = document.querySelector('input[name="'+name+'"]');
-              if (el) {
-                el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            };
-            
-            setVal('projectName', data.title);
-            setVal('clientName', data.clientName);
-            setVal('brand', data.clientName);
-
-            if (data.acceptedKols && data.acceptedKols.length > 0) {
-              data.acceptedKols.forEach(function(pk) {
-                try {
-                  kolDialogAdd(
-                    pk.kolId, 
-                    encodeURIComponent(pk.kolName), 
-                    encodeURIComponent(pk.kolAvatarUrl || ''), 
-                    pk.price
-                  );
-                } catch(e){}
-              });
-            }
-          }
-
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', runFilling);
-          } else {
-            setTimeout(runFilling, 100);
-          }
-        })();
       `
     } }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 267,
+      lineNumber: 268,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV7(Group4, { justify: "space-between", children: [
       /* @__PURE__ */ jsxDEV7(Title5, { order: 2, children: "\u5EFA\u7ACB\u59D4\u520A\u55AE" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 390,
+        lineNumber: 321,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV7(Button5, { component: Link4, to: "/insertion-orders", variant: "default", children: "\u53D6\u6D88" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 391,
+        lineNumber: 322,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 389,
+      lineNumber: 320,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV7(Card4, { withBorder: !0, children: /* @__PURE__ */ jsxDEV7(Form2, { method: "post", children: /* @__PURE__ */ jsxDEV7(Stack5, { gap: "lg", children: [
       /* @__PURE__ */ jsxDEV7(Box3, { children: [
         /* @__PURE__ */ jsxDEV7(Text5, { fw: 600, mb: "xs", children: "\u532F\u5165\u59D4\u520A\u55AE (Excel)" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 399,
+          lineNumber: 330,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(
@@ -3706,17 +3636,17 @@ function InsertionOrderCreatePage() {
             children: [
               /* @__PURE__ */ jsxDEV7("div", { style: { fontSize: 32, marginBottom: 8 }, children: "\u{1F4CA}" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.new.tsx",
-                lineNumber: 426,
+                lineNumber: 357,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV7(Text5, { fw: 600, color: "var(--mantine-color-blue-filled)", children: "\u9EDE\u64CA\u4E0A\u50B3\u6216\u62D6\u66F3 Excel \u6A94\u6848\u81F3\u6B64" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.new.tsx",
-                lineNumber: 427,
+                lineNumber: 358,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV7(Text5, { size: "sm", c: "dimmed", mt: 4, children: "\u652F\u63F4 .xlsx, .xls" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.new.tsx",
-                lineNumber: 428,
+                lineNumber: 359,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV7(
@@ -3732,7 +3662,7 @@ function InsertionOrderCreatePage() {
                 !1,
                 {
                   fileName: "app/routes/_app.insertion-orders.new.tsx",
-                  lineNumber: 430,
+                  lineNumber: 361,
                   columnNumber: 17
                 },
                 this
@@ -3743,41 +3673,41 @@ function InsertionOrderCreatePage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 400,
+            lineNumber: 331,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 398,
+        lineNumber: 329,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Divider3, {}, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 440,
+        lineNumber: 371,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Box3, { children: [
         /* @__PURE__ */ jsxDEV7(Title5, { order: 4, mb: "sm", children: "\u59D4\u520A\u55AE\u57FA\u672C\u8CC7\u8A0A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 444,
+          lineNumber: 375,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(SimpleGrid4, { cols: { base: 1, md: 2 }, spacing: "md", children: [
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "projectName", label: "\u5C08\u6848\u540D\u7A31", placeholder: "\u4F8B\u5982\uFF1A2026 Q1 \u5BB6\u96FB\u63A8\u5EE3", required: !0 }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 446,
+            lineNumber: 377,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(Select2, { name: "clientName", label: "\u5BA2\u6236", searchable: !0, placeholder: "\u9078\u64C7\u5BA2\u6236", data: clientOptions }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 447,
+            lineNumber: 378,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "brand", label: "\u54C1\u724C", placeholder: "\u8ACB\u8F38\u5165\u54C1\u724C\u540D\u7A31" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 448,
+            lineNumber: 379,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(
@@ -3792,103 +3722,103 @@ function InsertionOrderCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 449,
+              lineNumber: 380,
               columnNumber: 17
             },
             this
           ),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "documentUrl", label: "\u59D4\u520A\u55AE\u9023\u7D50/\u9644\u4EF6", placeholder: "Google Drive \u6216 Dropbox \u9023\u7D50" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 455,
+            lineNumber: 386,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(Select2, { name: "salesOwner", label: "\u8CA0\u8CAC\u696D\u52D9", searchable: !0, data: salesOptions }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 456,
+            lineNumber: 387,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(Select2, { name: "kolManager", label: "\u8CA0\u8CAC KOL Team Member", searchable: !0, data: kolManagerOptions }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 457,
+            lineNumber: 388,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "startDate", label: "\u958B\u59CB\u65E5", type: "date" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 458,
+            lineNumber: 389,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "endDate", label: "\u7D50\u675F\u65E5", type: "date" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 459,
+            lineNumber: 390,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 445,
+          lineNumber: 376,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 443,
+        lineNumber: 374,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Divider3, {}, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 463,
+        lineNumber: 394,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Box3, { children: [
         /* @__PURE__ */ jsxDEV7(Title5, { order: 4, mb: "sm", children: "\u5408\u4F5C\u5167\u5BB9\u8207\u8CA1\u52D9\u8CC7\u8A0A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 467,
+          lineNumber: 398,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(SimpleGrid4, { cols: { base: 1, md: 2 }, spacing: "md", children: [
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "services", label: "\u5408\u4F5C\u5167\u5BB9", placeholder: "\u4F8B\u5982\uFF1AIG \u8CBC\u6587 1 \u7BC7\u3001\u9650\u6642\u52D5\u614B 2 \u5247" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 469,
+            lineNumber: 400,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "authorization", label: "\u6388\u6B0A\u9805\u76EE", placeholder: "\u4F8B\u5982\uFF1A\u6578\u4F4D\u5EE3\u544A\u6295\u653E\u4E00\u5E74" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 470,
+            lineNumber: 401,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "projectQuote", label: "\u5C08\u6848\u5831\u50F9 (\u672A\u7A05)", type: "number", placeholder: "0" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 471,
+            lineNumber: 402,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "taxRate", label: "\u7A05\u7387 (%)", type: "number", defaultValue: "5" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 472,
+            lineNumber: 403,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "totalAmount", label: "\u5C08\u6848\u7E3D\u91D1\u984D (\u542B\u7A05)", type: "number", placeholder: "0" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 473,
+            lineNumber: 404,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 468,
+          lineNumber: 399,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 466,
+        lineNumber: 397,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Divider3, {}, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 477,
+        lineNumber: 408,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Box3, { children: [
         /* @__PURE__ */ jsxDEV7(Group4, { justify: "space-between", mb: "sm", children: [
           /* @__PURE__ */ jsxDEV7(Title5, { order: 4, children: "\u5408\u4F5C KOL" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 482,
+            lineNumber: 413,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(
@@ -3896,6 +3826,9 @@ function InsertionOrderCreatePage() {
             {
               type: "button",
               "data-kol-dialog-open": "1",
+              onClick: () => {
+                typeof window.kolDialogOpen == "function" && window.kolDialogOpen();
+              },
               style: {
                 padding: "8px 16px",
                 borderRadius: 4,
@@ -3912,14 +3845,14 @@ function InsertionOrderCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 484,
+              lineNumber: 415,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 481,
+          lineNumber: 412,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(
@@ -3929,7 +3862,7 @@ function InsertionOrderCreatePage() {
             style: { minHeight: 40 },
             children: /* @__PURE__ */ jsxDEV7("p", { style: { fontSize: 14, color: "var(--mantine-color-dimmed)", margin: "8px 0" }, children: "\u5C1A\u672A\u52A0\u5165\u4EFB\u4F55 KOL\uFF0C\u8ACB\u9EDE\u64CA\u300C\u9078\u64C7\u5408\u4F5C KOL\u300D\u958B\u59CB\u9078\u64C7\u3002" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 507,
+              lineNumber: 442,
               columnNumber: 17
             }, this)
           },
@@ -3937,7 +3870,7 @@ function InsertionOrderCreatePage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 503,
+            lineNumber: 438,
             columnNumber: 15
           },
           this
@@ -3955,102 +3888,105 @@ function InsertionOrderCreatePage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 513,
+            lineNumber: 448,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 480,
+        lineNumber: 411,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Divider3, {}, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 522,
+        lineNumber: 457,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV7(Box3, { children: [
         /* @__PURE__ */ jsxDEV7(Title5, { order: 4, mb: "sm", children: "\u5176\u4ED6\u8CC7\u8A0A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 526,
+          lineNumber: 461,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(Stack5, { children: [
           /* @__PURE__ */ jsxDEV7(Textarea3, { name: "description", label: "\u5C08\u6848\u8AAA\u660E", minRows: 4 }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 528,
+            lineNumber: 463,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(Textarea3, { name: "internalNotes", label: "\u5167\u90E8\u5099\u8A3B", minRows: 3 }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 529,
+            lineNumber: 464,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(TextInput3, { name: "attachmentUrl", label: "\u9644\u4EF6\u4E0A\u50B3", placeholder: "\u53EF\u5148\u8CBC\u6A94\u6848\u9023\u7D50\uFF0C\u5F8C\u7E8C\u63A5\u771F\u4E0A\u50B3" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 530,
+            lineNumber: 465,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 527,
+          lineNumber: 462,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 525,
+        lineNumber: 460,
         columnNumber: 13
       }, this),
       actionData?.error && /* @__PURE__ */ jsxDEV7(Alert, { color: "red", children: actionData.error }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 534,
+        lineNumber: 469,
         columnNumber: 35
       }, this),
       /* @__PURE__ */ jsxDEV7(Group4, { justify: "space-between", children: [
         /* @__PURE__ */ jsxDEV7(Button5, { component: Link4, to: "/insertion-orders", variant: "default", children: "\u53D6\u6D88" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 537,
+          lineNumber: 472,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV7(Group4, { children: [
           /* @__PURE__ */ jsxDEV7(Button5, { type: "submit", name: "intent", value: "draft", variant: "default", loading: submitting, children: "\u5132\u5B58\u8349\u7A3F" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 539,
+            lineNumber: 474,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV7(Button5, { type: "submit", name: "intent", value: "create", loading: submitting, children: "\u5EFA\u7ACB\u59D4\u520A\u55AE" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 540,
+            lineNumber: 475,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.new.tsx",
-          lineNumber: 538,
+          lineNumber: 473,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 536,
+        lineNumber: 471,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 396,
+      lineNumber: 327,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 395,
+      lineNumber: 326,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.new.tsx",
-      lineNumber: 394,
+      lineNumber: 325,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV7(
       "dialog",
       {
         id: "kol-select-dialog",
+        onToggle: (e) => {
+          e.currentTarget.open && typeof window.kolDialogSearch == "function" && window.kolDialogSearch("");
+        },
         style: {
           padding: 24,
           borderRadius: 8,
@@ -4065,7 +4001,7 @@ function InsertionOrderCreatePage() {
           /* @__PURE__ */ jsxDEV7("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }, children: [
             /* @__PURE__ */ jsxDEV7("strong", { style: { fontSize: 18 }, children: "\u9078\u64C7\u5408\u4F5C KOL" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 562,
+              lineNumber: 504,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV7(
@@ -4073,6 +4009,9 @@ function InsertionOrderCreatePage() {
               {
                 type: "button",
                 "data-kol-dialog-close": "1",
+                onClick: () => {
+                  typeof window.kolDialogClose == "function" && window.kolDialogClose();
+                },
                 style: { background: "none", border: "none", cursor: "pointer", fontSize: 20 },
                 children: "\u2715"
               },
@@ -4080,14 +4019,14 @@ function InsertionOrderCreatePage() {
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders.new.tsx",
-                lineNumber: 563,
+                lineNumber: 505,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 561,
+            lineNumber: 503,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV7(
@@ -4096,6 +4035,9 @@ function InsertionOrderCreatePage() {
               id: "kol-dialog-search",
               type: "text",
               placeholder: "\u641C\u5C0B KOL \u540D\u7A31\u3001\u5E33\u865F\u6216\u7522\u696D",
+              onChange: (e) => {
+                typeof window.kolDialogSearch == "function" && window.kolDialogSearch(e.target.value);
+              },
               style: {
                 width: "100%",
                 padding: "8px 12px",
@@ -4111,7 +4053,7 @@ function InsertionOrderCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 569,
+              lineNumber: 515,
               columnNumber: 9
             },
             this
@@ -4126,7 +4068,7 @@ function InsertionOrderCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 584,
+              lineNumber: 534,
               columnNumber: 9
             },
             this
@@ -4136,6 +4078,9 @@ function InsertionOrderCreatePage() {
             {
               type: "button",
               "data-kol-dialog-close": "1",
+              onClick: () => {
+                typeof window.kolDialogClose == "function" && window.kolDialogClose();
+              },
               style: { padding: "8px 20px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 },
               children: "\u5B8C\u6210\u9078\u64C7"
             },
@@ -4143,13 +4088,13 @@ function InsertionOrderCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.new.tsx",
-              lineNumber: 589,
+              lineNumber: 539,
               columnNumber: 11
             },
             this
           ) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.new.tsx",
-            lineNumber: 588,
+            lineNumber: 538,
             columnNumber: 9
           }, this)
         ]
@@ -4158,14 +4103,14 @@ function InsertionOrderCreatePage() {
       !0,
       {
         fileName: "app/routes/_app.insertion-orders.new.tsx",
-        lineNumber: 548,
+        lineNumber: 483,
         columnNumber: 7
       },
       this
     )
   ] }, void 0, !0, {
     fileName: "app/routes/_app.insertion-orders.new.tsx",
-    lineNumber: 256,
+    lineNumber: 257,
     columnNumber: 5
   }, this);
 }
@@ -10631,6 +10576,7 @@ function AppLayoutRoute() {
                 {
                   id: "kol-sidebar-toggle-btn",
                   type: "button",
+                  onClick: () => document.body.classList.toggle("sidebar-collapsed"),
                   style: {
                     background: "transparent",
                     border: "1px solid var(--mantine-color-default-border)",
@@ -10657,17 +10603,17 @@ function AppLayoutRoute() {
               /* @__PURE__ */ jsxDEV19(Stack15, { gap: 0, children: [
                 /* @__PURE__ */ jsxDEV19(Title16, { order: 4, children: "KOL DB" }, void 0, !1, {
                   fileName: "app/routes/_app.tsx",
-                  lineNumber: 104,
+                  lineNumber: 105,
                   columnNumber: 15
                 }, this),
                 /* @__PURE__ */ jsxDEV19(Text15, { size: "xs", c: "dimmed", children: "\u7D71\u4E00\u7BA1\u7406 KOL / \u63D0\u6848 / \u59D4\u520A\u55AE" }, void 0, !1, {
                   fileName: "app/routes/_app.tsx",
-                  lineNumber: 105,
+                  lineNumber: 106,
                   columnNumber: 15
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 103,
+                lineNumber: 104,
                 columnNumber: 13
               }, this)
             ] }, void 0, !0, {
@@ -10681,6 +10627,22 @@ function AppLayoutRoute() {
                 id: "kol-theme-toggle-btn",
                 type: "button",
                 suppressHydrationWarning: !0,
+                onClick: () => {
+                  let STORAGE_KEY = "mantine-color-scheme-value", theme = (() => {
+                    try {
+                      return localStorage.getItem(STORAGE_KEY) || "light";
+                    } catch {
+                      return "light";
+                    }
+                  })() === "dark" ? "light" : "dark";
+                  document.documentElement.setAttribute("data-mantine-color-scheme", theme);
+                  try {
+                    localStorage.setItem(STORAGE_KEY, theme);
+                  } catch {
+                  }
+                  let icon = document.getElementById("kol-theme-icon"), label = document.getElementById("kol-theme-label");
+                  icon && (icon.textContent = theme === "dark" ? "\u2600\uFE0F" : "\u{1F319}"), label && (label.textContent = theme === "dark" ? "Light" : "Dark");
+                },
                 style: {
                   background: "transparent",
                   border: "1px solid var(--mantine-color-default-border)",
@@ -10698,12 +10660,12 @@ function AppLayoutRoute() {
                 children: [
                   /* @__PURE__ */ jsxDEV19("span", { id: "kol-theme-icon", children: "\u{1F319}" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 134,
+                    lineNumber: 148,
                     columnNumber: 13
                   }, this),
                   /* @__PURE__ */ jsxDEV19("span", { id: "kol-theme-label", children: "Dark" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 135,
+                    lineNumber: 149,
                     columnNumber: 13
                   }, this)
                 ]
@@ -10712,7 +10674,7 @@ function AppLayoutRoute() {
               !0,
               {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 115,
+                lineNumber: 116,
                 columnNumber: 11
               },
               this
@@ -10742,21 +10704,6 @@ function AppLayoutRoute() {
 
   // Apply saved theme on load
   applyTheme(getTheme());
-
-  if (btn) {
-    btn.addEventListener('click', function() {
-      var next = getTheme() === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-    });
-  }
-
-  // Sidebar toggle
-  var sidebarBtn = document.getElementById('kol-sidebar-toggle-btn');
-  if (sidebarBtn) {
-    sidebarBtn.addEventListener('click', function() {
-      document.body.classList.toggle('sidebar-collapsed');
-    });
-  }
 })();
               `
                 }
@@ -10765,7 +10712,7 @@ function AppLayoutRoute() {
               !1,
               {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 140,
+                lineNumber: 154,
                 columnNumber: 11
               },
               this
@@ -10786,22 +10733,22 @@ function AppLayoutRoute() {
             return /* @__PURE__ */ jsxDEV19("a", { href: item.to, style: navLinkStyle(active), children: [
               /* @__PURE__ */ jsxDEV19("span", { className: "nav-icon", style: { marginRight: 8 }, children: item.icon }, void 0, !1, {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 193,
+                lineNumber: 192,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV19("span", { className: "nav-label", children: item.label }, void 0, !1, {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 194,
+                lineNumber: 193,
                 columnNumber: 17
               }, this)
             ] }, item.to, !0, {
               fileName: "app/routes/_app.tsx",
-              lineNumber: 192,
+              lineNumber: 191,
               columnNumber: 15
             }, this);
           }) }, void 0, !1, {
             fileName: "app/routes/_app.tsx",
-            lineNumber: 186,
+            lineNumber: 185,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV19("div", { style: { marginTop: "auto", paddingTop: 12 }, children: [
@@ -10825,12 +10772,12 @@ function AppLayoutRoute() {
                 children: [
                   /* @__PURE__ */ jsxDEV19("span", { className: "nav-icon", style: { marginRight: 8 }, children: "\u2699\uFE0F" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 217,
+                    lineNumber: 216,
                     columnNumber: 13
                   }, this),
                   /* @__PURE__ */ jsxDEV19("span", { className: "nav-label", children: "\u7CFB\u7D71\u8A2D\u5B9A" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 218,
+                    lineNumber: 217,
                     columnNumber: 13
                   }, this)
                 ]
@@ -10839,7 +10786,7 @@ function AppLayoutRoute() {
               !0,
               {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 201,
+                lineNumber: 200,
                 columnNumber: 11
               },
               this
@@ -10863,12 +10810,12 @@ function AppLayoutRoute() {
                 children: [
                   /* @__PURE__ */ jsxDEV19("span", { className: "nav-icon", style: { marginRight: 8 }, children: "\u{1F6AA}" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 235,
+                    lineNumber: 234,
                     columnNumber: 13
                   }, this),
                   /* @__PURE__ */ jsxDEV19("span", { className: "nav-label", children: "\u767B\u51FA\uFF08\u56DE\u767B\u5165\u9801\uFF09" }, void 0, !1, {
                     fileName: "app/routes/_app.tsx",
-                    lineNumber: 236,
+                    lineNumber: 235,
                     columnNumber: 13
                   }, this)
                 ]
@@ -10877,28 +10824,28 @@ function AppLayoutRoute() {
               !0,
               {
                 fileName: "app/routes/_app.tsx",
-                lineNumber: 220,
+                lineNumber: 219,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.tsx",
-            lineNumber: 200,
+            lineNumber: 199,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.tsx",
-          lineNumber: 185,
+          lineNumber: 184,
           columnNumber: 7
         }, this),
         /* @__PURE__ */ jsxDEV19(AppShell.Main, { children: /* @__PURE__ */ jsxDEV19(Outlet2, {}, void 0, !1, {
           fileName: "app/routes/_app.tsx",
-          lineNumber: 242,
+          lineNumber: 241,
           columnNumber: 9
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.tsx",
-          lineNumber: 241,
+          lineNumber: 240,
           columnNumber: 7
         }, this)
       ]
@@ -10928,7 +10875,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-UBDDNUOG.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-XFKJYJC4.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-YEIDLYOX.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-Y3BGVQBD.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-BZO2TL3R.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-6VD5PVTB.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-DTXIX2E2.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-DEBTSRRE.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-ZXS5QGI5.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-L3GYX5VY.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-474JB7RK.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-T25VEPIM.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-DBLULRYV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-DYKBBVFX.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-WHSU7DBO.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-IWMHOVJA.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-KAUMFGCV.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-P42TYE5Z.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-Z5XSGTK3.js", imports: ["/build/_shared/chunk-HTRQC2VH.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-4J62JRLE.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-KUXT7IG6.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-2TDIHLPT.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "82789f96", hmr: { runtime: "/build/_shared\\chunk-YEIDLYOX.js", timestamp: 1773642858127 }, url: "/build/manifest-82789F96.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-3JBNXCK2.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-6MTVVUTD.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-CCWO7I5N.js", imports: ["/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-2SLQFLGM.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-D7H7YK3Q.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-2WIF6WZD.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-NMVOKYAB.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-XEK7UB4J.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-PEAAYABC.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-LZ4CMQOA.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-VAWYDW7V.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-JASV5OFY.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-PAJ3EV6W.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-SRP2QKJR.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-NRGPZ5NU.js", imports: ["/build/_shared/chunk-2Y77WJSW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-24FCA362.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-62B2IAZI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "30e985d9", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1773974984720 }, url: "/build/manifest-30E985D9.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

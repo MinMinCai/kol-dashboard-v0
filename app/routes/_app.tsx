@@ -85,6 +85,7 @@ export default function AppLayoutRoute() {
             <button
               id="kol-sidebar-toggle-btn"
               type="button"
+              onClick={() => document.body.classList.toggle('sidebar-collapsed')}
               style={{
                 background: "transparent",
                 border: "1px solid var(--mantine-color-default-border)",
@@ -116,6 +117,19 @@ export default function AppLayoutRoute() {
             id="kol-theme-toggle-btn"
             type="button"
             suppressHydrationWarning
+            onClick={() => {
+              const STORAGE_KEY = 'mantine-color-scheme-value';
+              const getTheme = () => {
+                try { return localStorage.getItem(STORAGE_KEY) || 'light'; } catch(e) { return 'light'; }
+              };
+              const theme = getTheme() === 'dark' ? 'light' : 'dark';
+              document.documentElement.setAttribute('data-mantine-color-scheme', theme);
+              try { localStorage.setItem(STORAGE_KEY, theme); } catch(e) {}
+              const icon = document.getElementById('kol-theme-icon');
+              const label = document.getElementById('kol-theme-label');
+              if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+              if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+            }}
             style={{
               background: "transparent",
               border: "1px solid var(--mantine-color-default-border)",
@@ -160,21 +174,6 @@ export default function AppLayoutRoute() {
 
   // Apply saved theme on load
   applyTheme(getTheme());
-
-  if (btn) {
-    btn.addEventListener('click', function() {
-      var next = getTheme() === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-    });
-  }
-
-  // Sidebar toggle
-  var sidebarBtn = document.getElementById('kol-sidebar-toggle-btn');
-  if (sidebarBtn) {
-    sidebarBtn.addEventListener('click', function() {
-      document.body.classList.toggle('sidebar-collapsed');
-    });
-  }
 })();
               `,
             }}

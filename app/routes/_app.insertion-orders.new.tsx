@@ -19,6 +19,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
+import { useEffect } from "react";
 import {
   listInsertionOrders,
   listKols,
@@ -266,36 +267,6 @@ export default function InsertionOrderCreatePage() {
       */}
       <script dangerouslySetInnerHTML={{
         __html: `
-        (function bindKolDialog() {
-          function setup() {
-            // Open dialog button
-            var openBtns = document.querySelectorAll('[data-kol-dialog-open]');
-            openBtns.forEach(function(btn) {
-              btn.addEventListener('click', function() { kolDialogOpen(); });
-            });
-            // Close dialog buttons
-            var closeBtns = document.querySelectorAll('[data-kol-dialog-close]');
-            closeBtns.forEach(function(btn) {
-              btn.addEventListener('click', function() { kolDialogClose(); });
-            });
-            // Search input
-            var searchInput = document.getElementById('kol-dialog-search');
-            if (searchInput) {
-              searchInput.addEventListener('input', function() { kolDialogSearch(this.value); });
-            }
-            // Dialog toggle — populate list when dialog opens
-            var dlg = document.getElementById('kol-select-dialog');
-            if (dlg) {
-              dlg.addEventListener('toggle', function() { if (dlg.open) kolDialogSearch(''); });
-            }
-          }
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setup);
-          } else {
-            setup();
-          }
-        })();
-
         function handleExcelUpload(input) {
           var file = input.files && input.files[0];
           if (!file) return;
@@ -344,46 +315,6 @@ export default function InsertionOrderCreatePage() {
             // Reset input
             input.value = '';
           }, 600);
-        }
-
-        (function handleProposalPreFill() {
-          var data = ${proposalData ? JSON.stringify(proposalData) : 'null'};
-          if (!data) return;
-
-          function runFilling() {
-            var setVal = function(name, val) {
-              var el = document.querySelector('input[name="'+name+'"]');
-              if (el) {
-                el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            };
-            
-            setVal('projectName', data.title);
-            setVal('clientName', data.clientName);
-            setVal('brand', data.clientName);
-
-            if (data.acceptedKols && data.acceptedKols.length > 0) {
-              data.acceptedKols.forEach(function(pk) {
-                try {
-                  kolDialogAdd(
-                    pk.kolId, 
-                    encodeURIComponent(pk.kolName), 
-                    encodeURIComponent(pk.kolAvatarUrl || ''), 
-                    pk.price
-                  );
-                } catch(e){}
-              });
-            }
-          }
-
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', runFilling);
-          } else {
-            setTimeout(runFilling, 100);
-          }
-        })();
       `}} />
 
       <Group justify="space-between">
@@ -484,6 +415,10 @@ export default function InsertionOrderCreatePage() {
                 <button
                   type="button"
                   data-kol-dialog-open="1"
+                  onClick={() => {
+                    // @ts-ignore
+                    if (typeof window.kolDialogOpen === 'function') window.kolDialogOpen();
+                  }}
                   style={{
                     padding: "8px 16px",
                     borderRadius: 4,
@@ -547,6 +482,13 @@ export default function InsertionOrderCreatePage() {
       {/* ── KOL Selection Dialog (100% native HTML, no Mantine, no React events) ── */}
       <dialog
         id="kol-select-dialog"
+        onToggle={(e) => {
+          // @ts-ignore
+          if (e.currentTarget.open && typeof window.kolDialogSearch === 'function') {
+            // @ts-ignore
+            window.kolDialogSearch('');
+          }
+        }}
         style={{
           padding: 24,
           borderRadius: 8,
@@ -563,6 +505,10 @@ export default function InsertionOrderCreatePage() {
           <button
             type="button"
             data-kol-dialog-close="1"
+            onClick={() => {
+              // @ts-ignore
+              if (typeof window.kolDialogClose === 'function') window.kolDialogClose();
+            }}
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}
           >✕</button>
         </div>
@@ -570,6 +516,10 @@ export default function InsertionOrderCreatePage() {
           id="kol-dialog-search"
           type="text"
           placeholder="搜尋 KOL 名稱、帳號或產業"
+          onChange={(e) => {
+            // @ts-ignore
+            if (typeof window.kolDialogSearch === 'function') window.kolDialogSearch(e.target.value);
+          }}
           style={{
             width: "100%",
             padding: "8px 12px",
@@ -589,6 +539,10 @@ export default function InsertionOrderCreatePage() {
           <button
             type="button"
             data-kol-dialog-close="1"
+            onClick={() => {
+              // @ts-ignore
+              if (typeof window.kolDialogClose === 'function') window.kolDialogClose();
+            }}
             style={{ padding: "8px 20px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
           >
             完成選擇
