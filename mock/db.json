@@ -434,6 +434,47 @@
       "city": "Taipei",
       "notes": "internal:",
       "status": "active"
+    },
+    {
+      "id": "f4ec",
+      "displayName": "Emily",
+      "instagramHandle": "",
+      "industry": "待分類",
+      "tags": [
+        "母嬰",
+        "親子",
+        "旅遊"
+      ],
+      "categories": [
+        "母嬰",
+        "親子",
+        "旅遊"
+      ],
+      "platform": "Instagram",
+      "followers": 0,
+      "engagementRate": 0,
+      "rating": 0,
+      "collaborations": 0,
+      "averagePrice": 0,
+      "isFavorite": false,
+      "social": {
+        "instagram": 0,
+        "youtube": 0,
+        "tiktok": 0,
+        "facebook": 0
+      },
+      "contact": {
+        "phone": "",
+        "email": "",
+        "manager": ""
+      },
+      "profile": {
+        "gender": "女",
+        "age": 0
+      },
+      "city": "Taipei",
+      "notes": "",
+      "status": "active"
     }
   ],
   "proposals": [
@@ -459,7 +500,7 @@
       "clientName": "Ploom",
       "budget": 1000000,
       "dueDate": "2026-05-30",
-      "stage": "draft"
+      "stage": "sent_to_client"
     }
   ],
   "insertionOrders": [
@@ -999,160 +1040,6 @@
   ],
   "proposalKols": [
     {
-      "id": "19c2",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "63b4",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "456f",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "320b",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "5015",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "ae00",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "ff8d",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "accepted",
-      "feedbackText": "null"
-    },
-    {
-      "id": "3213",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "f8bb",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "3a38",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "a62b",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "8b0d",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "a7ed",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
-      "id": "6eeb",
-      "proposalId": "prop_001",
-      "kolId": "kol_001",
-      "kolName": "Amy Beauty",
-      "price": 0,
-      "role": "IG 貼文 x1",
-      "reason": "",
-      "status": "pending",
-      "feedbackText": ""
-    },
-    {
       "id": "275b",
       "proposalId": "prop_001",
       "kolId": "kol_001",
@@ -1160,6 +1047,50 @@
       "price": 52000,
       "role": "待討論",
       "reason": "根據您的需求「美妝」，該 KOL 的領域與標籤高度相關，且過往在類似專案中表現穩定。",
+      "status": "pending",
+      "feedbackText": ""
+    },
+    {
+      "id": "da92",
+      "proposalId": "92a0",
+      "kolId": "kol_003",
+      "kolName": "Gina",
+      "price": null,
+      "role": "FB貼文",
+      "reason": "",
+      "status": "accepted",
+      "feedbackText": "null"
+    },
+    {
+      "id": "51a1",
+      "proposalId": "prop_001",
+      "kolId": "kol_003",
+      "kolName": "Gina",
+      "price": 80000,
+      "role": "FB貼文",
+      "reason": "",
+      "status": "accepted",
+      "feedbackText": "null"
+    },
+    {
+      "id": "c40e",
+      "proposalId": "prop_002",
+      "kolId": "kol_004",
+      "kolName": "Chef Ken",
+      "price": 70000,
+      "role": "FB貼文",
+      "reason": "話題性佳，切合品牌",
+      "status": "accepted",
+      "feedbackText": "null"
+    },
+    {
+      "id": "2fac",
+      "proposalId": "92a0",
+      "kolId": "kol_002",
+      "kolName": "Tech Allen",
+      "price": 90000,
+      "role": "FB貼文",
+      "reason": "",
       "status": "pending",
       "feedbackText": ""
     }

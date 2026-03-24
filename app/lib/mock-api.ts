@@ -184,6 +184,22 @@ export async function listProposals(): Promise<Proposal[]> {
   return res.json();
 }
 
+export async function updateProposal(id: string, data: Partial<Proposal>): Promise<Proposal> {
+  const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteProposal(id: string): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
 export async function getProposal(id: string): Promise<Proposal | null> {
   const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`);
   if (res.status === 404) return null;
@@ -212,6 +228,13 @@ export async function updateProposalKolStatus(id: string, status: string, feedba
     body: JSON.stringify({ status, feedbackText }),
   });
   return res.json();
+}
+
+export async function deleteProposalKol(id: string): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
 }
 
 export async function listInsertionOrders(): Promise<InsertionOrder[]> {

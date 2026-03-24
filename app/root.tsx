@@ -10,6 +10,7 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import { ColorSchemeScript, MantineProvider, Container, Title, Text, Button, Center, Stack } from "@mantine/core";
+import { useEffect } from "react";
 import mantineStylesHref from "@mantine/core/styles.css";
 import mantineChartsStylesHref from "@mantine/charts/styles.css";
 import stylesHref from "./styles.css";
@@ -67,6 +68,13 @@ export function ErrorBoundary() {
     }
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = "/dashboard";
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <html lang="zh-Hant">
       <head>
@@ -84,8 +92,11 @@ export function ErrorBoundary() {
               <Text c="dimmed" size="lg" ta="center" maw={500}>
                 {message}
               </Text>
-              <Button component="a" href="/" mt="xl" size="lg" variant="light">
-                返回首頁
+              <Text c="blue" size="sm" ta="center" mt="xs">
+                系統將於 3 秒後自動為您導向至首頁...
+              </Text>
+              <Button component="a" href="/dashboard" mt="xl" size="lg" variant="light">
+                立即返回首頁
               </Button>
             </Stack>
           </Center>

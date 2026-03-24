@@ -1,5 +1,6 @@
 import { AppShell, Group, Stack, Text, Title } from "@mantine/core";
 import { Outlet, useLocation } from "@remix-run/react";
+import { GlobalNotification } from "~/components/GlobalNotification";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -32,11 +33,13 @@ export default function AppLayoutRoute() {
   const location = useLocation();
 
   return (
-    <AppShell
-      header={{ height: 64 }}
-      navbar={{ width: 260, breakpoint: "sm" }}
-      padding="md"
-    >
+    <>
+      <GlobalNotification />
+      <AppShell
+        header={{ height: 64 }}
+        navbar={{ width: 260, breakpoint: "sm" }}
+        padding="md"
+      >
       <AppShell.Header>
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -241,6 +244,7 @@ export default function AppLayoutRoute() {
         <Outlet />
       </AppShell.Main>
     </AppShell>
+    </>
   );
 }
 

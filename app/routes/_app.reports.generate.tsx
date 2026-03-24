@@ -8,10 +8,42 @@ import {
   Text,
   TextInput,
   Title,
+  Modal,
+  Checkbox,
+  Radio,
+  Progress,
+  Avatar,
+  Divider,
+  ThemeIcon,
+  ActionIcon,
+  Tooltip,
+  SimpleGrid,
+  Textarea,
+  FileButton
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { useNotificationStore } from "~/store/notification";
+import { useState, useEffect, useRef } from "react";
 import { listInsertionOrders } from "~/lib/mock-api";
+import { 
+  IconFileTypePpt, 
+  IconTrash, 
+  IconDownload, 
+  IconRefresh, 
+  IconBulb, 
+  IconRobot, 
+  IconCheck, 
+  IconX, 
+  IconTemplate, 
+  IconFile,
+  IconClockHour4,
+  IconFileDescription,
+  IconPencil,
+  IconUpload,
+  IconCloudUpload
+} from "@tabler/icons-react";
 
 function formatShortDate(date: string): string {
   return date.slice(0, 7);
@@ -21,41 +53,156 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const clientFilter = url.searchParams.get("client") ?? "";
   const timeFilter = url.searchParams.get("time") ?? "all";
+  const statusFilter = url.searchParams.get("status") ?? "all";
 
   const orders = await listInsertionOrders();
   const allClients = Array.from(new Set(orders.map((o) => o.clientName)));
 
-  const filtered = orders.filter((order) => {
+  const mappedOrders = orders.map((order, idx) => ({
+    ...order,
+    hasDraft: idx === 0 || idx === 1,
+    hasOfficial: idx === 0,
+  }));
+
+  const filtered = mappedOrders.filter((order) => {
     if (clientFilter && order.clientName !== clientFilter) return false;
     if (timeFilter === "this_year" && !order.startDate.startsWith("2026")) return false;
     if (timeFilter === "2024_10" && !order.startDate.startsWith("2024-10")) return false;
+    if (statusFilter === "draft" && !order.hasDraft) return false;
+    if (statusFilter === "official" && !order.hasOfficial) return false;
+    if (statusFilter === "none" && (order.hasDraft || order.hasOfficial)) return false;
     return true;
   });
 
-  return json({ orders: filtered, allClients, clientFilter, timeFilter });
+  return json({ orders: filtered, allClients, clientFilter, timeFilter, statusFilter });
 }
 
 export default function ReportManagementPage() {
-  const { orders, allClients, clientFilter, timeFilter } = useLoaderData<typeof loader>();
+  const { orders, allClients, clientFilter, timeFilter, statusFilter } = useLoaderData<typeof loader>();
+  const [selectedTemplate, setSelectedTemplate] = useState("standard");
+  const { showToast, showBanner } = useNotificationStore();
+
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [isOfficial, setIsOfficial] = useState(true);
+
+  const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
+  const [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure(false);
+  const [uploadModalOpen, { open: openUploadModal, close: closeUploadModal }] = useDisclosure(false);
+  const [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure(false);
+  const [activeOrder, setActiveOrder] = useState<any>(null);
+  const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
+  
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  const handleDownload = () => alert("報告下載中...");
+  const handleDelete = () => {
+    if (confirm("確定要刪除此版本的報告嗎？")) {
+      alert("報告已刪除 (模擬)");
+    }
+  };
+  const handleOpenUploadModal = (order: any) => {
+    setActiveOrder(order);
+    setUploadFile(null);
+    setUploadProgress(null);
+    setUploadSuccess(false);
+    setIsOfficial(true);
+    openUploadModal();
+  };
+
+  const startOfficialUpload = () => {
+    setUploadProgress(0);
+    let p = 0;
+    const interval = setInterval(() => {
+      p += 20;
+      if (p >= 100) {
+        clearInterval(interval);
+        setUploadProgress(100);
+        setTimeout(() => {
+          setUploadSuccess(true);
+          setTimeout(() => {
+            closeUploadModal();
+          }, 2000);
+        }, 500);
+      } else {
+        setUploadProgress(p);
+      }
+    }, 400);
+  };
+
+  const handleOpenGenModal = (order: any) => {
+    setActiveOrder(order);
+    // Initialize selected KOLs to those with performance data
+    const readyIds = (order.collaborations || [])
+      .filter((k: any) => (k.performanceItems || []).length > 0)
+      .map((k: any) => k.id);
+    setSelectedKolIds(readyIds);
+    openGenModal();
+  };
+
+  const toggleKolSelection = (kolId: string) => {
+    setSelectedKolIds((prev) => 
+      prev.includes(kolId) ? prev.filter(id => id !== kolId) : [...prev, kolId]
+    );
+  };
+
+  const startGeneration = () => {
+    closeGenModal();
+    setProgressPercentage(0);
+    setCurrentStepIndex(0);
+    openProgressModal();
+
+    const stepsProgress = [15, 30, 60, 80, 100];
+    stepsProgress.forEach((p, idx) => {
+      setTimeout(() => {
+        setProgressPercentage(p);
+        setCurrentStepIndex(idx);
+        
+        if (p === 100) {
+          setTimeout(() => {
+            closeProgressModal();
+            const title = "結案報告已生成完成！";
+            const message = `${activeOrder?.orderNo} ${activeOrder?.title || activeOrder?.projectName}|結案報告_v1.pptx`;
+            showToast(title, message, "/reports/generate");
+            showBanner(title, message, "/reports/generate");
+            
+            if ("Notification" in window) {
+              if (Notification.permission === "granted") {
+                new Notification("🎉 結案報告已完成", {
+                  body: `案件 #${activeOrder?.orderNo} 的結案報告已生成完成，點擊查看`,
+                });
+              } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then((permission) => {
+                  if (permission === "granted") {
+                    new Notification("🎉 結案報告已完成", {
+                      body: `案件 #${activeOrder?.orderNo} 的結案報告已生成完成，點擊查看`,
+                    });
+                  }
+                });
+              }
+            }
+          }, 800);
+        }
+      }, (idx + 1) * 1200);
+    });
+  };
 
   return (
-    <Stack gap="md">
-      <Group justify="space-between" align="center">
-        <Title order={2}>結案報告管理</Title>
-        {orders[0] && (
-          <Button
-            className="btn-trigger-gen"
-            {...({ 'data-order-name': orders[0].title || orders[0].projectName } as any)}
-          >
+    <Box>
+      <Stack gap="xl">
+        {/* Header Section */}
+        <Group justify="space-between" align="center">
+          <Title order={2}>結案報告管理</Title>
+          <Button color="blue" onClick={openSelectOrderModal}>
             + 生成新報告
           </Button>
-        )}
-      </Group>
+        </Group>
 
-      {/* ── Filter Form ── */}
-      <Card withBorder p="sm">
+        {/* Filter Bar */}
         <form method="get">
-          <Group align="end" wrap="wrap" gap="sm">
+          <Group align="end" wrap="wrap" gap="md">
             <Stack gap={4}>
               <Text size="sm" fw={500}>客戶</Text>
               <select name="client" defaultValue={clientFilter} style={{ padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }}>
@@ -71,214 +218,592 @@ export default function ReportManagementPage() {
                 <option value="2024_10">2024-10</option>
               </select>
             </Stack>
-            <Button type="submit">套用篩選</Button>
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>狀態</Text>
+              <select name="status" defaultValue={statusFilter} style={{ padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }}>
+                <option value="all">全部</option>
+                <option value="draft">有草稿</option>
+                <option value="official">有正式版</option>
+                <option value="none">無報告</option>
+              </select>
+            </Stack>
+            <Button type="submit" variant="light">套用篩選</Button>
             {(clientFilter || timeFilter !== "all") && (
-              <Button variant="default" component="a" href="/reports/generate">清除</Button>
+              <Button variant="subtle" color="gray" component="a" href="/reports/generate">清除</Button>
             )}
           </Group>
         </form>
-      </Card>
 
-      {/* ── Order Cards ── */}
-      <Stack gap="md">
-        {orders.map((order) => {
-          const missingCount = (order.collaborations ?? []).filter(
-            (k) => !(k.performanceItems ?? []).some((p) => (p.metrics?.impressions ?? 0) > 0)
-          ).length;
+        {/* Campaign Cards */}
+        <Stack gap="lg">
+          {orders.map((order: any) => {
+            const hasDraft = order.hasDraft;
+            const hasOfficial = order.hasOfficial;
+            
+            const kols = order.collaborations ?? [];
+            const readyKols = kols.filter(
+              (k: any) => (k.performanceItems ?? []).some((p: any) => (p.metrics?.impressions ?? 0) > 0)
+            );
+            const missingCount = kols.length - readyKols.length;
 
-          return (
-            <Card key={order.id} withBorder shadow="sm">
-              <Stack gap="md">
-                <Group justify="space-between" align="flex-start">
-                  <Box>
-                    <Text fw={700}>📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
-                    <Text c="dimmed" size="sm">
-                      客戶: {order.clientName} | 日期: {formatShortDate(order.startDate)} | 合作 KOL: {order.kolCount ?? order.collaborations?.length ?? 0} 位
-                    </Text>
-                  </Box>
-                  <Group>
-                    <Link to={`/insertion-orders/${order.id}`} style={{ fontSize: 14 }}>查看案件詳情</Link>
-                    <Button
-                      size="xs"
-                      className="btn-trigger-gen"
-                      {...({ 'data-order-name': order.title || order.projectName } as any)}
-                    >
-                      + 生成新報告
-                    </Button>
+            return (
+              <Card key={order.id} withBorder shadow="sm" radius="md" p={0}>
+                {/* 1. Campaign Header */}
+                <Box p="md" style={{ borderBottom: "1px solid #eee" }}>
+                  <Group justify="space-between" align="flex-start">
+                    <Box>
+                      <Text fw={700} size="lg">📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
+                      <Text c="dimmed" size="sm" mt={4}>
+                        客戶: {order.clientName} | 日期: {formatShortDate(order.startDate)} | 合作 KOL: {order.kolCount ?? kols.length} 位
+                      </Text>
+                    </Box>
+                    <Group>
+                      <Button variant="subtle" size="sm" component={Link} to={`/insertion-orders/${order.id}`}>
+                        查看案件詳情
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleOpenGenModal(order)}>
+                        + 生成新報告
+                      </Button>
+                    </Group>
                   </Group>
-                </Group>
+                </Box>
 
-                {missingCount > 0 && (
-                  <Badge color="yellow" variant="light">⚠️ {missingCount} 位 KOL 尚未上傳成效</Badge>
+                {/* 2. Reports Section */}
+                <Box p="md" bg="#fdfdfd">
+                  {!hasDraft && !hasOfficial ? (
+                    // Empty State
+                    <Stack align="center" py="xl" gap="sm">
+                      <Text c="dimmed" fw={500}>尚未生成結案報告</Text>
+                      {missingCount > 0 && (
+                        <Badge color="yellow" variant="light" size="lg">⚠️ 提示: {missingCount} 位 KOL 尚未上傳成效</Badge>
+                      )}
+                      <Group gap="sm" mt="sm">
+                        <Button onClick={() => handleOpenGenModal(order)}>開始生成報告</Button>
+                        <Button variant="outline" color="blue" onClick={() => handleOpenUploadModal(order)}>+ 上傳正式版</Button>
+                      </Group>
+                    </Stack>
+                  ) : (
+                    <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
+                      {/* Draft Section */}
+                      {hasDraft && (
+                        <Card withBorder bg="gray.0" radius="sm" p="sm">
+                          <Text size="sm" fw={600} mb="sm" c="dimmed">系統生成（草稿）</Text>
+                          <Group justify="space-between" wrap="nowrap" style={{ border: '1px solid #eaeaea', background: 'white', padding: 12, borderRadius: 8 }}>
+                            <Group>
+                              <ThemeIcon size="lg" variant="light" color="gray"><IconFileTypePpt size={20} /></ThemeIcon>
+                              <Box>
+                                <Group gap="xs">
+                                  <Text fw={500}>結案報告_v1.pptx</Text>
+                                  <Badge color="gray" variant="filled" size="xs">草稿</Badge>
+                                </Group>
+                                <Text size="xs" c="dimmed">生成時間: 2024-10-20 14:30 | 生成者: 系統 AI</Text>
+                              </Box>
+                            </Group>
+                            <Group gap="xs">
+                              <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                              <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
+                              <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                            </Group>
+                          </Group>
+                        </Card>
+                      )}
+
+                      {/* Official Section */}
+                      {hasOfficial && (
+                        <Card withBorder bg="green.0" radius="sm" p="sm">
+                          <Text size="sm" fw={600} mb="sm" c="green.8">正式版本</Text>
+                          <Group justify="space-between" wrap="nowrap" style={{ border: '1px solid #b2f2bb', background: 'white', padding: 12, borderRadius: 8 }}>
+                            <Group>
+                              <ThemeIcon size="lg" variant="light" color="green"><IconFileTypePpt size={20} /></ThemeIcon>
+                              <Box>
+                                <Group gap="xs">
+                                  <Text fw={500}>結案報告_完整版.pptx</Text>
+                                  <Badge color="green" variant="filled" size="xs">⭐ 正式版</Badge>
+                                </Group>
+                                <Text size="xs" c="dimmed">上傳時間: 2024-10-22 10:15 | 上傳者: 管理員</Text>
+                                <Text size="xs" c="dimmed" mt={2}>說明: 已根據客戶回饋修正數據呈現方式</Text>
+                              </Box>
+                            </Group>
+                            <Group gap="xs">
+                              <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                              <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                            </Group>
+                          </Group>
+                        </Card>
+                      )}
+                    </SimpleGrid>
+                  )}
+                </Box>
+
+                {/* 3. Bottom Action Bar */}
+                {(hasDraft || hasOfficial) && (
+                  <Box p="sm" style={{ borderTop: "1px solid #eee", background: "#f8f9fa" }}>
+                    <Group justify="flex-end">
+                      <Button variant="default" size="sm" onClick={() => handleOpenUploadModal(order)}>
+                        {hasOfficial ? "更新正式版" : "+ 上傳正式版"}
+                      </Button>
+                    </Group>
+                  </Box>
                 )}
-
-                <Group justify="flex-end">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="btn-trigger-upload"
-                    {...({ 'data-order-name': order.title || order.projectName } as any)}
-                  >
-                    + 上傳正式版
-                  </Button>
-                </Group>
-              </Stack>
-            </Card>
-          );
-        })}
+              </Card>
+            );
+          })}
+        </Stack>
       </Stack>
 
-      {/* ── Native Dialogs ── */}
-      <dialog id="report-generate-dialog" style={{ padding: 24, borderRadius: 8, border: '1px solid var(--mantine-color-default-border)', background: 'var(--mantine-color-body)', color: 'var(--mantine-color-text)', width: '100%', maxWidth: 640, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+      {/* ── Select Order Modal ── */}
+      <Modal 
+        opened={selectOrderModalOpen} 
+        onClose={closeSelectOrderModal} 
+        title={<Text fw={700} size="lg">選擇委刊單生成報告</Text>} 
+        size="lg"
+        centered
+      >
         <Stack gap="md">
-          <Title order={4}>生成結案報告 - <span className="order-name-placeholder">案件</span></Title>
-
-          <div id="gen-form-ui">
-            <TextInput label="報告標題" placeholder="OOO 專案結案報告" id="gen-report-title" />
-            <Text size="sm" mt="sm">點擊按鈕開始 AI 分析與生成過程。</Text>
-            <Group justify="flex-end" mt="md">
-              <Button variant="default" className="btn-close-report-gen">取消</Button>
-              <Button id="start-gen-btn" color="blue">🤖 開始 AI 生成</Button>
-            </Group>
-          </div>
-
-          <div id="gen-progress-ui" style={{ display: 'none', padding: '20px 0' }}>
-            <Text id="gen-status-text" ta="center" fw={700} mb="xs">正在初始化...</Text>
-            <div style={{ width: '100%', height: 10, background: '#eee', borderRadius: 5, overflow: 'hidden', marginBottom: 20 }}>
-              <div id="gen-progress-bar" style={{ width: '0%', height: '100%', background: '#339af0', transition: 'width 0.3s' }}></div>
-            </div>
-            <Text size="xs" c="dimmed" ta="center">AI 正在進行內容深潛與數據交叉分析...</Text>
-          </div>
-
-          <div id="gen-success-ui" style={{ display: 'none', textAlign: 'center', padding: '20px 0' }}>
-            <Box style={{ fontSize: 40 }}>🎉</Box>
-            <Title order={3}>報告生成成功！</Title>
-            <Text mb="lg">您的 AI 數據洞察結案報告已備妥。</Text>
-            <Group grow w="100%">
-              <Button variant="default" className="btn-close-report-gen">關閉</Button>
-              <Button id="download-ppt-btn" color="green">📥 下載 PowerPoint</Button>
-            </Group>
-          </div>
-        </Stack>
-      </dialog>
-
-      <dialog id="report-upload-dialog" style={{ padding: 24, borderRadius: 8, border: '1px solid var(--mantine-color-default-border)', background: 'var(--mantine-color-body)', color: 'var(--mantine-color-text)', width: '100%', maxWidth: 480, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-        <Stack gap="md">
-          <Title order={4}>上傳正式結案報告</Title>
-          <Text size="sm" c="dimmed">案件: <span className="order-name-placeholder">案件</span></Text>
-          <TextInput type="file" label="選擇檔案 (.pptx, .pdf)" />
-          <TextInput label="版本說明 (選填)" placeholder="例如: 已根據客戶回饋修正..." />
-          <Group justify="flex-end">
-            <Button variant="default" className="btn-close-report-upload">取消</Button>
-            <Button id="confirm-upload-btn" color="blue">確認上傳</Button>
+          <Text size="sm" c="dimmed">請選擇一個案件來開始生成新的結案報告：</Text>
+          <Box style={{ maxHeight: 400, overflowY: 'auto' }}>
+            <Stack gap="xs">
+              {orders.map((order: any) => (
+                <Card 
+                  key={order.id} 
+                  withBorder 
+                  p="sm" 
+                  radius="md" 
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    handleOpenGenModal(order);
+                    closeSelectOrderModal();
+                  }}
+                  className="hover:bg-blue-50"
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-0)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <Group justify="space-between">
+                    <Box>
+                      <Text fw={600}>#{order.orderNo} {order.title || order.projectName}</Text>
+                      <Text size="xs" c="dimmed">{order.clientName} | {formatShortDate(order.startDate)}</Text>
+                    </Box>
+                    <Button variant="light" size="xs">選擇</Button>
+                  </Group>
+                </Card>
+              ))}
+            </Stack>
+          </Box>
+          <Group justify="flex-end" mt="md">
+            <Button variant="default" onClick={closeSelectOrderModal}>取消</Button>
           </Group>
         </Stack>
-      </dialog>
+      </Modal>
 
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-(function() {
-  function bindDialogTriggers() {
-    var genBtns = document.querySelectorAll('.btn-trigger-gen');
-    var uploadBtns = document.querySelectorAll('.btn-trigger-upload');
-    var genDialog = document.getElementById('report-generate-dialog');
-    var uploadDialog = document.getElementById('report-upload-dialog');
+      {/* ── Generate Report Modal ── */}
+      <Modal 
+        opened={genModalOpen} 
+        onClose={closeGenModal} 
+        title={<Text fw={700} size="lg">生成結案報告</Text>} 
+        size="xl"
+      >
+        {activeOrder && (
+          <Stack gap="xl" mt="sm">
+            {/* Section 1 - Campaign Info */}
+            <Card withBorder bg="gray.0" p="sm" radius="md">
+              <Group gap="xl">
+                <Box>
+                  <Text size="xs" c="dimmed">案件編號</Text>
+                  <Text fw={600}>#{activeOrder.orderNo}</Text>
+                </Box>
+                <Box>
+                  <Text size="xs" c="dimmed">案件名稱</Text>
+                  <Text fw={600}>{activeOrder.title || activeOrder.projectName}</Text>
+                </Box>
+                <Box>
+                  <Text size="xs" c="dimmed">客戶</Text>
+                  <Text fw={600}>{activeOrder.clientName}</Text>
+                </Box>
+              </Group>
+            </Card>
 
-    function bind(btns, dialog) {
-      if (!dialog) return;
-      btns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var name = btn.getAttribute('data-order-name');
-          dialog.querySelectorAll('.order-name-placeholder').forEach(function(p) { p.textContent = name; });
-          dialog.showModal();
-          
-          if (dialog.id === 'report-generate-dialog') {
-            document.getElementById('gen-form-ui').style.display = 'block';
-            document.getElementById('gen-progress-ui').style.display = 'none';
-            document.getElementById('gen-success-ui').style.display = 'none';
-          }
-        });
-      });
-    }
+            {/* Section 2 - KOL Selection */}
+            <Box>
+              <Text fw={600} size="lg" mb={4}>步驟 1：確認 KOL 成效資料</Text>
+              <Text size="sm" c="dimmed" mb="md">系統將自動選擇已上傳成效的 KOL</Text>
 
-    bind(genBtns, genDialog);
-    bind(uploadBtns, uploadDialog);
+              <Stack gap="md">
+                {/* 2A. Ready KOLs */}
+                <Box>
+                  <Text fw={500} size="sm" c="green.7" mb="xs">✅ 已上傳成效的 KOL (預設選擇)</Text>
+                  <Stack gap="xs">
+                    {activeOrder.collaborations?.filter((k:any) => (k.performanceItems||[]).length > 0).map((kol:any, idx:number) => (
+                      <Card 
+                        key={kol.id || idx} 
+                        withBorder 
+                        p="sm" 
+                        radius="md" 
+                        style={{ transition: 'all 0.2s', cursor: 'pointer' }} 
+                        className="hover:shadow-sm"
+                        onClick={() => toggleKolSelection(kol.id)}
+                      >
+                        <Group wrap="nowrap">
+                          <Checkbox 
+                            checked={selectedKolIds.includes(kol.id)} 
+                            onChange={() => toggleKolSelection(kol.id)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <Avatar src={kol.kol?.avatarUrl} radius="xl" size="md" />
+                          <Box style={{ flexGrow: 1 }}>
+                            <Text fw={600}>{kol.kol?.name || "KOL Name"}</Text>
+                            <Group gap="xs" mt={4}>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{display:'inline', color:'green'}}/> | IG限動 <IconCheck size={12} style={{display:'inline', color:'green'}}/></Text>
+                            </Group>
+                          </Box>
+                          <Box style={{ textAlign: 'right' }}>
+                            <Badge variant="dot" color="blue">總觸及 80K</Badge>
+                            <Text size="xs" c="dimmed" mt={4}>互動率 7.8%</Text>
+                          </Box>
+                        </Group>
+                      </Card>
+                    ))}
+                    {/* Mock empty check context */}
+                    {(activeOrder.collaborations||[]).filter((k:any) => (k.performanceItems||[]).length > 0).length === 0 && (
+                      <Card withBorder p="sm" radius="md" style={{ cursor: 'pointer' }} onClick={() => toggleKolSelection("demo-gina")}>
+                        <Group wrap="nowrap">
+                          <Checkbox 
+                            checked={selectedKolIds.includes("demo-gina")} 
+                            onChange={() => toggleKolSelection("demo-gina")}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <Avatar color="blue" radius="xl" size="md">G</Avatar>
+                          <Box style={{ flexGrow: 1 }}>
+                            <Text fw={600}>Gina (Demo)</Text>
+                            <Group gap="xs" mt={4}>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{display:'inline', color:'green'}}/> | IG限動 <IconCheck size={12} style={{display:'inline', color:'green'}}/></Text>
+                            </Group>
+                          </Box>
+                        </Group>
+                      </Card>
+                    )}
+                  </Stack>
+                </Box>
 
-    // Bind close actions
-    document.querySelectorAll('.btn-close-report-gen').forEach(function(btn) {
-      btn.addEventListener('click', function() { if (genDialog) genDialog.close(); });
-    });
-    document.querySelectorAll('.btn-close-report-upload').forEach(function(btn) {
-      btn.addEventListener('click', function() { if (uploadDialog) uploadDialog.close(); });
-    });
+                {/* 2B. Not Ready KOLs */}
+                <Box>
+                  <Text fw={500} size="sm" c="orange.7" mb="xs">⚠️ 尚未上傳成效的 KOL</Text>
+                  <Stack gap="xs">
+                    {(activeOrder.collaborations||[]).filter((k:any) => !(k.performanceItems||[]).length).map((kol:any, idx:number) => (
+                      <Card 
+                        key={kol.id || idx} 
+                        withBorder 
+                        p="sm" 
+                        radius="md" 
+                        bg="orange.0" 
+                        style={{ opacity: 0.8, cursor: 'pointer' }}
+                        onClick={() => toggleKolSelection(kol.id)}
+                      >
+                        <Group wrap="nowrap">
+                          <Checkbox 
+                            checked={selectedKolIds.includes(kol.id)} 
+                            onChange={() => toggleKolSelection(kol.id)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <Avatar src={kol.kol?.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
+                          <Box style={{ flexGrow: 1 }}>
+                            <Text fw={600} c="dimmed">{kol.kol?.name || "KOL Name"}</Text>
+                            <Group gap="xs" mt={4}>
+                              <Text size="xs" c="red.7"><IconX size={12} style={{display:'inline'}}/> 無成效資料</Text>
+                            </Group>
+                          </Box>
+                          <Button variant="subtle" size="xs" color="blue" rightSection="→">前往上傳成效</Button>
+                        </Group>
+                      </Card>
+                    ))}
+                  </Stack>
+                </Box>
+                
+                {/* Info box */}
+                <Card bg="blue.0" p="sm" radius="md" mt="xs">
+                  <Group wrap="nowrap" align="flex-start">
+                    <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
+                    <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                      未勾選的 KOL 將不會出現在報告中。建議先上傳所有 KOL 的成效資料後再生成報告。
+                    </Text>
+                  </Group>
+                </Card>
+              </Stack>
+            </Box>
 
-    var downloadBtn = document.getElementById('download-ppt-btn');
-    if (downloadBtn) {
-      downloadBtn.addEventListener('click', function() {
-        alert('報告下載中...');
-        if (genDialog) genDialog.close();
-      });
-    }
+            <Divider />
 
-    var confirmUploadBtn = document.getElementById('confirm-upload-btn');
-    if (confirmUploadBtn) {
-      confirmUploadBtn.addEventListener('click', function() {
-        alert('已成功上傳正式版報告！');
-        if (uploadDialog) uploadDialog.close();
-      });
-    }
-  }
+            {/* Section 3 - Report Settings */}
+            <Box>
+              <Text fw={600} size="lg" mb="md">步驟 2：報告設定</Text>
+              
+              <Stack gap="lg">
+                <TextInput 
+                  label="報告標題" 
+                  defaultValue={`${activeOrder.title || activeOrder.projectName} 結案報告`}
+                  description="0/100"
+                />
 
-  bindDialogTriggers();
+                <Box>
+                  <Text size="sm" fw={500} mb="xs">PowerPoint 模板</Text>
+                  <Group grow>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} style={{ borderColor: selectedTemplate === "standard" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                      <Stack align="center" gap="xs">
+                        <ThemeIcon size="xl" variant="light" color={selectedTemplate === "standard" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
+                        <Text fw={500} size="sm" c={selectedTemplate === "standard" ? "" : "dimmed"}>公司標準模板</Text>
+                      </Stack>
+                    </Card>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} style={{ borderColor: selectedTemplate === "simple" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                      <Stack align="center" gap="xs">
+                        <ThemeIcon size="xl" variant="light" color={selectedTemplate === "simple" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
+                        <Text fw={500} size="sm" c={selectedTemplate === "simple" ? "" : "dimmed"}>簡約模板</Text>
+                      </Stack>
+                    </Card>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} style={{ borderColor: selectedTemplate === "none" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                      <Stack align="center" gap="xs">
+                        <ThemeIcon size="xl" variant="light" color={selectedTemplate === "none" ? "blue" : "gray"}><IconFile /></ThemeIcon>
+                        <Text fw={500} size="sm" c={selectedTemplate === "none" ? "" : "dimmed"}>不套用模板</Text>
+                      </Stack>
+                    </Card>
+                  </Group>
+                </Box>
 
-  // Filter Enter Trigger
-  document.querySelectorAll('select[name="client"], select[name="time"]').forEach(function(el) {
-    el.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        el.closest('form').submit();
-      }
-    });
-  });
+                <Card bg="gray.0" p="sm" radius="md">
+                  <Group wrap="nowrap">
+                    <ThemeIcon color="gray" variant="light"><IconFileDescription size={16} /></ThemeIcon>
+                    <Box>
+                      <Text size="sm" fw={600}>預估頁數: 約 18 頁</Text>
+                      <Text size="xs" c="dimmed">(封面 + 3個KOL × 平均5頁 + 總結)</Text>
+                    </Box>
+                  </Group>
+                </Card>
+              </Stack>
+            </Box>
+            
+            <Group justify="flex-end" mt="md">
+              <Button variant="ghost" color="gray" onClick={closeGenModal}>取消</Button>
+              <Tooltip label="報告將在背景生成，完成後會通知您" position="top" withArrow>
+                <Button color="blue" size="lg" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
+                  開始生成
+                </Button>
+              </Tooltip>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
 
-  var startGenBtn = document.getElementById('start-gen-btn');
-  if (startGenBtn) {
-    startGenBtn.addEventListener('click', function() {
-      document.getElementById('gen-form-ui').style.display = 'none';
-      document.getElementById('gen-progress-ui').style.display = 'block';
-      
-      var steps = [
-        { p: 20, t: '🔍 正在彙整所有 KOL 的成效數據...' },
-        { p: 45, t: '🧠 AI 正在分析各版位表現並產出洞察...' },
-        { p: 75, t: '✍️ 正在自動撰寫執行摘要與建議評語...' },
-        { p: 90, t: '🎨 正在套用標準模板並輸出 PowerPoint...' },
-        { p: 100, t: '✅ 報告已生成完畢！' }
-      ];
-      
-      var currentStep = 0;
-      var progressBar = document.getElementById('gen-progress-bar');
-      var statusText = document.getElementById('gen-status-text');
-      
-      var interval = setInterval(function() {
-        if (currentStep < steps.length) {
-          if (progressBar) progressBar.style.width = steps[currentStep].p + '%';
-          if (statusText) statusText.textContent = steps[currentStep].t;
-          currentStep++;
-        } else {
-          clearInterval(interval);
-          setTimeout(function() {
-            document.getElementById('gen-progress-ui').style.display = 'none';
-            document.getElementById('gen-success-ui').style.display = 'block';
-          }, 500);
+      {/* ── Progress Modal ── */}
+      <Modal 
+        opened={progressModalOpen} 
+        onClose={closeProgressModal}
+        withCloseButton={false}
+        size="md"
+        centered
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      >
+        <Stack align="center" ta="center" gap="md" py="md">
+          <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
+            <IconRobot size={40} />
+          </ThemeIcon>
+          <Box>
+            <Title order={3}>AI 正在為您生成報告</Title>
+            <Text c="dimmed" mt={4}>
+              案件 #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}
+            </Text>
+          </Box>
+
+          <Box w="100%" my="sm">
+            <Group justify="space-between" mb={8}>
+              <Text size="sm" fw={600}>進度</Text>
+              <Text size="sm" fw={600} c="blue">{progressPercentage}%</Text>
+            </Group>
+            <Progress 
+              value={progressPercentage} 
+              size="lg" 
+              radius="xl" 
+              striped 
+              animated 
+              color="blue" 
+            />
+          </Box>
+
+          {/* Checklist */}
+          <Stack gap="xs" w="100%" align="flex-start" pl="md">
+            {[
+              "收集案件資料",
+              "整理 KOL 成效數據",
+              "AI 生成報告內容中...",
+              "套用 PowerPoint 模板",
+              "上傳至雲端儲存"
+            ].map((stepDesc, idx) => {
+              const isCompleted = currentStepIndex > idx;
+              const isCurrent = currentStepIndex === idx;
+              return (
+                <Group key={idx} wrap="nowrap" gap="sm">
+                  {isCompleted ? (
+                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14}/></ThemeIcon>
+                  ) : isCurrent ? (
+                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14}/></ThemeIcon>
+                  ) : (
+                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14}/></ThemeIcon>
+                  )}
+                  <Text size="sm" fw={isCurrent ? 600 : 400} c={isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5"}>
+                    {stepDesc}
+                  </Text>
+                </Group>
+              );
+            })}
+          </Stack>
+
+          <Text size="xs" c="dimmed" mt="xs">預計還需 2 分鐘</Text>
+
+          <Card bg="blue.0" w="100%" p="sm" radius="md">
+            <Group wrap="nowrap" align="center" justify="center">
+              <IconBulb size={18} color="var(--mantine-color-blue-7)" />
+              <Text size="sm" c="blue.9">您可以關閉此視窗繼續其他工作，完成後會通知您</Text>
+            </Group>
+          </Card>
+
+          <Group w="100%" grow mt="sm">
+            <Button variant="outline" color="red" onClick={closeProgressModal}>取消生成</Button>
+            <Button onClick={closeProgressModal}>在背景繼續</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* ── Upload Modal ── */}
+      <Modal 
+        opened={uploadModalOpen} 
+        onClose={closeUploadModal} 
+        title={<Text fw={700} size="lg">上傳正式結案報告</Text>} 
+        centered 
+        size={600}
+        withCloseButton={!uploadProgress && !uploadSuccess}
+        closeOnClickOutside={!uploadProgress && !uploadSuccess}
+      >
+        {uploadSuccess ? (
+          <Stack align="center" ta="center" py="xl" gap="md">
+            <ThemeIcon size={64} radius="100%" color="green" variant="filled">
+              <IconCheck size={40} />
+            </ThemeIcon>
+            <Title order={3}>上傳成功！</Title>
+            <Button mt="md" variant="outline" onClick={closeUploadModal}>查看報告</Button>
+          </Stack>
+        ) : uploadProgress !== null ? (
+          <Stack align="center" ta="center" py="xl" gap="md">
+            <ThemeIcon size={64} radius="md" color="blue" variant="light" style={{ animation: 'pulse 2s infinite' }}>
+              <IconCloudUpload size={40} />
+            </ThemeIcon>
+            <Box w="100%">
+              <Group justify="space-between" mb={8}>
+                <Text fw={600}>上傳中... {uploadProgress}%</Text>
+              </Group>
+              <Progress value={uploadProgress} size="lg" radius="xl" striped animated />
+            </Box>
+            <Button mt="md" variant="subtle" color="red" onClick={closeUploadModal}>取消</Button>
+          </Stack>
+        ) : (
+          <Stack gap="lg">
+            <Text size="sm" c="dimmed" mt="-xs">案件: #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}</Text>
+            
+            {/* Section 1 - File Upload */}
+            <Box>
+              {!uploadFile ? (
+                <FileButton onChange={setUploadFile} accept="application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                  {(props) => (
+                    <Card
+                      {...props}
+                      withBorder
+                      radius="md"
+                      p="xl"
+                      style={{ 
+                        borderStyle: 'dashed', 
+                        borderWidth: 2, 
+                        borderColor: 'var(--mantine-color-default-border)', 
+                        cursor: 'pointer', 
+                        textAlign: 'center', 
+                        transition: 'border-color 0.2s, background-color 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--mantine-color-blue-filled)';
+                        e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-light)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--mantine-color-default-border)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <Stack align="center" gap="xs">
+                        <ThemeIcon size={48} variant="light" color="blue" radius="md">
+                          <IconUpload size={24} />
+                        </ThemeIcon>
+                        <Text fw={600} mt="sm">拖曳檔案至此或點擊選擇</Text>
+                        <Text size="xs" c="dimmed">支援格式: .pptx, .pdf • 最大 50MB</Text>
+                        <Button variant="light" size="xs" mt="sm">選擇檔案</Button>
+                      </Stack>
+                    </Card>
+                  )}
+                </FileButton>
+              ) : (
+                <Card withBorder radius="md" p="sm" bg="gray.0">
+                  <Group wrap="nowrap" justify="space-between">
+                    <Group wrap="nowrap">
+                      <ThemeIcon size="lg" variant="light" color="blue">
+                        <IconFile size={20} />
+                      </ThemeIcon>
+                      <Box>
+                        <Text fw={500} size="sm" lineClamp={1}>{uploadFile.name}</Text>
+                        <Text size="xs" c="dimmed">{(uploadFile.size / 1024 / 1024).toFixed(2)} MB</Text>
+                      </Box>
+                    </Group>
+                    <ActionIcon color="red" variant="subtle" onClick={() => setUploadFile(null)}>
+                      <IconX size={16} />
+                    </ActionIcon>
+                  </Group>
+                </Card>
+              )}
+            </Box>
+
+            {/* Section 2 - Version Info */}
+            <Textarea
+              label="版本說明 (選填)"
+              placeholder="例如: 已根據客戶回饋修正數據呈現方式、更新品牌視覺..."
+              description="說明此版本與草稿的差異或修改內容"
+              minRows={3}
+            />
+
+            {/* Section 3 - Status Setting */}
+            <Checkbox
+              checked={isOfficial}
+              onChange={(evt) => setIsOfficial(evt.currentTarget.checked)}
+              label={<Text fw={600} size="md">標記為正式版本</Text>}
+              description="正式版會顯示 ⭐ 標記，並優先展示給團隊成員"
+              size="md"
+            />
+
+            <Card bg="blue.0" p="sm" radius="md" mt="xs">
+              <Group wrap="nowrap" align="flex-start">
+                <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
+                <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                  上傳正式版後，系統草稿仍會保留。您可以隨時查看或下載任一版本。
+                </Text>
+              </Group>
+            </Card>
+
+            <Group justify="flex-end" mt="md">
+              <Button variant="ghost" color="gray" onClick={closeUploadModal}>取消</Button>
+              <Button color="blue" disabled={!uploadFile} onClick={startOfficialUpload}>確認上傳</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
         }
-      }, 1000);
-    });
-  }
-})();
-          `,
-        }}
-      />
-    </Stack>
+      `}</style>
+    </Box>
   );
 }

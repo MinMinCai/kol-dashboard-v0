@@ -16,10 +16,11 @@ import {
   TextInput,
   Textarea,
   Title,
+  Checkbox,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { useMemo, useState } from "react";
 import {
   addProposalKol,
@@ -27,7 +28,10 @@ import {
   listKols,
   listProposalKols,
   updateProposalKolStatus,
+  deleteProposalKol,
+  updateProposal,
 } from "~/lib/mock-api";
+import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft } from "@tabler/icons-react";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const proposalId = params.proposalId ?? "";
@@ -49,7 +53,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (intent === "add_candidate") {
     const kolId = String(formData.get("kolId"));
-    const price = Number(formData.get("price"));
+    // Strip commas from price string (e.g., "10,000" -> "10000") before conversion
+    const priceStr = String(formData.get("price") || "0").replace(/,/g, "");
+    const price = Number(priceStr);
     const role = String(formData.get("role"));
     const reason = String(formData.get("reason"));
     const kolName = String(formData.get("kolName"));
@@ -73,12 +79,45 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ success: true });
   }
 
+  if (intent === "delete_candidate") {
+    const candidateId = String(formData.get("candidateId"));
+    await deleteProposalKol(candidateId);
+    return json({ success: true });
+  }
+
+  if (intent === "batch_delete_candidates") {
+    const idsString = String(formData.get("candidateIds") || "");
+    const ids = idsString.split(",").filter(Boolean);
+    await Promise.all(ids.map(id => deleteProposalKol(id)));
+    return json({ success: true });
+  }
+
+  if (intent === "update_proposal") {
+    const stage = formData.get("stage") ? String(formData.get("stage")) : undefined;
+    const title = formData.get("title") ? String(formData.get("title")) : undefined;
+    const clientName = formData.get("clientName") ? String(formData.get("clientName")) : undefined;
+    const budgetStr = formData.get("budget") ? String(formData.get("budget")).replace(/,/g, "").replace(/\$/g, "") : undefined;
+    const budget = budgetStr !== undefined ? Number(budgetStr) : undefined;
+    const dueDate = formData.get("dueDate") ? String(formData.get("dueDate")) : undefined;
+
+    await updateProposal(proposalId, { stage, title, clientName, budget, dueDate });
+    return json({ success: true });
+  }
+
   return json({ success: false });
 }
 
 export default function ProposalDetailPage() {
   const { proposal, candidates, allKols } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(proposal.title);
+  const [editedClient, setEditedClient] = useState(proposal.clientName);
+  const [editedBudget, setEditedBudget] = useState(proposal.budget);
+  const [editedDueDate, setEditedDueDate] = useState(proposal.dueDate);
+  const [editedStage, setEditedStage] = useState(proposal.stage);
+
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
   const [aiSearchOpened, { open: openAiSearch, close: closeAiSearch }] = useDisclosure(false);
   const [aiSearching, setAiSearching] = useState(false);
@@ -86,6 +125,7 @@ export default function ProposalDetailPage() {
   const [aiQuery, setAiQuery] = useState("");
   const [feedbackCandidate, setFeedbackCandidate] = useState<{ id: string; name: string } | null>(null);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
+  const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
 
   const statusColor: Record<string, string> = {
     pending: "gray",
@@ -136,47 +176,129 @@ export default function ProposalDetailPage() {
 
   return (
     <Stack gap="lg">
-      <Group justify="space-between">
-        <Stack gap={0}>
-          <Title order={2}>提案詳細：{proposal.title}</Title>
-          <Text c="dimmed" size="sm">
-            ID: {proposal.id} | 客戶：{proposal.clientName}
-          </Text>
+      <Group justify="space-between" align="flex-start">
+        <Group align="center" gap="md" style={{ flex: 1 }}>
+          <ActionIcon 
+            variant="subtle" 
+            color="gray" 
+            component={Link} 
+            to="/proposals"
+            size="lg"
+          >
+            <IconArrowLeft size={24} />
+          </ActionIcon>
+          <Stack gap="xs" style={{ flex: 1 }}>
+            {isEditing ? (
+            <Stack gap="xs">
+              <TextInput
+                label="提案標題"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.currentTarget.value)}
+                size="md"
+                fw={700}
+              />
+              <TextInput
+                label="客戶名稱"
+                value={editedClient}
+                onChange={(e) => setEditedClient(e.currentTarget.value)}
+                size="sm"
+              />
+            </Stack>
+          ) : (
+            <Stack gap={0}>
+              <Title order={2}>提案詳細：{proposal.title}</Title>
+              <Text c="dimmed" size="sm">
+                ID: {proposal.id} | 客戶：{proposal.clientName}
+              </Text>
+            </Stack>
+          )}
         </Stack>
-        <Group>
-          <Button
-            variant="default"
-            onClick={() => alert("提案資料已匯出為 Excel (模擬)")}
-          >
-            匯出提案
-          </Button>
-          <Button
-            component={Link}
-            to={`/insertion-orders/new?fromProposalId=${proposal.id}`}
-            color="blue"
-            disabled={!candidates.some((c) => c.status === "accepted")}
-          >
-            轉為委刊單
-          </Button>
+        </Group>
+        <Group align="center">
+          {!isEditing && (
+            <>
+              <Button variant="light" color="orange" onClick={() => setIsEditing(true)}>
+                編輯提案內容
+              </Button>
+              <Button
+                variant="default"
+                onClick={() => alert("提案資料已匯出為 Excel (模擬)")}
+              >
+                匯出提案
+              </Button>
+              <Button
+                component={Link}
+                to={`/insertion-orders/new?fromProposalId=${proposal.id}`}
+                color="blue"
+                disabled={!candidates.some((c) => c.status === "accepted")}
+              >
+                轉為委刊單
+              </Button>
+            </>
+          )}
         </Group>
       </Group>
 
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>當前階段</Text>
-          <Badge size="lg" mt={5}>{proposal.stage.toUpperCase()}</Badge>
+          <Select
+            mt={5}
+            size="sm"
+            value={isEditing ? editedStage : proposal.stage}
+            disabled={!isEditing}
+            onChange={(val) => {
+              if (val) {
+                if (isEditing) {
+                  setEditedStage(val);
+                } else {
+                  // Legacy auto-save behavior if not in explicit edit mode (optional)
+                  const formData = new FormData();
+                  formData.append("intent", "update_proposal");
+                  formData.append("stage", val);
+                  submit(formData, { method: "post" });
+                }
+              }
+            }}
+            data={[
+              { value: "draft", label: "草稿 (DRAFT)" },
+              { value: "internal_review", label: "內部審核 (INTERNAL REVIEW)" },
+              { value: "sent_to_client", label: "已送出給客戶 (SENT TO CLIENT)" },
+            ]}
+          />
         </Card>
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>總預算</Text>
-          <Text size="xl" fw={700} mt={5}>${proposal.budget.toLocaleString("zh-TW")}</Text>
+          {isEditing ? (
+            <NumberInput
+              mt={5}
+              value={editedBudget}
+              onChange={(val) => setEditedBudget(Number(val))}
+              thousandSeparator=","
+              prefix="$"
+            />
+          ) : (
+            <Text size="xl" fw={700} mt={5}>${proposal.budget.toLocaleString("zh-TW")}</Text>
+          )}
         </Card>
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>截止日期</Text>
-          <Text size="xl" fw={700} mt={5}>{proposal.dueDate}</Text>
+          {isEditing ? (
+            <TextInput
+              mt={5}
+              value={editedDueDate}
+              onChange={(e) => setEditedDueDate(e.currentTarget.value)}
+              placeholder="YYYY-MM-DD"
+            />
+          ) : (
+            <Text size="xl" fw={700} mt={5}>{proposal.dueDate}</Text>
+          )}
         </Card>
       </SimpleGrid>
-      {/* AI Search Section */}
-      <Card withBorder padding="lg" radius="md" style={{ background: 'linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)', border: '1px solid #cce3ff' }}>
+
+      {/* AI Search Section - Only visible in Edit Mode */}
+      {isEditing && (
+        <Card withBorder padding="lg" radius="md" style={{ background: 'linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)', border: '1px solid #cce3ff' }}>
         <Stack gap="xs">
           <Group gap={8}>
             <Text size="lg" fw={700} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -210,37 +332,86 @@ export default function ProposalDetailPage() {
           </Group>
         </Stack>
       </Card>
+      )}
 
       <Card withBorder>
         <Stack gap="md">
           <Group justify="space-between">
-            <Title order={4}>KOL 候選名單 ({candidates.length})</Title>
-            <Button type="button" size="xs" onClick={openAdd}>+ 手動新增</Button>
+            <Group gap="md">
+              <Title order={4}>KOL 候選名單 ({candidates.length})</Title>
+              {isEditing && selectedCandidateIds.length > 0 && (
+                <Form method="post" style={{ display: 'inline' }} onSubmit={(e) => {
+                  if (!confirm(`確定要將選中的 ${selectedCandidateIds.length} 位 KOL 從候選名單中移除嗎？`)) {
+                    e.preventDefault();
+                  } else {
+                    setSelectedCandidateIds([]); // Clear selection after submit
+                  }
+                }}>
+                  <input type="hidden" name="intent" value="batch_delete_candidates" />
+                  <input type="hidden" name="candidateIds" value={selectedCandidateIds.join(",")} />
+                  <Button variant="light" color="red" size="xs" leftSection={<IconTrash size={14} />} type="submit">
+                    批量刪除 ({selectedCandidateIds.length})
+                  </Button>
+                </Form>
+              )}
+            </Group>
+            {isEditing && (
+              <Button type="button" size="xs" onClick={openAdd}>+ 手動新增</Button>
+            )}
           </Group>
 
           <Table striped withTableBorder>
             <Table.Thead>
               <Table.Tr>
+                {isEditing && (
+                  <Table.Th style={{ width: 40 }}>
+                    <Checkbox 
+                      checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
+                      indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
+                      onChange={(e) => {
+                        if (e.currentTarget.checked) {
+                          setSelectedCandidateIds(candidates.map(c => c.id));
+                        } else {
+                          setSelectedCandidateIds([]);
+                        }
+                      }}
+                    />
+                  </Table.Th>
+                )}
                 <Table.Th>KOL 名稱</Table.Th>
                 <Table.Th>角色/版位</Table.Th>
                 <Table.Th>預估報價</Table.Th>
                 <Table.Th>推薦理由</Table.Th>
                 <Table.Th>狀態</Table.Th>
                 <Table.Th>客戶反饋</Table.Th>
-                <Table.Th>操作</Table.Th>
+                {isEditing && <Table.Th>操作</Table.Th>}
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {candidates.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={7} align="center">尚未加入任何候選人</Table.Td>
+                  <Table.Td colSpan={isEditing ? 8 : 6} align="center">尚未加入任何候選人</Table.Td>
                 </Table.Tr>
               ) : (
                 candidates.map((c) => (
                   <Table.Tr key={c.id}>
+                    {isEditing && (
+                      <Table.Td>
+                        <Checkbox 
+                          checked={selectedCandidateIds.includes(c.id)}
+                          onChange={(e) => {
+                            if (e.currentTarget.checked) {
+                              setSelectedCandidateIds([...selectedCandidateIds, c.id]);
+                            } else {
+                              setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
+                            }
+                          }}
+                        />
+                      </Table.Td>
+                    )}
                     <Table.Td fw={500}>{c.kolName}</Table.Td>
                     <Table.Td>{c.role}</Table.Td>
-                    <Table.Td>${c.price.toLocaleString("zh-TW")}</Table.Td>
+                    <Table.Td>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
                     <Table.Td>
                       <Text size="sm" lineClamp={2}>{c.reason}</Text>
                     </Table.Td>
@@ -250,33 +421,51 @@ export default function ProposalDetailPage() {
                     <Table.Td>
                       <Text size="xs" c="dimmed">{c.feedbackText || "-"}</Text>
                     </Table.Td>
-                    <Table.Td>
-                      <Group gap={5}>
-                        <Form method="post" style={{ display: 'inline' }}>
-                          <input type="hidden" name="intent" value="update_status" />
-                          <input type="hidden" name="candidateId" value={c.id} />
-                          <input type="hidden" name="status" value="accepted" />
+                    {isEditing && (
+                      <Table.Td>
+                        <Group gap={5}>
+                          <Form method="post" style={{ display: 'inline' }}>
+                            <input type="hidden" name="intent" value="update_status" />
+                            <input type="hidden" name="candidateId" value={c.id} />
+                            <input type="hidden" name="status" value="accepted" />
+                            <Button
+                              variant="light"
+                              color="green"
+                              size="compact-xs"
+                              type="submit"
+                              disabled={c.status === "accepted"}
+                            >
+                              接受
+                            </Button>
+                          </Form>
                           <Button
                             variant="light"
-                            color="green"
+                            color="red"
                             size="compact-xs"
-                            type="submit"
-                            disabled={c.status === "accepted"}
+                            onClick={() => setFeedbackCandidate({ id: c.id, name: c.kolName })}
+                            disabled={c.status === "rejected"}
                           >
-                            接受
+                            拒絕
                           </Button>
-                        </Form>
-                        <Button
-                          variant="light"
-                          color="red"
-                          size="compact-xs"
-                          onClick={() => setFeedbackCandidate({ id: c.id, name: c.kolName })}
-                          disabled={c.status === "rejected"}
-                        >
-                          拒絕
-                        </Button>
-                      </Group>
-                    </Table.Td>
+                          <Form method="post" style={{ display: 'inline' }} onSubmit={(e) => {
+                            if (!confirm("確定要將此 KOL 從候選名單中移除嗎？")) {
+                              e.preventDefault();
+                            }
+                          }}>
+                            <input type="hidden" name="intent" value="delete_candidate" />
+                            <input type="hidden" name="candidateId" value={c.id} />
+                            <ActionIcon
+                              variant="light"
+                              color="gray"
+                              size="sm"
+                              type="submit"
+                            >
+                              <IconTrash size={14} />
+                            </ActionIcon>
+                          </Form>
+                        </Group>
+                      </Table.Td>
+                    )}
                   </Table.Tr>
                 ))
               )}
@@ -467,6 +656,42 @@ export default function ProposalDetailPage() {
           </Stack>
         </Form>
       </Modal>
+
+      {isEditing && (
+        <Group justify="flex-end" mt="xl" pb="xl">
+          <Button
+            variant="default"
+            size="lg"
+            onClick={() => {
+              setEditedTitle(proposal.title);
+              setEditedClient(proposal.clientName);
+              setEditedBudget(proposal.budget);
+              setEditedDueDate(proposal.dueDate);
+              setEditedStage(proposal.stage);
+              setIsEditing(false);
+            }}
+          >
+            取消
+          </Button>
+          <Button
+            color="blue"
+            size="lg"
+            onClick={() => {
+              const formData = new FormData();
+              formData.append("intent", "update_proposal");
+              formData.append("title", editedTitle);
+              formData.append("clientName", editedClient);
+              formData.append("budget", String(editedBudget));
+              formData.append("dueDate", editedDueDate);
+              formData.append("stage", editedStage);
+              submit(formData, { method: "post" });
+              setIsEditing(false);
+            }}
+          >
+            儲存變更
+          </Button>
+        </Group>
+      )}
     </Stack>
   );
 }
