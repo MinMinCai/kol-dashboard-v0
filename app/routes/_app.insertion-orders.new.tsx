@@ -5,13 +5,11 @@ import {
   Button,
   Card,
   Divider,
-  Grid,
   Group,
-  MultiSelect,
-  NumberInput,
   Select,
   SimpleGrid,
   Stack,
+  TagsInput,
   Text,
   TextInput,
   Textarea,
@@ -19,12 +17,17 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
-import { useEffect } from "react";
+import { useState } from "react";
+import { IconChevronDown } from "@tabler/icons-react";
 import {
+  addBrandCatalog,
+  addIndustryCatalog,
+  listBrandCatalog,
+  listIndustryCatalog,
   listInsertionOrders,
   listKols,
+  listTeamMembers,
   MOCK_API_BASE,
-  type Kol,
   getProposal,
   listProposalKols,
 } from "~/lib/mock-api";
@@ -36,6 +39,7 @@ type SelectedKolRow = {
   avatarUrl?: string;
   services: string[];
   uploadDate: string;
+  executionDate: string;
   authorization: string;
   price: number;
 };
@@ -44,7 +48,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const fromProposalId = url.searchParams.get("fromProposalId");
 
-  const [kols, orders] = await Promise.all([listKols(), listInsertionOrders()]);
+  const [kols, orders, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
+    listKols(),
+    listInsertionOrders(),
+    listBrandCatalog(),
+    listIndustryCatalog(),
+    listTeamMembers(),
+  ]);
 
   let proposalData = null;
   if (fromProposalId) {
@@ -61,58 +71,102 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
   }
 
-  const clients = Array.from(new Set(orders.map((o) => o.clientName).filter(Boolean)));
-  const salesOwners = Array.from(new Set(orders.map((o) => o.salesOwner).filter(Boolean)));
-  const kolManagers = Array.from(new Set(orders.map((o) => o.kolManager).filter(Boolean)));
-  return json({ kols, clients, salesOwners, kolManagers, proposalData });
+  // Derive options from system settings
+  const salesOwners = teamMembers
+    .filter((m) => m.group === "AE")
+    .map((m) => m.name);
+  const kolManagers = teamMembers
+    .filter((m) => m.group === "KOL")
+    .map((m) => m.name);
+  const orderBrands = orders.map((o) => o.brand).filter(Boolean) as string[];
+  const catalogBrands = brandCatalog.map((b) => b.name);
+  const brands = Array.from(new Set([...orderBrands, ...catalogBrands])) as string[];
+  const catalogIndustries = industryCatalog.map((i) => i.name);
+  const kolIndustries = kols.map((k) => k.industry).filter(Boolean) as string[];
+  const industries = Array.from(new Set([...catalogIndustries, ...kolIndustries])) as string[];
+
+  return json({ kols, salesOwners, kolManagers, brands, industries, proposalData });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") ?? "create");
 
+  const orderTitle = String(formData.get("orderTitle") ?? "").trim();
   const projectName = String(formData.get("projectName") ?? "").trim();
   const clientName = String(formData.get("clientName") ?? "").trim();
-  const brand = String(formData.get("brand") ?? "").trim();
-  const industriesRaw = String(formData.get("industries") ?? "");
-  const documentUrl = String(formData.get("documentUrl") ?? "").trim();
-  const salesOwner = String(formData.get("salesOwner") ?? "").trim();
-  const kolManager = String(formData.get("kolManager") ?? "").trim();
+  const mcnName = String(formData.get("mcnName") ?? "").trim();
+  const brandsRaw = String(formData.get("brands") ?? "").trim();
+  const industriesRaw = String(formData.get("industries") ?? "").trim();
+  const salesOwnersRaw = String(formData.get("salesOwners") ?? "").trim();
+  const kolManagersRaw = String(formData.get("kolManagers") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const internalNotes = String(formData.get("internalNotes") ?? "").trim();
   const selectedKolsJson = String(formData.get("selectedKolsJson") ?? "[]");
   const startDate = String(formData.get("startDate") ?? "").trim();
   const endDate = String(formData.get("endDate") ?? "").trim();
+  const taxRate = Number(formData.get("taxRate") ?? 5);
+  const projectQuote = Number(formData.get("projectQuote") ?? 0);
 
-  if (!projectName || !clientName) {
-    return json({ error: "專案名稱與客戶為必填" }, { status: 400 });
+  if (!orderTitle || !clientName) {
+    return json({ error: "委刊單標題與客戶為必填" }, { status: 400 });
   }
 
-  const industries = industriesRaw ? industriesRaw.split(",").map((s) => s.trim()) : [];
+  const industries = industriesRaw ? industriesRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const brandsArr = brandsRaw ? brandsRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const salesOwnersArr = salesOwnersRaw ? salesOwnersRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const kolManagersArr = kolManagersRaw ? kolManagersRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  const [brandCatalog, industryCatalog] = await Promise.all([
+    listBrandCatalog(),
+    listIndustryCatalog(),
+  ]);
+  const brandSet = new Set(brandCatalog.map((b) => b.name));
+  const industrySet = new Set(industryCatalog.map((i) => i.name));
+
+  await Promise.all(
+    brandsArr
+      .filter((b) => !brandSet.has(b))
+      .map((name) => addBrandCatalog({ name })),
+  );
+  await Promise.all(
+    industries
+      .filter((i) => !industrySet.has(i))
+      .map((name) => addIndustryCatalog({ name })),
+  );
+
   let selectedKols: SelectedKolRow[] = [];
   try { selectedKols = JSON.parse(selectedKolsJson); } catch { selectedKols = []; }
 
-  const totalBudget = selectedKols.reduce((sum, row) => sum + Number(row.price || 0), 0);
+  // Use per-KOL prices if available, else fall back to projectQuote
+  const totalBudget = selectedKols.length > 0
+    ? selectedKols.reduce((sum, row) => sum + Number(row.price || 0), 0)
+    : projectQuote;
+  const tax = Math.round(totalBudget * (taxRate / 100));
+  const totalWithTax = totalBudget + tax;
   const orderNo = `IO-${new Date().getFullYear()}-${String(Math.floor(100 + Math.random() * 900))}`;
 
   const payload = {
     orderNo,
-    title: projectName,
-    projectName,
+    orderTitle,
+    title: projectName || orderTitle,
+    projectName: projectName || orderTitle,
     clientName,
-    brand: brand || clientName,
+    mcnName,
+    brand: brandsArr[0] ?? "",
     industry: industries[0] ?? "未分類",
     industryPath: industries.join(" > "),
-    salesOwner,
-    kolManager,
+    salesOwner: salesOwnersArr[0] ?? "",
+    kolManager: kolManagersArr[0] ?? "",
     kolCount: selectedKols.length,
     status: intent === "draft" ? "planned" : "in_progress",
     totalBudget,
+    tax,
+    totalWithTax,
     totalReach: 0,
     totalEngagement: 0,
     avgRating: 0,
     avgEngagementRate: 0,
-    documentUrl,
     collaborations: selectedKols.map((row) => ({
       id: `ioc_${Math.random().toString(36).slice(2, 9)}`,
       kolId: row.kolId,
@@ -121,6 +175,7 @@ export async function action({ request }: ActionFunctionArgs) {
       price: row.price,
       services: row.services.join(" + "),
       uploadDate: row.uploadDate,
+      executionDate: row.executionDate,
       authorization: row.authorization,
       rating: 0,
       totalReach: 0,
@@ -145,16 +200,31 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function InsertionOrderCreatePage() {
-  const { kols, clients, salesOwners, kolManagers, proposalData } = useLoaderData<typeof loader>();
+  const { kols, salesOwners, kolManagers, brands, industries, proposalData } =
+    useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const submitting = navigation.state === "submitting";
 
-  const clientOptions = clients.map((c) => ({ value: c, label: c }));
-  const salesOptions = salesOwners.map((x) => ({ value: x, label: x }));
-  const kolManagerOptions = kolManagers.map((x) => ({ value: x, label: x }));
-  const availableIndustries = ["家電", "廚房家電", "美妝", "食品", "母嬰", "3C", "汽車", "旅遊"];
-  const serviceOptions = ["IG貼文", "限動", "Reels", "YouTube", "TikTok", "直播"];
+  // ── State for TagsInput (supports free-form creation) ──
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  const [selectedSales, setSelectedSales] = useState<string | null>(null);
+  const [selectedKolManagers, setSelectedKolManagers] = useState<string | null>(null);
+
+  const brandSuggestions = brands;
+  const industrySuggestions = industries;
+
+  // ── Form field state (for Excel autofill) ──
+  const [orderTitleVal, setOrderTitleVal] = useState(proposalData?.title ?? "");
+  const [projectNameVal, setProjectNameVal] = useState(proposalData?.title ?? "");
+  const [clientNameVal, setClientNameVal] = useState(proposalData?.clientName ?? "");
+  const [mcnNameVal, setMcnNameVal] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [projectQuote, setProjectQuote] = useState(0);
+  const [taxRate, setTaxRate] = useState(5);
+  const totalWithTax = Math.round(projectQuote * (1 + taxRate / 100));
 
   /* ── Embed KOL data for native JS dialog ── */
   const kolsJson = JSON.stringify(
@@ -192,8 +262,8 @@ export default function InsertionOrderCreatePage() {
       list.innerHTML = filtered.map(function(k){
         var isSel = selectedIds.indexOf(k.id) !== -1;
         var btnAttr = isSel
-          ? 'onclick="kolDialogRemove(\\''+k.id+'\\')" style="padding:5px 14px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;"'
-          : 'onclick="kolDialogAdd(\\''+k.id+'\\',\\''+encodeURIComponent(k.name)+'\\',\\''+encodeURIComponent(k.avatarUrl||'')+'\\','+k.price+')" style="padding:5px 14px;border-radius:4px;border:none;background:var(--mantine-color-blue-filled);color:#fff;cursor:pointer;font-size:12px;"';
+          ? 'onclick="kolDialogRemove(\\''+k.id+'\\');return false;" style="padding:5px 14px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;"'
+          : 'onclick="kolDialogAdd(\\''+k.id+'\\',\\''+encodeURIComponent(k.name)+'\\',\\''+encodeURIComponent(k.avatarUrl||'')+'\\','+k.price+');return false;" style="padding:5px 14px;border-radius:4px;border:none;background:var(--mantine-color-blue-filled);color:#fff;cursor:pointer;font-size:12px;"';
         return '<div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
           +'<img src="'+(k.avatarUrl||'')+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:#e2e8f0;"/>'
           +'<div style="flex:1;"><div style="font-weight:600;font-size:14px;">'+k.name+'</div><div style="font-size:12px;color:var(--mantine-color-dimmed);">@'+k.handle+' · '+k.industry+'</div></div>'
@@ -208,7 +278,7 @@ export default function InsertionOrderCreatePage() {
       var selected = [];
       try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
       if (selected.some(function(x){ return x.kolId === id; })) return;
-      selected.push({ id:'row_'+Math.random().toString(36).slice(2,10), kolId:id, name:name, avatarUrl:avatar, services:['IG貼文'], uploadDate:'', authorization:'', price:Number(price)||0 });
+      selected.push({ id:'row_'+Math.random().toString(36).slice(2,10), kolId:id, name:name, avatarUrl:avatar, services:['IG貼文'], uploadDate:'', executionDate:'', authorization:'', price:Number(price)||0 });
       if (ta) ta.value = JSON.stringify(selected);
       kolRenderSelected();
       var searchEl = document.getElementById('kol-dialog-search');
@@ -243,79 +313,75 @@ export default function InsertionOrderCreatePage() {
         return;
       }
       container.innerHTML = selected.map(function(row){
-        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
-          +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;"/>'
-          +'<span style="flex:1;font-weight:600;font-size:14px;">'+row.name+'</span>'
+        return '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
+          +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;"/>'
+          +'<div style="flex:1;">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+          +'<span style="font-weight:600;font-size:14px;">'+row.name+'</span>'
           +'<span style="font-size:13px;color:var(--mantine-color-dimmed);">NT$ '+(row.price||0).toLocaleString()+'</span>'
-          +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:4px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;">移除</button>'
+          +'</div>'
+          +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);">執行日期</label>'
+          +'<input type="date" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="font-size:12px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);"/>'
+          +'</div>'
+          +'</div>'
+          +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:4px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;flex-shrink:0;">移除</button>'
           +'</div>';
       }).join('');
     }
+    window.kolUpdateExecDate = function(rowId, val) {
+      var ta = document.getElementById('kol-selected-json');
+      var selected = [];
+      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
+      var idx = selected.findIndex(function(x){ return x.id === rowId; });
+      if (idx !== -1) selected[idx].executionDate = val;
+      if (ta) ta.value = JSON.stringify(selected);
+    }
   `;
+
+  /* ── Excel autofill handler (React-controlled fields) ── */
+  const handleExcelUpload = (file: File) => {
+    // Simulate parsing delay
+    setTimeout(() => {
+      // Mock parsed values — in production, replace with real xlsx parsing
+      const parsed = {
+        orderTitle: "DAC_ALLIE_KOL行銷活動 委刊單",
+        projectName: "2026 夏季新品上市推廣",
+        clientName: "ALLIE",
+        mcnName: "雲太資訊有限公司",
+        startDate: "2026-06-01",
+        endDate: "2026-06-30",
+        executionDate: "2026-05-23",
+        projectQuote: 150000,
+        taxRate: 5,
+      };
+
+      setOrderTitleVal(parsed.orderTitle);
+      setProjectNameVal(parsed.projectName);
+      setClientNameVal(parsed.clientName);
+      setMcnNameVal(parsed.mcnName);
+      setStartDate(parsed.startDate);
+      setEndDate(parsed.endDate);
+      setProjectQuote(parsed.projectQuote);
+      setTaxRate(parsed.taxRate);
+      setSelectedBrands(["ALLIE"]);
+
+      // Add a mock KOL (Gina) via native JS
+      try {
+        // @ts-ignore
+        if (typeof window.kolDialogAdd === "function") {
+          // @ts-ignore
+          window.kolDialogAdd("kol-001", encodeURIComponent("Gina"), encodeURIComponent("https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png"), 40000);
+        }
+      } catch (_) {}
+
+      alert("✅ 成功解析 Excel！已自動帶入委刊單標題、客戶、網紅公司、日期與報價等欄位。");
+    }, 600);
+  };
 
   return (
     <Stack gap="md">
       <script dangerouslySetInnerHTML={{ __html: nativeDialogScript }} />
-      {/*
-        Event binding script: uses addEventListener so React cannot strip them.
-        Runs immediately (not DOMContentLoaded) because the script tag appears
-        in the body after the elements it references are siblings further down;
-        React server-renders the full HTML, so all elements exist in DOM by the
-        time the browser executes this script.
-        We use a tiny 'turbo' trick - requestIdleCallback or setTimeout 0 to
-        ensure the script runs after React's own synchronous setup.
-      */}
-      <script dangerouslySetInnerHTML={{
-        __html: `
-        function handleExcelUpload(input) {
-          var file = input.files && input.files[0];
-          if (!file) return;
-
-          // Simulate parsing delay
-          setTimeout(function() {
-            // Auto-fill basic info
-            var setVal = function(name, val) {
-              var el = document.querySelector('input[name="'+name+'"]');
-              if (el) {
-                el.value = val;
-                // Dispatch event so React/Mantine might pick it up if they have listeners
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            };
-            
-            setVal('projectName', '2026 夏季新品上市推廣 (由 Excel 匯入)');
-            setVal('brand', 'SHISEIDO');
-            setVal('startDate', '2026-06-01');
-            setVal('endDate', '2026-06-30');
-            
-            // For select elements (Mantine's native inputs are hidden, but we use native attributes or standard hidden inputs)
-            setVal('clientName', 'Shiseido');
-            setVal('industries', '美妝');
-
-            // Auto-fill financial & collab info
-            setVal('services', 'IG 貼文 1 篇、限時動態 2 則');
-            setVal('authorization', '數位廣告投放一年、品牌官網使用');
-            setVal('projectQuote', '150000');
-            setVal('taxRate', '5');
-            setVal('totalAmount', '157500');
-
-            // Add a mock KOL (Gina)
-            if (typeof window.kolDialogAdd === 'function') {
-               // Assuming 'kol-001' is Gina from mock-api
-               window.kolDialogAdd('kol-001', encodeURIComponent('Gina'), encodeURIComponent('https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png'), 40000);
-            } else {
-               // Fallback inline add if global kolDialogAdd isn't fully exposed (it's in another script)
-               // The previous script defined kolDialogAdd in global scope, wait no, it was inside a string without var/let, so it's global!
-               try { kolDialogAdd('kol-001', encodeURIComponent('Gina'), encodeURIComponent('https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png'), 40000); } catch(e){}
-            }
-
-            alert('✅ 成功解析 Excel 檔案！已為您自動帶入案件名稱、日期、客戶、財務細節與 KOL 人選。');
-            
-            // Reset input
-            input.value = '';
-          }, 600);
-      `}} />
 
       <Group justify="space-between">
         <Title order={2}>建立委刊單</Title>
@@ -324,6 +390,12 @@ export default function InsertionOrderCreatePage() {
 
       <Card withBorder>
         <Form method="post">
+          {/* Hidden inputs for multi-select arrays */}
+          <input type="hidden" name="brands" value={selectedBrands.join(",")} />
+          <input type="hidden" name="industries" value={selectedIndustries.join(",")} />
+          <input type="hidden" name="salesOwners" value={selectedSales ?? ""} />
+          <input type="hidden" name="kolManagers" value={selectedKolManagers ?? ""} />
+
           <Stack gap="lg">
             {/* ── Excel Upload Dropzone ── */}
             <Box>
@@ -341,29 +413,24 @@ export default function InsertionOrderCreatePage() {
                   cursor: "pointer",
                   transition: "background-color 0.2s"
                 }}
-                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-1)"; }}
-                onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-light)"; }}
+                onDragOver={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-1)"; }}
+                onDragLeave={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-light)"; }}
                 onDrop={(e) => {
                   e.preventDefault();
-                  e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-light)";
-                  const fileInput = document.getElementById('excel-upload-input') as HTMLInputElement;
-                  if (fileInput && e.dataTransfer.files.length > 0) {
-                    fileInput.files = e.dataTransfer.files;
-                    // @ts-ignore
-                    handleExcelUpload(fileInput);
-                  }
+                  (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-light)";
+                  const f = e.dataTransfer.files[0];
+                  if (f) handleExcelUpload(f);
                 }}
               >
                 <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
-                <Text fw={600} color="var(--mantine-color-blue-filled)">點擊上傳或拖曳 Excel 檔案至此</Text>
-                <Text size="sm" c="dimmed" mt={4}>支援 .xlsx, .xls</Text>
-                {/* Native input with onchange directly linked to our script */}
+                <Text fw={600} c="blue">點擊上傳或拖曳 Excel 檔案至此</Text>
+                <Text size="sm" c="dimmed" mt={4}>支援 .xlsx, .xls — 上傳後自動帶入下方欄位，可手動修改</Text>
                 <input
                   id="excel-upload-input"
                   type="file"
-                  accept=".xlsx, .xls, .csv"
+                  accept=".xlsx,.xls,.csv"
                   style={{ display: "none" }}
-                  {...({ onchange: "handleExcelUpload(this)" } as any)}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleExcelUpload(f); }}
                 />
               </label>
             </Box>
@@ -374,34 +441,137 @@ export default function InsertionOrderCreatePage() {
             <Box>
               <Title order={4} mb="sm">委刊單基本資訊</Title>
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
-                <TextInput name="projectName" label="專案名稱" placeholder="例如：2026 Q1 家電推廣" required />
-                <Select name="clientName" label="客戶" searchable placeholder="選擇客戶" data={clientOptions} />
-                <TextInput name="brand" label="品牌" placeholder="請輸入品牌名稱" />
-                <Select
-                  name="industries"
-                  label="產業"
-                  placeholder="選擇產業"
-                  data={availableIndustries.map((i) => ({ value: i, label: i }))}
+                <TextInput
+                  name="orderTitle"
+                  label="委刊單標題"
+                  placeholder="例如：DAC_ALLIE_KOL行銷活動 委刊單"
+                  required
+                  value={orderTitleVal}
+                  onChange={(e) => {
+                    setOrderTitleVal(e.currentTarget.value);
+                    // Mirror to projectName if they are still in sync
+                    if (projectNameVal === orderTitleVal) setProjectNameVal(e.currentTarget.value);
+                  }}
                 />
-                <TextInput name="documentUrl" label="委刊單連結/附件" placeholder="Google Drive 或 Dropbox 連結" />
-                <Select name="salesOwner" label="負責業務" searchable data={salesOptions} />
-                <Select name="kolManager" label="負責 KOL Team Member" searchable data={kolManagerOptions} />
-                <TextInput name="startDate" label="開始日" type="date" />
-                <TextInput name="endDate" label="結束日" type="date" />
+                <TextInput
+                  name="projectName"
+                  label="專案名稱"
+                  placeholder="例如：2026 Q1 家電推廣"
+                  value={projectNameVal}
+                  onChange={(e) => setProjectNameVal(e.currentTarget.value)}
+                />
+                <TextInput
+                  name="clientName"
+                  label="客戶"
+                  placeholder="請輸入客戶名稱"
+                  required
+                  value={clientNameVal}
+                  onChange={(e) => setClientNameVal(e.currentTarget.value)}
+                />
+                <TextInput
+                  name="mcnName"
+                  label="網紅公司名稱"
+                  placeholder="例如：雲太資訊有限公司"
+                  value={mcnNameVal}
+                  onChange={(e) => setMcnNameVal(e.currentTarget.value)}
+                />
+                <TagsInput
+                  label="品牌"
+                  placeholder="選擇或輸入品牌，Enter 新增"
+                  data={brandSuggestions}
+                  value={selectedBrands}
+                  onChange={setSelectedBrands}
+                  clearable
+                  rightSection={<IconChevronDown size={14} />}
+                  rightSectionPointerEvents="none"
+                />
+                <TagsInput
+                  label="產業"
+                  placeholder="選擇或輸入產業，Enter 新增"
+                  data={industrySuggestions}
+                  value={selectedIndustries}
+                  onChange={setSelectedIndustries}
+                  clearable
+                  rightSection={<IconChevronDown size={14} />}
+                  rightSectionPointerEvents="none"
+                />
+                <Select
+                  label="負責業務"
+                  placeholder="選擇負責業務"
+                  data={salesOwners}
+                  value={selectedSales}
+                  onChange={setSelectedSales}
+                  clearable
+                  searchable
+                  rightSection={<IconChevronDown size={14} />}
+                  rightSectionPointerEvents="none"
+                />
+                <Select
+                  label="負責 KOL Team 成員"
+                  placeholder="選擇 KOL Team 成員"
+                  data={kolManagers}
+                  value={selectedKolManagers}
+                  onChange={setSelectedKolManagers}
+                  clearable
+                  searchable
+                  rightSection={<IconChevronDown size={14} />}
+                  rightSectionPointerEvents="none"
+                />
+                <TextInput
+                  name="startDate"
+                  label="開始日"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.currentTarget.value)}
+                />
+                <TextInput
+                  name="endDate"
+                  label="結束日"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.currentTarget.value)}
+                />
               </SimpleGrid>
             </Box>
 
             <Divider />
 
-            {/* ── Execution & Finance info ── */}
+            {/* ── Finance info ── */}
             <Box>
-              <Title order={4} mb="sm">合作內容與財務資訊</Title>
+              <Title order={4} mb="sm">財務資訊</Title>
+              <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
+                <TextInput
+                  name="projectQuote"
+                  label="專案報價 (未稅)"
+                  type="number"
+                  placeholder="0"
+                  value={projectQuote || ""}
+                  onChange={(e) => setProjectQuote(Number(e.currentTarget.value) || 0)}
+                />
+                <TextInput
+                  name="taxRate"
+                  label="稅率 (%)"
+                  type="number"
+                  value={taxRate}
+                  onChange={(e) => setTaxRate(Number(e.currentTarget.value) || 0)}
+                />
+                <TextInput
+                  label="專案總金額 (含稅)"
+                  readOnly
+                  value={`NT$ ${totalWithTax.toLocaleString()}`}
+                  styles={{ input: { color: "var(--mantine-color-blue-6)", fontWeight: 600 } }}
+                />
+              </SimpleGrid>
+            </Box>
+
+            <Divider />
+
+            {/* ── Collab content ── */}
+            <Box>
+              <Title order={4} mb="sm">合作內容</Title>
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
                 <TextInput name="services" label="合作內容" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" />
                 <TextInput name="authorization" label="授權項目" placeholder="例如：數位廣告投放一年" />
-                <TextInput name="projectQuote" label="專案報價 (未稅)" type="number" placeholder="0" />
-                <TextInput name="taxRate" label="稅率 (%)" type="number" defaultValue="5" />
-                <TextInput name="totalAmount" label="專案總金額 (含稅)" type="number" placeholder="0" />
               </SimpleGrid>
             </Box>
 
@@ -411,40 +581,24 @@ export default function InsertionOrderCreatePage() {
             <Box>
               <Group justify="space-between" mb="sm">
                 <Title order={4}>合作 KOL</Title>
-                {/* Native button — data-attribute used, listener attached by script above */}
-                <button
+                <Button
                   type="button"
-                  data-kol-dialog-open="1"
+                  variant="default"
                   onClick={() => {
                     // @ts-ignore
-                    if (typeof window.kolDialogOpen === 'function') window.kolDialogOpen();
-                  }}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 4,
-                    border: "1px solid var(--mantine-color-default-border)",
-                    background: "var(--mantine-color-default)",
-                    fontSize: 14,
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    color: "var(--mantine-color-text)",
+                    if (typeof window.kolDialogOpen === "function") window.kolDialogOpen();
                   }}
                 >
                   選擇合作 KOL
-                </button>
+                </Button>
               </Group>
 
-              {/* Native div rendered by kolRenderSelected() */}
-              <div
-                id="kol-selected-display"
-                style={{ minHeight: 40 }}
-              >
+              <div id="kol-selected-display" style={{ minHeight: 40 }}>
                 <p style={{ fontSize: 14, color: "var(--mantine-color-dimmed)", margin: "8px 0" }}>
                   尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。
                 </p>
               </div>
 
-              {/* Hidden textarea — stores JSON for form submission, updated by JS */}
               <textarea
                 id="kol-selected-json"
                 name="selectedKolsJson"
@@ -462,7 +616,6 @@ export default function InsertionOrderCreatePage() {
               <Stack>
                 <Textarea name="description" label="專案說明" minRows={4} />
                 <Textarea name="internalNotes" label="內部備註" minRows={3} />
-                <TextInput name="attachmentUrl" label="附件上傳" placeholder="可先貼檔案連結，後續接真上傳" />
               </Stack>
             </Box>
 
@@ -479,16 +632,9 @@ export default function InsertionOrderCreatePage() {
         </Form>
       </Card>
 
-      {/* ── KOL Selection Dialog (100% native HTML, no Mantine, no React events) ── */}
+      {/* ── KOL Selection Dialog (native <dialog> element) ── */}
       <dialog
         id="kol-select-dialog"
-        onToggle={(e) => {
-          // @ts-ignore
-          if (e.currentTarget.open && typeof window.kolDialogSearch === 'function') {
-            // @ts-ignore
-            window.kolDialogSearch('');
-          }
-        }}
         style={{
           padding: 24,
           borderRadius: 8,
@@ -504,10 +650,9 @@ export default function InsertionOrderCreatePage() {
           <strong style={{ fontSize: 18 }}>選擇合作 KOL</strong>
           <button
             type="button"
-            data-kol-dialog-close="1"
             onClick={() => {
               // @ts-ignore
-              if (typeof window.kolDialogClose === 'function') window.kolDialogClose();
+              if (typeof window.kolDialogClose === "function") window.kolDialogClose();
             }}
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}
           >✕</button>
@@ -518,7 +663,7 @@ export default function InsertionOrderCreatePage() {
           placeholder="搜尋 KOL 名稱、帳號或產業"
           onChange={(e) => {
             // @ts-ignore
-            if (typeof window.kolDialogSearch === 'function') window.kolDialogSearch(e.target.value);
+            if (typeof window.kolDialogSearch === "function") window.kolDialogSearch(e.target.value);
           }}
           style={{
             width: "100%",
@@ -538,10 +683,9 @@ export default function InsertionOrderCreatePage() {
         <div style={{ marginTop: 16, textAlign: "right" }}>
           <button
             type="button"
-            data-kol-dialog-close="1"
             onClick={() => {
               // @ts-ignore
-              if (typeof window.kolDialogClose === 'function') window.kolDialogClose();
+              if (typeof window.kolDialogClose === "function") window.kolDialogClose();
             }}
             style={{ padding: "8px 20px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
           >

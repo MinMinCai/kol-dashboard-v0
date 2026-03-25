@@ -79,6 +79,7 @@ export type OrderKolCollaboration = {
   price?: number;
   services?: string;
   uploadDate?: string;
+  executionDate?: string;
   authorization?: string;
   rating?: number;
   totalReach?: number;
@@ -150,12 +151,50 @@ export type ProposalKol = {
   feedbackText: string;
 };
 
+export type TagCatalogItem = {
+  id: string | number;
+  name: string;
+};
+
+export type BrandCatalogItem = {
+  id: string | number;
+  name: string;
+};
+
+export type IndustryCatalogItem = {
+  id: string | number;
+  name: string;
+};
+
+export type PlatformCatalogItem = {
+  id: string | number;
+  name: string;
+};
+
+export type TeamMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "manager" | "member";
+  group: "AE" | "KOL" | "Tech" | "Media" | "其他";
+};
+
+export type SystemPreferences = {
+  currency: string;
+  defaultTaxRate: number;
+  defaultReportLang: string;
+  notifyEmail: string;
+  aiSuggestions: boolean;
+};
+
 export type InsertionOrder = {
   id: string;
   orderNo: string;
+  orderTitle?: string;
   title?: string;
   projectName?: string;
   clientName: string;
+  mcnName?: string;
   brand?: string;
   industry?: string;
   industryPath?: string;
@@ -170,6 +209,8 @@ export type InsertionOrder = {
   collaborations?: OrderKolCollaboration[];
   status: string;
   totalBudget: number;
+  tax?: number;
+  totalWithTax?: number;
   startDate: string;
   endDate: string;
 };
@@ -246,6 +287,202 @@ export async function deleteProposalKol(id: string): Promise<boolean> {
 export async function listInsertionOrders(): Promise<InsertionOrder[]> {
   const res = await fetch(`${MOCK_API_BASE}/insertionOrders`);
   return res.json();
+}
+
+export async function listTagCatalog(): Promise<TagCatalogItem[]> {
+  try {
+    const res = await fetch(`${MOCK_API_BASE}/tagCatalog`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function addTagCatalog(data: Omit<TagCatalogItem, "id">): Promise<TagCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/tagCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateTagCatalog(id: string | number, data: Partial<TagCatalogItem>): Promise<TagCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteTagCatalog(id: string | number): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
+export async function listBrandCatalog(): Promise<BrandCatalogItem[]> {
+  try {
+    const res = await fetch(`${MOCK_API_BASE}/brandCatalog`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function addBrandCatalog(data: Omit<BrandCatalogItem, "id">): Promise<BrandCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/brandCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateBrandCatalog(id: string | number, data: Partial<BrandCatalogItem>): Promise<BrandCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteBrandCatalog(id: string | number): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
+export async function listIndustryCatalog(): Promise<IndustryCatalogItem[]> {
+  try {
+    const res = await fetch(`${MOCK_API_BASE}/industryCatalog`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function addIndustryCatalog(
+  data: Omit<IndustryCatalogItem, "id">,
+): Promise<IndustryCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/industryCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateIndustryCatalog(
+  id: string | number,
+  data: Partial<IndustryCatalogItem>,
+): Promise<IndustryCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteIndustryCatalog(id: string | number): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
+export async function listPlatformCatalog(): Promise<PlatformCatalogItem[]> {
+  try {
+    const res = await fetch(`${MOCK_API_BASE}/platformCatalog`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function addPlatformCatalog(
+  data: Omit<PlatformCatalogItem, "id">,
+): Promise<PlatformCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/platformCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updatePlatformCatalog(
+  id: string | number,
+  data: Partial<PlatformCatalogItem>,
+): Promise<PlatformCatalogItem> {
+  const res = await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deletePlatformCatalog(id: string | number): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
+export async function listTeamMembers(): Promise<TeamMember[]> {
+  const res = await fetch(`${MOCK_API_BASE}/teamMembers`);
+  return res.json();
+}
+
+export async function getSystemPreferences(): Promise<SystemPreferences> {
+  const res = await fetch(`${MOCK_API_BASE}/systemPreferences`);
+  return res.json();
+}
+
+export async function updateSystemPreferences(
+  data: Partial<SystemPreferences>,
+): Promise<SystemPreferences> {
+  const res = await fetch(`${MOCK_API_BASE}/systemPreferences`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function addTeamMember(data: Omit<TeamMember, "id">): Promise<TeamMember> {
+  const res = await fetch(`${MOCK_API_BASE}/teamMembers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateTeamMember(id: string, data: Partial<TeamMember>): Promise<TeamMember> {
+  const res = await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteTeamMember(id: string): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
 }
 
 export async function getInsertionOrder(id: string): Promise<InsertionOrder | null> {

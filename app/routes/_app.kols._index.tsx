@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { deleteKol, listKols, updateKol, type Kol } from "~/lib/mock-api";
+import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -127,7 +127,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // derive filter options from ALL kols (before filtering)
   const allKols = await listKols();
   const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
-  const allTags = [...new Set(allKols.flatMap((k) => getPrimaryTags(k)))];
+  const tagCatalog = await listTagCatalog();
+  const catalogTags = tagCatalog.map((t) => t.name);
+  const allTags = [...new Set([...allKols.flatMap((k) => getPrimaryTags(k)), ...catalogTags])];
 
   return json({
     deleted,

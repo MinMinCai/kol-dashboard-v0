@@ -373,11 +373,10 @@ export default function KolCreatePage() {
               <Title order={3} mb="md">提案與評估資料</Title>
               <Stack>
                 <Textarea
-                  label="人選介紹 (用於提案撰寫) *"
+                  label="人選介紹"
                   name="introduction"
                   placeholder="描述此 KOL 的風格特色、受眾黏著度、適合推廣的產品等，這將幫助業務快速撰寫提案內容"
                   minRows={5}
-                  required
                 />
                 <Textarea label="描述" name="description" placeholder="KOL 內容風格、擅長主題、合作亮點" minRows={4} />
                 <Textarea label="內部備註" name="internalComments" placeholder="僅內部可見，例如報價偏好、溝通注意事項" minRows={3} />

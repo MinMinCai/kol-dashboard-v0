@@ -1113,5 +1113,236 @@
     }
   ],
   "proposalFeedbacks": [],
+  "tagCatalog": [
+    {
+      "id": "tag_001",
+      "name": "美妝"
+    },
+    {
+      "id": "tag_002",
+      "name": "保養"
+    },
+    {
+      "id": "tag_003",
+      "name": "3C"
+    },
+    {
+      "id": "tag_004",
+      "name": "開箱"
+    },
+    {
+      "id": "tag_005",
+      "name": "母嬰"
+    },
+    {
+      "id": "tag_006",
+      "name": "親子"
+    },
+    {
+      "id": "tag_007",
+      "name": "生活"
+    },
+    {
+      "id": "tag_008",
+      "name": "料理"
+    },
+    {
+      "id": "tag_009",
+      "name": "居家"
+    },
+    {
+      "id": "tag_010",
+      "name": "健身"
+    },
+    {
+      "id": "tag_011",
+      "name": "女性"
+    },
+    {
+      "id": "tag_012",
+      "name": "投資"
+    },
+    {
+      "id": "tag_013",
+      "name": "理財"
+    },
+    {
+      "id": "tag_014",
+      "name": "旅遊"
+    },
+    {
+      "id": "tag_015",
+      "name": "汽車"
+    }
+  ],
+  "brandCatalog": [
+    {
+      "id": "brand_001",
+      "name": "Panasonic"
+    },
+    {
+      "id": "brand_002",
+      "name": "Happy Food"
+    },
+    {
+      "id": "brand_003",
+      "name": "DermaLab"
+    },
+    {
+      "id": "brand_004",
+      "name": "Aqua Home"
+    },
+    {
+      "id": "brand_005",
+      "name": "BabyCare"
+    },
+    {
+      "id": "brand_006",
+      "name": "NovaTech"
+    },
+    {
+      "id": "brand_007",
+      "name": "AutoMax"
+    },
+    {
+      "id": "brand_008",
+      "name": "FitMeal"
+    },
+    {
+      "id": "743b",
+      "name": "ALLIE"
+    }
+  ],
+  "teamMembers": [
+    {
+      "id": "u_002",
+      "name": "John",
+      "email": "john@example.com",
+      "role": "member",
+      "group": "KOL"
+    },
+    {
+      "id": "u_003",
+      "name": "Nina",
+      "email": "nina@example.com",
+      "role": "manager",
+      "group": "Media"
+    },
+    {
+      "id": "u_004",
+      "name": "Leo",
+      "email": "leo@example.com",
+      "role": "member",
+      "group": "Tech"
+    },
+    {
+      "id": "u_005",
+      "name": "Cindy",
+      "email": "cindy@example.com",
+      "role": "member",
+      "group": "AE"
+    },
+    {
+      "id": "u_006",
+      "name": "Ivy",
+      "email": "ivy@example.com",
+      "role": "admin",
+      "group": "其他"
+    },
+    {
+      "id": "665e",
+      "name": "Una",
+      "email": "una@example.com",
+      "role": "member",
+      "group": "AE"
+    }
+  ],
+  "industryCatalog": [
+    {
+      "id": "industry_001",
+      "name": "美妝保養"
+    },
+    {
+      "id": "industry_002",
+      "name": "3C 科技"
+    },
+    {
+      "id": "industry_003",
+      "name": "母嬰親子"
+    },
+    {
+      "id": "industry_004",
+      "name": "美食"
+    },
+    {
+      "id": "industry_005",
+      "name": "健康運動"
+    },
+    {
+      "id": "industry_006",
+      "name": "財經"
+    },
+    {
+      "id": "industry_007",
+      "name": "汽車"
+    },
+    {
+      "id": "industry_008",
+      "name": "待分類"
+    },
+    {
+      "id": "industry_009",
+      "name": "家電"
+    },
+    {
+      "id": "industry_010",
+      "name": "食品"
+    },
+    {
+      "id": "industry_011",
+      "name": "美妝"
+    },
+    {
+      "id": "industry_012",
+      "name": "母嬰"
+    },
+    {
+      "id": "industry_013",
+      "name": "3C"
+    },
+    {
+      "id": "industry_014",
+      "name": "廚房家電"
+    },
+    {
+      "id": "industry_015",
+      "name": "旅遊"
+    }
+  ],
+  "platformCatalog": [
+    {
+      "id": "platform_001",
+      "name": "Instagram"
+    },
+    {
+      "id": "platform_002",
+      "name": "YouTube"
+    },
+    {
+      "id": "platform_003",
+      "name": "TikTok"
+    },
+    {
+      "id": "platform_004",
+      "name": "Facebook"
+    }
+  ],
+  "systemPreferences": {
+    "currency": "TWD",
+    "defaultTaxRate": 5,
+    "defaultReportLang": "zh-TW",
+    "notifyEmail": "",
+    "aiSuggestions": true
+  },
   "$schema": "./node_modules/json-server/schema.json"
 }

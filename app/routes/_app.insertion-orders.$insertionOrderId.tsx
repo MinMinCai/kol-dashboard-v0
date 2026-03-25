@@ -72,6 +72,9 @@ function KolCollabCard({
               <Text size="xs" c="dimmed">
                 {kol.services} | NT$ {(kol.price ?? 0).toLocaleString("zh-TW")}
               </Text>
+              {kol.executionDate && (
+                <Text size="xs" c="dimmed">執行日期：{kol.executionDate}</Text>
+              )}
             </div>
           </Group>
           <Group gap="xl">
@@ -398,6 +401,9 @@ export default function InsertionOrderDetailPage() {
         <Grid gutter="xl">
           <Grid.Col span={{ base: 12, md: 7 }}>
             <Stack gap="sm">
+              {insertionOrder.orderTitle && (
+                <Text size="sm" fw={500} c="dimmed">{insertionOrder.orderTitle}</Text>
+              )}
               <Title order={3} c="blue">
                 {insertionOrder.projectName ?? insertionOrder.title ?? "未命名專案"}
               </Title>
@@ -406,6 +412,9 @@ export default function InsertionOrderDetailPage() {
                 <Badge variant="light" color="cyan">
                   品牌: {insertionOrder.brand ?? insertionOrder.clientName}
                 </Badge>
+                {insertionOrder.mcnName && (
+                  <Badge variant="light" color="violet">網紅公司: {insertionOrder.mcnName}</Badge>
+                )}
               </Group>
               <Text size="sm">
                 產業: {insertionOrder.industryPath ?? insertionOrder.industry ?? "-"}
@@ -441,10 +450,26 @@ export default function InsertionOrderDetailPage() {
               </Card>
               <Card withBorder radius="md">
                 <Text size="xs" c="dimmed" fw={700}>
-                  總預算
+                  專案報價(未稅)
                 </Text>
                 <Title order={4}>{currency(insertionOrder.totalBudget)}</Title>
               </Card>
+              {insertionOrder.tax != null && (
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    稅金
+                  </Text>
+                  <Title order={4}>{currency(insertionOrder.tax)}</Title>
+                </Card>
+              )}
+              {insertionOrder.totalWithTax != null && (
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    含稅總額
+                  </Text>
+                  <Title order={4}>{currency(insertionOrder.totalWithTax)}</Title>
+                </Card>
+              )}
               <Card withBorder radius="md">
                 <Text size="xs" c="dimmed" fw={700}>
                   總觸及

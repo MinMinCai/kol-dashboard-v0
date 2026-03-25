@@ -303,11 +303,10 @@ export default function KolEditPage() {
               />
               <Textarea
                 mt="md"
-                label="人選介紹 (用於提案撰寫) *"
+                label="人選介紹"
                 name="introduction"
                 minRows={5}
                 defaultValue={kol.introduction ?? ""}
-                required
               />
               <Textarea
                 mt="md"
