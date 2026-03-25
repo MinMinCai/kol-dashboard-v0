@@ -6,6 +6,8 @@ import {
   Card,
   Divider,
   Group,
+  Radio,
+  Select,
   SimpleGrid,
   Stack,
   Text,
@@ -15,6 +17,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
+import { useState, useCallback } from "react";
 import { MOCK_API_BASE } from "~/lib/mock-api";
 
 function parseHandle(url: string): string {
@@ -38,6 +41,13 @@ export async function action({ request }: ActionFunctionArgs) {
   const avatarUrl = String(formData.get("avatarUrl") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const internalComments = String(formData.get("internalComments") ?? "").trim();
+  const paymentMethod = formData.get("paymentMethod") as "勞報" | "發票" | null;
+  const engagementRate = Number(formData.get("engagementRate") ?? 0);
+  const exposureRate = Number(formData.get("exposureRate") ?? 0);
+  const audienceMale = Number(formData.get("audienceMale") ?? 0);
+  const audienceFemale = Number(formData.get("audienceFemale") ?? 100 - audienceMale);
+  const audienceAge = String(formData.get("audienceAge") ?? "").trim();
+  const introduction = String(formData.get("introduction") ?? "").trim();
 
   if (!displayName) {
     return json({ error: "KOL 名稱為必填" }, { status: 400 });
@@ -67,7 +77,11 @@ export async function action({ request }: ActionFunctionArgs) {
     categories: tags.length > 0 ? tags : ["待分類"],
     platform: primarySocial.platform || "Instagram",
     followers: Number(primarySocial.followers ?? 0),
-    engagementRate: 0,
+    engagementRate,
+    exposureRate,
+    audienceGender: { male: audienceMale, female: audienceFemale },
+    audienceAge,
+    introduction,
     rating: 0,
     collaborations: 0,
     averagePrice: 0,
@@ -84,6 +98,7 @@ export async function action({ request }: ActionFunctionArgs) {
     city: "Taipei",
     notes: [description, internalComments && `internal:${internalComments}`].filter(Boolean).join("\n"),
     status: intent === "draft" ? "draft" : "active",
+    paymentMethod: paymentMethod || undefined,
   };
 
   const res = await fetch(`${MOCK_API_BASE}/kols`, {
@@ -97,98 +112,63 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/kols/${created.id}`);
 }
 
-/* ── Inline native JS for social platform rows ── */
-const socialScript = `
-  var __socials = [{ id:'s0', platform:'Instagram', url:'', followers:'' }];
-
-  function renderSocials() {
-    var container = document.getElementById('social-rows');
-    if (!container) return;
-    container.innerHTML = __socials.map(function(item, idx){
-      return '<div style="border:1px solid var(--mantine-color-default-border);border-radius:8px;padding:12px;margin-top:10px;">' +
-        '<div style="display:grid;grid-template-columns:1fr 2fr 1fr 80px 36px;gap:8px;align-items:flex-end;">' +
-          '<div><label style="font-size:13px;font-weight:500;">平台</label>' +
-            '<select oninput="updateSocial(\\''+item.id+'\\',\\'platform\\',this.value)" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;background:var(--mantine-color-body);color:var(--mantine-color-text);">' +
-              ['Instagram','YouTube','TikTok','Facebook','Twitter','LINE'].map(function(p){ return '<option'+(item.platform===p?' selected':'')+'>'+p+'</option>'; }).join('') +
-            '</select></div>' +
-          '<div><label style="font-size:13px;font-weight:500;">帳號 URL</label>' +
-            '<input type="text" value="'+item.url+'" oninput="updateSocial(\\''+item.id+'\\',\\'url\\',this.value)" placeholder="https://instagram.com/username" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;box-sizing:border-box;background:var(--mantine-color-body);color:var(--mantine-color-text);" /></div>' +
-          '<div style="display:flex;flex-direction:column;justify-content:flex-end;">' +
-            '<button type="button" onclick="fetchFollowers(\\''+item.id+'\\',\\''+item.platform+'\\')" style="padding:7px 10px;border-radius:4px;border:1px solid var(--mantine-color-default-border);background:var(--mantine-color-body);cursor:pointer;font-size:12px;margin-top:auto;color:var(--mantine-color-text);">取得追蹤數</button></div>' +
-          '<div><label style="font-size:13px;font-weight:500;">追蹤數</label>' +
-            '<input type="text" readOnly value="'+(item.followers||'-')+'" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;background:var(--mantine-color-body);color:var(--mantine-color-dimmed);" /></div>' +
-          '<div style="display:flex;align-items:flex-end;padding-bottom:2px;">' +
-            (idx === 0 ? '<span style="width:36px;"></span>' : '<button type="button" onclick="removeSocial(\\''+item.id+'\\');return false;" style="width:36px;height:34px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:14px;font-weight:700;">×</button>') +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-    syncSocialsJson();
-  }
-  function updateSocial(id, key, value) {
-    __socials = __socials.map(function(s){ return s.id===id ? Object.assign({},s,{[key]:value}) : s; });
-    renderSocials();
-    syncSocialsJson();
-  }
-  function addSocial() {
-    if (__socials.length >= 8) return;
-    __socials.push({ id:'s'+Date.now(), platform:'Instagram', url:'', followers:'' });
-    renderSocials();
-  }
-  function removeSocial(id) {
-    if (__socials.length <= 1) return;
-    __socials = __socials.filter(function(s){ return s.id!==id; });
-    renderSocials();
-  }
-  function syncSocialsJson() {
-    var el = document.getElementById('socials-json');
-    if (el) el.value = JSON.stringify(__socials.map(function(s){ return { platform:s.platform, url:s.url, followers: s.followers ? Number(s.followers) : null }; }));
-  }
-  async function fetchFollowers(id, platform) {
-    var s = __socials.find(function(x){ return x.id===id; });
-    if (!s || !s.url) { alert('請先輸入社群帳號 URL'); return; }
-    try {
-      var r = await fetch('/api/social-followers?platform='+encodeURIComponent(platform)+'&url='+encodeURIComponent(s.url));
-      var data = await r.json();
-      if (r.ok && data.followers) {
-        __socials = __socials.map(function(x){ return x.id===id ? Object.assign({},x,{followers:data.followers}) : x; });
-        renderSocials();
-      } else { alert(data.error || '取得追蹤數失敗'); }
-    } catch(e) { alert('取得失敗，請稍後再試'); }
-  }
-
-  // Avatar upload
-  function pickAvatar() {
-    var fi = document.getElementById('avatar-file-input');
-    if (fi) fi.click();
-  }
-  function previewAvatar(input) {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(){
-      var preview = document.getElementById('avatar-preview');
-      var urlInput = document.getElementById('avatar-url-hidden');
-      if (preview) preview.src = reader.result;
-      if (urlInput) urlInput.value = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  document.addEventListener('DOMContentLoaded', function() { renderSocials(); });
-  // Also render when script loads (in case DOMContentLoaded has already fired)
-  if (document.readyState !== 'loading') { setTimeout(renderSocials, 0); }
-`;
-
 export default function KolCreatePage() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const submitting = navigation.state === "submitting";
 
+  // --- Social Platforms State ---
+  const [socials, setSocials] = useState<Array<{ id: string; platform: string; url: string; followers: number | null }>>([
+    { id: "s0", platform: "Instagram", url: "", followers: null },
+  ]);
+
+  const addSocial = () => {
+    if (socials.length >= 8) return;
+    setSocials([...socials, { id: "s" + Date.now(), platform: "Instagram", url: "", followers: null }]);
+  };
+
+  const removeSocial = (id: string) => {
+    if (socials.length <= 1) return;
+    setSocials(socials.filter((s) => s.id !== id));
+  };
+
+  const updateSocial = (id: string, key: string, value: any) => {
+    setSocials(socials.map((s) => (s.id === id ? { ...s, [key]: value } : s)));
+  };
+
+  const fetchFollowers = async (id: string, platform: string, url: string) => {
+    if (!url) {
+      alert("請先輸入社群帳號 URL");
+      return;
+    }
+    try {
+      const r = await fetch(`/api/social-followers?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}`);
+      const data = await r.json();
+      if (r.ok && data.followers) {
+        updateSocial(id, "followers", data.followers);
+      } else {
+        alert(data.error || "取得追蹤數失敗");
+      }
+    } catch (e) {
+      alert("取得失敗，請稍後再試");
+    }
+  };
+
+  // --- Avatar Preview ---
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(undefined);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <Stack gap="md">
-      <script dangerouslySetInnerHTML={{ __html: socialScript }} />
-
       <Group gap={8}>
         <Link to="/kols">KOL 管理</Link>
         <Text c="dimmed">&gt;</Text>
@@ -202,22 +182,23 @@ export default function KolCreatePage() {
             <Box>
               <Title order={3} mb="md">KOL 基本資料</Title>
 
-              {/* Avatar upload — native click/file input */}
+              {/* Avatar upload */}
               <Stack align="center" mb="lg">
                 <input
                   id="avatar-file-input"
                   type="file"
                   accept="image/*"
                   style={{ display: "none" }}
-                  {...({ onchange: "previewAvatar(this)" } as any)}
+                  onChange={handleAvatarChange}
                 />
-                <input type="hidden" id="avatar-url-hidden" name="avatarUrl" />
+                <input type="hidden" name="avatarUrl" value={avatarPreview || ""} />
                 <div
                   style={{ width: 220, border: "1px dashed #94a3b8", borderRadius: 16, padding: 20, cursor: "pointer", textAlign: "center" }}
-                  {...({ onclick: "pickAvatar()", ondragover: "event.preventDefault()" } as any)}
+                  onClick={() => document.getElementById("avatar-file-input")?.click()}
+                  onDragOver={(e) => e.preventDefault()}
                 >
                   <Stack align="center" gap="xs">
-                    <Avatar id="avatar-preview" src={undefined} radius={999} size={96} />
+                    <Avatar src={avatarPreview} radius={999} size={96} />
                     <Text fw={700}>↑</Text>
                     <Text size="sm">點擊上傳 KOL 照片</Text>
                     <Text size="xs" c="dimmed">支援拖拉上傳</Text>
@@ -230,41 +211,36 @@ export default function KolCreatePage() {
 
                 <Box>
                   <Text size="sm" fw={500} mb={6}>性別</Text>
-                  <Group>
-                    <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
-                      <input type="radio" name="gender" value="男" /> 男
-                    </label>
-                    <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
-                      <input type="radio" name="gender" value="女" defaultChecked /> 女
-                    </label>
-                    <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
-                      <input type="radio" name="gender" value="其他" /> 其他
-                    </label>
-                  </Group>
+                  <Radio.Group name="gender" defaultValue="女">
+                    <Group mt="xs">
+                      <Radio value="男" label="男" />
+                      <Radio value="女" label="女" />
+                      <Radio value="其他" label="其他" />
+                    </Group>
+                  </Radio.Group>
                 </Box>
 
                 <TextInput label="年齡" name="age" type="number" min={0} max={100} />
                 <TextInput label="聯絡方式" name="contactPhone" placeholder="09xx-xxx-xxx" />
                 <TextInput label="Email" name="email" type="email" placeholder="manager@example.com" />
+
+                <Box>
+                  <Text size="sm" fw={500} mb={6}>請款方式</Text>
+                  <Radio.Group name="paymentMethod">
+                    <Group mt="xs">
+                      <Radio value="勞報" label="勞報" />
+                      <Radio value="發票" label="發票" />
+                    </Group>
+                  </Radio.Group>
+                </Box>
               </SimpleGrid>
 
               <Box mt="md">
                 <Text size="sm" fw={500} mb={4}>KOL 標籤（逗號分隔）</Text>
-                <input
+                <TextInput
                   name="tagsInput"
-                  type="text"
                   defaultValue="母嬰,親子,旅遊"
                   placeholder="例如：美妝, 旅遊, 科技"
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    border: "1px solid var(--mantine-color-default-border)",
-                    borderRadius: 4,
-                    fontSize: 14,
-                    background: "var(--mantine-color-body)",
-                    color: "var(--mantine-color-text)",
-                    boxSizing: "border-box",
-                  }}
                 />
                 <Text size="xs" c="dimmed" mt={4}>用逗號分隔多個標籤，例如：美妝, 旅遊, 科技</Text>
               </Box>
@@ -272,28 +248,137 @@ export default function KolCreatePage() {
 
             <Divider />
 
-            {/* ── Social platforms — rendered by native JS ── */}
+            {/* ── Social platforms ── */}
             <Box>
               <Title order={3} mb="md">經營的社群平台</Title>
-              <div id="social-rows" />
-              <textarea id="socials-json" name="socialsJson" defaultValue="[]" style={{ display: "none" }} readOnly />
+              <div id="social-rows">
+                {socials.map((item, idx) => (
+                  <div key={item.id} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }}>
+                      <Select
+                        label="平台"
+                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter", "LINE"]}
+                        value={item.platform}
+                        onChange={(val) => updateSocial(item.id, "platform", val)}
+                        size="sm"
+                      />
+                      <TextInput
+                        label="帳號 URL"
+                        value={item.url}
+                        onChange={(e) => updateSocial(item.id, "url", e.target.value)}
+                        placeholder="https://instagram.com/username"
+                        size="sm"
+                      />
+                      <Box style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => fetchFollowers(item.id, item.platform, item.url)}
+                          disabled={!item.url}
+                        >
+                          取得追蹤數
+                        </Button>
+                      </Box>
+                      <TextInput
+                        label="追蹤數"
+                        readOnly
+                        value={item.followers ? item.followers.toLocaleString() : "-"}
+                        size="sm"
+                        c="dimmed"
+                      />
+                      <Box style={{ display: "flex", alignItems: "flex-end", paddingBottom: "2px" }}>
+                        {idx !== 0 && (
+                          <Button
+                            color="red"
+                            variant="light"
+                            onClick={() => removeSocial(item.id)}
+                            style={{ width: 36, height: 36, padding: 0 }}
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </Box>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <input type="hidden" name="socialsJson" value={JSON.stringify(socials.map(s => ({ platform: s.platform, url: s.url, followers: s.followers })))} />
               <Group mt="md">
-                <button
-                  type="button"
-                  style={{ padding: "7px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-blue-filled)" }}
-                  {...({ onclick: "addSocial()" } as any)}
-                >
+                <Button variant="default" onClick={addSocial} disabled={socials.length >= 8}>
                   + 新增社群平台
-                </button>
+                </Button>
               </Group>
             </Box>
 
             <Divider />
 
-            {/* ── Notes ── */}
+            <Divider />
+
+            {/* ── Audience Metrics ── */}
             <Box>
-              <Title order={3} mb="md">其他資訊</Title>
+              <Title order={3} mb="md">受眾數據與指標</Title>
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                <TextInput
+                  label="互動率 (%)"
+                  name="engagementRate"
+                  type="number"
+                  step="0.01"
+                  placeholder="例如：4.5"
+                />
+                <TextInput
+                  label="曝光率 (%)"
+                  name="exposureRate"
+                  type="number"
+                  step="0.01"
+                  placeholder="例如：12.5"
+                />
+                <Box>
+                  <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>
+                  <TextInput
+                    name="audienceMale"
+                    type="number"
+                    placeholder="例如：30"
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      const fInput = document.getElementsByName("audienceFemale")[0] as HTMLInputElement;
+                      if (fInput) fInput.value = String(Math.max(0, 100 - val));
+                    }}
+                  />
+                </Box>
+                <Box>
+                  <Text size="sm" fw={500} mb={4}>受眾性別比 (女 %)</Text>
+                  <TextInput
+                    name="audienceFemale"
+                    type="number"
+                    placeholder="例如：70"
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      const mInput = document.getElementsByName("audienceMale")[0] as HTMLInputElement;
+                      if (mInput) mInput.value = String(Math.max(0, 100 - val));
+                    }}
+                  />
+                </Box>
+                <TextInput
+                  label="主要受眾年齡層"
+                  name="audienceAge"
+                  placeholder="例如：18-24, 25-34"
+                />
+              </SimpleGrid>
+            </Box>
+
+            <Divider />
+
+            {/* ── Notes & Introduction ── */}
+            <Box>
+              <Title order={3} mb="md">提案與評估資料</Title>
               <Stack>
+                <Textarea
+                  label="人選介紹 (用於提案撰寫) *"
+                  name="introduction"
+                  placeholder="描述此 KOL 的風格特色、受眾黏著度、適合推廣的產品等，這將幫助業務快速撰寫提案內容"
+                  minRows={5}
+                  required
+                />
                 <Textarea label="描述" name="description" placeholder="KOL 內容風格、擅長主題、合作亮點" minRows={4} />
                 <Textarea label="內部備註" name="internalComments" placeholder="僅內部可見，例如報價偏好、溝通注意事項" minRows={3} />
               </Stack>

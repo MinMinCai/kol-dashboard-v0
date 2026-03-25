@@ -105,6 +105,7 @@ export type Kol = {
     instagram?: number;
     youtube?: number;
     tiktok?: number;
+    facebook?: number;
   };
   contact?: {
     phone?: string;
@@ -118,8 +119,13 @@ export type Kol = {
   platform: string;
   followers: number;
   engagementRate: number;
+  exposureRate?: number;
+  audienceGender?: { male: number; female: number };
+  audienceAge?: string;
+  introduction?: string;
   city: string;
   notes?: string;
+  paymentMethod?: "勞報" | "發票";
 };
 
 export type Proposal = {

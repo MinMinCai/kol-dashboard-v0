@@ -4508,41 +4508,41 @@ function SparkLine({ points }) {
     /* @__PURE__ */ jsxDEV8("svg", { width: "100%", viewBox: "0 0 620 220", role: "img", "aria-label": "price trend", children: [
       /* @__PURE__ */ jsxDEV8("line", { x1: 24, y1: 220 - 24, x2: 620 - 24, y2: 220 - 24, stroke: "#cbd5e1" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 49,
+        lineNumber: 50,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV8("line", { x1: 24, y1: 24, x2: 24, y2: 220 - 24, stroke: "#cbd5e1" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 50,
+        lineNumber: 51,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV8("polyline", { fill: "none", stroke: "#228be6", strokeWidth: "3", points: path }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 51,
+        lineNumber: 52,
         columnNumber: 9
       }, this),
       mapped.map((p) => /* @__PURE__ */ jsxDEV8("circle", { cx: p.x, cy: p.y, r: "4", fill: "#228be6" }, p.date, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 53,
+        lineNumber: 54,
         columnNumber: 11
       }, this))
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-      lineNumber: 48,
+      lineNumber: 49,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV8(Group5, { justify: "space-between", children: points.map((p) => /* @__PURE__ */ jsxDEV8(Text6, { size: "xs", c: "dimmed", children: p.date }, p.date, !1, {
       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-      lineNumber: 58,
+      lineNumber: 59,
       columnNumber: 11
     }, this)) }, void 0, !1, {
       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-      lineNumber: 56,
+      lineNumber: 57,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-    lineNumber: 47,
+    lineNumber: 48,
     columnNumber: 5
   }, this);
 }
@@ -4588,22 +4588,22 @@ function KolDetailPage() {
     /* @__PURE__ */ jsxDEV8(Group5, { gap: 8, children: [
       /* @__PURE__ */ jsxDEV8(Link5, { to: "/kols", children: "KOL \u7BA1\u7406" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 143,
+        lineNumber: 144,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", children: ">" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 144,
+        lineNumber: 145,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV8(Text6, { fw: 600, children: kol.displayName }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 145,
+        lineNumber: 146,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-      lineNumber: 142,
+      lineNumber: 143,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV8(Grid3, { children: [
@@ -4613,13 +4613,13 @@ function KolDetailPage() {
             /* @__PURE__ */ jsxDEV8(Group5, { align: "flex-start", wrap: "nowrap", children: [
               /* @__PURE__ */ jsxDEV8(Avatar3, { src: kol.avatarUrl, size: 96, radius: 999 }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 154,
+                lineNumber: 155,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV8(Stack6, { gap: 6, children: [
                 /* @__PURE__ */ jsxDEV8(Title6, { order: 2, children: kol.displayName }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 156,
+                  lineNumber: 157,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -4630,7 +4630,7 @@ function KolDetailPage() {
                   " \u7C89\u7D72"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 157,
+                  lineNumber: 158,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -4639,26 +4639,26 @@ function KolDetailPage() {
                   " \u8A02\u95B1"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 158,
+                  lineNumber: 159,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Group5, { gap: 6, children: (kol.tags ?? kol.categories).map((tag) => /* @__PURE__ */ jsxDEV8(Badge4, { variant: "light", radius: "xl", children: tag }, tag, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 161,
+                  lineNumber: 162,
                   columnNumber: 23
                 }, this)) }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 159,
+                  lineNumber: 160,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 155,
+                lineNumber: 156,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 153,
+              lineNumber: 154,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV8(Stack6, { align: "flex-end", gap: 6, children: [
@@ -4670,7 +4670,7 @@ function KolDetailPage() {
                 " \u6B21\u5408\u4F5C)"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 167,
+                lineNumber: 168,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -4678,32 +4678,44 @@ function KolDetailPage() {
                 formatCurrency(avgPrice)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 168,
+                lineNumber: 169,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV8(Text6, { children: [
+                "\u8ACB\u6B3E\u65B9\u5F0F: ",
+                /* @__PURE__ */ jsxDEV8(Badge4, { variant: "dot", children: kol.paymentMethod || "\u672A\u8A2D\u5B9A" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 170,
+                  columnNumber: 29
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 170,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV8(Group5, { gap: 6, children: (kol.industryDistribution ?? [kol.industry ?? "\u672A\u5206\u985E"]).map((industry) => /* @__PURE__ */ jsxDEV8(Badge4, { color: "gray", variant: "light", children: industry }, industry, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 171,
+                lineNumber: 173,
                 columnNumber: 21
               }, this)) }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 169,
+                lineNumber: 171,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 166,
+              lineNumber: 167,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 152,
+            lineNumber: 153,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV8(Group5, { mt: "md", children: [
             /* @__PURE__ */ jsxDEV8(Link5, { to: kol.isFavorite ? "/favorites" : `/kols/${kol.id}`, style: { padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", textDecoration: "none", fontSize: 14 }, children: kol.isFavorite ? "\u2764\uFE0F \u5DF2\u6536\u85CF" : "\u{1F497} \u52A0\u5165\u6536\u85CF" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 177,
+              lineNumber: 179,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV8(
@@ -4719,30 +4731,50 @@ function KolDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 180,
+                lineNumber: 182,
                 columnNumber: 15
               },
               this
             ),
+            /* @__PURE__ */ jsxDEV8(Button6, { type: "button", variant: "link", size: "xs", component: Link5, to: `/kols/${kol.id}/edit`, children: "\u270F\uFE0F \u7DE8\u8F2F" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId._index.tsx",
+              lineNumber: 190,
+              columnNumber: 15
+            }, this),
             /* @__PURE__ */ jsxDEV8(Button6, { type: "button", variant: "default", size: "xs", onClick: handleDownloadReport, children: "\u{1F4CA} \u4E0B\u8F09 KOL \u5831\u544A" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 188,
+              lineNumber: 193,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 176,
+            lineNumber: 178,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId._index.tsx",
-          lineNumber: 151,
+          lineNumber: 152,
           columnNumber: 11
+        }, this),
+        kol.introduction && /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, mt: "md", children: [
+          /* @__PURE__ */ jsxDEV8(Title6, { order: 4, mb: "sm", children: "\u4EBA\u9078\u4ECB\u7D39 (\u7528\u65BC\u63D0\u6848\u64B0\u5BEB)" }, void 0, !1, {
+            fileName: "app/routes/_app.kols.$kolId._index.tsx",
+            lineNumber: 202,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", style: { whiteSpace: "pre-wrap", lineHeight: 1.6 }, children: kol.introduction }, void 0, !1, {
+            fileName: "app/routes/_app.kols.$kolId._index.tsx",
+            lineNumber: 203,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, !0, {
+          fileName: "app/routes/_app.kols.$kolId._index.tsx",
+          lineNumber: 201,
+          columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV8(
           Modal3,
           {
-            id: "kol-contact-modal",
             opened: contactOpened,
             onClose: () => setContactOpened(!1),
             title: "\u806F\u7D61\u65B9\u5F0F",
@@ -4750,37 +4782,37 @@ function KolDetailPage() {
               /* @__PURE__ */ jsxDEV8(Text6, { children: [
                 /* @__PURE__ */ jsxDEV8(Text6, { span: !0, fw: 600, children: "\u96FB\u8A71\uFF1A" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 202,
+                  lineNumber: 216,
                   columnNumber: 17
                 }, this),
                 " ",
                 kol.contact?.phone || "\u5C1A\u672A\u63D0\u4F9B"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 201,
+                lineNumber: 215,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV8(Text6, { children: [
                 /* @__PURE__ */ jsxDEV8(Text6, { span: !0, fw: 600, children: "Email\uFF1A" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 208,
+                  lineNumber: 222,
                   columnNumber: 17
                 }, this),
                 " ",
                 kol.contact?.email || "\u5C1A\u672A\u63D0\u4F9B"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 207,
+                lineNumber: 221,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV8(Button6, { type: "button", variant: "light", onClick: () => setContactOpened(!1), children: "\u95DC\u9589" }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 213,
+                lineNumber: 227,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 200,
+              lineNumber: 214,
               columnNumber: 13
             }, this)
           },
@@ -4788,7 +4820,7 @@ function KolDetailPage() {
           !1,
           {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 194,
+            lineNumber: 209,
             columnNumber: 11
           },
           this
@@ -4797,22 +4829,22 @@ function KolDetailPage() {
           /* @__PURE__ */ jsxDEV8("div", { style: { borderBottom: "1px solid var(--mantine-color-default-border)", marginBottom: 16 }, children: [
             /* @__PURE__ */ jsxDEV8(Link5, { to: `/kols/${kol.id}?tab=projects&limit=${limit}`, style: tabStyle("projects"), children: "\u5408\u4F5C\u6848\u4EF6" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 222,
+              lineNumber: 236,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV8(Link5, { to: `/kols/${kol.id}?tab=price&limit=${limit}`, style: tabStyle("price"), children: "\u50F9\u683C\u8DA8\u52E2" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 223,
+              lineNumber: 237,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV8(Link5, { to: `/kols/${kol.id}?tab=performance&limit=${limit}`, style: tabStyle("performance"), children: "\u6210\u6548\u7D71\u8A08" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 224,
+              lineNumber: 238,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 221,
+            lineNumber: 235,
             columnNumber: 13
           }, this),
           tab === "projects" && /* @__PURE__ */ jsxDEV8(Stack6, { gap: "md", children: [
@@ -4820,17 +4852,17 @@ function KolDetailPage() {
               /* @__PURE__ */ jsxDEV8("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }, children: [
                 /* @__PURE__ */ jsxDEV8("div", { style: { width: 20, height: 20, borderRadius: "50%", background: "var(--mantine-color-blue-filled)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 600, flexShrink: 0 }, children: idx + 1 }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 233,
+                  lineNumber: 247,
                   columnNumber: 23
                 }, this),
                 idx < visibleHistory.length - 1 && /* @__PURE__ */ jsxDEV8("div", { style: { width: 2, flex: 1, minHeight: 16, background: "var(--mantine-color-default-border)", marginTop: 4 } }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 237,
+                  lineNumber: 251,
                   columnNumber: 25
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 232,
+                lineNumber: 246,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, style: { flex: 1, marginBottom: 8 }, children: /* @__PURE__ */ jsxDEV8(Stack6, { gap: 8, children: [
@@ -4840,12 +4872,12 @@ function KolDetailPage() {
                       "\u{1F4CB} ",
                       /* @__PURE__ */ jsxDEV8(Link5, { to: item.orderId ? `/insertion-orders/${item.orderId}` : "#", children: item.projectTitle }, void 0, !1, {
                         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                        lineNumber: 245,
+                        lineNumber: 259,
                         columnNumber: 34
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 244,
+                      lineNumber: 258,
                       columnNumber: 29
                     }, this),
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", c: "dimmed", children: [
@@ -4854,18 +4886,18 @@ function KolDetailPage() {
                       item.industry
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 247,
+                      lineNumber: 261,
                       columnNumber: 29
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 243,
+                    lineNumber: 257,
                     columnNumber: 27
                   }, this),
                   /* @__PURE__ */ jsxDEV8(Stack6, { align: "flex-end", gap: 2, children: [
                     /* @__PURE__ */ jsxDEV8(Text6, { fw: 600, children: formatCurrency(item.price) }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 250,
+                      lineNumber: 264,
                       columnNumber: 29
                     }, this),
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: [
@@ -4873,17 +4905,17 @@ function KolDetailPage() {
                       item.rating.toFixed(1)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 251,
+                      lineNumber: 265,
                       columnNumber: 29
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 249,
+                    lineNumber: 263,
                     columnNumber: 27
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 242,
+                  lineNumber: 256,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: [
@@ -4891,7 +4923,7 @@ function KolDetailPage() {
                   item.services
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 254,
+                  lineNumber: 268,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Group5, { gap: "lg", children: [
@@ -4904,7 +4936,7 @@ function KolDetailPage() {
                     formatNumber(item.metrics?.postComments)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 256,
+                    lineNumber: 270,
                     columnNumber: 27
                   }, this),
                   /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: [
@@ -4914,35 +4946,35 @@ function KolDetailPage() {
                     formatNumber(item.metrics?.storyLikes)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 257,
+                    lineNumber: 271,
                     columnNumber: 27
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 255,
+                  lineNumber: 269,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Group5, { justify: "flex-end", children: /* @__PURE__ */ jsxDEV8(Link5, { to: item.orderId ? `/insertion-orders/${item.orderId}` : "#", children: "\u67E5\u770B\u8A73\u7D30\u6210\u6548 \u2192" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 260,
+                  lineNumber: 274,
                   columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 259,
+                  lineNumber: 273,
                   columnNumber: 25
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 241,
+                lineNumber: 255,
                 columnNumber: 23
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 240,
+                lineNumber: 254,
                 columnNumber: 21
               }, this)
             ] }, item.id, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 231,
+              lineNumber: 245,
               columnNumber: 19
             }, this)),
             hasMore && /* @__PURE__ */ jsxDEV8(Group5, { justify: "center", mt: "md", children: /* @__PURE__ */ jsxDEV8(
@@ -4963,137 +4995,221 @@ function KolDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 269,
+                lineNumber: 283,
                 columnNumber: 21
               },
               this
             ) }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 268,
+              lineNumber: 282,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 229,
+            lineNumber: 243,
             columnNumber: 15
           }, this),
           tab === "price" && /* @__PURE__ */ jsxDEV8(Stack6, { children: [
             /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", children: "X \u8EF8: \u65E5\u671F / Y \u8EF8: \u50F9\u683C (NT$)" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 290,
+              lineNumber: 304,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: /* @__PURE__ */ jsxDEV8(SparkLine, { points: kol.priceTrend ?? [] }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 292,
+              lineNumber: 306,
               columnNumber: 19
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 291,
+              lineNumber: 305,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 289,
+            lineNumber: 303,
             columnNumber: 15
           }, this),
           tab === "performance" && /* @__PURE__ */ jsxDEV8(Stack6, { children: [
             /* @__PURE__ */ jsxDEV8(Grid3, { children: [
-              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, style: { height: "100%" }, children: [
                 /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", size: "sm", children: "\u5E73\u5747\u89F8\u53CA" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 301,
-                  columnNumber: 73
+                  lineNumber: 317,
+                  columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: formatNumber(stats.averageReach) }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 301,
-                  columnNumber: 111
+                  lineNumber: 318,
+                  columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 301,
-                columnNumber: 56
+                lineNumber: 316,
+                columnNumber: 21
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 301,
+                lineNumber: 315,
                 columnNumber: 19
               }, this),
-              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, style: { height: "100%" }, children: [
+                /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", size: "sm", children: "\u66DD\u5149\u7387 (%)" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 323,
+                  columnNumber: 23
+                }, this),
+                /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: [
+                  (kol.exposureRate || 0).toFixed(1),
+                  "%"
+                ] }, void 0, !0, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 324,
+                  columnNumber: 23
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 322,
+                columnNumber: 21
+              }, this) }, void 0, !1, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 321,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, style: { height: "100%" }, children: [
                 /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", size: "sm", children: "\u5E73\u5747\u4E92\u52D5\u7387" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 302,
-                  columnNumber: 73
+                  lineNumber: 329,
+                  columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: [
                   (stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1),
                   "%"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 302,
-                  columnNumber: 112
+                  lineNumber: 330,
+                  columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 302,
-                columnNumber: 56
+                lineNumber: 328,
+                columnNumber: 21
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 302,
+                lineNumber: 327,
                 columnNumber: 19
               }, this),
-              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
-                /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", size: "sm", children: "\u5E73\u5747\u89C0\u770B" }, void 0, !1, {
-                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 303,
-                  columnNumber: 73
-                }, this),
-                /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: formatNumber(stats.averageViews) }, void 0, !1, {
-                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 303,
-                  columnNumber: 111
-                }, this)
-              ] }, void 0, !0, {
-                fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 303,
-                columnNumber: 56
-              }, this) }, void 0, !1, {
-                fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 303,
-                columnNumber: 19
-              }, this),
-              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, style: { height: "100%" }, children: [
                 /* @__PURE__ */ jsxDEV8(Text6, { c: "dimmed", size: "sm", children: "\u8F49\u63DB\u7387" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 304,
-                  columnNumber: 73
+                  lineNumber: 335,
+                  columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: [
                   (stats.conversionRate ?? 0).toFixed(1),
                   "%"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 304,
-                  columnNumber: 110
+                  lineNumber: 336,
+                  columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 304,
-                columnNumber: 56
+                lineNumber: 334,
+                columnNumber: 21
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 304,
+                lineNumber: 333,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 300,
+              lineNumber: 314,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV8(Grid3, { mt: "sm", children: [
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
+                /* @__PURE__ */ jsxDEV8(Text6, { fw: 600, mb: "sm", children: "\u53D7\u773E\u6027\u5225\u6BD4" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 344,
+                  columnNumber: 23
+                }, this),
+                /* @__PURE__ */ jsxDEV8(Group5, { justify: "space-between", children: [
+                  /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: [
+                    "\u7537 ",
+                    kol.audienceGender?.male || 0,
+                    "%"
+                  ] }, void 0, !0, {
+                    fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                    lineNumber: 346,
+                    columnNumber: 25
+                  }, this),
+                  /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: [
+                    "\u5973 ",
+                    kol.audienceGender?.female || 0,
+                    "%"
+                  ] }, void 0, !0, {
+                    fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                    lineNumber: 347,
+                    columnNumber: 25
+                  }, this)
+                ] }, void 0, !0, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 345,
+                  columnNumber: 23
+                }, this),
+                /* @__PURE__ */ jsxDEV8(Progress.Root, { size: "xl", mt: 4, children: [
+                  /* @__PURE__ */ jsxDEV8(Progress.Section, { value: kol.audienceGender?.male || 0, color: "blue" }, void 0, !1, {
+                    fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                    lineNumber: 350,
+                    columnNumber: 25
+                  }, this),
+                  /* @__PURE__ */ jsxDEV8(Progress.Section, { value: kol.audienceGender?.female || 0, color: "pink" }, void 0, !1, {
+                    fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                    lineNumber: 351,
+                    columnNumber: 25
+                  }, this)
+                ] }, void 0, !0, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 349,
+                  columnNumber: 23
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 343,
+                columnNumber: 21
+              }, this) }, void 0, !1, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 342,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, md: 6 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
+                /* @__PURE__ */ jsxDEV8(Text6, { fw: 600, mb: "sm", children: "\u53D7\u773E\u5E74\u9F61\u5C64" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 357,
+                  columnNumber: 23
+                }, this),
+                /* @__PURE__ */ jsxDEV8(Title6, { order: 3, children: kol.audienceAge || "\u672A\u77E5" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                  lineNumber: 358,
+                  columnNumber: 23
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 356,
+                columnNumber: 21
+              }, this) }, void 0, !1, {
+                fileName: "app/routes/_app.kols.$kolId._index.tsx",
+                lineNumber: 355,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.kols.$kolId._index.tsx",
+              lineNumber: 341,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, mt: "md", children: [
               /* @__PURE__ */ jsxDEV8(Text6, { fw: 600, mb: "sm", children: "\u5E73\u53F0\u6210\u6548\u6BD4\u8F03" }, void 0, !1, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 308,
+                lineNumber: 364,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV8(Stack6, { children: [
@@ -5101,112 +5217,112 @@ function KolDetailPage() {
                   /* @__PURE__ */ jsxDEV8(Group5, { justify: "space-between", children: [
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: "Instagram" }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 311,
+                      lineNumber: 367,
                       columnNumber: 54
                     }, this),
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: formatNumber(platformPerf.instagram) }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 311,
+                      lineNumber: 367,
                       columnNumber: 86
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 311,
+                    lineNumber: 367,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV8(Progress, { value: Math.min(100, (platformPerf.instagram ?? 0) / 1200) }, void 0, !1, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 312,
+                    lineNumber: 368,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 310,
+                  lineNumber: 366,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Box4, { children: [
                   /* @__PURE__ */ jsxDEV8(Group5, { justify: "space-between", children: [
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: "YouTube" }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 315,
+                      lineNumber: 371,
                       columnNumber: 54
                     }, this),
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: formatNumber(platformPerf.youtube) }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 315,
+                      lineNumber: 371,
                       columnNumber: 84
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 315,
+                    lineNumber: 371,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV8(Progress, { value: Math.min(100, (platformPerf.youtube ?? 0) / 1200), color: "orange" }, void 0, !1, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 316,
+                    lineNumber: 372,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 314,
+                  lineNumber: 370,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV8(Box4, { children: [
                   /* @__PURE__ */ jsxDEV8(Group5, { justify: "space-between", children: [
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: "TikTok" }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 319,
+                      lineNumber: 375,
                       columnNumber: 54
                     }, this),
                     /* @__PURE__ */ jsxDEV8(Text6, { size: "sm", children: formatNumber(platformPerf.tiktok) }, void 0, !1, {
                       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                      lineNumber: 319,
+                      lineNumber: 375,
                       columnNumber: 83
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 319,
+                    lineNumber: 375,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV8(Progress, { value: Math.min(100, (platformPerf.tiktok ?? 0) / 1200), color: "grape" }, void 0, !1, {
                     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                    lineNumber: 320,
+                    lineNumber: 376,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                  lineNumber: 318,
+                  lineNumber: 374,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.$kolId._index.tsx",
-                lineNumber: 309,
+                lineNumber: 365,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.$kolId._index.tsx",
-              lineNumber: 307,
+              lineNumber: 363,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 299,
+            lineNumber: 313,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId._index.tsx",
-          lineNumber: 220,
+          lineNumber: 234,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 149,
+        lineNumber: 150,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV8(Grid3.Col, { span: { base: 12, lg: 3 }, children: /* @__PURE__ */ jsxDEV8(Card5, { withBorder: !0, children: [
         /* @__PURE__ */ jsxDEV8(Title6, { order: 4, mb: "sm", children: "\u5FEB\u901F\u7D71\u8A08" }, void 0, !1, {
           fileName: "app/routes/_app.kols.$kolId._index.tsx",
-          lineNumber: 331,
+          lineNumber: 387,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV8(Stack6, { gap: 8, children: [
@@ -5216,7 +5332,7 @@ function KolDetailPage() {
             " \u6B21"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 333,
+            lineNumber: 389,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -5224,7 +5340,7 @@ function KolDetailPage() {
             formatCurrency(avgPrice)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 334,
+            lineNumber: 390,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -5232,7 +5348,7 @@ function KolDetailPage() {
             (kol.industryDistribution ?? []).join(" ") || (kol.industry ?? "-")
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 335,
+            lineNumber: 391,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -5240,7 +5356,7 @@ function KolDetailPage() {
             formatNumber(stats.averageReach)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 336,
+            lineNumber: 392,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV8(Text6, { children: [
@@ -5249,31 +5365,40 @@ function KolDetailPage() {
             "%"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId._index.tsx",
-            lineNumber: 337,
+            lineNumber: 393,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV8(Text6, { children: [
+            "\u{1F4E2} \u66DD\u5149\u7387: ",
+            (kol.exposureRate || 0).toFixed(1),
+            "%"
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.kols.$kolId._index.tsx",
+            lineNumber: 394,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId._index.tsx",
-          lineNumber: 332,
+          lineNumber: 388,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 330,
+        lineNumber: 386,
         columnNumber: 11
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId._index.tsx",
-        lineNumber: 329,
+        lineNumber: 385,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.$kolId._index.tsx",
-      lineNumber: 148,
+      lineNumber: 149,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.kols.$kolId._index.tsx",
-    lineNumber: 141,
+    lineNumber: 142,
     columnNumber: 5
   }, this);
 }
@@ -5293,106 +5418,143 @@ import {
   Card as Card6,
   Divider as Divider4,
   Group as Group6,
+  Radio,
   SimpleGrid as SimpleGrid5,
   Stack as Stack7,
   Text as Text7,
-  TextInput as TextInput4,
+  TextInput as TextInput5,
   Textarea as Textarea4,
   Title as Title7
 } from "@mantine/core";
 import { json as json6, redirect as redirect2 } from "@remix-run/node";
 import { Form as Form3, Link as Link6, useActionData as useActionData2, useLoaderData as useLoaderData6, useNavigation as useNavigation3 } from "@remix-run/react";
+import { useState as useState5 } from "react";
 import { jsxDEV as jsxDEV9 } from "react/jsx-dev-runtime";
 async function loader6({ params }) {
   let kolId = params.kolId;
   if (!kolId)
     return json6({ error: "Missing KOL id" }, { status: 400 });
   let kol = await getKol(kolId);
-  return kol ? json6({ kol }) : json6({ error: "KOL not found" }, { status: 404 });
+  if (!kol)
+    throw new Response("KOL not found", { status: 404 });
+  return json6({ kol });
 }
 async function action4({ request, params }) {
   let kolId = params.kolId;
   if (!kolId)
     return json6({ error: "Missing KOL id" }, { status: 400 });
-  let formData = await request.formData(), displayName = String(formData.get("displayName") ?? "").trim(), instagramHandle = String(formData.get("instagramHandle") ?? "").trim(), industry = String(formData.get("industry") ?? "").trim(), tagsRaw = String(formData.get("tagsInput") ?? ""), followers = Number(formData.get("followers") ?? 0), rating = Number(formData.get("rating") ?? 0), collaborations = Number(formData.get("collaborations") ?? 0), avatarUrl = String(formData.get("avatarUrl") ?? "").trim(), phone = String(formData.get("contactPhone") ?? "").trim(), email = String(formData.get("email") ?? "").trim(), notes = String(formData.get("notes") ?? "").trim();
+  let formData = await request.formData(), displayName = String(formData.get("displayName") ?? "").trim(), instagramHandle = String(formData.get("instagramHandle") ?? "").trim(), industry = String(formData.get("industry") ?? "").trim(), tagsRaw = String(formData.get("tagsInput") ?? ""), history = (await getKol(kolId))?.collaborationHistory ?? [], rating = history.length > 0 ? history.reduce((s, r) => s + r.rating, 0) / history.length : 0, collaborations = history.length, avatarUrl = String(formData.get("avatarUrl") ?? "").trim(), phone = String(formData.get("contactPhone") ?? "").trim(), email = String(formData.get("email") ?? "").trim(), notes = String(formData.get("notes") ?? "").trim(), paymentMethod = formData.get("paymentMethod"), engagementRate = Number(formData.get("engagementRate") ?? 0), exposureRate = Number(formData.get("exposureRate") ?? 0), audienceMale = Number(formData.get("audienceMale") ?? 0), audienceFemale = Number(formData.get("audienceFemale") ?? 100 - audienceMale), audienceAge = String(formData.get("audienceAge") ?? "").trim(), introduction = String(formData.get("introduction") ?? "").trim(), socialsRaw = String(formData.get("socialsJson") ?? "[]");
   if (!displayName)
     return json6({ error: "KOL \u540D\u7A31\u70BA\u5FC5\u586B" }, { status: 400 });
-  let tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  let tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [], socials = [];
+  try {
+    socials = JSON.parse(socialsRaw);
+  } catch {
+    socials = [];
+  }
+  let socialMap = socials.reduce((acc, item) => {
+    let key = String(item.platform || "").toLowerCase();
+    return key && (acc[key] = Number(item.followers ?? 0)), acc;
+  }, {});
   return await updateKol(kolId, {
     displayName,
     instagramHandle: instagramHandle || void 0,
     industry: industry || void 0,
     tags,
     categories: tags.length > 0 ? tags : void 0,
-    followers: Number.isFinite(followers) ? followers : 0,
+    followers: socials[0]?.followers ?? 0,
     rating: Number.isFinite(rating) ? rating : 0,
     collaborations: Number.isFinite(collaborations) ? collaborations : 0,
     avatarUrl: avatarUrl || void 0,
     contact: { phone, email },
-    notes: notes || void 0
+    notes: notes || void 0,
+    paymentMethod: paymentMethod || void 0,
+    engagementRate: Number.isFinite(engagementRate) ? engagementRate : void 0,
+    exposureRate: Number.isFinite(exposureRate) ? exposureRate : void 0,
+    audienceGender: { male: audienceMale, female: audienceFemale },
+    audienceAge: audienceAge || void 0,
+    introduction: introduction || void 0,
+    social: {
+      instagram: socialMap.instagram ?? 0,
+      youtube: socialMap.youtube ?? 0,
+      tiktok: socialMap.tiktok ?? 0,
+      facebook: socialMap.facebook ?? 0
+    }
   }), redirect2(`/kols/${kolId}`);
 }
 function KolEditPage() {
-  let { kol } = useLoaderData6(), actionData = useActionData2(), submitting = useNavigation3().state === "submitting";
+  let kol = useLoaderData6().kol, actionData = useActionData2(), submitting = useNavigation3().state === "submitting", initialSocials = [
+    { id: "s-ig", platform: "Instagram", url: `https://instagram.com/${kol.instagramHandle || ""}`, followers: kol.social?.instagram ?? kol.followers ?? 0 },
+    { id: "s-yt", platform: "YouTube", url: "", followers: kol.social?.youtube ?? 0 },
+    { id: "s-tt", platform: "TikTok", url: "", followers: kol.social?.tiktok ?? 0 }
+  ].filter((s) => s.followers > 0 || s.platform === "Instagram" && kol.instagramHandle);
+  initialSocials.length === 0 && initialSocials.push({ id: "s0", platform: "Instagram", url: "", followers: 0 });
+  let [socials, setSocials] = useState5(initialSocials), addSocial = () => {
+    setSocials([...socials, { id: "s" + Date.now(), platform: "Instagram", url: "", followers: 0 }]);
+  }, removeSocial = (id) => {
+    socials.length <= 1 || setSocials(socials.filter((s) => s.id !== id));
+  }, updateSocial = (id, key, value) => {
+    setSocials(socials.map((s) => s.id === id ? { ...s, [key]: value } : s));
+  };
   return /* @__PURE__ */ jsxDEV9(Stack7, { gap: "md", children: [
     /* @__PURE__ */ jsxDEV9(Group6, { gap: 8, children: [
       /* @__PURE__ */ jsxDEV9(Link6, { to: "/kols", children: "KOL \u7BA1\u7406" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 79,
+        lineNumber: 139,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV9(Text7, { c: "dimmed", children: ">" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 80,
+        lineNumber: 140,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV9(Link6, { to: `/kols/${kol.id}`, children: kol.displayName }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 81,
+        lineNumber: 141,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV9(Text7, { c: "dimmed", children: ">" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 82,
+        lineNumber: 142,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV9(Text7, { fw: 600, children: "\u7DE8\u8F2F KOL" }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 83,
+        lineNumber: 143,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-      lineNumber: 78,
+      lineNumber: 138,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV9(Card6, { withBorder: !0, p: "lg", maw: 840, mx: "auto", w: "100%", children: /* @__PURE__ */ jsxDEV9(Form3, { method: "post", children: /* @__PURE__ */ jsxDEV9(Stack7, { gap: "xl", children: [
       /* @__PURE__ */ jsxDEV9(Box5, { children: [
         /* @__PURE__ */ jsxDEV9(Title7, { order: 3, mb: "md", children: "\u57FA\u672C\u8CC7\u6599" }, void 0, !1, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 90,
+          lineNumber: 150,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV9(Group6, { align: "flex-start", gap: "xl", wrap: "wrap", children: [
           /* @__PURE__ */ jsxDEV9(Stack7, { align: "center", gap: "xs", children: [
             /* @__PURE__ */ jsxDEV9(Avatar4, { src: kol.avatarUrl, radius: 999, size: 96 }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 93,
+              lineNumber: 153,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV9(Text7, { size: "xs", c: "dimmed", children: "\u982D\u50CF\u9810\u89BD" }, void 0, !1, {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 94,
+              lineNumber: 154,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 92,
+            lineNumber: 152,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV9(Stack7, { gap: "md", style: { flex: 1, minWidth: 260 }, children: [
             /* @__PURE__ */ jsxDEV9(
-              TextInput4,
+              TextInput5,
               {
                 label: "KOL \u540D\u7A31 *",
                 name: "displayName",
@@ -5403,13 +5565,13 @@ function KolEditPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-                lineNumber: 97,
+                lineNumber: 157,
                 columnNumber: 19
               },
               this
             ),
             /* @__PURE__ */ jsxDEV9(
-              TextInput4,
+              TextInput5,
               {
                 label: "Instagram \u5E33\u865F",
                 name: "instagramHandle",
@@ -5420,13 +5582,13 @@ function KolEditPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-                lineNumber: 103,
+                lineNumber: 163,
                 columnNumber: 19
               },
               this
             ),
             /* @__PURE__ */ jsxDEV9(
-              TextInput4,
+              TextInput5,
               {
                 label: "\u7522\u696D",
                 name: "industry",
@@ -5437,13 +5599,13 @@ function KolEditPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-                lineNumber: 109,
+                lineNumber: 169,
                 columnNumber: 19
               },
               this
             ),
             /* @__PURE__ */ jsxDEV9(
-              TextInput4,
+              TextInput5,
               {
                 label: "\u6A19\u7C64\uFF08\u9017\u865F\u5206\u9694\uFF09",
                 name: "tagsInput",
@@ -5454,118 +5616,307 @@ function KolEditPage() {
               !1,
               {
                 fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-                lineNumber: 115,
+                lineNumber: 175,
                 columnNumber: 19
               },
               this
-            )
+            ),
+            /* @__PURE__ */ jsxDEV9(Box5, { children: [
+              /* @__PURE__ */ jsxDEV9(Text7, { size: "sm", fw: 500, mb: 6, children: "\u8ACB\u6B3E\u65B9\u5F0F" }, void 0, !1, {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 182,
+                columnNumber: 21
+              }, this),
+              /* @__PURE__ */ jsxDEV9(Radio.Group, { name: "paymentMethod", defaultValue: kol.paymentMethod, children: /* @__PURE__ */ jsxDEV9(Group6, { mt: "xs", children: [
+                /* @__PURE__ */ jsxDEV9(Radio, { value: "\u52DE\u5831", label: "\u52DE\u5831" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                  lineNumber: 185,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV9(Radio, { value: "\u767C\u7968", label: "\u767C\u7968" }, void 0, !1, {
+                  fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                  lineNumber: 186,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 184,
+                columnNumber: 23
+              }, this) }, void 0, !1, {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 183,
+                columnNumber: 21
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 181,
+              columnNumber: 19
+            }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 96,
+            lineNumber: 156,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 91,
+          lineNumber: 151,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 89,
+        lineNumber: 149,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV9(Divider4, {}, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 125,
+        lineNumber: 194,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV9(Box5, { children: [
-        /* @__PURE__ */ jsxDEV9(Title7, { order: 3, mb: "md", children: "\u793E\u7FA4\u8207\u6210\u6548" }, void 0, !1, {
+        /* @__PURE__ */ jsxDEV9(Title7, { order: 3, mb: "md", children: "\u793E\u7FA4\u5E73\u53F0" }, void 0, !1, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 128,
+          lineNumber: 197,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV9(Stack7, { gap: "sm", children: [
+          socials.map((item, idx) => /* @__PURE__ */ jsxDEV9(Group6, { align: "flex-end", children: [
+            /* @__PURE__ */ jsxDEV9(
+              TextInput5,
+              {
+                label: "\u5E73\u53F0",
+                value: item.platform,
+                onChange: (e) => updateSocial(item.id, "platform", e.target.value),
+                style: { flex: 1 }
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 201,
+                columnNumber: 21
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV9(
+              TextInput5,
+              {
+                label: "URL / \u5E33\u865F",
+                value: item.url,
+                onChange: (e) => updateSocial(item.id, "url", e.target.value),
+                style: { flex: 2 }
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 207,
+                columnNumber: 21
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV9(
+              TextInput5,
+              {
+                label: "\u7C89\u7D72\u6578",
+                type: "number",
+                value: item.followers || 0,
+                onChange: (e) => updateSocial(item.id, "followers", Number(e.target.value)),
+                style: { flex: 1 }
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+                lineNumber: 213,
+                columnNumber: 21
+              },
+              this
+            ),
+            idx !== 0 && /* @__PURE__ */ jsxDEV9(Button7, { color: "red", variant: "light", onClick: () => removeSocial(item.id), children: "\xD7" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 221,
+              columnNumber: 23
+            }, this)
+          ] }, item.id, !0, {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 200,
+            columnNumber: 19
+          }, this)),
+          /* @__PURE__ */ jsxDEV9(Button7, { variant: "default", onClick: addSocial, size: "xs", style: { width: "fit-content" }, children: "+ \u65B0\u589E\u793E\u7FA4\u5E73\u53F0" }, void 0, !1, {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 225,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV9("input", { type: "hidden", name: "socialsJson", value: JSON.stringify(socials) }, void 0, !1, {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 228,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, !0, {
+          fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+          lineNumber: 198,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, !0, {
+        fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+        lineNumber: 196,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV9(Divider4, {}, void 0, !1, {
+        fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+        lineNumber: 232,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV9(Box5, { children: [
+        /* @__PURE__ */ jsxDEV9(Title7, { order: 3, mb: "md", children: "\u6210\u6548\u6307\u6A19" }, void 0, !1, {
+          fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+          lineNumber: 235,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV9(SimpleGrid5, { cols: { base: 1, sm: 3 }, spacing: "md", children: [
           /* @__PURE__ */ jsxDEV9(
-            TextInput4,
+            TextInput5,
             {
-              label: "\u7C89\u7D72\u6578\uFF08IG\uFF09",
-              name: "followers",
+              label: "\u4E92\u52D5\u7387 (%)",
+              name: "engagementRate",
               type: "number",
-              min: 0,
-              defaultValue: kol.social?.instagram ?? kol.followers ?? 0
+              step: "0.01",
+              defaultValue: kol.engagementRate ?? 0
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 130,
+              lineNumber: 237,
               columnNumber: 17
             },
             this
           ),
           /* @__PURE__ */ jsxDEV9(
-            TextInput4,
+            TextInput5,
             {
-              label: "\u8A55\u5206",
-              name: "rating",
+              label: "\u66DD\u5149\u7387 (%)",
+              name: "exposureRate",
               type: "number",
-              min: 0,
-              max: 5,
-              step: 0.1,
-              defaultValue: kol.rating ?? 0
+              step: "0.01",
+              defaultValue: kol.exposureRate ?? 0
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 137,
+              lineNumber: 244,
               columnNumber: 17
             },
             this
           ),
           /* @__PURE__ */ jsxDEV9(
-            TextInput4,
+            TextInput5,
             {
-              label: "\u5408\u4F5C\u6B21\u6578",
-              name: "collaborations",
+              label: "\u53D7\u773E\u6027\u5225\u6BD4 (\u7537 %)",
+              name: "audienceMale",
               type: "number",
-              min: 0,
-              defaultValue: kol.collaborations ?? 0
+              defaultValue: kol.audienceGender?.male ?? 0
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 146,
+              lineNumber: 251,
               columnNumber: 17
             },
             this
-          )
+          ),
+          /* @__PURE__ */ jsxDEV9(
+            TextInput5,
+            {
+              label: "\u53D7\u773E\u6027\u5225\u6BD4 (\u5973 %)",
+              name: "audienceFemale",
+              type: "number",
+              defaultValue: kol.audienceGender?.female ?? 0
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 257,
+              columnNumber: 17
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV9(
+            TextInput5,
+            {
+              label: "\u53D7\u773E\u5167\u5BB9\u5E74\u9F61\u5C64",
+              name: "audienceAge",
+              defaultValue: kol.audienceAge ?? "",
+              placeholder: "\u4F8B\u5982\uFF1A18-24"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 263,
+              columnNumber: 17
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV9(Box5, { children: [
+            /* @__PURE__ */ jsxDEV9(Text7, { size: "sm", fw: 500, children: "\u8A55\u5206 (\u81EA\u52D5\u8A08\u7B97)" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 270,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV9(Text7, { mt: 4, children: kol.rating?.toFixed(1) ?? "0.0" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 271,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 269,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV9(Box5, { children: [
+            /* @__PURE__ */ jsxDEV9(Text7, { size: "sm", fw: 500, children: "\u5408\u4F5C\u6B21\u6578 (\u81EA\u52D5\u8A08\u7B97)" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 274,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV9(Text7, { mt: 4, children: kol.collaborations ?? 0 }, void 0, !1, {
+              fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+              lineNumber: 275,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 273,
+            columnNumber: 17
+          }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 129,
+          lineNumber: 236,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 127,
+        lineNumber: 234,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV9(Divider4, {}, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 156,
+        lineNumber: 280,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV9(Box5, { children: [
         /* @__PURE__ */ jsxDEV9(Title7, { order: 3, mb: "md", children: "\u806F\u7D61\u8207\u5099\u8A3B" }, void 0, !1, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 159,
+          lineNumber: 283,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV9(SimpleGrid5, { cols: { base: 1, sm: 2 }, spacing: "md", children: [
           /* @__PURE__ */ jsxDEV9(
-            TextInput4,
+            TextInput5,
             {
               label: "\u806F\u7D61\u96FB\u8A71",
               name: "contactPhone",
@@ -5575,13 +5926,13 @@ function KolEditPage() {
             !1,
             {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 161,
+              lineNumber: 285,
               columnNumber: 17
             },
             this
           ),
           /* @__PURE__ */ jsxDEV9(
-            TextInput4,
+            TextInput5,
             {
               label: "Email",
               name: "email",
@@ -5592,18 +5943,18 @@ function KolEditPage() {
             !1,
             {
               fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-              lineNumber: 166,
+              lineNumber: 290,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 160,
+          lineNumber: 284,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV9(
-          TextInput4,
+          TextInput5,
           {
             mt: "md",
             label: "\u982D\u50CF\u7DB2\u5740",
@@ -5615,7 +5966,26 @@ function KolEditPage() {
           !1,
           {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 173,
+            lineNumber: 297,
+            columnNumber: 15
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV9(
+          Textarea4,
+          {
+            mt: "md",
+            label: "\u4EBA\u9078\u4ECB\u7D39 (\u7528\u65BC\u63D0\u6848\u64B0\u5BEB) *",
+            name: "introduction",
+            minRows: 5,
+            defaultValue: kol.introduction ?? "",
+            required: !0
+          },
+          void 0,
+          !1,
+          {
+            fileName: "app/routes/_app.kols.$kolId.edit.tsx",
+            lineNumber: 304,
             columnNumber: 15
           },
           this
@@ -5633,64 +6003,64 @@ function KolEditPage() {
           !1,
           {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 180,
+            lineNumber: 312,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 158,
+        lineNumber: 282,
         columnNumber: 13
       }, this),
       actionData?.error && /* @__PURE__ */ jsxDEV9(Alert2, { color: "red", title: "\u5132\u5B58\u5931\u6557", children: actionData.error }, void 0, !1, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 190,
+        lineNumber: 322,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ jsxDEV9(Group6, { justify: "space-between", mt: "sm", children: [
         /* @__PURE__ */ jsxDEV9(Button7, { component: Link6, to: "/kols", variant: "default", children: "\u53D6\u6D88" }, void 0, !1, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 196,
+          lineNumber: 328,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV9(Group6, { children: [
           /* @__PURE__ */ jsxDEV9(Button7, { component: Link6, to: `/kols/${kol.id}`, variant: "light", children: "\u56DE\u8A73\u7D30\u9801" }, void 0, !1, {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 200,
+            lineNumber: 332,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV9(Button7, { type: "submit", loading: submitting, children: "\u5132\u5B58\u8B8A\u66F4" }, void 0, !1, {
             fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-            lineNumber: 203,
+            lineNumber: 335,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-          lineNumber: 199,
+          lineNumber: 331,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-        lineNumber: 195,
+        lineNumber: 327,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-      lineNumber: 88,
+      lineNumber: 148,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-      lineNumber: 87,
+      lineNumber: 147,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-      lineNumber: 86,
+      lineNumber: 146,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.kols.$kolId.edit.tsx",
-    lineNumber: 77,
+    lineNumber: 137,
     columnNumber: 5
   }, this);
 }
@@ -5702,11 +6072,11 @@ __export(app_proposals_index_exports, {
   default: () => ProposalListPage,
   loader: () => loader7
 });
-import { Button as Button8, Card as Card7, Group as Group7, Stack as Stack8, Table as Table2, Title as Title8, ActionIcon as ActionIcon2, Modal as Modal4, TextInput as TextInput5, NumberInput as NumberInput3, Select as Select3 } from "@mantine/core";
+import { Button as Button8, Card as Card7, Group as Group7, Stack as Stack8, Table as Table2, Title as Title8, ActionIcon as ActionIcon2, Modal as Modal4, TextInput as TextInput6, NumberInput as NumberInput3, Select as Select3 } from "@mantine/core";
 import { useDisclosure as useDisclosure3 } from "@mantine/hooks";
 import { json as json7 } from "@remix-run/node";
 import { Link as Link7, useLoaderData as useLoaderData7, Form as Form4 } from "@remix-run/react";
-import { useState as useState5 } from "react";
+import { useState as useState6 } from "react";
 import { IconEye, IconPencil, IconTrash as IconTrash2 } from "@tabler/icons-react";
 import { jsxDEV as jsxDEV10 } from "react/jsx-dev-runtime";
 async function action5({ request }) {
@@ -5726,7 +6096,7 @@ async function loader7(_) {
   return json7({ proposals });
 }
 function ProposalListPage() {
-  let { proposals } = useLoaderData7(), [editingProposal, setEditingProposal] = useState5(null), [opened, { open, close }] = useDisclosure3(!1), handleEdit = (p) => {
+  let { proposals } = useLoaderData7(), [editingProposal, setEditingProposal] = useState6(null), [opened, { open, close }] = useDisclosure3(!1), handleEdit = (p) => {
     setEditingProposal(p), open();
   };
   return /* @__PURE__ */ jsxDEV10(Stack8, { children: [
@@ -5945,7 +6315,7 @@ function ProposalListPage() {
       }, this),
       /* @__PURE__ */ jsxDEV10(Stack8, { children: [
         /* @__PURE__ */ jsxDEV10(
-          TextInput5,
+          TextInput6,
           {
             name: "title",
             label: "\u63D0\u6848\u6A19\u984C",
@@ -5962,7 +6332,7 @@ function ProposalListPage() {
           this
         ),
         /* @__PURE__ */ jsxDEV10(
-          TextInput5,
+          TextInput6,
           {
             name: "clientName",
             label: "\u5BA2\u6236\u540D\u7A31",
@@ -5996,7 +6366,7 @@ function ProposalListPage() {
           this
         ),
         /* @__PURE__ */ jsxDEV10(
-          TextInput5,
+          TextInput6,
           {
             name: "dueDate",
             label: "\u622A\u6B62\u65E5",
@@ -6085,7 +6455,7 @@ import {
   Group as Group8,
   Stack as Stack9,
   Text as Text9,
-  TextInput as TextInput6,
+  TextInput as TextInput7,
   Title as Title9,
   Modal as Modal5,
   Checkbox as Checkbox2,
@@ -6117,7 +6487,7 @@ var useNotificationStore = create((set) => ({
 }));
 
 // app/routes/_app.reports.generate.tsx
-import { useState as useState6 } from "react";
+import { useState as useState7 } from "react";
 import {
   IconFileTypePpt,
   IconTrash as IconTrash3,
@@ -6147,7 +6517,7 @@ async function loader8({ request }) {
   return json8({ orders: filtered, allClients, clientFilter, timeFilter, statusFilter });
 }
 function ReportManagementPage() {
-  let { orders, allClients, clientFilter, timeFilter, statusFilter } = useLoaderData8(), [selectedTemplate, setSelectedTemplate] = useState6("standard"), { showToast, showBanner } = useNotificationStore(), [uploadFile, setUploadFile] = useState6(null), [uploadProgress, setUploadProgress] = useState6(null), [uploadSuccess, setUploadSuccess] = useState6(!1), [isOfficial, setIsOfficial] = useState6(!0), [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure4(!1), [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure4(!1), [uploadModalOpen, { open: openUploadModal, close: closeUploadModal }] = useDisclosure4(!1), [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure4(!1), [activeOrder, setActiveOrder] = useState6(null), [selectedKolIds, setSelectedKolIds] = useState6([]), [progressPercentage, setProgressPercentage] = useState6(0), [currentStepIndex, setCurrentStepIndex] = useState6(0), handleDownload = () => alert("\u5831\u544A\u4E0B\u8F09\u4E2D..."), handleDelete = () => {
+  let { orders, allClients, clientFilter, timeFilter, statusFilter } = useLoaderData8(), [selectedTemplate, setSelectedTemplate] = useState7("standard"), { showToast, showBanner } = useNotificationStore(), [uploadFile, setUploadFile] = useState7(null), [uploadProgress, setUploadProgress] = useState7(null), [uploadSuccess, setUploadSuccess] = useState7(!1), [isOfficial, setIsOfficial] = useState7(!0), [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure4(!1), [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure4(!1), [uploadModalOpen, { open: openUploadModal, close: closeUploadModal }] = useDisclosure4(!1), [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure4(!1), [activeOrder, setActiveOrder] = useState7(null), [selectedKolIds, setSelectedKolIds] = useState7([]), [progressPercentage, setProgressPercentage] = useState7(0), [currentStepIndex, setCurrentStepIndex] = useState7(0), handleDownload = () => alert("\u5831\u544A\u4E0B\u8F09\u4E2D..."), handleDelete = () => {
     confirm("\u78BA\u5B9A\u8981\u522A\u9664\u6B64\u7248\u672C\u7684\u5831\u544A\u55CE\uFF1F") && alert("\u5831\u544A\u5DF2\u522A\u9664 (\u6A21\u64EC)");
   }, handleOpenUploadModal = (order) => {
     setActiveOrder(order), setUploadFile(null), setUploadProgress(null), setUploadSuccess(!1), setIsOfficial(!0), openUploadModal();
@@ -7145,7 +7515,7 @@ function ReportManagementPage() {
             }, this),
             /* @__PURE__ */ jsxDEV11(Stack9, { gap: "lg", children: [
               /* @__PURE__ */ jsxDEV11(
-                TextInput6,
+                TextInput7,
                 {
                   label: "\u5831\u544A\u6A19\u984C",
                   defaultValue: `${activeOrder.title || activeOrder.projectName} \u7D50\u6848\u5831\u544A`,
@@ -7908,7 +8278,7 @@ __export(app_proposals_new_exports, {
   action: () => action6,
   default: () => ProposalCreatePage
 });
-import { Button as Button10, Card as Card9, Group as Group9, Stack as Stack10, TextInput as TextInput7, Title as Title10 } from "@mantine/core";
+import { Button as Button10, Card as Card9, Group as Group9, Stack as Stack10, TextInput as TextInput8, Title as Title10 } from "@mantine/core";
 import { json as json11, redirect as redirect3 } from "@remix-run/node";
 import { Form as Form5, Link as Link9, useActionData as useActionData3 } from "@remix-run/react";
 import { jsxDEV as jsxDEV12 } from "react/jsx-dev-runtime";
@@ -7949,22 +8319,22 @@ function ProposalCreatePage() {
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, children: /* @__PURE__ */ jsxDEV12(Form5, { method: "post", children: /* @__PURE__ */ jsxDEV12(Stack10, { children: [
-      /* @__PURE__ */ jsxDEV12(TextInput7, { name: "title", label: "\u63D0\u6848\u6A19\u984C", required: !0 }, void 0, !1, {
+      /* @__PURE__ */ jsxDEV12(TextInput8, { name: "title", label: "\u63D0\u6848\u6A19\u984C", required: !0 }, void 0, !1, {
         fileName: "app/routes/_app.proposals.new.tsx",
         lineNumber: 47,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ jsxDEV12(TextInput7, { name: "clientName", label: "\u5BA2\u6236\u540D\u7A31", required: !0 }, void 0, !1, {
+      /* @__PURE__ */ jsxDEV12(TextInput8, { name: "clientName", label: "\u5BA2\u6236\u540D\u7A31", required: !0 }, void 0, !1, {
         fileName: "app/routes/_app.proposals.new.tsx",
         lineNumber: 48,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ jsxDEV12(TextInput7, { name: "budget", label: "\u9810\u7B97", defaultValue: "0" }, void 0, !1, {
+      /* @__PURE__ */ jsxDEV12(TextInput8, { name: "budget", label: "\u9810\u7B97", defaultValue: "0" }, void 0, !1, {
         fileName: "app/routes/_app.proposals.new.tsx",
         lineNumber: 49,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ jsxDEV12(TextInput7, { name: "dueDate", label: "\u622A\u6B62\u65E5", placeholder: "2026-03-20" }, void 0, !1, {
+      /* @__PURE__ */ jsxDEV12(TextInput8, { name: "dueDate", label: "\u622A\u6B62\u65E5", placeholder: "2026-03-20" }, void 0, !1, {
         fileName: "app/routes/_app.proposals.new.tsx",
         lineNumber: 50,
         columnNumber: 13
@@ -8989,14 +9359,10 @@ document.addEventListener('submit', function(e) {
           lineNumber: 640,
           columnNumber: 19
         }, this),
-        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: /* @__PURE__ */ jsxDEV13("a", { href: sortUrl("name"), style: { textDecoration: "none", color: "inherit" }, children: [
+        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: [
           "\u540D\u7A31",
           sortLabel("name")
         ] }, void 0, !0, {
-          fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 641,
-          columnNumber: 29
-        }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
           lineNumber: 641,
           columnNumber: 19
@@ -9006,33 +9372,30 @@ document.addEventListener('submit', function(e) {
           lineNumber: 642,
           columnNumber: 19
         }, this),
-        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: /* @__PURE__ */ jsxDEV13("a", { href: sortUrl("followers"), style: { textDecoration: "none", color: "inherit" }, children: [
+        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: [
           "\u7C89\u7D72\u6578",
           sortLabel("followers")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
           lineNumber: 643,
-          columnNumber: 29
-        }, this) }, void 0, !1, {
-          fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 643,
           columnNumber: 19
         }, this),
-        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: "\u6A19\u7C64" }, void 0, !1, {
+        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: "\u4E92\u52D5/\u66DD\u5149" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
           lineNumber: 644,
           columnNumber: 19
         }, this),
-        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: /* @__PURE__ */ jsxDEV13("a", { href: sortUrl("rating"), style: { textDecoration: "none", color: "inherit" }, children: [
+        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: "\u6A19\u7C64" }, void 0, !1, {
+          fileName: "app/routes/_app.kols._index.tsx",
+          lineNumber: 645,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV13(Table3.Th, { children: [
           "\u8A55\u5206",
           sortLabel("rating")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 645,
-          columnNumber: 29
-        }, this) }, void 0, !1, {
-          fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 645,
+          lineNumber: 646,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Th, { children: /* @__PURE__ */ jsxDEV13("a", { href: sortUrl("collaborations"), style: { textDecoration: "none", color: "inherit" }, children: [
@@ -9040,16 +9403,16 @@ document.addEventListener('submit', function(e) {
           sortLabel("collaborations")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 646,
+          lineNumber: 647,
           columnNumber: 29
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 646,
+          lineNumber: 647,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Th, { children: "\u64CD\u4F5C" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 647,
+          lineNumber: 648,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
@@ -9064,20 +9427,20 @@ document.addEventListener('submit', function(e) {
       /* @__PURE__ */ jsxDEV13(Table3.Tbody, { children: pageRows.map((kol) => /* @__PURE__ */ jsxDEV13(Table3.Tr, { children: [
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: /* @__PURE__ */ jsxDEV13(Avatar6, { src: kol.avatarUrl, size: 32, radius: "xl" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 653,
+          lineNumber: 654,
           columnNumber: 31
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 653,
+          lineNumber: 654,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: /* @__PURE__ */ jsxDEV13(Link10, { to: `/kols/${kol.id}`, children: kol.displayName }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 654,
+          lineNumber: 655,
           columnNumber: 31
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 654,
+          lineNumber: 655,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: [
@@ -9085,25 +9448,41 @@ document.addEventListener('submit', function(e) {
           kol.instagramHandle ?? "-"
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 655,
+          lineNumber: 656,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString() }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 656,
+          lineNumber: 657,
+          columnNumber: 21
+        }, this),
+        /* @__PURE__ */ jsxDEV13(Table3.Td, { children: [
+          /* @__PURE__ */ jsxDEV13(Text10, { size: "xs", children: kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-" }, void 0, !1, {
+            fileName: "app/routes/_app.kols._index.tsx",
+            lineNumber: 659,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ jsxDEV13(Text10, { size: "xs", c: "dimmed", children: kol.exposureRate ? `${kol.exposureRate.toFixed(1)}%` : "-" }, void 0, !1, {
+            fileName: "app/routes/_app.kols._index.tsx",
+            lineNumber: 660,
+            columnNumber: 23
+          }, this)
+        ] }, void 0, !0, {
+          fileName: "app/routes/_app.kols._index.tsx",
+          lineNumber: 658,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: /* @__PURE__ */ jsxDEV13(Group10, { gap: 4, children: getPrimaryTags(kol).slice(0, 2).map((tag) => /* @__PURE__ */ jsxDEV13(Badge6, { size: "sm", variant: "light", children: tag }, tag, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 660,
+          lineNumber: 665,
           columnNumber: 27
         }, this)) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 658,
+          lineNumber: 663,
           columnNumber: 23
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 657,
+          lineNumber: 662,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: [
@@ -9111,29 +9490,29 @@ document.addEventListener('submit', function(e) {
           (kol.rating ?? 0).toFixed(1)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 664,
+          lineNumber: 669,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: kol.collaborations ?? 0 }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 665,
+          lineNumber: 670,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV13(Table3.Td, { children: /* @__PURE__ */ jsxDEV13(Group10, { gap: "xs", children: [
           /* @__PURE__ */ jsxDEV13(Form6, { method: "post", style: { display: "inline" }, children: [
             /* @__PURE__ */ jsxDEV13("input", { type: "hidden", name: "intent", value: "toggleFavorite" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 669,
+              lineNumber: 674,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV13("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 670,
+              lineNumber: 675,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV13("input", { type: "hidden", name: "isFavorite", value: String(kol.isFavorite) }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 671,
+              lineNumber: 676,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV13(
@@ -9156,24 +9535,24 @@ document.addEventListener('submit', function(e) {
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 672,
+                lineNumber: 677,
                 columnNumber: 27
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 668,
+            lineNumber: 673,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV13(Button11, { component: Link10, to: `/kols/${kol.id}`, variant: "light", size: "xs", children: "\u67E5\u770B" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 688,
+            lineNumber: 693,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV13(Button11, { component: Link10, to: `/kols/${kol.id}/edit`, variant: "default", size: "xs", children: "\u7DE8\u8F2F" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 689,
+            lineNumber: 694,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV13(
@@ -9185,17 +9564,17 @@ document.addEventListener('submit', function(e) {
               children: [
                 /* @__PURE__ */ jsxDEV13("input", { type: "hidden", name: "intent", value: "delete" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 695,
+                  lineNumber: 700,
                   columnNumber: 27
                 }, this),
                 /* @__PURE__ */ jsxDEV13("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 696,
+                  lineNumber: 701,
                   columnNumber: 27
                 }, this),
                 /* @__PURE__ */ jsxDEV13(Button11, { type: "submit", color: "red", variant: "subtle", size: "xs", children: "\u522A\u9664" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 697,
+                  lineNumber: 702,
                   columnNumber: 27
                 }, this)
               ]
@@ -9204,27 +9583,27 @@ document.addEventListener('submit', function(e) {
             !0,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 690,
+              lineNumber: 695,
               columnNumber: 25
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 667,
+          lineNumber: 672,
           columnNumber: 23
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 666,
+          lineNumber: 671,
           columnNumber: 21
         }, this)
       ] }, kol.id, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 652,
+        lineNumber: 653,
         columnNumber: 19
       }, this)) }, void 0, !1, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 650,
+        lineNumber: 651,
         columnNumber: 15
       }, this)
     ] }, void 0, !0, {
@@ -9260,17 +9639,17 @@ document.addEventListener('submit', function(e) {
       !1,
       {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 715,
+        lineNumber: 720,
         columnNumber: 17
       },
       this
     )) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 713,
+      lineNumber: 718,
       columnNumber: 13
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 712,
+      lineNumber: 717,
       columnNumber: 11
     }, this),
     /* @__PURE__ */ jsxDEV13(
@@ -9291,7 +9670,7 @@ document.addEventListener('submit', function(e) {
           /* @__PURE__ */ jsxDEV13(Group10, { justify: "space-between", mb: "md", children: [
             /* @__PURE__ */ jsxDEV13(Title11, { order: 4, children: "\u6279\u91CF\u532F\u5165 KOL (Excel)" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 756,
+              lineNumber: 761,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV13(
@@ -9308,19 +9687,19 @@ document.addEventListener('submit', function(e) {
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 757,
+                lineNumber: 762,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 755,
+            lineNumber: 760,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV13(Text10, { size: "sm", c: "dimmed", mb: "lg", children: "\u8ACB\u4E0A\u50B3\u5305\u542B KOL \u540D\u7A31\u3001\u5E73\u53F0\u9023\u7D50\u3001\u7C89\u7D72\u6578\u7B49\u8CC7\u8A0A\u7684 Excel \u6A94\u6848\u3002\u7CFB\u7D71\u6703\u81EA\u52D5\u89E3\u6790\u4E26\u5EFA\u6A94\u3002\uFF08\u529F\u80FD\u5C55\u793A\u7248\uFF09" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 765,
+            lineNumber: 770,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV13(
@@ -9352,17 +9731,17 @@ document.addEventListener('submit', function(e) {
               children: [
                 /* @__PURE__ */ jsxDEV13("div", { style: { fontSize: 36, marginBottom: 12 }, children: "\u{1F4E4}" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 794,
+                  lineNumber: 799,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV13(Text10, { fw: 600, color: "var(--mantine-color-blue-filled)", children: "\u9EDE\u64CA\u6216\u62D6\u66F3 Excel \u6A94\u6848\u81F3\u6B64" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 795,
+                  lineNumber: 800,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV13(Text10, { size: "sm", c: "dimmed", mt: 4, children: "\u652F\u63F4 .xlsx, .csv" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 796,
+                  lineNumber: 801,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV13(
@@ -9385,7 +9764,7 @@ document.addEventListener('submit', function(e) {
                   !1,
                   {
                     fileName: "app/routes/_app.kols._index.tsx",
-                    lineNumber: 797,
+                    lineNumber: 802,
                     columnNumber: 11
                   },
                   this
@@ -9396,7 +9775,7 @@ document.addEventListener('submit', function(e) {
             !0,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 769,
+              lineNumber: 774,
               columnNumber: 9
             },
             this
@@ -9404,7 +9783,7 @@ document.addEventListener('submit', function(e) {
           /* @__PURE__ */ jsxDEV13(Group10, { justify: "space-between", mt: "xl", children: [
             /* @__PURE__ */ jsxDEV13("a", { href: "#", style: { fontSize: 13, color: "var(--mantine-color-blue-filled)", textDecoration: "none" }, children: "\u4E0B\u8F09 Excel \u5EFA\u6A94\u7BC4\u672C" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 821,
+              lineNumber: 826,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV13(
@@ -9421,14 +9800,14 @@ document.addEventListener('submit', function(e) {
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 822,
+                lineNumber: 827,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 820,
+            lineNumber: 825,
             columnNumber: 9
           }, this)
         ]
@@ -9437,7 +9816,7 @@ document.addEventListener('submit', function(e) {
       !0,
       {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 742,
+        lineNumber: 747,
         columnNumber: 7
       },
       this
@@ -10175,15 +10554,18 @@ import {
   Card as Card13,
   Divider as Divider7,
   Group as Group13,
+  Radio as Radio3,
+  Select as Select4,
   SimpleGrid as SimpleGrid10,
   Stack as Stack13,
   Text as Text13,
-  TextInput as TextInput8,
+  TextInput as TextInput9,
   Textarea as Textarea6,
   Title as Title14
 } from "@mantine/core";
 import { json as json14, redirect as redirect6 } from "@remix-run/node";
 import { Form as Form8, Link as Link12, useActionData as useActionData4, useNavigation as useNavigation4 } from "@remix-run/react";
+import { useState as useState8 } from "react";
 import { jsxDEV as jsxDEV16 } from "react/jsx-dev-runtime";
 function parseHandle(url) {
   let raw = url.trim();
@@ -10193,7 +10575,7 @@ function parseHandle(url) {
   return (parts[parts.length - 1] ?? "").replace("@", "");
 }
 async function action9({ request }) {
-  let formData = await request.formData(), intent = String(formData.get("intent") ?? "create"), displayName = String(formData.get("displayName") ?? "").trim(), gender = String(formData.get("gender") ?? "\u5176\u4ED6"), age = Number(formData.get("age") ?? 0), phone = String(formData.get("contactPhone") ?? "").trim(), email = String(formData.get("email") ?? "").trim(), tagsRaw = String(formData.get("tagsInput") ?? ""), socialsRaw = String(formData.get("socialsJson") ?? "[]"), avatarUrl = String(formData.get("avatarUrl") ?? "").trim(), description = String(formData.get("description") ?? "").trim(), internalComments = String(formData.get("internalComments") ?? "").trim();
+  let formData = await request.formData(), intent = String(formData.get("intent") ?? "create"), displayName = String(formData.get("displayName") ?? "").trim(), gender = String(formData.get("gender") ?? "\u5176\u4ED6"), age = Number(formData.get("age") ?? 0), phone = String(formData.get("contactPhone") ?? "").trim(), email = String(formData.get("email") ?? "").trim(), tagsRaw = String(formData.get("tagsInput") ?? ""), socialsRaw = String(formData.get("socialsJson") ?? "[]"), avatarUrl = String(formData.get("avatarUrl") ?? "").trim(), description = String(formData.get("description") ?? "").trim(), internalComments = String(formData.get("internalComments") ?? "").trim(), paymentMethod = formData.get("paymentMethod"), engagementRate = Number(formData.get("engagementRate") ?? 0), exposureRate = Number(formData.get("exposureRate") ?? 0), audienceMale = Number(formData.get("audienceMale") ?? 0), audienceFemale = Number(formData.get("audienceFemale") ?? 100 - audienceMale), audienceAge = String(formData.get("audienceAge") ?? "").trim(), introduction = String(formData.get("introduction") ?? "").trim();
   if (!displayName)
     return json14({ error: "KOL \u540D\u7A31\u70BA\u5FC5\u586B" }, { status: 400 });
   let tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [], socials = [];
@@ -10215,7 +10597,11 @@ async function action9({ request }) {
     categories: tags.length > 0 ? tags : ["\u5F85\u5206\u985E"],
     platform: primarySocial.platform || "Instagram",
     followers: Number(primarySocial.followers ?? 0),
-    engagementRate: 0,
+    engagementRate,
+    exposureRate,
+    audienceGender: { male: audienceMale, female: audienceFemale },
+    audienceAge,
+    introduction,
     rating: 0,
     collaborations: 0,
     averagePrice: 0,
@@ -10232,7 +10618,8 @@ async function action9({ request }) {
     city: "Taipei",
     notes: [description, internalComments && `internal:${internalComments}`].filter(Boolean).join(`
 `),
-    status: intent === "draft" ? "draft" : "active"
+    status: intent === "draft" ? "draft" : "active",
+    paymentMethod: paymentMethod || void 0
   }, res = await fetch(`${MOCK_API_BASE}/kols`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -10243,121 +10630,54 @@ async function action9({ request }) {
   let created = await res.json();
   return redirect6(`/kols/${created.id}`);
 }
-var socialScript = `
-  var __socials = [{ id:'s0', platform:'Instagram', url:'', followers:'' }];
-
-  function renderSocials() {
-    var container = document.getElementById('social-rows');
-    if (!container) return;
-    container.innerHTML = __socials.map(function(item, idx){
-      return '<div style="border:1px solid var(--mantine-color-default-border);border-radius:8px;padding:12px;margin-top:10px;">' +
-        '<div style="display:grid;grid-template-columns:1fr 2fr 1fr 80px 36px;gap:8px;align-items:flex-end;">' +
-          '<div><label style="font-size:13px;font-weight:500;">\u5E73\u53F0</label>' +
-            '<select oninput="updateSocial(\\''+item.id+'\\',\\'platform\\',this.value)" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;background:var(--mantine-color-body);color:var(--mantine-color-text);">' +
-              ['Instagram','YouTube','TikTok','Facebook','Twitter','LINE'].map(function(p){ return '<option'+(item.platform===p?' selected':'')+'>'+p+'</option>'; }).join('') +
-            '</select></div>' +
-          '<div><label style="font-size:13px;font-weight:500;">\u5E33\u865F URL</label>' +
-            '<input type="text" value="'+item.url+'" oninput="updateSocial(\\''+item.id+'\\',\\'url\\',this.value)" placeholder="https://instagram.com/username" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;box-sizing:border-box;background:var(--mantine-color-body);color:var(--mantine-color-text);" /></div>' +
-          '<div style="display:flex;flex-direction:column;justify-content:flex-end;">' +
-            '<button type="button" onclick="fetchFollowers(\\''+item.id+'\\',\\''+item.platform+'\\')" style="padding:7px 10px;border-radius:4px;border:1px solid var(--mantine-color-default-border);background:var(--mantine-color-body);cursor:pointer;font-size:12px;margin-top:auto;color:var(--mantine-color-text);">\u53D6\u5F97\u8FFD\u8E64\u6578</button></div>' +
-          '<div><label style="font-size:13px;font-weight:500;">\u8FFD\u8E64\u6578</label>' +
-            '<input type="text" readOnly value="'+(item.followers||'-')+'" style="width:100%;padding:7px;border:1px solid var(--mantine-color-default-border);border-radius:4px;margin-top:4px;font-size:13px;background:var(--mantine-color-body);color:var(--mantine-color-dimmed);" /></div>' +
-          '<div style="display:flex;align-items:flex-end;padding-bottom:2px;">' +
-            (idx === 0 ? '<span style="width:36px;"></span>' : '<button type="button" onclick="removeSocial(\\''+item.id+'\\');return false;" style="width:36px;height:34px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:14px;font-weight:700;">\xD7</button>') +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-    syncSocialsJson();
-  }
-  function updateSocial(id, key, value) {
-    __socials = __socials.map(function(s){ return s.id===id ? Object.assign({},s,{[key]:value}) : s; });
-    renderSocials();
-    syncSocialsJson();
-  }
-  function addSocial() {
-    if (__socials.length >= 8) return;
-    __socials.push({ id:'s'+Date.now(), platform:'Instagram', url:'', followers:'' });
-    renderSocials();
-  }
-  function removeSocial(id) {
-    if (__socials.length <= 1) return;
-    __socials = __socials.filter(function(s){ return s.id!==id; });
-    renderSocials();
-  }
-  function syncSocialsJson() {
-    var el = document.getElementById('socials-json');
-    if (el) el.value = JSON.stringify(__socials.map(function(s){ return { platform:s.platform, url:s.url, followers: s.followers ? Number(s.followers) : null }; }));
-  }
-  async function fetchFollowers(id, platform) {
-    var s = __socials.find(function(x){ return x.id===id; });
-    if (!s || !s.url) { alert('\u8ACB\u5148\u8F38\u5165\u793E\u7FA4\u5E33\u865F URL'); return; }
-    try {
-      var r = await fetch('/api/social-followers?platform='+encodeURIComponent(platform)+'&url='+encodeURIComponent(s.url));
-      var data = await r.json();
-      if (r.ok && data.followers) {
-        __socials = __socials.map(function(x){ return x.id===id ? Object.assign({},x,{followers:data.followers}) : x; });
-        renderSocials();
-      } else { alert(data.error || '\u53D6\u5F97\u8FFD\u8E64\u6578\u5931\u6557'); }
-    } catch(e) { alert('\u53D6\u5F97\u5931\u6557\uFF0C\u8ACB\u7A0D\u5F8C\u518D\u8A66'); }
-  }
-
-  // Avatar upload
-  function pickAvatar() {
-    var fi = document.getElementById('avatar-file-input');
-    if (fi) fi.click();
-  }
-  function previewAvatar(input) {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(){
-      var preview = document.getElementById('avatar-preview');
-      var urlInput = document.getElementById('avatar-url-hidden');
-      if (preview) preview.src = reader.result;
-      if (urlInput) urlInput.value = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  document.addEventListener('DOMContentLoaded', function() { renderSocials(); });
-  // Also render when script loads (in case DOMContentLoaded has already fired)
-  if (document.readyState !== 'loading') { setTimeout(renderSocials, 0); }
-`;
 function KolCreatePage() {
-  let actionData = useActionData4(), submitting = useNavigation4().state === "submitting";
+  let actionData = useActionData4(), submitting = useNavigation4().state === "submitting", [socials, setSocials] = useState8([
+    { id: "s0", platform: "Instagram", url: "", followers: null }
+  ]), addSocial = () => {
+    socials.length >= 8 || setSocials([...socials, { id: "s" + Date.now(), platform: "Instagram", url: "", followers: null }]);
+  }, removeSocial = (id) => {
+    socials.length <= 1 || setSocials(socials.filter((s) => s.id !== id));
+  }, updateSocial = (id, key, value) => {
+    setSocials(socials.map((s) => s.id === id ? { ...s, [key]: value } : s));
+  }, fetchFollowers = async (id, platform, url) => {
+    if (!url) {
+      alert("\u8ACB\u5148\u8F38\u5165\u793E\u7FA4\u5E33\u865F URL");
+      return;
+    }
+    try {
+      let r = await fetch(`/api/social-followers?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}`), data = await r.json();
+      r.ok && data.followers ? updateSocial(id, "followers", data.followers) : alert(data.error || "\u53D6\u5F97\u8FFD\u8E64\u6578\u5931\u6557");
+    } catch {
+      alert("\u53D6\u5F97\u5931\u6557\uFF0C\u8ACB\u7A0D\u5F8C\u518D\u8A66");
+    }
+  }, [avatarPreview, setAvatarPreview] = useState8(void 0);
   return /* @__PURE__ */ jsxDEV16(Stack13, { gap: "md", children: [
-    /* @__PURE__ */ jsxDEV16("script", { dangerouslySetInnerHTML: { __html: socialScript } }, void 0, !1, {
-      fileName: "app/routes/_app.kols.new.tsx",
-      lineNumber: 190,
-      columnNumber: 7
-    }, this),
     /* @__PURE__ */ jsxDEV16(Group13, { gap: 8, children: [
       /* @__PURE__ */ jsxDEV16(Link12, { to: "/kols", children: "KOL \u7BA1\u7406" }, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 193,
+        lineNumber: 173,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV16(Text13, { c: "dimmed", children: ">" }, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 194,
+        lineNumber: 174,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV16(Text13, { fw: 600, children: "\u65B0\u589E KOL" }, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 195,
+        lineNumber: 175,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.new.tsx",
-      lineNumber: 192,
+      lineNumber: 172,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV16(Card13, { withBorder: !0, p: "lg", maw: 800, mx: "auto", w: "100%", children: /* @__PURE__ */ jsxDEV16(Form8, { method: "post", children: /* @__PURE__ */ jsxDEV16(Stack13, { gap: "xl", children: [
       /* @__PURE__ */ jsxDEV16(Box9, { children: [
         /* @__PURE__ */ jsxDEV16(Title14, { order: 3, mb: "md", children: "KOL \u57FA\u672C\u8CC7\u6599" }, void 0, !1, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 203,
+          lineNumber: 183,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV16(Stack13, { align: "center", mb: "lg", children: [
@@ -10368,52 +10688,60 @@ function KolCreatePage() {
               type: "file",
               accept: "image/*",
               style: { display: "none" },
-              onchange: "previewAvatar(this)"
+              onChange: (e) => {
+                let file = e.target.files?.[0];
+                if (!file)
+                  return;
+                let reader = new FileReader();
+                reader.onload = () => {
+                  setAvatarPreview(reader.result);
+                }, reader.readAsDataURL(file);
+              }
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols.new.tsx",
-              lineNumber: 207,
+              lineNumber: 187,
               columnNumber: 17
             },
             this
           ),
-          /* @__PURE__ */ jsxDEV16("input", { type: "hidden", id: "avatar-url-hidden", name: "avatarUrl" }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16("input", { type: "hidden", name: "avatarUrl", value: avatarPreview || "" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 214,
+            lineNumber: 194,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV16(
             "div",
             {
               style: { width: 220, border: "1px dashed #94a3b8", borderRadius: 16, padding: 20, cursor: "pointer", textAlign: "center" },
-              onclick: "pickAvatar()",
-              ondragover: "event.preventDefault()",
+              onClick: () => document.getElementById("avatar-file-input")?.click(),
+              onDragOver: (e) => e.preventDefault(),
               children: /* @__PURE__ */ jsxDEV16(Stack13, { align: "center", gap: "xs", children: [
-                /* @__PURE__ */ jsxDEV16(Avatar8, { id: "avatar-preview", src: void 0, radius: 999, size: 96 }, void 0, !1, {
+                /* @__PURE__ */ jsxDEV16(Avatar8, { src: avatarPreview, radius: 999, size: 96 }, void 0, !1, {
                   fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 220,
+                  lineNumber: 201,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV16(Text13, { fw: 700, children: "\u2191" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 221,
+                  lineNumber: 202,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", children: "\u9EDE\u64CA\u4E0A\u50B3 KOL \u7167\u7247" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 222,
+                  lineNumber: 203,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV16(Text13, { size: "xs", c: "dimmed", children: "\u652F\u63F4\u62D6\u62C9\u4E0A\u50B3" }, void 0, !1, {
                   fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 223,
+                  lineNumber: 204,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.kols.new.tsx",
-                lineNumber: 219,
+                lineNumber: 200,
                 columnNumber: 19
               }, this)
             },
@@ -10421,270 +10749,527 @@ function KolCreatePage() {
             !1,
             {
               fileName: "app/routes/_app.kols.new.tsx",
-              lineNumber: 215,
+              lineNumber: 195,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 206,
+          lineNumber: 186,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV16(SimpleGrid10, { cols: { base: 1, sm: 2 }, spacing: "md", children: [
-          /* @__PURE__ */ jsxDEV16(TextInput8, { label: "KOL \u540D\u7A31 *", name: "displayName", placeholder: "\u4F8B\u5982\uFF1AGina", required: !0 }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16(TextInput9, { label: "KOL \u540D\u7A31 *", name: "displayName", placeholder: "\u4F8B\u5982\uFF1AGina", required: !0 }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 229,
+            lineNumber: 210,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV16(Box9, { children: [
             /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", fw: 500, mb: 6, children: "\u6027\u5225" }, void 0, !1, {
               fileName: "app/routes/_app.kols.new.tsx",
-              lineNumber: 232,
+              lineNumber: 213,
               columnNumber: 19
             }, this),
-            /* @__PURE__ */ jsxDEV16(Group13, { children: [
-              /* @__PURE__ */ jsxDEV16("label", { style: { display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }, children: [
-                /* @__PURE__ */ jsxDEV16("input", { type: "radio", name: "gender", value: "\u7537" }, void 0, !1, {
-                  fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 235,
-                  columnNumber: 23
-                }, this),
-                " \u7537"
-              ] }, void 0, !0, {
+            /* @__PURE__ */ jsxDEV16(Radio3.Group, { name: "gender", defaultValue: "\u5973", children: /* @__PURE__ */ jsxDEV16(Group13, { mt: "xs", children: [
+              /* @__PURE__ */ jsxDEV16(Radio3, { value: "\u7537", label: "\u7537" }, void 0, !1, {
                 fileName: "app/routes/_app.kols.new.tsx",
-                lineNumber: 234,
-                columnNumber: 21
+                lineNumber: 216,
+                columnNumber: 23
               }, this),
-              /* @__PURE__ */ jsxDEV16("label", { style: { display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }, children: [
-                /* @__PURE__ */ jsxDEV16("input", { type: "radio", name: "gender", value: "\u5973", defaultChecked: !0 }, void 0, !1, {
-                  fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 238,
-                  columnNumber: 23
-                }, this),
-                " \u5973"
-              ] }, void 0, !0, {
+              /* @__PURE__ */ jsxDEV16(Radio3, { value: "\u5973", label: "\u5973" }, void 0, !1, {
                 fileName: "app/routes/_app.kols.new.tsx",
-                lineNumber: 237,
-                columnNumber: 21
+                lineNumber: 217,
+                columnNumber: 23
               }, this),
-              /* @__PURE__ */ jsxDEV16("label", { style: { display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }, children: [
-                /* @__PURE__ */ jsxDEV16("input", { type: "radio", name: "gender", value: "\u5176\u4ED6" }, void 0, !1, {
-                  fileName: "app/routes/_app.kols.new.tsx",
-                  lineNumber: 241,
-                  columnNumber: 23
-                }, this),
-                " \u5176\u4ED6"
-              ] }, void 0, !0, {
+              /* @__PURE__ */ jsxDEV16(Radio3, { value: "\u5176\u4ED6", label: "\u5176\u4ED6" }, void 0, !1, {
                 fileName: "app/routes/_app.kols.new.tsx",
-                lineNumber: 240,
-                columnNumber: 21
+                lineNumber: 218,
+                columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.kols.new.tsx",
-              lineNumber: 233,
+              lineNumber: 215,
+              columnNumber: 21
+            }, this) }, void 0, !1, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 214,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 231,
+            lineNumber: 212,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ jsxDEV16(TextInput8, { label: "\u5E74\u9F61", name: "age", type: "number", min: 0, max: 100 }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16(TextInput9, { label: "\u5E74\u9F61", name: "age", type: "number", min: 0, max: 100 }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 246,
+            lineNumber: 223,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ jsxDEV16(TextInput8, { label: "\u806F\u7D61\u65B9\u5F0F", name: "contactPhone", placeholder: "09xx-xxx-xxx" }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16(TextInput9, { label: "\u806F\u7D61\u65B9\u5F0F", name: "contactPhone", placeholder: "09xx-xxx-xxx" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 247,
+            lineNumber: 224,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ jsxDEV16(TextInput8, { label: "Email", name: "email", type: "email", placeholder: "manager@example.com" }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16(TextInput9, { label: "Email", name: "email", type: "email", placeholder: "manager@example.com" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 248,
+            lineNumber: 225,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV16(Box9, { children: [
+            /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", fw: 500, mb: 6, children: "\u8ACB\u6B3E\u65B9\u5F0F" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 228,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV16(Radio3.Group, { name: "paymentMethod", children: /* @__PURE__ */ jsxDEV16(Group13, { mt: "xs", children: [
+              /* @__PURE__ */ jsxDEV16(Radio3, { value: "\u52DE\u5831", label: "\u52DE\u5831" }, void 0, !1, {
+                fileName: "app/routes/_app.kols.new.tsx",
+                lineNumber: 231,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV16(Radio3, { value: "\u767C\u7968", label: "\u767C\u7968" }, void 0, !1, {
+                fileName: "app/routes/_app.kols.new.tsx",
+                lineNumber: 232,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 230,
+              columnNumber: 21
+            }, this) }, void 0, !1, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 229,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.kols.new.tsx",
+            lineNumber: 227,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 228,
+          lineNumber: 209,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV16(Box9, { mt: "md", children: [
           /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", fw: 500, mb: 4, children: "KOL \u6A19\u7C64\uFF08\u9017\u865F\u5206\u9694\uFF09" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 252,
+            lineNumber: 239,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV16(
-            "input",
+            TextInput9,
             {
               name: "tagsInput",
-              type: "text",
               defaultValue: "\u6BCD\u5B30,\u89AA\u5B50,\u65C5\u904A",
-              placeholder: "\u4F8B\u5982\uFF1A\u7F8E\u599D, \u65C5\u904A, \u79D1\u6280",
-              style: {
-                width: "100%",
-                padding: "8px 12px",
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 4,
-                fontSize: 14,
-                background: "var(--mantine-color-body)",
-                color: "var(--mantine-color-text)",
-                boxSizing: "border-box"
-              }
+              placeholder: "\u4F8B\u5982\uFF1A\u7F8E\u599D, \u65C5\u904A, \u79D1\u6280"
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols.new.tsx",
-              lineNumber: 253,
+              lineNumber: 240,
               columnNumber: 17
             },
             this
           ),
           /* @__PURE__ */ jsxDEV16(Text13, { size: "xs", c: "dimmed", mt: 4, children: "\u7528\u9017\u865F\u5206\u9694\u591A\u500B\u6A19\u7C64\uFF0C\u4F8B\u5982\uFF1A\u7F8E\u599D, \u65C5\u904A, \u79D1\u6280" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 269,
+            lineNumber: 245,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 251,
+          lineNumber: 238,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 202,
+        lineNumber: 182,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV16(Divider7, {}, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 273,
+        lineNumber: 249,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV16(Box9, { children: [
         /* @__PURE__ */ jsxDEV16(Title14, { order: 3, mb: "md", children: "\u7D93\u71DF\u7684\u793E\u7FA4\u5E73\u53F0" }, void 0, !1, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 277,
+          lineNumber: 253,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ jsxDEV16("div", { id: "social-rows" }, void 0, !1, {
-          fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 278,
-          columnNumber: 15
-        }, this),
-        /* @__PURE__ */ jsxDEV16("textarea", { id: "socials-json", name: "socialsJson", defaultValue: "[]", style: { display: "none" }, readOnly: !0 }, void 0, !1, {
-          fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 279,
-          columnNumber: 15
-        }, this),
-        /* @__PURE__ */ jsxDEV16(Group13, { mt: "md", children: /* @__PURE__ */ jsxDEV16(
-          "button",
-          {
-            type: "button",
-            style: { padding: "7px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-blue-filled)" },
-            onclick: "addSocial()",
-            children: "+ \u65B0\u589E\u793E\u7FA4\u5E73\u53F0"
-          },
-          void 0,
-          !1,
-          {
+        /* @__PURE__ */ jsxDEV16("div", { id: "social-rows", children: socials.map((item, idx) => /* @__PURE__ */ jsxDEV16("div", { style: { border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }, children: /* @__PURE__ */ jsxDEV16("div", { style: { display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }, children: [
+          /* @__PURE__ */ jsxDEV16(
+            Select4,
+            {
+              label: "\u5E73\u53F0",
+              data: ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter", "LINE"],
+              value: item.platform,
+              onChange: (val) => updateSocial(item.id, "platform", val),
+              size: "sm"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 258,
+              columnNumber: 23
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(
+            TextInput9,
+            {
+              label: "\u5E33\u865F URL",
+              value: item.url,
+              onChange: (e) => updateSocial(item.id, "url", e.target.value),
+              placeholder: "https://instagram.com/username",
+              size: "sm"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 265,
+              columnNumber: 23
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(Box9, { style: { display: "flex", flexDirection: "column", justifyContent: "flex-end" }, children: /* @__PURE__ */ jsxDEV16(
+            Button13,
+            {
+              variant: "default",
+              size: "sm",
+              onClick: () => fetchFollowers(item.id, item.platform, item.url),
+              disabled: !item.url,
+              children: "\u53D6\u5F97\u8FFD\u8E64\u6578"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 273,
+              columnNumber: 25
+            },
+            this
+          ) }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 281,
-            columnNumber: 17
-          },
-          this
-        ) }, void 0, !1, {
+            lineNumber: 272,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ jsxDEV16(
+            TextInput9,
+            {
+              label: "\u8FFD\u8E64\u6578",
+              readOnly: !0,
+              value: item.followers ? item.followers.toLocaleString() : "-",
+              size: "sm",
+              c: "dimmed"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 282,
+              columnNumber: 23
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(Box9, { style: { display: "flex", alignItems: "flex-end", paddingBottom: "2px" }, children: idx !== 0 && /* @__PURE__ */ jsxDEV16(
+            Button13,
+            {
+              color: "red",
+              variant: "light",
+              onClick: () => removeSocial(item.id),
+              style: { width: 36, height: 36, padding: 0 },
+              children: "\xD7"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 291,
+              columnNumber: 27
+            },
+            this
+          ) }, void 0, !1, {
+            fileName: "app/routes/_app.kols.new.tsx",
+            lineNumber: 289,
+            columnNumber: 23
+          }, this)
+        ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 280,
+          lineNumber: 257,
+          columnNumber: 21
+        }, this) }, item.id, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 256,
+          columnNumber: 19
+        }, this)) }, void 0, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 254,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV16("input", { type: "hidden", name: "socialsJson", value: JSON.stringify(socials.map((s) => ({ platform: s.platform, url: s.url, followers: s.followers }))) }, void 0, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 305,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV16(Group13, { mt: "md", children: /* @__PURE__ */ jsxDEV16(Button13, { variant: "default", onClick: addSocial, disabled: socials.length >= 8, children: "+ \u65B0\u589E\u793E\u7FA4\u5E73\u53F0" }, void 0, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 307,
+          columnNumber: 17
+        }, this) }, void 0, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 306,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 276,
+        lineNumber: 252,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV16(Divider7, {}, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 291,
+        lineNumber: 313,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV16(Divider7, {}, void 0, !1, {
+        fileName: "app/routes/_app.kols.new.tsx",
+        lineNumber: 315,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV16(Box9, { children: [
-        /* @__PURE__ */ jsxDEV16(Title14, { order: 3, mb: "md", children: "\u5176\u4ED6\u8CC7\u8A0A" }, void 0, !1, {
+        /* @__PURE__ */ jsxDEV16(Title14, { order: 3, mb: "md", children: "\u53D7\u773E\u6578\u64DA\u8207\u6307\u6A19" }, void 0, !1, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 295,
+          lineNumber: 319,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ jsxDEV16(Stack13, { children: [
-          /* @__PURE__ */ jsxDEV16(Textarea6, { label: "\u63CF\u8FF0", name: "description", placeholder: "KOL \u5167\u5BB9\u98A8\u683C\u3001\u64C5\u9577\u4E3B\u984C\u3001\u5408\u4F5C\u4EAE\u9EDE", minRows: 4 }, void 0, !1, {
+        /* @__PURE__ */ jsxDEV16(SimpleGrid10, { cols: { base: 1, sm: 2 }, spacing: "md", children: [
+          /* @__PURE__ */ jsxDEV16(
+            TextInput9,
+            {
+              label: "\u4E92\u52D5\u7387 (%)",
+              name: "engagementRate",
+              type: "number",
+              step: "0.01",
+              placeholder: "\u4F8B\u5982\uFF1A4.5"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 321,
+              columnNumber: 17
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(
+            TextInput9,
+            {
+              label: "\u66DD\u5149\u7387 (%)",
+              name: "exposureRate",
+              type: "number",
+              step: "0.01",
+              placeholder: "\u4F8B\u5982\uFF1A12.5"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 328,
+              columnNumber: 17
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(Box9, { children: [
+            /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", fw: 500, mb: 4, children: "\u53D7\u773E\u6027\u5225\u6BD4 (\u7537 %)" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 336,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV16(
+              TextInput9,
+              {
+                name: "audienceMale",
+                type: "number",
+                placeholder: "\u4F8B\u5982\uFF1A30",
+                onChange: (e) => {
+                  let val = Number(e.target.value), fInput = document.getElementsByName("audienceFemale")[0];
+                  fInput && (fInput.value = String(Math.max(0, 100 - val)));
+                }
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.kols.new.tsx",
+                lineNumber: 337,
+                columnNumber: 19
+              },
+              this
+            )
+          ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 297,
+            lineNumber: 335,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ jsxDEV16(Textarea6, { label: "\u5167\u90E8\u5099\u8A3B", name: "internalComments", placeholder: "\u50C5\u5167\u90E8\u53EF\u898B\uFF0C\u4F8B\u5982\u5831\u50F9\u504F\u597D\u3001\u6E9D\u901A\u6CE8\u610F\u4E8B\u9805", minRows: 3 }, void 0, !1, {
+          /* @__PURE__ */ jsxDEV16(Box9, { children: [
+            /* @__PURE__ */ jsxDEV16(Text13, { size: "sm", fw: 500, mb: 4, children: "\u53D7\u773E\u6027\u5225\u6BD4 (\u5973 %)" }, void 0, !1, {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 349,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV16(
+              TextInput9,
+              {
+                name: "audienceFemale",
+                type: "number",
+                placeholder: "\u4F8B\u5982\uFF1A70",
+                onChange: (e) => {
+                  let val = Number(e.target.value), mInput = document.getElementsByName("audienceMale")[0];
+                  mInput && (mInput.value = String(Math.max(0, 100 - val)));
+                }
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.kols.new.tsx",
+                lineNumber: 350,
+                columnNumber: 19
+              },
+              this
+            )
+          ] }, void 0, !0, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 298,
+            lineNumber: 348,
             columnNumber: 17
-          }, this)
+          }, this),
+          /* @__PURE__ */ jsxDEV16(
+            TextInput9,
+            {
+              label: "\u4E3B\u8981\u53D7\u773E\u5E74\u9F61\u5C64",
+              name: "audienceAge",
+              placeholder: "\u4F8B\u5982\uFF1A18-24, 25-34"
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 361,
+              columnNumber: 17
+            },
+            this
+          )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 296,
+          lineNumber: 320,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 294,
+        lineNumber: 318,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV16(Divider7, {}, void 0, !1, {
+        fileName: "app/routes/_app.kols.new.tsx",
+        lineNumber: 369,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV16(Box9, { children: [
+        /* @__PURE__ */ jsxDEV16(Title14, { order: 3, mb: "md", children: "\u63D0\u6848\u8207\u8A55\u4F30\u8CC7\u6599" }, void 0, !1, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 373,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV16(Stack13, { children: [
+          /* @__PURE__ */ jsxDEV16(
+            Textarea6,
+            {
+              label: "\u4EBA\u9078\u4ECB\u7D39 (\u7528\u65BC\u63D0\u6848\u64B0\u5BEB) *",
+              name: "introduction",
+              placeholder: "\u63CF\u8FF0\u6B64 KOL \u7684\u98A8\u683C\u7279\u8272\u3001\u53D7\u773E\u9ECF\u8457\u5EA6\u3001\u9069\u5408\u63A8\u5EE3\u7684\u7522\u54C1\u7B49\uFF0C\u9019\u5C07\u5E6B\u52A9\u696D\u52D9\u5FEB\u901F\u64B0\u5BEB\u63D0\u6848\u5167\u5BB9",
+              minRows: 5,
+              required: !0
+            },
+            void 0,
+            !1,
+            {
+              fileName: "app/routes/_app.kols.new.tsx",
+              lineNumber: 375,
+              columnNumber: 17
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV16(Textarea6, { label: "\u63CF\u8FF0", name: "description", placeholder: "KOL \u5167\u5BB9\u98A8\u683C\u3001\u64C5\u9577\u4E3B\u984C\u3001\u5408\u4F5C\u4EAE\u9EDE", minRows: 4 }, void 0, !1, {
+            fileName: "app/routes/_app.kols.new.tsx",
+            lineNumber: 382,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV16(Textarea6, { label: "\u5167\u90E8\u5099\u8A3B", name: "internalComments", placeholder: "\u50C5\u5167\u90E8\u53EF\u898B\uFF0C\u4F8B\u5982\u5831\u50F9\u504F\u597D\u3001\u6E9D\u901A\u6CE8\u610F\u4E8B\u9805", minRows: 3 }, void 0, !1, {
+            fileName: "app/routes/_app.kols.new.tsx",
+            lineNumber: 383,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, !0, {
+          fileName: "app/routes/_app.kols.new.tsx",
+          lineNumber: 374,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, !0, {
+        fileName: "app/routes/_app.kols.new.tsx",
+        lineNumber: 372,
         columnNumber: 13
       }, this),
       actionData?.error && /* @__PURE__ */ jsxDEV16(Alert4, { color: "red", title: "\u5EFA\u7ACB\u5931\u6557", children: actionData.error }, void 0, !1, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 303,
+        lineNumber: 388,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ jsxDEV16(Group13, { justify: "space-between", mt: "sm", children: [
         /* @__PURE__ */ jsxDEV16(Button13, { component: Link12, to: "/kols", variant: "default", children: "\u53D6\u6D88" }, void 0, !1, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 307,
+          lineNumber: 392,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV16(Group13, { children: [
           /* @__PURE__ */ jsxDEV16(Button13, { type: "submit", name: "intent", value: "draft", variant: "default", loading: submitting, children: "\u5132\u5B58\u8349\u7A3F" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 309,
+            lineNumber: 394,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV16(Button13, { type: "submit", name: "intent", value: "create", loading: submitting, children: "\u5EFA\u7ACB KOL" }, void 0, !1, {
             fileName: "app/routes/_app.kols.new.tsx",
-            lineNumber: 310,
+            lineNumber: 395,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols.new.tsx",
-          lineNumber: 308,
+          lineNumber: 393,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols.new.tsx",
-        lineNumber: 306,
+        lineNumber: 391,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols.new.tsx",
-      lineNumber: 200,
+      lineNumber: 180,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols.new.tsx",
-      lineNumber: 199,
+      lineNumber: 179,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols.new.tsx",
-      lineNumber: 198,
+      lineNumber: 178,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.kols.new.tsx",
-    lineNumber: 189,
+    lineNumber: 171,
     columnNumber: 5
   }, this);
 }
@@ -10708,12 +11293,12 @@ import {
   Stack as Stack14,
   Table as Table4,
   Text as Text14,
-  TextInput as TextInput9,
+  TextInput as TextInput10,
   Title as Title15
 } from "@mantine/core";
 import { json as json15 } from "@remix-run/node";
 import { Link as Link13, useLoaderData as useLoaderData11 } from "@remix-run/react";
-import { useMemo as useMemo3, useState as useState7 } from "react";
+import { useMemo as useMemo3, useState as useState9 } from "react";
 import { Fragment as Fragment4, jsxDEV as jsxDEV17 } from "react/jsx-dev-runtime";
 var CLIENTS = [
   {
@@ -10766,10 +11351,10 @@ async function loader13({ request }) {
   return json15({ tab, q, filteredClients });
 }
 function SettingsRoute() {
-  let { tab, q, filteredClients } = useLoaderData11(), [tagGroups, setTagGroups] = useState7(() => TAG_GROUPS), [selectedGroupId, setSelectedGroupId] = useState7(() => TAG_GROUPS[0]?.id ?? "style"), selectedGroup = useMemo3(
+  let { tab, q, filteredClients } = useLoaderData11(), [tagGroups, setTagGroups] = useState9(() => TAG_GROUPS), [selectedGroupId, setSelectedGroupId] = useState9(() => TAG_GROUPS[0]?.id ?? "style"), selectedGroup = useMemo3(
     () => tagGroups.find((g) => g.id === selectedGroupId) ?? tagGroups[0],
     [tagGroups, selectedGroupId]
-  ), [categoryModalOpened, setCategoryModalOpened] = useState7(!1), [categoryModalMode, setCategoryModalMode] = useState7("edit"), [tagModalOpened, setTagModalOpened] = useState7(!1), [tagModalMode, setTagModalMode] = useState7("add"), [activeTagValue, setActiveTagValue] = useState7(""), [draftCategoryName, setDraftCategoryName] = useState7(""), [draftTagValue, setDraftTagValue] = useState7(""), tabStyle = (value) => ({
+  ), [categoryModalOpened, setCategoryModalOpened] = useState9(!1), [categoryModalMode, setCategoryModalMode] = useState9("edit"), [tagModalOpened, setTagModalOpened] = useState9(!1), [tagModalMode, setTagModalMode] = useState9("add"), [activeTagValue, setActiveTagValue] = useState9(""), [draftCategoryName, setDraftCategoryName] = useState9(""), [draftTagValue, setDraftTagValue] = useState9(""), tabStyle = (value) => ({
     padding: "10px 16px",
     borderBottom: tab === value ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
     color: tab === value ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-text)",
@@ -11310,7 +11895,7 @@ function SettingsRoute() {
               title: categoryModalMode === "edit" ? "\u7DE8\u8F2F\u5206\u985E" : "\u522A\u9664\u5206\u985E",
               children: /* @__PURE__ */ jsxDEV17(Stack14, { children: categoryModalMode === "edit" ? /* @__PURE__ */ jsxDEV17(Fragment4, { children: [
                 /* @__PURE__ */ jsxDEV17(
-                  TextInput9,
+                  TextInput10,
                   {
                     label: "\u5206\u985E\u540D\u7A31",
                     value: draftCategoryName,
@@ -11433,7 +12018,7 @@ function SettingsRoute() {
               title: tagModalMode === "add" ? "\u65B0\u589E\u6A19\u7C64" : tagModalMode === "edit" ? "\u7DE8\u8F2F\u6A19\u7C64" : "\u522A\u9664\u6A19\u7C64",
               children: /* @__PURE__ */ jsxDEV17(Stack14, { children: [
                 (tagModalMode === "add" || tagModalMode === "edit") && /* @__PURE__ */ jsxDEV17(
-                  TextInput9,
+                  TextInput10,
                   {
                     label: "\u6A19\u7C64\u540D\u7A31",
                     value: draftTagValue,
@@ -11655,10 +12240,10 @@ var login_exports = {};
 __export(login_exports, {
   default: () => LoginPage
 });
-import { useState as useState8 } from "react";
+import { useState as useState10 } from "react";
 import { jsxDEV as jsxDEV18 } from "react/jsx-dev-runtime";
 function LoginPage() {
-  let [dark, setDark] = useState8(!1), bg = dark ? "#0f172a" : "#ffffff", fg = dark ? "#f8fafc" : "#0f172a", subtle = dark ? "#94a3b8" : "#64748b", border = dark ? "#1e293b" : "#e2e8f0", googleBg = dark ? "#1e293b" : "#f8fafc", googleBorder = dark ? "#334155" : "#cbd5e1", googleHoverBg = dark ? "#273549" : "#f1f5f9";
+  let [dark, setDark] = useState10(!1), bg = dark ? "#0f172a" : "#ffffff", fg = dark ? "#f8fafc" : "#0f172a", subtle = dark ? "#94a3b8" : "#64748b", border = dark ? "#1e293b" : "#e2e8f0", googleBg = dark ? "#1e293b" : "#f8fafc", googleBorder = dark ? "#334155" : "#cbd5e1", googleHoverBg = dark ? "#273549" : "#f1f5f9";
   return /* @__PURE__ */ jsxDEV18(
     "div",
     {
@@ -12318,11 +12903,11 @@ import { Outlet as Outlet2, useLocation as useLocation2 } from "@remix-run/react
 // app/components/GlobalNotification.tsx
 import { Affix, Transition, Card as Card15, Group as Group15, ActionIcon as ActionIcon5, Title as Title16, Text as Text15, Button as Button15, Progress as Progress3, ThemeIcon as ThemeIcon3, Box as Box11 } from "@mantine/core";
 import { IconX as IconX3, IconCheck as IconCheck3 } from "@tabler/icons-react";
-import { useEffect as useEffect4, useState as useState9 } from "react";
+import { useEffect as useEffect4, useState as useState11 } from "react";
 import { useNavigate, useLocation } from "@remix-run/react";
 import { Fragment as Fragment5, jsxDEV as jsxDEV19 } from "react/jsx-dev-runtime";
 function GlobalNotification() {
-  let { toast, hideToast, banner, hideBanner } = useNotificationStore(), navigate = useNavigate(), location = useLocation(), [progress, setProgress] = useState9(100);
+  let { toast, hideToast, banner, hideBanner } = useNotificationStore(), navigate = useNavigate(), location = useLocation(), [progress, setProgress] = useState11(100);
   return useEffect4(() => {
     if (toast?.isOpen) {
       setProgress(100);
@@ -12962,7 +13547,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-KYACCYW2.js", imports: ["/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-X7F2C7P6.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-TN5JOK4I.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-V5NGXMOQ.js", imports: ["/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-NKYA2T2A.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-WRDYVCDI.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-U3675F2C.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-SQLNBQCQ.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-DZ77HL5C.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-SWZEVZZH.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-EXF3ZPM2.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-VQNDQ5NZ.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-OXU7IG25.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-3GYPPQJ3.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-T2ZXJXUI.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-EZZOMGF7.js", imports: ["/build/_shared/chunk-HKV6QY5X.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-GKRBRMB6.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-MQ3YHBDZ.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "d5f97ff5", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774338946491 }, url: "/build/manifest-D5F97FF5.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-OM5A4DET.js", imports: ["/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-IN3SJ4RO.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-TN5JOK4I.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-V7KKKDQD.js", imports: ["/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-MYFNLRK6.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-CX3666PZ.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-WTBBGZCB.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-PRBYSKTH.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-BQZSJZNZ.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-4TB2OCY6.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-TA3GFAAP.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-VFYPJN5X.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-ECYX7DDJ.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-UVKYPMOY.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-7IMQE3OX.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-A4NWTRY3.js", imports: ["/build/_shared/chunk-2EYHFDP6.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-KYJH5WYG.js", imports: ["/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-LYH654VY.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "f449820d", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774410584531 }, url: "/build/manifest-F449820D.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

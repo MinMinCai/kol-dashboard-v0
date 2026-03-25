@@ -638,11 +638,12 @@ document.addEventListener('submit', function(e) {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Photo</Table.Th>
-                  <Table.Th><a href={sortUrl("name")} style={{ textDecoration: "none", color: "inherit" }}>名稱{sortLabel("name")}</a></Table.Th>
+                  <Table.Th>名稱{sortLabel("name")}</Table.Th>
                   <Table.Th>Instagram</Table.Th>
-                  <Table.Th><a href={sortUrl("followers")} style={{ textDecoration: "none", color: "inherit" }}>粉絲數{sortLabel("followers")}</a></Table.Th>
+                  <Table.Th>粉絲數{sortLabel("followers")}</Table.Th>
+                  <Table.Th>互動/曝光</Table.Th>
                   <Table.Th>標籤</Table.Th>
-                  <Table.Th><a href={sortUrl("rating")} style={{ textDecoration: "none", color: "inherit" }}>評分{sortLabel("rating")}</a></Table.Th>
+                  <Table.Th>評分{sortLabel("rating")}</Table.Th>
                   <Table.Th><a href={sortUrl("collaborations")} style={{ textDecoration: "none", color: "inherit" }}>合作次數{sortLabel("collaborations")}</a></Table.Th>
                   <Table.Th>操作</Table.Th>
                 </Table.Tr>
@@ -654,6 +655,10 @@ document.addEventListener('submit', function(e) {
                     <Table.Td><Link to={`/kols/${kol.id}`}>{kol.displayName}</Link></Table.Td>
                     <Table.Td>@{kol.instagramHandle ?? "-"}</Table.Td>
                     <Table.Td>{(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Table.Td>
+                    <Table.Td>
+                      <Text size="xs">{kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-"}</Text>
+                      <Text size="xs" c="dimmed">{kol.exposureRate ? `${kol.exposureRate.toFixed(1)}%` : "-"}</Text>
+                    </Table.Td>
                     <Table.Td>
                       <Group gap={4}>
                         {getPrimaryTags(kol).slice(0, 2).map((tag) => (

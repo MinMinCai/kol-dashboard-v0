@@ -10,6 +10,7 @@ import {
   Progress,
   Stack,
   Text,
+  TextInput,
   Title,
 } from "@mantine/core";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
@@ -166,6 +167,7 @@ export default function KolDetailPage() {
               <Stack align="flex-end" gap={6}>
                 <Text>⭐ {avgRating.toFixed(1)} ({collabCount} 次合作)</Text>
                 <Text>平均價格: {formatCurrency(avgPrice)}</Text>
+                <Text>請款方式: <Badge variant="dot">{kol.paymentMethod || "未設定"}</Badge></Text>
                 <Group gap={6}>
                   {(kol.industryDistribution ?? [kol.industry ?? "未分類"]).map((industry) => (
                     <Badge key={industry} color="gray" variant="light">{industry}</Badge>
@@ -185,14 +187,26 @@ export default function KolDetailPage() {
               >
                 📞 查看聯絡方式
               </Button>
+              <Button type="button" variant="link" size="xs" component={Link} to={`/kols/${kol.id}/edit`}>
+                ✏️ 編輯
+              </Button>
               <Button type="button" variant="default" size="xs" onClick={handleDownloadReport}>
                 📊 下載 KOL 報告
               </Button>
             </Group>
           </Card>
 
+          {/* Introduction section */}
+          {kol.introduction && (
+            <Card withBorder mt="md">
+              <Title order={4} mb="sm">人選介紹 (用於提案撰寫)</Title>
+              <Text size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                {kol.introduction}
+              </Text>
+            </Card>
+          )}
+
           <Modal
-            id="kol-contact-modal"
             opened={contactOpened}
             onClose={() => setContactOpened(false)}
             title="聯絡方式"
@@ -298,10 +312,52 @@ export default function KolDetailPage() {
             {tab === "performance" && (
               <Stack>
                 <Grid>
-                  <Grid.Col span={{ base: 12, md: 6 }}><Card withBorder><Text c="dimmed" size="sm">平均觸及</Text><Title order={3}>{formatNumber(stats.averageReach)}</Title></Card></Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}><Card withBorder><Text c="dimmed" size="sm">平均互動率</Text><Title order={3}>{(stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1)}%</Title></Card></Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}><Card withBorder><Text c="dimmed" size="sm">平均觀看</Text><Title order={3}>{formatNumber(stats.averageViews)}</Title></Card></Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}><Card withBorder><Text c="dimmed" size="sm">轉換率</Text><Title order={3}>{(stats.conversionRate ?? 0).toFixed(1)}%</Title></Card></Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder style={{ height: "100%" }}>
+                      <Text c="dimmed" size="sm">平均觸及</Text>
+                      <Title order={3}>{formatNumber(stats.averageReach)}</Title>
+                    </Card>
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder style={{ height: "100%" }}>
+                      <Text c="dimmed" size="sm">曝光率 (%)</Text>
+                      <Title order={3}>{(kol.exposureRate || 0).toFixed(1)}%</Title>
+                    </Card>
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder style={{ height: "100%" }}>
+                      <Text c="dimmed" size="sm">平均互動率</Text>
+                      <Title order={3}>{(stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1)}%</Title>
+                    </Card>
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder style={{ height: "100%" }}>
+                      <Text c="dimmed" size="sm">轉換率</Text>
+                      <Title order={3}>{(stats.conversionRate ?? 0).toFixed(1)}%</Title>
+                    </Card>
+                  </Grid.Col>
+                </Grid>
+
+                <Grid mt="sm">
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder>
+                      <Text fw={600} mb="sm">受眾性別比</Text>
+                      <Group justify="space-between">
+                        <Text size="sm">男 {kol.audienceGender?.male || 0}%</Text>
+                        <Text size="sm">女 {kol.audienceGender?.female || 0}%</Text>
+                      </Group>
+                      <Progress.Root size="xl" mt={4}>
+                        <Progress.Section value={kol.audienceGender?.male || 0} color="blue" />
+                        <Progress.Section value={kol.audienceGender?.female || 0} color="pink" />
+                      </Progress.Root>
+                    </Card>
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder>
+                      <Text fw={600} mb="sm">受眾年齡層</Text>
+                      <Title order={3}>{kol.audienceAge || "未知"}</Title>
+                    </Card>
+                  </Grid.Col>
                 </Grid>
 
                 <Card withBorder mt="md">
@@ -335,6 +391,7 @@ export default function KolDetailPage() {
               <Text>🏢 合作產業: {(kol.industryDistribution ?? []).join(" ") || (kol.industry ?? "-")}</Text>
               <Text>👁️ 平均觸及: {formatNumber(stats.averageReach)}</Text>
               <Text>💗 平均互動率: {(stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1)}%</Text>
+              <Text>📢 曝光率: {(kol.exposureRate || 0).toFixed(1)}%</Text>
             </Stack>
           </Card>
         </Grid.Col>
