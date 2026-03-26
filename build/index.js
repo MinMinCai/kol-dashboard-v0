@@ -455,6 +455,13 @@ async function listPlatformCatalog() {
     return [];
   }
 }
+async function addPlatformCatalog(data) {
+  return (await fetch(`${MOCK_API_BASE}/platformCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
 async function updatePlatformCatalog(id, data) {
   return (await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
     method: "PATCH",
@@ -11684,12 +11691,13 @@ import {
   Table as Table4,
   Text as Text14,
   TextInput as TextInput10,
-  Title as Title15
+  Title as Title15,
+  ScrollArea
 } from "@mantine/core";
 import { json as json15, redirect as redirect7 } from "@remix-run/node";
-import { Form as Form9, Link as Link13, useLoaderData as useLoaderData11 } from "@remix-run/react";
+import { Form as Form9, Link as Link13, useLoaderData as useLoaderData11, useSubmit as useSubmit2 } from "@remix-run/react";
 import { useMemo as useMemo3, useState as useState10 } from "react";
-import { IconPencil as IconPencil3, IconPlus, IconTrash as IconTrash4 } from "@tabler/icons-react";
+import { IconPencil as IconPencil3, IconPlus, IconTrash as IconTrash4, IconX as IconX3, IconCheck as IconCheck3 } from "@tabler/icons-react";
 import { jsxDEV as jsxDEV17 } from "react/jsx-dev-runtime";
 function normalizeTagList(tags) {
   return Array.from(new Set(tags.map((t) => t.trim()).filter(Boolean))).sort();
@@ -11858,12 +11866,12 @@ function tabFallback(intent) {
   return intent.startsWith("tag.") ? "tags" : intent.startsWith("member.") ? "roles" : (intent.startsWith("brand."), "clients");
 }
 function SettingsRoute() {
-  let { tab, q, filteredBrands, tagGroups, teamMembers, currentUserRole } = useLoaderData11(), [selectedGroupId, setSelectedGroupId] = useState10(
+  let submit = useSubmit2(), { tab, q, filteredBrands, tagGroups, teamMembers, currentUserRole } = useLoaderData11(), [selectedGroupId, setSelectedGroupId] = useState10(
     () => tagGroups[0]?.id ?? EDITABLE_TAG_GROUP
   ), selectedGroup = useMemo3(
     () => tagGroups.find((g) => g.id === selectedGroupId) ?? tagGroups[0],
     [tagGroups, selectedGroupId]
-  ), [tagModalOpened, setTagModalOpened] = useState10(!1), [tagModalMode, setTagModalMode] = useState10("add"), [activeTagValue, setActiveTagValue] = useState10(""), [draftTagValue, setDraftTagValue] = useState10(""), [brandModalOpened, setBrandModalOpened] = useState10(!1), [activeBrand, setActiveBrand] = useState10(null), [memberModalOpened, setMemberModalOpened] = useState10(!1), [activeMember, setActiveMember] = useState10(null), [groupFilter, setGroupFilter] = useState10("all"), isAdmin = currentUserRole === "admin", groupOrder = {
+  ), [isEditingTags, setIsEditingTags] = useState10(!1), [newTagValue, setNewTagValue] = useState10(""), [tagModalOpened, setTagModalOpened] = useState10(!1), [tagModalMode, setTagModalMode] = useState10("add"), [activeTagValue, setActiveTagValue] = useState10(""), [draftTagValue, setDraftTagValue] = useState10(""), [brandModalOpened, setBrandModalOpened] = useState10(!1), [activeBrand, setActiveBrand] = useState10(null), [memberModalOpened, setMemberModalOpened] = useState10(!1), [activeMember, setActiveMember] = useState10(null), [groupFilter, setGroupFilter] = useState10("all"), isAdmin = currentUserRole === "admin", groupOrder = {
     AE: 1,
     KOL: 2,
     Tech: 3,
@@ -11886,17 +11894,17 @@ function SettingsRoute() {
     /* @__PURE__ */ jsxDEV17(Stack14, { gap: 4, children: [
       /* @__PURE__ */ jsxDEV17(Title15, { order: 2, children: "\u7CFB\u7D71\u8A2D\u5B9A" }, void 0, !1, {
         fileName: "app/routes/_app.settings.tsx",
-        lineNumber: 353,
+        lineNumber: 363,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV17(Text14, { c: "dimmed", children: "\u7BA1\u7406\u54C1\u724C\u3001\u6A19\u7C64\u3001\u6B0A\u9650\u8207\u7CFB\u7D71\u504F\u597D\u8A2D\u5B9A\u3002\u5404\u5206\u9801\u5C07\u81EA\u52D5\u8207\u76EE\u524D\u8CC7\u6599\u540C\u6B65\u66F4\u65B0\u3002" }, void 0, !1, {
         fileName: "app/routes/_app.settings.tsx",
-        lineNumber: 354,
+        lineNumber: 364,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.settings.tsx",
-      lineNumber: 352,
+      lineNumber: 362,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV17(Card14, { withBorder: !0, radius: "lg", p: 0, style: { overflow: "hidden" }, children: [
@@ -11912,17 +11920,17 @@ function SettingsRoute() {
           children: [
             /* @__PURE__ */ jsxDEV17(Link13, { to: "/settings?tab=clients", style: tabStyle("clients"), children: "\u54C1\u724C\u7BA1\u7406" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 368,
+              lineNumber: 378,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV17(Link13, { to: "/settings?tab=tags", style: tabStyle("tags"), children: "\u6A19\u7C64\u7BA1\u7406" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 371,
+              lineNumber: 381,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV17(Link13, { to: "/settings?tab=roles", style: tabStyle("roles"), children: "\u6B0A\u9650\u7BA1\u7406" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 374,
+              lineNumber: 384,
               columnNumber: 11
             }, this)
           ]
@@ -11931,7 +11939,7 @@ function SettingsRoute() {
         !0,
         {
           fileName: "app/routes/_app.settings.tsx",
-          lineNumber: 360,
+          lineNumber: 370,
           columnNumber: 9
         },
         this
@@ -11942,17 +11950,17 @@ function SettingsRoute() {
             /* @__PURE__ */ jsxDEV17(Stack14, { gap: 2, children: [
               /* @__PURE__ */ jsxDEV17(Title15, { order: 3, children: "\u54C1\u724C\u7BA1\u7406" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 384,
+                lineNumber: 394,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", c: "dimmed", children: "\u96C6\u4E2D\u7BA1\u7406\u54C1\u724C\u8207\u5BA2\u6236\u8CC7\u8A0A\uFF0C\u652F\u63F4\u7DE8\u8F2F\u8207\u5FEB\u901F\u7DAD\u8B77\u3002" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 385,
+                lineNumber: 395,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 383,
+              lineNumber: 393,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV17(
@@ -11960,7 +11968,7 @@ function SettingsRoute() {
               {
                 leftSection: /* @__PURE__ */ jsxDEV17(IconPlus, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 390,
+                  lineNumber: 400,
                   columnNumber: 32
                 }, this),
                 onClick: () => {
@@ -11972,21 +11980,21 @@ function SettingsRoute() {
               !1,
               {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 389,
+                lineNumber: 399,
                 columnNumber: 17
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 382,
+            lineNumber: 392,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Group14, { mt: "md", align: "center", justify: "space-between", wrap: "nowrap", children: [
             /* @__PURE__ */ jsxDEV17(Form9, { method: "get", action: "/settings", style: { flex: 1, display: "flex", gap: 8 }, children: [
               /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "tab", value: "clients" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 402,
+                lineNumber: 412,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV17(
@@ -12001,93 +12009,93 @@ function SettingsRoute() {
                 !1,
                 {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 403,
+                  lineNumber: 413,
                   columnNumber: 19
                 },
                 this
               ),
               /* @__PURE__ */ jsxDEV17(Button14, { type: "submit", children: "\u641C\u5C0B" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 409,
+                lineNumber: 419,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 401,
+              lineNumber: 411,
               columnNumber: 17
             }, this),
             q && /* @__PURE__ */ jsxDEV17(Button14, { variant: "default", component: Link13, to: "/settings?tab=clients", children: "\u6E05\u9664" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 412,
+              lineNumber: 422,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 400,
+            lineNumber: 410,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ jsxDEV17(Table4, { withTableBorder: !0, verticalSpacing: "md", mt: "lg", children: [
+          /* @__PURE__ */ jsxDEV17(ScrollArea, { h: 500, offsetScrollbars: !0, mt: "lg", children: /* @__PURE__ */ jsxDEV17(Table4, { withTableBorder: !0, verticalSpacing: "md", children: [
             /* @__PURE__ */ jsxDEV17(Table4.Thead, { children: /* @__PURE__ */ jsxDEV17(Table4.Tr, { children: [
               /* @__PURE__ */ jsxDEV17(Table4.Th, { w: 80, children: "Logo" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 421,
-                columnNumber: 21
+                lineNumber: 432,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { children: "\u54C1\u724C\u540D\u7A31" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 422,
-                columnNumber: 21
+                lineNumber: 433,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { w: 150, children: "\u6D3B\u52D5\u5C08\u6848\u6578" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 423,
-                columnNumber: 21
+                lineNumber: 434,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { w: 120, children: "\u64CD\u4F5C" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 424,
-                columnNumber: 21
+                lineNumber: 435,
+                columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 420,
-              columnNumber: 19
+              lineNumber: 431,
+              columnNumber: 21
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 419,
-              columnNumber: 17
+              lineNumber: 430,
+              columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV17(Table4.Tbody, { children: [
               filteredBrands.map((brand) => /* @__PURE__ */ jsxDEV17(Table4.Tr, { children: [
                 /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Avatar9, { radius: "xl", color: "blue", children: brand.name.slice(0, 1).toUpperCase() }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 431,
-                  columnNumber: 25
+                  lineNumber: 442,
+                  columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 430,
-                  columnNumber: 23
+                  lineNumber: 441,
+                  columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Text14, { fw: 600, children: brand.name }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 436,
-                  columnNumber: 25
+                  lineNumber: 447,
+                  columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 435,
-                  columnNumber: 23
+                  lineNumber: 446,
+                  columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Badge8, { variant: "light", color: "gray", children: [
                   brand.activeProjects,
                   " \u500B\u5C08\u6848"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 439,
-                  columnNumber: 25
+                  lineNumber: 450,
+                  columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 438,
-                  columnNumber: 23
+                  lineNumber: 449,
+                  columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: [
                   /* @__PURE__ */ jsxDEV17(
@@ -12100,16 +12108,16 @@ function SettingsRoute() {
                       },
                       children: /* @__PURE__ */ jsxDEV17(IconPencil3, { size: 14 }, void 0, !1, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 451,
-                        columnNumber: 29
+                        lineNumber: 462,
+                        columnNumber: 31
                       }, this)
                     },
                     void 0,
                     !1,
                     {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 443,
-                      columnNumber: 27
+                      lineNumber: 454,
+                      columnNumber: 29
                     },
                     this
                   ),
@@ -12118,111 +12126,115 @@ function SettingsRoute() {
                   }, children: [
                     /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "intent", value: "brand.delete" }, void 0, !1, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 454,
-                      columnNumber: 29
+                      lineNumber: 465,
+                      columnNumber: 31
                     }, this),
                     /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "id", value: brand.id }, void 0, !1, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 455,
-                      columnNumber: 29
+                      lineNumber: 466,
+                      columnNumber: 31
                     }, this),
                     /* @__PURE__ */ jsxDEV17(ActionIcon4, { variant: "light", color: "red", type: "submit", children: /* @__PURE__ */ jsxDEV17(IconTrash4, { size: 14 }, void 0, !1, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 457,
-                      columnNumber: 31
+                      lineNumber: 468,
+                      columnNumber: 33
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 456,
-                      columnNumber: 29
+                      lineNumber: 467,
+                      columnNumber: 31
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 453,
-                    columnNumber: 27
+                    lineNumber: 464,
+                    columnNumber: 29
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 442,
-                  columnNumber: 25
+                  lineNumber: 453,
+                  columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 441,
-                  columnNumber: 23
+                  lineNumber: 452,
+                  columnNumber: 25
                 }, this)
               ] }, brand.id, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 429,
-                columnNumber: 21
+                lineNumber: 440,
+                columnNumber: 23
               }, this)),
               filteredBrands.length === 0 && /* @__PURE__ */ jsxDEV17(Table4.Tr, { children: /* @__PURE__ */ jsxDEV17(Table4.Td, { colSpan: 4, align: "center", style: { padding: "32px 0", color: "var(--mantine-color-dimmed)" }, children: "\u627E\u4E0D\u5230\u7B26\u5408\u689D\u4EF6\u7684\u54C1\u724C" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 466,
-                columnNumber: 23
+                lineNumber: 477,
+                columnNumber: 25
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 465,
-                columnNumber: 21
+                lineNumber: 476,
+                columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 427,
-              columnNumber: 17
+              lineNumber: 438,
+              columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 418,
+            lineNumber: 429,
+            columnNumber: 17
+          }, this) }, void 0, !1, {
+            fileName: "app/routes/_app.settings.tsx",
+            lineNumber: 428,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Modal6, { opened: brandModalOpened, onClose: () => setBrandModalOpened(!1), title: activeBrand ? "\u7DE8\u8F2F\u54C1\u724C" : "\u65B0\u589E\u54C1\u724C", children: /* @__PURE__ */ jsxDEV17(Form9, { method: "post", onSubmit: () => setBrandModalOpened(!1), children: [
             /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "intent", value: activeBrand ? "brand.edit" : "brand.add" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 476,
+              lineNumber: 488,
               columnNumber: 19
             }, this),
             activeBrand && /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "id", value: activeBrand.id }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 477,
+              lineNumber: 489,
               columnNumber: 35
             }, this),
             /* @__PURE__ */ jsxDEV17(Stack14, { children: [
               /* @__PURE__ */ jsxDEV17(TextInput10, { label: "\u54C1\u724C\u540D\u7A31", name: "name", defaultValue: activeBrand?.name || "", placeholder: "\u4F8B\u5982\uFF1APanasonic", required: !0 }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 479,
+                lineNumber: 491,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV17(Group14, { justify: "flex-end", children: [
                 /* @__PURE__ */ jsxDEV17(Button14, { variant: "default", onClick: () => setBrandModalOpened(!1), children: "\u53D6\u6D88" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 481,
+                  lineNumber: 493,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Button14, { type: "submit", children: "\u5132\u5B58" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 482,
+                  lineNumber: 494,
                   columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 480,
+                lineNumber: 492,
                 columnNumber: 21
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 478,
+              lineNumber: 490,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 475,
+            lineNumber: 487,
             columnNumber: 17
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 474,
+            lineNumber: 486,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.settings.tsx",
-          lineNumber: 381,
+          lineNumber: 391,
           columnNumber: 13
         }, this),
         tab === "tags" && /* @__PURE__ */ jsxDEV17(Box10, { children: [
@@ -12230,57 +12242,60 @@ function SettingsRoute() {
             /* @__PURE__ */ jsxDEV17(Stack14, { gap: 2, children: [
               /* @__PURE__ */ jsxDEV17(Title15, { order: 3, children: "\u6A19\u7C64\u7BA1\u7406" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 494,
+                lineNumber: 506,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", c: "dimmed", children: "\u5167\u5BB9\u6A19\u7C64\u3001\u7522\u696D\u8207\u5E73\u53F0\u6703\u81EA\u52D5\u8207 KOL \u8CC7\u6599\u540C\u6B65\u66F4\u65B0\u3002\u7CFB\u7D71\u504F\u597D\u5DF2\u79FB\u9664\u3002" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 495,
+                lineNumber: 507,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 493,
+              lineNumber: 505,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV17(
               Button14,
               {
-                variant: "light",
-                leftSection: /* @__PURE__ */ jsxDEV17(IconPlus, { size: 16 }, void 0, !1, {
+                variant: isEditingTags ? "filled" : "light",
+                color: "blue",
+                leftSection: isEditingTags ? /* @__PURE__ */ jsxDEV17(IconCheck3, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 501,
-                  columnNumber: 32
+                  lineNumber: 514,
+                  columnNumber: 48
+                }, this) : /* @__PURE__ */ jsxDEV17(IconPencil3, { size: 16 }, void 0, !1, {
+                  fileName: "app/routes/_app.settings.tsx",
+                  lineNumber: 514,
+                  columnNumber: 74
                 }, this),
-                onClick: () => {
-                  setTagModalMode("add"), setDraftTagValue(""), setTagModalOpened(!0);
-                },
-                children: "\u65B0\u589E\u6A19\u7C64"
+                onClick: () => setIsEditingTags(!isEditingTags),
+                children: isEditingTags ? "\u5B8C\u6210\u7DE8\u8F2F" : "\u7DE8\u8F2F"
               },
               void 0,
               !1,
               {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 499,
+                lineNumber: 511,
                 columnNumber: 17
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 492,
+            lineNumber: 504,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Divider8, { my: "md" }, void 0, !1, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 512,
+            lineNumber: 521,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Grid3, { children: [
             /* @__PURE__ */ jsxDEV17(Grid3.Col, { span: { base: 12, md: 4 }, children: /* @__PURE__ */ jsxDEV17(Stack14, { gap: "xs", children: [
               /* @__PURE__ */ jsxDEV17(Text14, { fw: 600, size: "sm", c: "dimmed", children: "\u6A19\u7C64\u5206\u985E" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 517,
+                lineNumber: 526,
                 columnNumber: 21
               }, this),
               tagGroups.map((group) => {
@@ -12299,7 +12314,7 @@ function SettingsRoute() {
                     children: [
                       /* @__PURE__ */ jsxDEV17(Text14, { fw: 600, children: group.name }, void 0, !1, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 534,
+                        lineNumber: 543,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV17(Text14, { size: "xs", c: "dimmed", children: [
@@ -12307,7 +12322,7 @@ function SettingsRoute() {
                         " \u9805"
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 535,
+                        lineNumber: 544,
                         columnNumber: 27
                       }, this)
                     ]
@@ -12316,7 +12331,7 @@ function SettingsRoute() {
                   !0,
                   {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 523,
+                    lineNumber: 532,
                     columnNumber: 25
                   },
                   this
@@ -12324,93 +12339,155 @@ function SettingsRoute() {
               })
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 516,
+              lineNumber: 525,
               columnNumber: 19
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 515,
+              lineNumber: 524,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV17(Grid3.Col, { span: { base: 12, md: 8 }, children: /* @__PURE__ */ jsxDEV17(Stack14, { gap: "sm", children: [
               /* @__PURE__ */ jsxDEV17(Stack14, { gap: 4, children: [
                 /* @__PURE__ */ jsxDEV17(Title15, { order: 4, children: selectedGroup?.name ?? "-" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 546,
+                  lineNumber: 555,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", c: "dimmed", children: selectedGroup?.description }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 547,
+                  lineNumber: 556,
                   columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 545,
+                lineNumber: 554,
                 columnNumber: 21
               }, this),
-              /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: (selectedGroup?.tags ?? []).map((tag, index) => /* @__PURE__ */ jsxDEV17(Group14, { gap: 6, wrap: "nowrap", children: [
-                /* @__PURE__ */ jsxDEV17(
-                  Badge8,
-                  {
-                    color: PILL_COLORS[index % PILL_COLORS.length],
-                    variant: "light",
-                    size: "lg",
-                    children: tag
-                  },
-                  void 0,
-                  !1,
-                  {
-                    fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 554,
-                    columnNumber: 27
-                  },
-                  this
-                ),
-                /* @__PURE__ */ jsxDEV17(
-                  ActionIcon4,
-                  {
-                    variant: "subtle",
-                    color: "blue",
-                    size: "sm",
-                    onClick: () => {
-                      setActiveTagValue(tag), setTagModalMode("edit"), setDraftTagValue(tag), setTagModalOpened(!0);
+              /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: (selectedGroup?.tags ?? []).map((tag, index) => /* @__PURE__ */ jsxDEV17(Group14, { gap: 4, wrap: "nowrap", children: /* @__PURE__ */ jsxDEV17(
+                Badge8,
+                {
+                  color: PILL_COLORS[index % PILL_COLORS.length],
+                  variant: "light",
+                  size: "lg",
+                  rightSection: isEditingTags && /* @__PURE__ */ jsxDEV17(
+                    ActionIcon4,
+                    {
+                      size: "xs",
+                      color: "red",
+                      variant: "transparent",
+                      onClick: () => {
+                        if (window.confirm(`\u78BA\u5B9A\u8981\u522A\u9664\u6A19\u7C64\u300C${tag}\u300D\u55CE\uFF1F`)) {
+                          let formData = new FormData();
+                          formData.append("intent", "tag.delete"), formData.append("groupId", selectedGroupId), formData.append("name", tag), submit(formData, { method: "post" });
+                        }
+                      },
+                      children: /* @__PURE__ */ jsxDEV17(IconX3, { size: 12 }, void 0, !1, {
+                        fileName: "app/routes/_app.settings.tsx",
+                        lineNumber: 582,
+                        columnNumber: 33
+                      }, this)
                     },
-                    children: /* @__PURE__ */ jsxDEV17(IconPencil3, { size: 14 }, void 0, !1, {
+                    void 0,
+                    !1,
+                    {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 572,
-                      columnNumber: 29
-                    }, this)
-                  },
-                  void 0,
-                  !1,
-                  {
-                    fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 561,
-                    columnNumber: 27
-                  },
-                  this
-                )
-              ] }, tag, !0, {
+                      lineNumber: 568,
+                      columnNumber: 31
+                    },
+                    this
+                  ),
+                  children: tag
+                },
+                void 0,
+                !1,
+                {
+                  fileName: "app/routes/_app.settings.tsx",
+                  lineNumber: 563,
+                  columnNumber: 27
+                },
+                this
+              ) }, tag, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 553,
+                lineNumber: 562,
                 columnNumber: 25
               }, this)) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 551,
+                lineNumber: 560,
                 columnNumber: 21
+              }, this),
+              isEditingTags && /* @__PURE__ */ jsxDEV17(Box10, { mt: "md", p: "md", style: { border: "1px dashed var(--mantine-color-blue-4)", borderRadius: "8px" }, children: [
+                /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", fw: 600, mb: "xs", children: "\u65B0\u589E\u65B0\u6A19\u7C64\uFF1A" }, void 0, !1, {
+                  fileName: "app/routes/_app.settings.tsx",
+                  lineNumber: 593,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: [
+                  /* @__PURE__ */ jsxDEV17(
+                    TextInput10,
+                    {
+                      placeholder: "\u8F38\u5165\u65B0\u6A19\u7C64\u540D\u7A31",
+                      value: newTagValue,
+                      onChange: (e) => setNewTagValue(e.currentTarget.value),
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter" && newTagValue.trim()) {
+                          let formData = new FormData();
+                          formData.append("intent", "tag.add"), formData.append("groupId", selectedGroupId), formData.append("name", newTagValue.trim()), submit(formData, { method: "post" }), setNewTagValue("");
+                        }
+                      },
+                      style: { flex: 1 }
+                    },
+                    void 0,
+                    !1,
+                    {
+                      fileName: "app/routes/_app.settings.tsx",
+                      lineNumber: 595,
+                      columnNumber: 27
+                    },
+                    this
+                  ),
+                  /* @__PURE__ */ jsxDEV17(
+                    Button14,
+                    {
+                      onClick: () => {
+                        if (newTagValue.trim()) {
+                          let formData = new FormData();
+                          formData.append("intent", "tag.add"), formData.append("groupId", selectedGroupId), formData.append("name", newTagValue.trim()), submit(formData, { method: "post" }), setNewTagValue("");
+                        }
+                      },
+                      disabled: !newTagValue.trim(),
+                      children: "\u65B0\u589E"
+                    },
+                    void 0,
+                    !1,
+                    {
+                      fileName: "app/routes/_app.settings.tsx",
+                      lineNumber: 611,
+                      columnNumber: 27
+                    },
+                    this
+                  )
+                ] }, void 0, !0, {
+                  fileName: "app/routes/_app.settings.tsx",
+                  lineNumber: 594,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.settings.tsx",
+                lineNumber: 592,
+                columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 544,
+              lineNumber: 553,
               columnNumber: 19
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 543,
+              lineNumber: 552,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 514,
+            lineNumber: 523,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(
@@ -12422,22 +12499,22 @@ function SettingsRoute() {
               children: /* @__PURE__ */ jsxDEV17(Form9, { method: "post", onSubmit: () => setTagModalOpened(!1), children: /* @__PURE__ */ jsxDEV17(Stack14, { children: [
                 /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "intent", value: `tag.${tagModalMode}` }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 590,
+                  lineNumber: 642,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "groupId", value: selectedGroupId }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 591,
+                  lineNumber: 643,
                   columnNumber: 21
                 }, this),
                 tagModalMode === "edit" && /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "oldName", value: activeTagValue }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 592,
+                  lineNumber: 644,
                   columnNumber: 49
                 }, this),
                 tagModalMode === "delete" && /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "name", value: activeTagValue }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 593,
+                  lineNumber: 645,
                   columnNumber: 51
                 }, this),
                 (tagModalMode === "add" || tagModalMode === "edit") && /* @__PURE__ */ jsxDEV17(
@@ -12453,7 +12530,7 @@ function SettingsRoute() {
                   !1,
                   {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 595,
+                    lineNumber: 647,
                     columnNumber: 23
                   },
                   this
@@ -12464,37 +12541,37 @@ function SettingsRoute() {
                   "\u300D\u55CE\uFF1F\u76F8\u95DC KOL \u7684\u8CC7\u6599\u4E5F\u5C07\u540C\u6B65\u6E05\u9664\u3002"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 604,
+                  lineNumber: 656,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Group14, { justify: "flex-end", children: [
                   tagModalMode === "edit" && /* @__PURE__ */ jsxDEV17(Button14, { type: "button", variant: "light", color: "red", onClick: () => setTagModalMode("delete"), children: "\u522A\u9664" }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 609,
+                    lineNumber: 661,
                     columnNumber: 25
                   }, this),
                   /* @__PURE__ */ jsxDEV17(Button14, { variant: "default", onClick: () => setTagModalOpened(!1), children: "\u53D6\u6D88" }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 613,
+                    lineNumber: 665,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV17(Button14, { type: "submit", color: tagModalMode === "delete" ? "red" : "blue", children: tagModalMode === "delete" ? "\u78BA\u8A8D\u522A\u9664" : "\u5132\u5B58" }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 616,
+                    lineNumber: 668,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 607,
+                  lineNumber: 659,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 589,
+                lineNumber: 641,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 588,
+                lineNumber: 640,
                 columnNumber: 17
               }, this)
             },
@@ -12502,14 +12579,14 @@ function SettingsRoute() {
             !1,
             {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 581,
+              lineNumber: 633,
               columnNumber: 15
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.settings.tsx",
-          lineNumber: 491,
+          lineNumber: 503,
           columnNumber: 13
         }, this),
         tab === "roles" && /* @__PURE__ */ jsxDEV17(Box10, { children: [
@@ -12517,17 +12594,17 @@ function SettingsRoute() {
             /* @__PURE__ */ jsxDEV17(Stack14, { gap: 2, children: [
               /* @__PURE__ */ jsxDEV17(Title15, { order: 3, children: "\u6B0A\u9650\u7BA1\u7406" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 630,
+                lineNumber: 682,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", c: "dimmed", children: "\u7BA1\u7406\u5718\u968A\u6210\u54E1\u3002\u9EDE\u64CA\u925B\u7B46\u9032\u884C\u7DE8\u8F2F\uFF0C\u63D0\u4EA4\u5F8C\u81EA\u52D5\u95DC\u9589\u8996\u7A97\u3002" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 631,
+                lineNumber: 683,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 629,
+              lineNumber: 681,
               columnNumber: 17
             }, this),
             isAdmin && /* @__PURE__ */ jsxDEV17(
@@ -12535,7 +12612,7 @@ function SettingsRoute() {
               {
                 leftSection: /* @__PURE__ */ jsxDEV17(IconPlus, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 637,
+                  lineNumber: 689,
                   columnNumber: 34
                 }, this),
                 onClick: () => {
@@ -12547,20 +12624,20 @@ function SettingsRoute() {
               !1,
               {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 636,
+                lineNumber: 688,
                 columnNumber: 19
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 628,
+            lineNumber: 680,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Group14, { mt: "md", align: "center", justify: "space-between", children: /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: [
             /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", fw: 600, children: "\u7D44\u5225\u7BE9\u9078" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 650,
+              lineNumber: 702,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV17(
@@ -12577,7 +12654,7 @@ function SettingsRoute() {
                 children: [
                   /* @__PURE__ */ jsxDEV17("option", { value: "all", children: "\u5168\u90E8" }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 661,
+                    lineNumber: 713,
                     columnNumber: 21
                   }, this),
                   GROUP_OPTIONS.map((opt) => /* @__PURE__ */ jsxDEV17("option", { value: opt, children: [
@@ -12585,7 +12662,7 @@ function SettingsRoute() {
                     " \u7D44"
                   ] }, opt, !0, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 662,
+                    lineNumber: 714,
                     columnNumber: 49
                   }, this))
                 ]
@@ -12594,91 +12671,91 @@ function SettingsRoute() {
               !0,
               {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 651,
+                lineNumber: 703,
                 columnNumber: 19
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 649,
+            lineNumber: 701,
             columnNumber: 17
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 648,
+            lineNumber: 700,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ jsxDEV17(Table4, { withTableBorder: !0, verticalSpacing: "md", mt: "lg", children: [
+          /* @__PURE__ */ jsxDEV17(ScrollArea, { h: 500, offsetScrollbars: !0, mt: "lg", children: /* @__PURE__ */ jsxDEV17(Table4, { withTableBorder: !0, verticalSpacing: "md", children: [
             /* @__PURE__ */ jsxDEV17(Table4.Thead, { children: /* @__PURE__ */ jsxDEV17(Table4.Tr, { children: [
               /* @__PURE__ */ jsxDEV17(Table4.Th, { children: "\u6210\u54E1" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 670,
-                columnNumber: 21
+                lineNumber: 723,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { children: "Email" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 671,
-                columnNumber: 21
+                lineNumber: 724,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { children: "\u7D44\u5225" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 672,
-                columnNumber: 21
+                lineNumber: 725,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { children: "\u89D2\u8272" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 673,
-                columnNumber: 21
+                lineNumber: 726,
+                columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Th, { w: 120, children: "\u64CD\u4F5C" }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 674,
-                columnNumber: 21
+                lineNumber: 727,
+                columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 669,
-              columnNumber: 19
+              lineNumber: 722,
+              columnNumber: 21
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 668,
-              columnNumber: 17
+              lineNumber: 721,
+              columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV17(Table4.Tbody, { children: filteredMembers.map((member) => /* @__PURE__ */ jsxDEV17(Table4.Tr, { children: [
               /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Text14, { fw: 600, children: member.name }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 680,
-                columnNumber: 33
+                lineNumber: 733,
+                columnNumber: 35
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 680,
-                columnNumber: 23
+                lineNumber: 733,
+                columnNumber: 25
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Td, { children: member.email }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 681,
-                columnNumber: 23
+                lineNumber: 734,
+                columnNumber: 25
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Badge8, { variant: "light", children: [
                 member.group,
                 " \u7D44"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 682,
-                columnNumber: 33
+                lineNumber: 735,
+                columnNumber: 35
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 682,
-                columnNumber: 23
+                lineNumber: 735,
+                columnNumber: 25
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Td, { children: /* @__PURE__ */ jsxDEV17(Badge8, { variant: "outline", color: member.role === "admin" ? "red" : "gray", children: member.role.toUpperCase() }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 684,
-                columnNumber: 25
+                lineNumber: 737,
+                columnNumber: 27
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 683,
-                columnNumber: 23
+                lineNumber: 736,
+                columnNumber: 25
               }, this),
               /* @__PURE__ */ jsxDEV17(Table4.Td, { children: isAdmin && /* @__PURE__ */ jsxDEV17(Group14, { gap: "xs", children: [
                 /* @__PURE__ */ jsxDEV17(
@@ -12691,16 +12768,16 @@ function SettingsRoute() {
                     },
                     children: /* @__PURE__ */ jsxDEV17(IconPencil3, { size: 14 }, void 0, !1, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 699,
-                      columnNumber: 31
+                      lineNumber: 752,
+                      columnNumber: 33
                     }, this)
                   },
                   void 0,
                   !1,
                   {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 691,
-                    columnNumber: 29
+                    lineNumber: 744,
+                    columnNumber: 31
                   },
                   this
                 ),
@@ -12709,77 +12786,81 @@ function SettingsRoute() {
                 }, children: [
                   /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "intent", value: "member.delete" }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 702,
-                    columnNumber: 31
+                    lineNumber: 755,
+                    columnNumber: 33
                   }, this),
                   /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "id", value: member.id }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 703,
-                    columnNumber: 31
+                    lineNumber: 756,
+                    columnNumber: 33
                   }, this),
                   /* @__PURE__ */ jsxDEV17(ActionIcon4, { variant: "light", color: "red", type: "submit", children: /* @__PURE__ */ jsxDEV17(IconTrash4, { size: 14 }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 705,
-                    columnNumber: 33
+                    lineNumber: 758,
+                    columnNumber: 35
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 704,
-                    columnNumber: 31
+                    lineNumber: 757,
+                    columnNumber: 33
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 701,
-                  columnNumber: 29
+                  lineNumber: 754,
+                  columnNumber: 31
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 690,
-                columnNumber: 27
+                lineNumber: 743,
+                columnNumber: 29
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 688,
-                columnNumber: 23
+                lineNumber: 741,
+                columnNumber: 25
               }, this)
             ] }, member.id, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 679,
-              columnNumber: 21
+              lineNumber: 732,
+              columnNumber: 23
             }, this)) }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 677,
-              columnNumber: 17
+              lineNumber: 730,
+              columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 667,
+            lineNumber: 720,
+            columnNumber: 17
+          }, this) }, void 0, !1, {
+            fileName: "app/routes/_app.settings.tsx",
+            lineNumber: 719,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV17(Modal6, { opened: memberModalOpened, onClose: () => setMemberModalOpened(!1), title: activeMember ? "\u7DE8\u8F2F\u6210\u54E1" : "\u65B0\u589E\u6210\u54E1", children: /* @__PURE__ */ jsxDEV17(Form9, { method: "post", onSubmit: () => setMemberModalOpened(!1), children: [
             /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "intent", value: activeMember ? "member.update" : "member.add" }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 718,
+              lineNumber: 772,
               columnNumber: 19
             }, this),
             activeMember && /* @__PURE__ */ jsxDEV17("input", { type: "hidden", name: "id", value: activeMember.id }, void 0, !1, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 719,
+              lineNumber: 773,
               columnNumber: 36
             }, this),
             /* @__PURE__ */ jsxDEV17(Stack14, { children: [
               /* @__PURE__ */ jsxDEV17(TextInput10, { name: "name", label: "\u59D3\u540D", defaultValue: activeMember?.name || "", placeholder: "\u8F38\u5165\u59D3\u540D", required: !0 }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 721,
+                lineNumber: 775,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV17(TextInput10, { name: "email", label: "Email", defaultValue: activeMember?.email || "", placeholder: "name@example.com", required: !0 }, void 0, !1, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 722,
+                lineNumber: 776,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV17(Stack14, { gap: 4, children: [
                 /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", fw: 500, children: "\u7D44\u5225" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 724,
+                  lineNumber: 778,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(
@@ -12793,7 +12874,7 @@ function SettingsRoute() {
                       " \u7D44"
                     ] }, opt, !0, {
                       fileName: "app/routes/_app.settings.tsx",
-                      lineNumber: 730,
+                      lineNumber: 784,
                       columnNumber: 51
                     }, this))
                   },
@@ -12801,20 +12882,20 @@ function SettingsRoute() {
                   !1,
                   {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 725,
+                    lineNumber: 779,
                     columnNumber: 23
                   },
                   this
                 )
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 723,
+                lineNumber: 777,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV17(Stack14, { gap: 4, children: [
                 /* @__PURE__ */ jsxDEV17(Text14, { size: "sm", fw: 500, children: "\u89D2\u8272" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 734,
+                  lineNumber: 788,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(
@@ -12826,17 +12907,17 @@ function SettingsRoute() {
                     children: [
                       /* @__PURE__ */ jsxDEV17("option", { value: "admin", children: "Admin" }, void 0, !1, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 740,
+                        lineNumber: 794,
                         columnNumber: 25
                       }, this),
                       /* @__PURE__ */ jsxDEV17("option", { value: "manager", children: "Manager" }, void 0, !1, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 741,
+                        lineNumber: 795,
                         columnNumber: 25
                       }, this),
                       /* @__PURE__ */ jsxDEV17("option", { value: "member", children: "Member" }, void 0, !1, {
                         fileName: "app/routes/_app.settings.tsx",
-                        lineNumber: 742,
+                        lineNumber: 796,
                         columnNumber: 25
                       }, this)
                     ]
@@ -12845,64 +12926,64 @@ function SettingsRoute() {
                   !0,
                   {
                     fileName: "app/routes/_app.settings.tsx",
-                    lineNumber: 735,
+                    lineNumber: 789,
                     columnNumber: 23
                   },
                   this
                 )
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 733,
+                lineNumber: 787,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV17(Group14, { justify: "flex-end", children: [
                 /* @__PURE__ */ jsxDEV17(Button14, { variant: "default", onClick: () => setMemberModalOpened(!1), children: "\u53D6\u6D88" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 746,
+                  lineNumber: 800,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV17(Button14, { type: "submit", children: activeMember ? "\u5132\u5B58" : "\u65B0\u589E" }, void 0, !1, {
                   fileName: "app/routes/_app.settings.tsx",
-                  lineNumber: 747,
+                  lineNumber: 801,
                   columnNumber: 23
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.settings.tsx",
-                lineNumber: 745,
+                lineNumber: 799,
                 columnNumber: 21
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.settings.tsx",
-              lineNumber: 720,
+              lineNumber: 774,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 717,
+            lineNumber: 771,
             columnNumber: 17
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.settings.tsx",
-            lineNumber: 716,
+            lineNumber: 770,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.settings.tsx",
-          lineNumber: 627,
+          lineNumber: 679,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.settings.tsx",
-        lineNumber: 379,
+        lineNumber: 389,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.settings.tsx",
-      lineNumber: 359,
+      lineNumber: 369,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.settings.tsx",
-    lineNumber: 351,
+    lineNumber: 361,
     columnNumber: 5
   }, this);
 }
@@ -13588,7 +13669,7 @@ import { Outlet as Outlet2, useLocation as useLocation2 } from "@remix-run/react
 
 // app/components/GlobalNotification.tsx
 import { Affix, Transition, Card as Card15, Group as Group15, ActionIcon as ActionIcon5, Title as Title16, Text as Text15, Button as Button15, Progress as Progress3, ThemeIcon as ThemeIcon3, Box as Box11 } from "@mantine/core";
-import { IconX as IconX3, IconCheck as IconCheck3 } from "@tabler/icons-react";
+import { IconX as IconX4, IconCheck as IconCheck4 } from "@tabler/icons-react";
 import { useEffect as useEffect4, useState as useState12 } from "react";
 import { useNavigate, useLocation } from "@remix-run/react";
 import { Fragment as Fragment4, jsxDEV as jsxDEV19 } from "react/jsx-dev-runtime";
@@ -13613,7 +13694,7 @@ function GlobalNotification() {
         style: { position: "sticky", top: 0, zIndex: 1e3, width: "100%" },
         children: /* @__PURE__ */ jsxDEV19(Group15, { justify: "center", align: "center", style: { position: "relative" }, children: [
           /* @__PURE__ */ jsxDEV19(Group15, { gap: "xs", children: [
-            /* @__PURE__ */ jsxDEV19(ThemeIcon3, { color: "white", variant: "transparent", size: "sm", children: /* @__PURE__ */ jsxDEV19(IconCheck3, { size: 18 }, void 0, !1, {
+            /* @__PURE__ */ jsxDEV19(ThemeIcon3, { color: "white", variant: "transparent", size: "sm", children: /* @__PURE__ */ jsxDEV19(IconCheck4, { size: 18 }, void 0, !1, {
               fileName: "app/components/GlobalNotification.tsx",
               lineNumber: 48,
               columnNumber: 17
@@ -13660,7 +13741,7 @@ function GlobalNotification() {
               variant: "transparent",
               color: "white",
               style: { position: "absolute", right: 16 },
-              children: /* @__PURE__ */ jsxDEV19(IconX3, { size: 16 }, void 0, !1, {
+              children: /* @__PURE__ */ jsxDEV19(IconX4, { size: 16 }, void 0, !1, {
                 fileName: "app/components/GlobalNotification.tsx",
                 lineNumber: 71,
                 columnNumber: 15
@@ -13783,7 +13864,7 @@ function GlobalNotification() {
               lineNumber: 90,
               columnNumber: 19
             }, this),
-            /* @__PURE__ */ jsxDEV19(ActionIcon5, { variant: "subtle", color: "gray", onClick: hideToast, children: /* @__PURE__ */ jsxDEV19(IconX3, { size: 16 }, void 0, !1, {
+            /* @__PURE__ */ jsxDEV19(ActionIcon5, { variant: "subtle", color: "gray", onClick: hideToast, children: /* @__PURE__ */ jsxDEV19(IconX4, { size: 16 }, void 0, !1, {
               fileName: "app/components/GlobalNotification.tsx",
               lineNumber: 123,
               columnNumber: 21
@@ -14233,7 +14314,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-YHEFYFF6.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-Q2QT43GJ.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-B36BURA4.js", imports: ["/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-UZVSCFO3.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-P3EAJ3XT.js", imports: ["/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-S3QUQOTZ.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-MGOGBUSY.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-4VP6LHN4.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-K6SNZASE.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-5WPYLX2V.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-HTVL3OA3.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-ZFT3U75T.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-KRDQKVCK.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-PX6XKV6K.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-KYTC4XDB.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-RFWW2F7Y.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-T67WYMDJ.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-34ONWWTX.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-OCP55OL5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "507a08a7", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774436263269 }, url: "/build/manifest-507A08A7.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-OBX4HXJB.js", imports: ["/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-YSX6LJTQ.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-S7EZED66.js", imports: ["/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-3O2M7GBD.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId": { id: "routes/_app.insertion-orders.$insertionOrderId", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId-Q3NZ6WBQ.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-O3C4VL5R.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-ZBGAQFWC.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-WUOABOFL.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-PSUV7QZC.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-YYUBPR6M.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-2GOB2ZVJ.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-O6WNOVVE.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-OABFHXVJ.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-JPC4VS2F.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-N5HMNLRS.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-ACGEOOEA.js", imports: ["/build/_shared/chunk-KBIFJHSO.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-EK4DUNM5.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "0641ebb2", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774495418660 }, url: "/build/manifest-0641EBB2.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

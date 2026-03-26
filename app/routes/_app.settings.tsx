@@ -13,16 +13,21 @@ import {
   Table,
   Text,
   TextInput,
+  Textarea,
   Title,
+  Checkbox,
+  ScrollArea,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import React, { useMemo, useState } from "react";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconPencil, IconPlus, IconTrash, IconX, IconCheck } from "@tabler/icons-react";
 import {
   addBrandCatalog,
   addIndustryCatalog,
   addTagCatalog,
+  addPlatformCatalog,
   addTeamMember,
   deleteBrandCatalog,
   deleteIndustryCatalog,
@@ -297,6 +302,7 @@ function tabFallback(intent: string): string {
 }
 
 export default function SettingsRoute() {
+  const submit = useSubmit();
   const { tab, q, filteredBrands, tagGroups, teamMembers, currentUserRole } =
     useLoaderData<typeof loader>();
   const [selectedGroupId, setSelectedGroupId] = useState<string>(
@@ -306,6 +312,10 @@ export default function SettingsRoute() {
     () => tagGroups.find((g) => g.id === selectedGroupId) ?? tagGroups[0],
     [tagGroups, selectedGroupId],
   );
+
+  const [isEditingTags, setIsEditingTags] = useState(false);
+  const [newTagValue, setNewTagValue] = useState("");
+
 
   const [tagModalOpened, setTagModalOpened] = useState(false);
   const [tagModalMode, setTagModalMode] = useState<"add" | "edit" | "delete">("add");
@@ -415,61 +425,63 @@ export default function SettingsRoute() {
                 )}
               </Group>
 
-              <Table withTableBorder verticalSpacing="md" mt="lg">
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th w={80}>Logo</Table.Th>
-                    <Table.Th>品牌名稱</Table.Th>
-                    <Table.Th w={150}>活動專案數</Table.Th>
-                    <Table.Th w={120}>操作</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {filteredBrands.map((brand) => (
-                    <Table.Tr key={brand.id}>
-                      <Table.Td>
-                        <Avatar radius="xl" color="blue">
-                          {brand.name.slice(0, 1).toUpperCase()}
-                        </Avatar>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text fw={600}>{brand.name}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge variant="light" color="gray">{brand.activeProjects} 個專案</Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="light"
-                            color="blue"
-                            onClick={() => {
-                              setActiveBrand({ id: brand.id, name: brand.name });
-                              setBrandModalOpened(true);
-                            }}
-                          >
-                            <IconPencil size={14} />
-                          </ActionIcon>
-                          <Form method="post" onSubmit={(e) => { if (!window.confirm(`確定要刪除品牌「${brand.name}」嗎？`)) e.preventDefault(); }}>
-                            <input type="hidden" name="intent" value="brand.delete" />
-                            <input type="hidden" name="id" value={brand.id} />
-                            <ActionIcon variant="light" color="red" type="submit">
-                              <IconTrash size={14} />
-                            </ActionIcon>
-                          </Form>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
-                  {filteredBrands.length === 0 && (
+              <ScrollArea h={500} offsetScrollbars mt="lg">
+                <Table withTableBorder verticalSpacing="md">
+                  <Table.Thead>
                     <Table.Tr>
-                      <Table.Td colSpan={4} align="center" style={{ padding: "32px 0", color: "var(--mantine-color-dimmed)" }}>
-                        找不到符合條件的品牌
-                      </Table.Td>
+                      <Table.Th w={80}>Logo</Table.Th>
+                      <Table.Th>品牌名稱</Table.Th>
+                      <Table.Th w={150}>活動專案數</Table.Th>
+                      <Table.Th w={120}>操作</Table.Th>
                     </Table.Tr>
-                  )}
-                </Table.Tbody>
-              </Table>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {filteredBrands.map((brand) => (
+                      <Table.Tr key={brand.id}>
+                        <Table.Td>
+                          <Avatar radius="xl" color="blue">
+                            {brand.name.slice(0, 1).toUpperCase()}
+                          </Avatar>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text fw={600}>{brand.name}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge variant="light" color="gray">{brand.activeProjects} 個專案</Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="light"
+                              color="blue"
+                              onClick={() => {
+                                setActiveBrand({ id: brand.id, name: brand.name });
+                                setBrandModalOpened(true);
+                              }}
+                            >
+                              <IconPencil size={14} />
+                            </ActionIcon>
+                            <Form method="post" onSubmit={(e) => { if (!window.confirm(`確定要刪除品牌「${brand.name}」嗎？`)) e.preventDefault(); }}>
+                              <input type="hidden" name="intent" value="brand.delete" />
+                              <input type="hidden" name="id" value={brand.id} />
+                              <ActionIcon variant="light" color="red" type="submit">
+                                <IconTrash size={14} />
+                              </ActionIcon>
+                            </Form>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                    {filteredBrands.length === 0 && (
+                      <Table.Tr>
+                        <Table.Td colSpan={4} align="center" style={{ padding: "32px 0", color: "var(--mantine-color-dimmed)" }}>
+                          找不到符合條件的品牌
+                        </Table.Td>
+                      </Table.Tr>
+                    )}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
 
               <Modal opened={brandModalOpened} onClose={() => setBrandModalOpened(false)} title={activeBrand ? "編輯品牌" : "新增品牌"}>
                 <Form method="post" onSubmit={() => setBrandModalOpened(false)}>
@@ -497,15 +509,12 @@ export default function SettingsRoute() {
                   </Text>
                 </Stack>
                 <Button
-                  variant="light"
-                  leftSection={<IconPlus size={16} />}
-                  onClick={() => {
-                    setTagModalMode("add");
-                    setDraftTagValue("");
-                    setTagModalOpened(true);
-                  }}
+                  variant={isEditingTags ? "filled" : "light"}
+                  color={isEditingTags ? "blue" : "blue"}
+                  leftSection={isEditingTags ? <IconCheck size={16} /> : <IconPencil size={16} />}
+                  onClick={() => setIsEditingTags(!isEditingTags)}
                 >
-                  新增標籤
+                  {isEditingTags ? "完成編輯" : "編輯"}
                 </Button>
               </Group>
 
@@ -550,30 +559,73 @@ export default function SettingsRoute() {
                     </Stack>
                     <Group gap="xs">
                       {(selectedGroup?.tags ?? []).map((tag, index) => (
-                        <Group key={tag} gap={6} wrap="nowrap">
+                        <Group key={tag} gap={4} wrap="nowrap">
                           <Badge
                             color={PILL_COLORS[index % PILL_COLORS.length]}
                             variant="light"
                             size="lg"
+                            rightSection={isEditingTags && (
+                              <ActionIcon
+                                size="xs"
+                                color="red"
+                                variant="transparent"
+                                onClick={() => {
+                                  if (window.confirm(`確定要刪除標籤「${tag}」嗎？`)) {
+                                    const formData = new FormData();
+                                    formData.append("intent", "tag.delete");
+                                    formData.append("groupId", selectedGroupId);
+                                    formData.append("name", tag);
+                                    submit(formData, { method: "post" });
+                                  }
+                                }}
+                              >
+                                <IconX size={12} />
+                              </ActionIcon>
+                            )}
                           >
                             {tag}
                           </Badge>
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            size="sm"
-                            onClick={() => {
-                              setActiveTagValue(tag);
-                              setTagModalMode("edit");
-                              setDraftTagValue(tag);
-                              setTagModalOpened(true);
-                            }}
-                          >
-                            <IconPencil size={14} />
-                          </ActionIcon>
                         </Group>
                       ))}
                     </Group>
+                    {isEditingTags && (
+                      <Box mt="md" p="md" style={{ border: '1px dashed var(--mantine-color-blue-4)', borderRadius: '8px' }}>
+                        <Text size="sm" fw={600} mb="xs">新增新標籤：</Text>
+                        <Group gap="xs">
+                          <TextInput
+                            placeholder="輸入新標籤名稱"
+                            value={newTagValue}
+                            onChange={(e) => setNewTagValue(e.currentTarget.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && newTagValue.trim()) {
+                                const formData = new FormData();
+                                formData.append("intent", "tag.add");
+                                formData.append("groupId", selectedGroupId);
+                                formData.append("name", newTagValue.trim());
+                                submit(formData, { method: "post" });
+                                setNewTagValue("");
+                              }
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <Button 
+                            onClick={() => {
+                              if (newTagValue.trim()) {
+                                const formData = new FormData();
+                                formData.append("intent", "tag.add");
+                                formData.append("groupId", selectedGroupId);
+                                formData.append("name", newTagValue.trim());
+                                submit(formData, { method: "post" });
+                                setNewTagValue("");
+                              }
+                            }}
+                            disabled={!newTagValue.trim()}
+                          >
+                            新增
+                          </Button>
+                        </Group>
+                      </Box>
+                    )}
                   </Stack>
                 </Grid.Col>
               </Grid>
@@ -664,54 +716,56 @@ export default function SettingsRoute() {
                 </Group>
               </Group>
 
-              <Table withTableBorder verticalSpacing="md" mt="lg">
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>成員</Table.Th>
-                    <Table.Th>Email</Table.Th>
-                    <Table.Th>組別</Table.Th>
-                    <Table.Th>角色</Table.Th>
-                    <Table.Th w={120}>操作</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {filteredMembers.map((member) => (
-                    <Table.Tr key={member.id}>
-                      <Table.Td><Text fw={600}>{member.name}</Text></Table.Td>
-                      <Table.Td>{member.email}</Table.Td>
-                      <Table.Td><Badge variant="light">{member.group} 組</Badge></Table.Td>
-                      <Table.Td>
-                        <Badge variant="outline" color={member.role === 'admin' ? 'red' : 'gray'}>
-                          {member.role.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        {isAdmin && (
-                          <Group gap="xs">
-                            <ActionIcon
-                              variant="light"
-                              color="blue"
-                              onClick={() => {
-                                setActiveMember(member);
-                                setMemberModalOpened(true);
-                              }}
-                            >
-                              <IconPencil size={14} />
-                            </ActionIcon>
-                            <Form method="post" onSubmit={(e) => { if (!window.confirm(`確定要刪除成員「${member.name}」嗎？`)) e.preventDefault(); }}>
-                              <input type="hidden" name="intent" value="member.delete" />
-                              <input type="hidden" name="id" value={member.id} />
-                              <ActionIcon variant="light" color="red" type="submit">
-                                <IconTrash size={14} />
-                              </ActionIcon>
-                            </Form>
-                          </Group>
-                        )}
-                      </Table.Td>
+              <ScrollArea h={500} offsetScrollbars mt="lg">
+                <Table withTableBorder verticalSpacing="md">
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>成員</Table.Th>
+                      <Table.Th>Email</Table.Th>
+                      <Table.Th>組別</Table.Th>
+                      <Table.Th>角色</Table.Th>
+                      <Table.Th w={120}>操作</Table.Th>
                     </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {filteredMembers.map((member) => (
+                      <Table.Tr key={member.id}>
+                        <Table.Td><Text fw={600}>{member.name}</Text></Table.Td>
+                        <Table.Td>{member.email}</Table.Td>
+                        <Table.Td><Badge variant="light">{member.group} 組</Badge></Table.Td>
+                        <Table.Td>
+                          <Badge variant="outline" color={member.role === 'admin' ? 'red' : 'gray'}>
+                            {member.role.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          {isAdmin && (
+                            <Group gap="xs">
+                              <ActionIcon
+                                variant="light"
+                                color="blue"
+                                onClick={() => {
+                                  setActiveMember(member);
+                                  setMemberModalOpened(true);
+                                }}
+                              >
+                                <IconPencil size={14} />
+                              </ActionIcon>
+                              <Form method="post" onSubmit={(e) => { if (!window.confirm(`確定要刪除成員「${member.name}」嗎？`)) e.preventDefault(); }}>
+                                <input type="hidden" name="intent" value="member.delete" />
+                                <input type="hidden" name="id" value={member.id} />
+                                <ActionIcon variant="light" color="red" type="submit">
+                                  <IconTrash size={14} />
+                                </ActionIcon>
+                              </Form>
+                            </Group>
+                          )}
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
 
               <Modal opened={memberModalOpened} onClose={() => setMemberModalOpened(false)} title={activeMember ? "編輯成員" : "新增成員"}>
                 <Form method="post" onSubmit={() => setMemberModalOpened(false)}>
