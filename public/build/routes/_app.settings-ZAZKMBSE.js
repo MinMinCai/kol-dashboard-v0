@@ -33,7 +33,7 @@ import {
   Link,
   useLoaderData,
   useSubmit
-} from "/build/_shared/chunk-6WKXAUV5.js";
+} from "/build/_shared/chunk-Q2QT43GJ.js";
 import "/build/_shared/chunk-U4FRFQSK.js";
 import {
   require_jsx_dev_runtime
@@ -1082,4 +1082,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   SettingsRoute as default
 };
-//# sourceMappingURL=/build/routes/_app.settings-ACGEOOEA.js.map
+//# sourceMappingURL=/build/routes/_app.settings-ZAZKMBSE.js.map

@@ -16,7 +16,7 @@ import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Link,
   useLoaderData
-} from "/build/_shared/chunk-6WKXAUV5.js";
+} from "/build/_shared/chunk-Q2QT43GJ.js";
 import "/build/_shared/chunk-U4FRFQSK.js";
 import {
   require_jsx_dev_runtime
@@ -761,4 +761,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   InsertionOrderListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.insertion-orders._index-O3C4VL5R.js.map
+//# sourceMappingURL=/build/routes/_app.insertion-orders._index-KGHMM2LP.js.map

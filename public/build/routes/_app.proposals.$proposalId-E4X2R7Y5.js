@@ -32,7 +32,7 @@ import {
   useLoaderData,
   useNavigation,
   useSubmit
-} from "/build/_shared/chunk-6WKXAUV5.js";
+} from "/build/_shared/chunk-Q2QT43GJ.js";
 import "/build/_shared/chunk-U4FRFQSK.js";
 import {
   require_jsx_dev_runtime
@@ -1014,4 +1014,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalDetailPage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-O6WNOVVE.js.map
+//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-E4X2R7Y5.js.map

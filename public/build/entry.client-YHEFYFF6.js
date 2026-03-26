@@ -3,7 +3,7 @@ import {
 } from "/build/_shared/chunk-O4BRYNJ4.js";
 import {
   RemixBrowser
-} from "/build/_shared/chunk-6WKXAUV5.js";
+} from "/build/_shared/chunk-Q2QT43GJ.js";
 import "/build/_shared/chunk-U4FRFQSK.js";
 import {
   require_jsx_dev_runtime
@@ -54,4 +54,4 @@ if (typeof globalThis !== "undefined" && !globalThis.process) {
     }, this)
   );
 });
-//# sourceMappingURL=/build/entry.client-HZV6GBGS.js.map
+//# sourceMappingURL=/build/entry.client-YHEFYFF6.js.map

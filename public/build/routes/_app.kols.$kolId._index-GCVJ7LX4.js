@@ -20,7 +20,7 @@ import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Link,
   useLoaderData
-} from "/build/_shared/chunk-6WKXAUV5.js";
+} from "/build/_shared/chunk-Q2QT43GJ.js";
 import "/build/_shared/chunk-U4FRFQSK.js";
 import {
   require_jsx_dev_runtime
@@ -1061,4 +1061,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   KolDetailPage as default
 };
-//# sourceMappingURL=/build/routes/_app.kols.$kolId._index-WUOABOFL.js.map
+//# sourceMappingURL=/build/routes/_app.kols.$kolId._index-GCVJ7LX4.js.map

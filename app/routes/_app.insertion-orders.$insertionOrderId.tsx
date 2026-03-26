@@ -8,9 +8,12 @@ import {
   Grid,
   Group,
   Modal,
+  NumberInput,
   Rating,
+  Select,
   SimpleGrid,
   Stack,
+  TagsInput,
   Text,
   Textarea,
   TextInput,
@@ -23,13 +26,18 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { Link, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
+import { useState, useMemo } from "react";
+import { IconPencil, IconCheck, IconX, IconChevronDown } from "@tabler/icons-react";
 import { ClientOnly } from "~/components/ClientOnly";
 import {
   getInsertionOrder,
   addIOReview,
   updateIOPerformance,
+  listBrandCatalog,
+  listIndustryCatalog,
+  listTeamMembers,
+  updateInsertionOrder,
   type OrderKolCollaboration,
 } from "~/lib/mock-api";
 
@@ -251,15 +259,59 @@ function KolCollabCard({
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const insertionOrderId = params.insertionOrderId ?? "";
-  const insertionOrder = await getInsertionOrder(insertionOrderId);
+  const [insertionOrder, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
+    getInsertionOrder(insertionOrderId),
+    listBrandCatalog(),
+    listIndustryCatalog(),
+    listTeamMembers(),
+  ]);
+
   if (!insertionOrder) throw new Response("Not Found", { status: 404 });
-  return json({ insertionOrder });
+
+  const salesOwners = teamMembers.filter(m => m.group === 'AE').map(m => m.name);
+  const kolManagers = teamMembers.filter(m => m.group === 'KOL').map(m => m.name);
+  const brands = brandCatalog.map(b => b.name);
+  const industries = industryCatalog.map(i => i.name);
+
+  return json({ insertionOrder, salesOwners, kolManagers, brands, industries });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const orderId = params.insertionOrderId ?? "";
   const formData = await request.formData();
   const intent = formData.get("intent");
+
+  if (intent === "updateOrder") {
+    const projectName = String(formData.get("projectName") ?? "").trim();
+    const clientName = String(formData.get("clientName") ?? "").trim();
+    const brand = String(formData.get("brand") ?? "").trim();
+    const industry = String(formData.get("industry") ?? "").trim();
+    const mcnName = String(formData.get("mcnName") ?? "").trim();
+    const salesOwner = String(formData.get("salesOwner") ?? "").trim();
+    const kolManager = String(formData.get("kolManager") ?? "").trim();
+    const startDate = String(formData.get("startDate") ?? "").trim();
+    const endDate = String(formData.get("endDate") ?? "").trim();
+    const totalBudget = Number(formData.get("totalBudget") ?? 0);
+    const tax = Number(formData.get("tax") ?? 0);
+    const totalWithTax = totalBudget + tax;
+
+    await updateInsertionOrder(orderId, {
+      projectName,
+      title: projectName,
+      clientName,
+      brand,
+      industry,
+      mcnName,
+      salesOwner,
+      kolManager,
+      startDate,
+      endDate,
+      totalBudget,
+      tax,
+      totalWithTax,
+    });
+    return json({ success: true });
+  }
 
   if (intent === "review") {
     const kolId = formData.get("kolId") as string;
@@ -313,9 +365,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function InsertionOrderDetailPage() {
-  const { insertionOrder } = useLoaderData<typeof loader>();
+  const { insertionOrder, salesOwners, kolManagers, brands, industries } = useLoaderData<typeof loader>();
   const collaborations = insertionOrder.collaborations ?? [];
   const fetcher = useFetcher();
+  const submit = useSubmit();
+  const [isEditing, setIsEditing] = useState(false);
+
 
   // Modal states
   const [reviewOpened, { open: openReview, close: closeReview }] =
@@ -386,6 +441,15 @@ export default function InsertionOrderDetailPage() {
           <Title order={2}>案件 #{insertionOrder.orderNo}</Title>
         </Group>
         <Group>
+          {!isEditing && (
+            <Button
+              variant="light"
+              leftSection={<IconPencil size={16} />}
+              onClick={() => setIsEditing(true)}
+            >
+              編輯資料
+            </Button>
+          )}
           <Button
             component={Link}
             to={`/reports/generate?orderId=${insertionOrder.id}`}
@@ -398,105 +462,202 @@ export default function InsertionOrderDetailPage() {
 
       {/* ── Overview Card ── */}
       <Card withBorder radius="md" p="xl" shadow="sm">
-        <Grid gutter="xl">
-          <Grid.Col span={{ base: 12, md: 7 }}>
-            <Stack gap="sm">
-              {insertionOrder.orderTitle && (
-                <Text size="sm" fw={500} c="dimmed">{insertionOrder.orderTitle}</Text>
-              )}
-              <Title order={3} c="blue">
-                {insertionOrder.projectName ?? insertionOrder.title ?? "未命名專案"}
-              </Title>
-              <Group gap="xs">
-                <Badge variant="light">客戶: {insertionOrder.clientName}</Badge>
-                <Badge variant="light" color="cyan">
-                  品牌: {insertionOrder.brand ?? insertionOrder.clientName}
-                </Badge>
-                {insertionOrder.mcnName && (
-                  <Badge variant="light" color="violet">網紅公司: {insertionOrder.mcnName}</Badge>
-                )}
+        {isEditing ? (
+          <fetcher.Form method="post" onSubmit={() => setIsEditing(false)}>
+            <input type="hidden" name="intent" value="updateOrder" />
+            <Stack gap="lg">
+              <Group justify="space-between">
+                <Title order={3}>編輯委刊單詳情</Title>
+                <Group>
+                  <Button variant="default" onClick={() => setIsEditing(false)} leftSection={<IconX size={16} />}>
+                    取消
+                  </Button>
+                  <Button type="submit" leftSection={<IconCheck size={16} />}>
+                    儲存變更
+                  </Button>
+                </Group>
               </Group>
-              <Text size="sm">
-                產業: {insertionOrder.industryPath ?? insertionOrder.industry ?? "-"}
-              </Text>
-              <Text size="sm">
-                負責業務: {insertionOrder.salesOwner ?? "-"} | KOL 窗口:{" "}
-                {insertionOrder.kolManager ?? "-"}
-              </Text>
-              {insertionOrder.documentUrl && (
-                <Button
-                  component="a"
-                  href={insertionOrder.documentUrl}
-                  target="_blank"
-                  variant="subtle"
-                  leftSection="📄"
-                  size="compact-sm"
-                  p={0}
-                >
-                  下載委刊單合約
-                </Button>
-              )}
+
+              <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+                <TextInput
+                  label="專案名稱"
+                  name="projectName"
+                  defaultValue={insertionOrder.projectName ?? insertionOrder.title}
+                  required
+                />
+                <TextInput
+                  label="客戶"
+                  name="clientName"
+                  defaultValue={insertionOrder.clientName}
+                  required
+                />
+                <Select
+                  label="品牌"
+                  name="brand"
+                  defaultValue={insertionOrder.brand}
+                  data={brands}
+                  searchable
+                  rightSection={<IconChevronDown size={14} />}
+                />
+                <Select
+                  label="產業"
+                  name="industry"
+                  defaultValue={insertionOrder.industry}
+                  data={industries}
+                  searchable
+                  rightSection={<IconChevronDown size={14} />}
+                />
+                <TextInput
+                  label="網紅公司名稱"
+                  name="mcnName"
+                  defaultValue={insertionOrder.mcnName || ""}
+                />
+                <Select
+                  label="負責業務"
+                  name="salesOwner"
+                  defaultValue={insertionOrder.salesOwner}
+                  data={salesOwners}
+                  searchable
+                />
+                <Select
+                  label="負責 KOL Team 成員"
+                  name="kolManager"
+                  defaultValue={insertionOrder.kolManager}
+                  data={kolManagers}
+                  searchable
+                />
+                <Group grow>
+                  <TextInput
+                    label="開始日"
+                    name="startDate"
+                    type="date"
+                    defaultValue={insertionOrder.startDate}
+                  />
+                  <TextInput
+                    label="結束日"
+                    name="endDate"
+                    type="date"
+                    defaultValue={insertionOrder.endDate}
+                  />
+                </Group>
+                <NumberInput
+                  label="專案報價 (未稅)"
+                  name="totalBudget"
+                  defaultValue={insertionOrder.totalBudget}
+                  thousandSeparator
+                  prefix="NT$ "
+                />
+                <NumberInput
+                  label="稅金"
+                  name="tax"
+                  defaultValue={insertionOrder.tax || 0}
+                  thousandSeparator
+                  prefix="NT$ "
+                />
+              </SimpleGrid>
             </Stack>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 5 }}>
-            <SimpleGrid cols={2} spacing="md">
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  合作 KOL
-                </Text>
-                <Title order={4}>
-                  {insertionOrder.kolCount ?? collaborations.length} 位
+          </fetcher.Form>
+        ) : (
+          <Grid gutter="xl">
+            <Grid.Col span={{ base: 12, md: 7 }}>
+              <Stack gap="sm">
+                {insertionOrder.orderTitle && (
+                  <Text size="sm" fw={500} c="dimmed">{insertionOrder.orderTitle}</Text>
+                )}
+                <Title order={3} c="blue">
+                  {insertionOrder.projectName ?? insertionOrder.title ?? "未命名專案"}
                 </Title>
-              </Card>
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  專案報價(未稅)
+                <Group gap="xs">
+                  <Badge variant="light">客戶: {insertionOrder.clientName}</Badge>
+                  <Badge variant="light" color="cyan">
+                    品牌: {insertionOrder.brand ?? insertionOrder.clientName}
+                  </Badge>
+                  {insertionOrder.mcnName && (
+                    <Badge variant="light" color="violet">網紅公司: {insertionOrder.mcnName}</Badge>
+                  )}
+                </Group>
+                <Text size="sm">
+                  產業: {insertionOrder.industryPath ?? insertionOrder.industry ?? "-"}
                 </Text>
-                <Title order={4}>{currency(insertionOrder.totalBudget)}</Title>
-              </Card>
-              {insertionOrder.tax != null && (
+                <Text size="sm">
+                  負責業務: {insertionOrder.salesOwner ?? "-"} | KOL 窗口:{" "}
+                  {insertionOrder.kolManager ?? "-"}
+                </Text>
+                {insertionOrder.documentUrl && (
+                  <Button
+                    component="a"
+                    href={insertionOrder.documentUrl}
+                    target="_blank"
+                    variant="subtle"
+                    leftSection="📄"
+                    size="compact-sm"
+                    p={0}
+                  >
+                    下載委刊單合約
+                  </Button>
+                )}
+              </Stack>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 5 }}>
+              <SimpleGrid cols={2} spacing="md">
                 <Card withBorder radius="md">
                   <Text size="xs" c="dimmed" fw={700}>
-                    稅金
+                    合作 KOL
                   </Text>
-                  <Title order={4}>{currency(insertionOrder.tax)}</Title>
+                  <Title order={4}>
+                    {insertionOrder.kolCount ?? collaborations.length} 位
+                  </Title>
                 </Card>
-              )}
-              {insertionOrder.totalWithTax != null && (
                 <Card withBorder radius="md">
                   <Text size="xs" c="dimmed" fw={700}>
-                    含稅總額
+                    專案報價(未稅)
                   </Text>
-                  <Title order={4}>{currency(insertionOrder.totalWithTax)}</Title>
+                  <Title order={4}>{currency(insertionOrder.totalBudget)}</Title>
                 </Card>
-              )}
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  總觸及
-                </Text>
-                <Title order={4}>{n(totalReach)}</Title>
-              </Card>
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  總互動
-                </Text>
-                <Title order={4}>{n(totalEngagement)}</Title>
-              </Card>
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  平均互動率
-                </Text>
-                <Title order={4}>{avgEngagementRate.toFixed(1)}%</Title>
-              </Card>
-              <Card withBorder radius="md">
-                <Text size="xs" c="dimmed" fw={700}>
-                  平均評價
-                </Text>
-                <Title order={4}>⭐ {avgRating.toFixed(1)}</Title>
-              </Card>
-            </SimpleGrid>
-          </Grid.Col>
-        </Grid>
+                {insertionOrder.tax != null && (
+                  <Card withBorder radius="md">
+                    <Text size="xs" c="dimmed" fw={700}>
+                      稅金
+                    </Text>
+                    <Title order={4}>{currency(insertionOrder.tax)}</Title>
+                  </Card>
+                )}
+                {insertionOrder.totalWithTax != null && (
+                  <Card withBorder radius="md">
+                    <Text size="xs" c="dimmed" fw={700}>
+                      含稅總額
+                    </Text>
+                    <Title order={4}>{currency(insertionOrder.totalWithTax)}</Title>
+                  </Card>
+                )}
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    總觸及
+                  </Text>
+                  <Title order={4}>{n(totalReach)}</Title>
+                </Card>
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    總互動
+                  </Text>
+                  <Title order={4}>{n(totalEngagement)}</Title>
+                </Card>
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    平均互動率
+                  </Text>
+                  <Title order={4}>{avgEngagementRate.toFixed(1)}%</Title>
+                </Card>
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    平均評價
+                  </Text>
+                  <Title order={4}>⭐ {avgRating.toFixed(1)}</Title>
+                </Card>
+              </SimpleGrid>
+            </Grid.Col>
+          </Grid>
+        )}
       </Card>
 
       {/* ── Performance Chart Dashboard ── */}
