@@ -568,6 +568,13 @@ export async function updateIOPerformance(
   return updateInsertionOrder(orderId, { collaborations: updatedCollabs });
 }
 
+export async function deleteInsertionOrder(id: string): Promise<boolean> {
+  const res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
+    method: "DELETE",
+  });
+  return res.ok;
+}
+
 export { MOCK_API_BASE };
 
 

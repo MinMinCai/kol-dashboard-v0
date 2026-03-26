@@ -138,10 +138,10 @@ export async function action({ request }: ActionFunctionArgs) {
   let selectedKols: SelectedKolRow[] = [];
   try { selectedKols = JSON.parse(selectedKolsJson); } catch { selectedKols = []; }
 
-  // Use per-KOL prices if available, else fall back to projectQuote
-  const totalBudget = selectedKols.length > 0
-    ? selectedKols.reduce((sum, row) => sum + Number(row.price || 0), 0)
-    : projectQuote;
+  // Keep the manual project quote entered by the user
+  const docFile = formData.get("documentUrl") as File;
+  const documentUrl = docFile && docFile.name ? docFile.name : "";
+  const totalBudget = projectQuote;
   const tax = Math.round(totalBudget * (taxRate / 100));
   const totalWithTax = totalBudget + tax;
   const orderNo = `IO-${new Date().getFullYear()}-${String(Math.floor(100 + Math.random() * 900))}`;
@@ -160,6 +160,7 @@ export async function action({ request }: ActionFunctionArgs) {
     kolManager: kolManagersArr[0] ?? "",
     kolCount: selectedKols.length,
     status: intent === "draft" ? "planned" : "in_progress",
+    documentUrl,
     totalBudget,
     tax,
     totalWithTax,
@@ -389,7 +390,14 @@ export default function InsertionOrderCreatePage() {
       </Group>
 
       <Card withBorder>
-        <Form method="post">
+        <Form 
+          method="post" 
+          onKeyDown={(e) => { 
+            if (e.key === "Enter" && (e.target as HTMLElement).tagName === "INPUT" && (e.target as HTMLInputElement).type !== "submit") {
+              e.preventDefault(); 
+            } 
+          }}
+        >
           {/* Hidden inputs for multi-select arrays */}
           <input type="hidden" name="brands" value={selectedBrands.join(",")} />
           <input type="hidden" name="industries" value={selectedIndustries.join(",")} />
@@ -608,8 +616,16 @@ export default function InsertionOrderCreatePage() {
               />
             </Box>
 
+            
             <Divider />
+            {/* ── File Upload ── */}
+            <Box>
+              <Title order={4} mb="sm">委刊單檔案 (合約)</Title>
+              <Text size="sm" c="dimmed" mb="xs">上傳經雙方確認的委刊單 PDF/Word 檔案 (選填)</Text>
+              <input type="file" name="documentUrl" accept=".pdf,.doc,.docx" />
+            </Box>
 
+            <Divider />
             {/* ── Notes ── */}
             <Box>
               <Title order={4} mb="sm">其他資訊</Title>

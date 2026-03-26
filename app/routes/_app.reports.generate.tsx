@@ -54,6 +54,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const clientFilter = url.searchParams.get("client") ?? "";
   const timeFilter = url.searchParams.get("time") ?? "all";
   const statusFilter = url.searchParams.get("status") ?? "all";
+  
+  const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
+  const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
+  
 
   const orders = await listInsertionOrders();
   const allClients = Array.from(new Set(orders.map((o) => o.clientName)));
@@ -74,11 +78,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return true;
   });
 
-  return json({ orders: filtered, allClients, clientFilter, timeFilter, statusFilter });
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedOrders = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  return json({ 
+    orders: paginatedOrders, 
+    allClients, 
+    clientFilter, 
+    timeFilter, 
+    statusFilter,
+    totalPages,
+    currentPage,
+    pageSize,
+    totalCount: filtered.length
+  });
 }
 
 export default function ReportManagementPage() {
-  const { orders, allClients, clientFilter, timeFilter, statusFilter } = useLoaderData<typeof loader>();
+  const { orders, allClients, clientFilter, timeFilter, statusFilter, totalPages, currentPage, pageSize, totalCount } = useLoaderData<typeof loader>();
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const { showToast, showBanner } = useNotificationStore();
 
@@ -349,6 +367,91 @@ export default function ReportManagementPage() {
             );
           })}
         </Stack>
+
+        {/* ── Pagination ── */}
+        {totalPages > 1 && (
+          <Group justify="space-between" align="center" mt="xl" py="md" style={{ borderTop: "1px solid var(--mantine-color-default-border)" }}>
+            <Group>
+              <Text size="sm" c="dimmed">每頁筆數</Text>
+              <form method="get" style={{ display: "inline" }}>
+                <input type="hidden" name="client" value={clientFilter} />
+                <input type="hidden" name="time" value={timeFilter} />
+                <input type="hidden" name="status" value={statusFilter} />
+                <input type="hidden" name="page" value="1" />
+                <select
+                  name="pageSize"
+                  defaultValue={pageSize}
+                  onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
+                  style={{
+                    padding: "6px 10px",
+                    border: "1px solid var(--mantine-color-default-border)",
+                    borderRadius: 4,
+                    fontSize: 14,
+                    background: "var(--mantine-color-body)",
+                    color: "var(--mantine-color-text)",
+                  }}
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </select>
+              </form>
+            </Group>
+
+            <Group gap={4}>
+              {currentPage > 1 && (
+                <Link
+                  to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${currentPage - 1}&pageSize=${pageSize}`}
+                  style={{
+                    padding: "6px 12px",
+                    border: "1px solid var(--mantine-color-default-border)",
+                    borderRadius: 4,
+                    textDecoration: "none",
+                    color: "var(--mantine-color-text)",
+                    fontSize: 14,
+                  }}
+                >
+                  ‹ 上一頁
+                </Link>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <Link
+                  key={p}
+                  to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${p}&pageSize=${pageSize}`}
+                  style={{
+                    padding: "6px 10px",
+                    border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
+                    borderRadius: 4,
+                    textDecoration: "none",
+                    background: p === currentPage ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
+                    color: p === currentPage ? "#fff" : "var(--mantine-color-text)",
+                    fontSize: 14,
+                    fontWeight: p === currentPage ? 600 : 400,
+                  }}
+                >
+                  {p}
+                </Link>
+              ))}
+
+              {currentPage < totalPages && (
+                <Link
+                  to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${currentPage + 1}&pageSize=${pageSize}`}
+                  style={{
+                    padding: "6px 12px",
+                    border: "1px solid var(--mantine-color-default-border)",
+                    borderRadius: 4,
+                    textDecoration: "none",
+                    color: "var(--mantine-color-text)",
+                    fontSize: 14,
+                  }}
+                >
+                  下一頁 ›
+                </Link>
+              )}
+            </Group>
+          </Group>
+        )}
       </Stack>
 
       {/* ── Select Order Modal ── */}
