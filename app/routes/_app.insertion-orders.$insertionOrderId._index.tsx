@@ -21,6 +21,7 @@ import {
   Loader,
   Progress,
   Image,
+  Collapse,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BarChart } from "@mantine/charts";
@@ -56,13 +57,7 @@ function currency(value: number | undefined): string {
   return `NT$ ${(value ?? 0).toLocaleString("zh-TW")}`;
 }
 
-// ── KolCollabCard: 獨立子元件，用 useState 管理分頁，避開 Mantine Tabs 的 SSR ID 生成問題 ──
-const TAB_LABELS: Record<string, string> = {
-  actions: "操作工具",
-  performance: "成效明細",
-  reviews: "合作評價",
-};
-
+// ── KolCollabCard: 獨立子元件 ──
 function KolCollabCard({
   kol,
   onOpenUploadAndPerf,
@@ -72,22 +67,51 @@ function KolCollabCard({
   onOpenUploadAndPerf: (k: { id: string; name: string }) => void;
   onOpenReview: (k: { id: string; name: string }) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<"actions" | "performance" | "reviews">("actions");
+  const [expanded, { toggle }] = useDisclosure(false);
 
   return (
     <Card withBorder p="md" radius="md">
       <Stack gap="md">
-        <Group justify="space-between">
-          <Group>
+        <Group justify="space-between" align="flex-start">
+          <Group align="flex-start">
             <Avatar src={kol.avatarUrl} radius="xl" size={50} />
             <div>
               <Text fw={700} size="lg">{kol.name}</Text>
-              <Text size="xs" c="dimmed">
+              <Text size="xs" c="dimmed" mb={2}>
                 {kol.services} | NT$ {(kol.price ?? 0).toLocaleString("zh-TW")}
               </Text>
               {kol.executionDate && (
-                <Text size="xs" c="dimmed">執行日期：{kol.executionDate}</Text>
+                <Text size="xs" c="dimmed" mb={8}>執行日期：{kol.executionDate}</Text>
               )}
+              {/* 操作工具移入人物總覽內部 */}
+              <Group gap="xs" mt="xs">
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="light"
+                  onClick={() => onOpenUploadAndPerf(kol)}
+                >
+                  📸 上傳貼文成效
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="light"
+                  color="yellow"
+                  onClick={() => onOpenReview(kol)}
+                >
+                  ✍️ 留下評價
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="default"
+                  component={Link}
+                  to={`/kols/${kol.kolId}`}
+                >
+                  👤 查看 KOL 檔案
+                </Button>
+              </Group>
             </div>
           </Group>
           <Group gap="xl">
@@ -110,145 +134,102 @@ function KolCollabCard({
         </Group>
 
         <Divider />
+        <Group justify="center" mt={expanded ? "xs" : -10} mb={expanded ? 0 : -10}>
+          <Button 
+            variant="subtle" 
+            size="sm" 
+            color="gray"
+            onClick={toggle} 
+            rightSection={<IconChevronDown size={14} style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />}
+          >
+            {expanded ? "收起成效與評價" : "展開成效與評價"}
+          </Button>
+        </Group>
+        
+        <Collapse in={expanded}>
+          <Stack gap="xl">
 
-        {/* 自製分頁列：純 HTML button + useState，無 Mantine Tabs ID 生成 */}
-        <Box style={{ borderBottom: "1px solid var(--mantine-color-default-border)" }}>
-          <Group gap={0}>
-            {(["actions", "performance", "reviews"] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  padding: "8px 16px",
-                  border: "none",
-                  borderBottom: activeTab === tab
-                    ? "2px solid var(--mantine-color-blue-filled)"
-                    : "2px solid transparent",
-                  background: "none",
-                  cursor: "pointer",
-                  color: activeTab === tab
-                    ? "var(--mantine-color-blue-filled)"
-                    : "var(--mantine-color-dimmed)",
-                  fontWeight: activeTab === tab ? 600 : 400,
-                  fontSize: "var(--mantine-font-size-sm)",
-                  fontFamily: "inherit",
-                  transition: "color 0.1s, border-color 0.1s",
-                }}
-              >
-                {TAB_LABELS[tab]}
-              </button>
-            ))}
-          </Group>
-        </Box>
-
-        {/* 操作工具 */}
-        {activeTab === "actions" && (
-          <Group pt="xs">
-            <Button
-              type="button"
-              size="xs"
-              variant="light"
-              onClick={() => onOpenUploadAndPerf(kol)}
-            >
-              📸 上傳貼文成效
-            </Button>
-            <Button
-              type="button"
-              size="xs"
-              variant="light"
-              color="yellow"
-              onClick={() => onOpenReview(kol)}
-            >
-              ✍️ 留下評價
-            </Button>
-            <Button
-              type="button"
-              size="xs"
-              variant="default"
-              component={Link}
-              to={`/kols/${kol.kolId}`}
-            >
-              👤 查看 KOL 檔案
-            </Button>
-          </Group>
-        )}
-
-        {/* 成效明細 */}
-        {activeTab === "performance" && (
-          <Box pt="xs">
-            {(kol.performanceItems ?? []).length > 0 ? (
-              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
-                {kol.performanceItems?.map((perf) => (
-                  <Card key={perf.id} withBorder p="sm" radius="md">
-                    <Group justify="space-between" mb="xs">
-                      <Text size="sm" fw={700}>{perf.title}</Text>
-                      <Badge size="xs">已追蹤</Badge>
-                    </Group>
-                    <SimpleGrid cols={4}>
-                      <Stack gap={0}>
-                        <Text size="xs" c="dimmed">曝光</Text>
-                        <Text size="sm" fw={600}>
-                          {(perf.metrics?.impressions ?? 0).toLocaleString("zh-TW")}
-                        </Text>
-                      </Stack>
-                      <Stack gap={0}>
-                        <Text size="xs" c="dimmed">觸及</Text>
-                        <Text size="sm" fw={600}>
-                          {(perf.metrics?.reach ?? 0).toLocaleString("zh-TW")}
-                        </Text>
-                      </Stack>
-                      <Stack gap={0}>
-                        <Text size="xs" c="dimmed">互動次數</Text>
-                        <Text size="sm" fw={600}>
-                          {(perf.metrics?.likes ?? 0).toLocaleString("zh-TW")}
-                        </Text>
-                      </Stack>
-                      <Stack gap={0}>
-                        <Text size="xs" c="dimmed">互動率</Text>
-                        <Text size="sm" fw={600}>
-                          {(perf.metrics?.engagementRate ?? 0).toFixed(1)}%
-                        </Text>
-                      </Stack>
-                    </SimpleGrid>
-                  </Card>
-                ))}
-              </SimpleGrid>
-            ) : (
-              <Text size="sm" c="dimmed" p="md" ta="center">尚無成效數據</Text>
-            )}
-          </Box>
-        )}
-
-        {/* 合作評價 */}
-        {activeTab === "reviews" && (
-          <Box pt="xs">
-            {(kol.reviews ?? []).length > 0 ? (
-              <Stack gap="xs">
-                {kol.reviews?.map((rv) => (
-                  <Card key={rv.id} withBorder p="sm" radius="md">
-                    <Group justify="space-between">
-                      <Group gap="xs">
-                        <Avatar src={rv.avatarUrl} size="sm" />
-                        <Text size="sm" fw={600}>{rv.author}</Text>
-                        <Text size="xs" c="dimmed">{rv.date}</Text>
-                        {rv.type && (
-                          <Badge size="xs" color={rv.type === "internal" ? "red" : "blue"}>
-                            {rv.type === "internal" ? "內評" : "外評"}
-                          </Badge>
-                        )}
+            {/* 成效明細 */}
+            <Box>
+              <Text fw={600} size="sm" mb="md">成效明細</Text>
+              {(kol.performanceItems ?? []).length > 0 ? (
+                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
+                  {kol.performanceItems?.map((perf) => (
+                    <Card key={perf.id} withBorder p="sm" radius="md">
+                      <Group justify="space-between" mb="xs">
+                        <Text size="sm" fw={700}>{perf.title}</Text>
+                        <Badge size="xs">已追蹤</Badge>
                       </Group>
-                      <Rating value={rv.rating} readOnly size="xs" />
-                    </Group>
-                    <Text size="sm" mt="xs">{rv.comment}</Text>
-                  </Card>
-                ))}
-              </Stack>
-            ) : (
-              <Text size="sm" c="dimmed" p="md" ta="center">尚無評價內容</Text>
-            )}
-          </Box>
-        )}
+                      <SimpleGrid cols={4}>
+                        <Stack gap={0}>
+                          <Text size="xs" c="dimmed">曝光</Text>
+                          <Text size="sm" fw={600}>
+                            {(perf.metrics?.impressions ?? 0).toLocaleString("zh-TW")}
+                          </Text>
+                        </Stack>
+                        <Stack gap={0}>
+                          <Text size="xs" c="dimmed">觸及</Text>
+                          <Text size="sm" fw={600}>
+                            {(perf.metrics?.reach ?? 0).toLocaleString("zh-TW")}
+                          </Text>
+                        </Stack>
+                        <Stack gap={0}>
+                          <Text size="xs" c="dimmed">互動次數</Text>
+                          <Text size="sm" fw={600}>
+                            {(perf.metrics?.likes ?? 0).toLocaleString("zh-TW")}
+                          </Text>
+                        </Stack>
+                        <Stack gap={0}>
+                          <Text size="xs" c="dimmed">互動率</Text>
+                          <Text size="sm" fw={600}>
+                            {(perf.metrics?.engagementRate ?? 0).toFixed(1)}%
+                          </Text>
+                        </Stack>
+                      </SimpleGrid>
+                    </Card>
+                  ))}
+                </SimpleGrid>
+              ) : (
+                <Text size="sm" c="dimmed" p="md" ta="center" style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: '8px' }}>
+                  尚無成效數據
+                </Text>
+              )}
+            </Box>
+
+            <Divider variant="dashed" />
+
+            {/* 合作評價 */}
+            <Box>
+              <Text fw={600} size="sm" mb="md">合作評價</Text>
+              {(kol.reviews ?? []).length > 0 ? (
+                <Stack gap="xs">
+                  {kol.reviews?.map((rv) => (
+                    <Card key={rv.id} withBorder p="sm" radius="md">
+                      <Group justify="space-between">
+                        <Group gap="xs">
+                          <Avatar src={rv.avatarUrl} size="sm" />
+                          <Text size="sm" fw={600}>{rv.author}</Text>
+                          <Text size="xs" c="dimmed">{rv.date}</Text>
+                          {rv.type && (
+                            <Badge size="xs" color={rv.type === "internal" ? "red" : "blue"}>
+                              {rv.type === "internal" ? "內評" : "外評"}
+                            </Badge>
+                          )}
+                        </Group>
+                        <Rating value={rv.rating} readOnly size="xs" />
+                      </Group>
+                      <Text size="sm" mt="xs">{rv.comment}</Text>
+                    </Card>
+                  ))}
+                </Stack>
+              ) : (
+                <Text size="sm" c="dimmed" p="md" ta="center" style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: '8px' }}>
+                  尚無評價內容
+                </Text>
+              )}
+            </Box>
+          </Stack>
+        </Collapse>
       </Stack>
     </Card>
   );

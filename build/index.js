@@ -603,7 +603,8 @@ import {
   FileInput,
   Loader,
   Progress,
-  Image
+  Image,
+  Collapse
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BarChart } from "@mantine/charts";
@@ -614,7 +615,7 @@ import {
 import { Link, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
 import { useState as useState2, useEffect as useEffect3 } from "react";
 import { ThemeIcon, Checkbox, Tooltip } from "@mantine/core";
-import { IconRobot, IconBulb, IconClockHour4, IconTemplate, IconFileDescription, IconFile, IconPencil, IconCheck, IconX, IconTrash } from "@tabler/icons-react";
+import { IconRobot, IconBulb, IconClockHour4, IconTemplate, IconFileDescription, IconFile, IconPencil, IconCheck, IconX, IconChevronDown, IconTrash } from "@tabler/icons-react";
 
 // app/store/notification.ts
 import { create } from "zustand";
@@ -656,405 +657,420 @@ function n(value) {
 function currency(value) {
   return `NT$ ${(value ?? 0).toLocaleString("zh-TW")}`;
 }
-var TAB_LABELS = {
-  actions: "\u64CD\u4F5C\u5DE5\u5177",
-  performance: "\u6210\u6548\u660E\u7D30",
-  reviews: "\u5408\u4F5C\u8A55\u50F9"
-};
 function KolCollabCard({
   kol,
   onOpenUploadAndPerf,
   onOpenReview
 }) {
-  let [activeTab, setActiveTab] = useState2("actions");
+  let [expanded, { toggle }] = useDisclosure(!1);
   return /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "md", radius: "md", children: /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: [
-    /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", children: [
-      /* @__PURE__ */ jsxDEV4(Group, { children: [
+    /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", align: "flex-start", children: [
+      /* @__PURE__ */ jsxDEV4(Group, { align: "flex-start", children: [
         /* @__PURE__ */ jsxDEV4(Avatar, { src: kol.avatarUrl, radius: "xl", size: 50 }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 82,
+          lineNumber: 77,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV4("div", { children: [
           /* @__PURE__ */ jsxDEV4(Text2, { fw: 700, size: "lg", children: kol.name }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 84,
+            lineNumber: 79,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: [
+          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mb: 2, children: [
             kol.services,
             " | NT$ ",
             (kol.price ?? 0).toLocaleString("zh-TW")
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 85,
+            lineNumber: 80,
             columnNumber: 15
           }, this),
-          kol.executionDate && /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: [
+          kol.executionDate && /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mb: 8, children: [
             "\u57F7\u884C\u65E5\u671F\uFF1A",
             kol.executionDate
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 89,
+            lineNumber: 84,
             columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", mt: "xs", children: [
+            /* @__PURE__ */ jsxDEV4(
+              Button2,
+              {
+                type: "button",
+                size: "xs",
+                variant: "light",
+                onClick: () => onOpenUploadAndPerf(kol),
+                children: "\u{1F4F8} \u4E0A\u50B3\u8CBC\u6587\u6210\u6548"
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 88,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV4(
+              Button2,
+              {
+                type: "button",
+                size: "xs",
+                variant: "light",
+                color: "yellow",
+                onClick: () => onOpenReview(kol),
+                children: "\u270D\uFE0F \u7559\u4E0B\u8A55\u50F9"
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 96,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV4(
+              Button2,
+              {
+                type: "button",
+                size: "xs",
+                variant: "default",
+                component: Link,
+                to: `/kols/${kol.kolId}`,
+                children: "\u{1F464} \u67E5\u770B KOL \u6A94\u6848"
+              },
+              void 0,
+              !1,
+              {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 105,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+            lineNumber: 87,
+            columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 83,
+          lineNumber: 78,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 81,
+        lineNumber: 76,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV4(Group, { gap: "xl", children: [
         /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, align: "center", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u89F8\u53CA" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 95,
+            lineNumber: 119,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV4(Text2, { fw: 700, size: "xl", children: (kol.totalReach ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 96,
+            lineNumber: 120,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 94,
+          lineNumber: 118,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, align: "center", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u4E92\u52D5" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 99,
+            lineNumber: 123,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV4(Text2, { fw: 700, size: "xl", children: (kol.totalEngagement ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 100,
+            lineNumber: 124,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 98,
+          lineNumber: 122,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, align: "center", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u8A55\u50F9" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 103,
+            lineNumber: 127,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV4(Group, { gap: 4, children: [
             /* @__PURE__ */ jsxDEV4(Text2, { fw: 700, size: "xl", children: (kol.rating ?? 0).toFixed(1) }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 105,
+              lineNumber: 129,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV4(Text2, { color: "yellow", children: "\u2B50" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 106,
+              lineNumber: 130,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 104,
+            lineNumber: 128,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 102,
+          lineNumber: 126,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 93,
+        lineNumber: 117,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 80,
+      lineNumber: 75,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ jsxDEV4(Divider, {}, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 112,
+      lineNumber: 136,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ jsxDEV4(Box, { style: { borderBottom: "1px solid var(--mantine-color-default-border)" }, children: /* @__PURE__ */ jsxDEV4(Group, { gap: 0, children: ["actions", "performance", "reviews"].map((tab) => /* @__PURE__ */ jsxDEV4(
-      "button",
+    /* @__PURE__ */ jsxDEV4(Group, { justify: "center", mt: expanded ? "xs" : -10, mb: expanded ? 0 : -10, children: /* @__PURE__ */ jsxDEV4(
+      Button2,
       {
-        type: "button",
-        onClick: () => setActiveTab(tab),
-        style: {
-          padding: "8px 16px",
-          border: "none",
-          borderBottom: activeTab === tab ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
-          background: "none",
-          cursor: "pointer",
-          color: activeTab === tab ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-dimmed)",
-          fontWeight: activeTab === tab ? 600 : 400,
-          fontSize: "var(--mantine-font-size-sm)",
-          fontFamily: "inherit",
-          transition: "color 0.1s, border-color 0.1s"
-        },
-        children: TAB_LABELS[tab]
+        variant: "subtle",
+        size: "sm",
+        color: "gray",
+        onClick: toggle,
+        rightSection: /* @__PURE__ */ jsxDEV4(IconChevronDown, { size: 14, style: { transform: expanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" } }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 143,
+          columnNumber: 27
+        }, this),
+        children: expanded ? "\u6536\u8D77\u6210\u6548\u8207\u8A55\u50F9" : "\u5C55\u958B\u6210\u6548\u8207\u8A55\u50F9"
       },
-      tab,
+      void 0,
       !1,
       {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 118,
-        columnNumber: 15
+        lineNumber: 138,
+        columnNumber: 11
       },
       this
-    )) }, void 0, !1, {
+    ) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 116,
-      columnNumber: 11
-    }, this) }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 115,
+      lineNumber: 137,
       columnNumber: 9
     }, this),
-    activeTab === "actions" && /* @__PURE__ */ jsxDEV4(Group, { pt: "xs", children: [
-      /* @__PURE__ */ jsxDEV4(
-        Button2,
-        {
-          type: "button",
-          size: "xs",
-          variant: "light",
-          onClick: () => onOpenUploadAndPerf(kol),
-          children: "\u{1F4F8} \u4E0A\u50B3\u8CBC\u6587\u6210\u6548"
-        },
-        void 0,
-        !1,
-        {
+    /* @__PURE__ */ jsxDEV4(Collapse, { in: expanded, children: /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xl", children: [
+      /* @__PURE__ */ jsxDEV4(Box, { children: [
+        /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, size: "sm", mb: "md", children: "\u6210\u6548\u660E\u7D30" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 148,
-          columnNumber: 13
-        },
-        this
-      ),
-      /* @__PURE__ */ jsxDEV4(
-        Button2,
-        {
-          type: "button",
-          size: "xs",
-          variant: "light",
-          color: "yellow",
-          onClick: () => onOpenReview(kol),
-          children: "\u270D\uFE0F \u7559\u4E0B\u8A55\u50F9"
-        },
-        void 0,
-        !1,
-        {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 156,
-          columnNumber: 13
-        },
-        this
-      ),
-      /* @__PURE__ */ jsxDEV4(
-        Button2,
-        {
-          type: "button",
-          size: "xs",
-          variant: "default",
-          component: Link,
-          to: `/kols/${kol.kolId}`,
-          children: "\u{1F464} \u67E5\u770B KOL \u6A94\u6848"
-        },
-        void 0,
-        !1,
-        {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 165,
-          columnNumber: 13
-        },
-        this
-      )
-    ] }, void 0, !0, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 147,
-      columnNumber: 11
-    }, this),
-    activeTab === "performance" && /* @__PURE__ */ jsxDEV4(Box, { pt: "xs", children: (kol.performanceItems ?? []).length > 0 ? /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: { base: 1, sm: 2 }, spacing: "sm", children: kol.performanceItems?.map((perf) => /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", radius: "md", children: [
-      /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", mb: "xs", children: [
-        /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 700, children: perf.title }, void 0, !1, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 185,
-          columnNumber: 23
+          lineNumber: 154,
+          columnNumber: 15
         }, this),
-        /* @__PURE__ */ jsxDEV4(Badge, { size: "xs", children: "\u5DF2\u8FFD\u8E64" }, void 0, !1, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 186,
-          columnNumber: 23
-        }, this)
-      ] }, void 0, !0, {
-        fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 184,
-        columnNumber: 21
-      }, this),
-      /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: 4, children: [
-        /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u66DD\u5149" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 190,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.impressions ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 191,
-            columnNumber: 25
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 189,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u89F8\u53CA" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 196,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.reach ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 197,
-            columnNumber: 25
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 195,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u4E92\u52D5\u6B21\u6578" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 202,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.likes ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 203,
-            columnNumber: 25
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 201,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u4E92\u52D5\u7387" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 208,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: [
-            (perf.metrics?.engagementRate ?? 0).toFixed(1),
-            "%"
+        (kol.performanceItems ?? []).length > 0 ? /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: { base: 1, sm: 2 }, spacing: "sm", children: kol.performanceItems?.map((perf) => /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", radius: "md", children: [
+          /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", mb: "xs", children: [
+            /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 700, children: perf.title }, void 0, !1, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 160,
+              columnNumber: 25
+            }, this),
+            /* @__PURE__ */ jsxDEV4(Badge, { size: "xs", children: "\u5DF2\u8FFD\u8E64" }, void 0, !1, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 161,
+              columnNumber: 25
+            }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 209,
-            columnNumber: 25
+            lineNumber: 159,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: 4, children: [
+            /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u66DD\u5149" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 165,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.impressions ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 166,
+                columnNumber: 27
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 164,
+              columnNumber: 25
+            }, this),
+            /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u89F8\u53CA" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 171,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.reach ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 172,
+                columnNumber: 27
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 170,
+              columnNumber: 25
+            }, this),
+            /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u4E92\u52D5\u6B21\u6578" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 177,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: (perf.metrics?.likes ?? 0).toLocaleString("zh-TW") }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 178,
+                columnNumber: 27
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 176,
+              columnNumber: 25
+            }, this),
+            /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u4E92\u52D5\u7387" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 183,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: [
+                (perf.metrics?.engagementRate ?? 0).toFixed(1),
+                "%"
+              ] }, void 0, !0, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 184,
+                columnNumber: 27
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 182,
+              columnNumber: 25
+            }, this)
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+            lineNumber: 163,
+            columnNumber: 23
           }, this)
-        ] }, void 0, !0, {
+        ] }, perf.id, !0, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 158,
+          columnNumber: 21
+        }, this)) }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 156,
+          columnNumber: 17
+        }, this) : /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", p: "md", ta: "center", style: { border: "1px dashed var(--mantine-color-gray-4)", borderRadius: "8px" }, children: "\u5C1A\u7121\u6210\u6548\u6578\u64DA" }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 193,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, !0, {
+        fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+        lineNumber: 153,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV4(Divider, { variant: "dashed" }, void 0, !1, {
+        fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+        lineNumber: 199,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV4(Box, { children: [
+        /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, size: "sm", mb: "md", children: "\u5408\u4F5C\u8A55\u50F9" }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 203,
+          columnNumber: 15
+        }, this),
+        (kol.reviews ?? []).length > 0 ? /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", children: kol.reviews?.map((rv) => /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", radius: "md", children: [
+          /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", children: [
+            /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", children: [
+              /* @__PURE__ */ jsxDEV4(Avatar, { src: rv.avatarUrl, size: "sm" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 210,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: rv.author }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 211,
+                columnNumber: 27
+              }, this),
+              /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: rv.date }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 212,
+                columnNumber: 27
+              }, this),
+              rv.type && /* @__PURE__ */ jsxDEV4(Badge, { size: "xs", color: rv.type === "internal" ? "red" : "blue", children: rv.type === "internal" ? "\u5167\u8A55" : "\u5916\u8A55" }, void 0, !1, {
+                fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+                lineNumber: 214,
+                columnNumber: 29
+              }, this)
+            ] }, void 0, !0, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 209,
+              columnNumber: 25
+            }, this),
+            /* @__PURE__ */ jsxDEV4(Rating, { value: rv.rating, readOnly: !0, size: "xs" }, void 0, !1, {
+              fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+              lineNumber: 219,
+              columnNumber: 25
+            }, this)
+          ] }, void 0, !0, {
+            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+            lineNumber: 208,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", mt: "xs", children: rv.comment }, void 0, !1, {
+            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+            lineNumber: 221,
+            columnNumber: 23
+          }, this)
+        ] }, rv.id, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
           lineNumber: 207,
-          columnNumber: 23
+          columnNumber: 21
+        }, this)) }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 205,
+          columnNumber: 17
+        }, this) : /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", p: "md", ta: "center", style: { border: "1px dashed var(--mantine-color-gray-4)", borderRadius: "8px" }, children: "\u5C1A\u7121\u8A55\u50F9\u5167\u5BB9" }, void 0, !1, {
+          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
+          lineNumber: 226,
+          columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 188,
-        columnNumber: 21
+        lineNumber: 202,
+        columnNumber: 13
       }, this)
-    ] }, perf.id, !0, {
+    ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 183,
-      columnNumber: 19
-    }, this)) }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 181,
-      columnNumber: 15
-    }, this) : /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", p: "md", ta: "center", children: "\u5C1A\u7121\u6210\u6548\u6578\u64DA" }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 218,
-      columnNumber: 15
+      lineNumber: 150,
+      columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 179,
-      columnNumber: 11
-    }, this),
-    activeTab === "reviews" && /* @__PURE__ */ jsxDEV4(Box, { pt: "xs", children: (kol.reviews ?? []).length > 0 ? /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", children: kol.reviews?.map((rv) => /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", radius: "md", children: [
-      /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", children: [
-        /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", children: [
-          /* @__PURE__ */ jsxDEV4(Avatar, { src: rv.avatarUrl, size: "sm" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 232,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: rv.author }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 233,
-            columnNumber: 25
-          }, this),
-          /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: rv.date }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 234,
-            columnNumber: 25
-          }, this),
-          rv.type && /* @__PURE__ */ jsxDEV4(Badge, { size: "xs", color: rv.type === "internal" ? "red" : "blue", children: rv.type === "internal" ? "\u5167\u8A55" : "\u5916\u8A55" }, void 0, !1, {
-            fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 236,
-            columnNumber: 27
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 231,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ jsxDEV4(Rating, { value: rv.rating, readOnly: !0, size: "xs" }, void 0, !1, {
-          fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 241,
-          columnNumber: 23
-        }, this)
-      ] }, void 0, !0, {
-        fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 230,
-        columnNumber: 21
-      }, this),
-      /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", mt: "xs", children: rv.comment }, void 0, !1, {
-        fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 243,
-        columnNumber: 21
-      }, this)
-    ] }, rv.id, !0, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 229,
-      columnNumber: 19
-    }, this)) }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 227,
-      columnNumber: 15
-    }, this) : /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", p: "md", ta: "center", children: "\u5C1A\u7121\u8A55\u50F9\u5167\u5BB9" }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 248,
-      columnNumber: 15
-    }, this) }, void 0, !1, {
-      fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 225,
-      columnNumber: 11
+      lineNumber: 149,
+      columnNumber: 9
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-    lineNumber: 79,
+    lineNumber: 74,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-    lineNumber: 78,
+    lineNumber: 73,
     columnNumber: 5
   }, this);
 }
@@ -1205,12 +1221,12 @@ function InsertionOrderDetailPage() {
     /* @__PURE__ */ jsxDEV4(Group, { gap: 8, children: [
       /* @__PURE__ */ jsxDEV4(Link, { to: "/insertion-orders", className: "text-blue-500 hover:underline", children: "\u59D4\u520A\u55AE\u7BA1\u7406" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 538,
+        lineNumber: 519,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV4(Text2, { c: "dimmed", children: ">" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 541,
+        lineNumber: 522,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: [
@@ -1218,19 +1234,19 @@ function InsertionOrderDetailPage() {
         insertionOrder.orderNo
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 542,
+        lineNumber: 523,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 537,
+      lineNumber: 518,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", align: "center", children: [
       /* @__PURE__ */ jsxDEV4(Group, { children: [
         /* @__PURE__ */ jsxDEV4(Button2, { variant: "default", component: Link, to: "/insertion-orders", children: "\u8FD4\u56DE" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 547,
+          lineNumber: 528,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV4(Title2, { order: 2, children: [
@@ -1238,12 +1254,12 @@ function InsertionOrderDetailPage() {
           insertionOrder.orderNo
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 550,
+          lineNumber: 531,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 546,
+        lineNumber: 527,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV4(Group, { children: [
@@ -1256,7 +1272,7 @@ function InsertionOrderDetailPage() {
               variant: "light",
               leftSection: /* @__PURE__ */ jsxDEV4(IconPencil, { size: 16 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 558,
+                lineNumber: 539,
                 columnNumber: 30
               }, this),
               children: "\u7DE8\u8F2F"
@@ -1265,7 +1281,7 @@ function InsertionOrderDetailPage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 554,
+              lineNumber: 535,
               columnNumber: 15
             },
             this
@@ -1281,7 +1297,7 @@ function InsertionOrderDetailPage() {
               children: [
                 /* @__PURE__ */ jsxDEV4("input", { type: "hidden", name: "intent", value: "deleteOrder" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 569,
+                  lineNumber: 550,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV4(
@@ -1292,7 +1308,7 @@ function InsertionOrderDetailPage() {
                     color: "red",
                     leftSection: /* @__PURE__ */ jsxDEV4(IconTrash, { size: 16 }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 574,
+                      lineNumber: 555,
                       columnNumber: 32
                     }, this),
                     loading: isSubmitting,
@@ -1302,7 +1318,7 @@ function InsertionOrderDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 570,
+                    lineNumber: 551,
                     columnNumber: 17
                   },
                   this
@@ -1313,46 +1329,46 @@ function InsertionOrderDetailPage() {
             !0,
             {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 562,
+              lineNumber: 543,
               columnNumber: 15
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 553,
+          lineNumber: 534,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV4(Button2, { onClick: () => handleOpenGenModal(insertionOrder), children: "\u{1F4CA} \u7522\u751F\u7D50\u6848\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 581,
+          lineNumber: 562,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV4(Button2, { type: "button", variant: "default", children: "\u{1F4BE} \u532F\u51FA Excel" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 584,
+          lineNumber: 565,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 552,
+        lineNumber: 533,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 545,
+      lineNumber: 526,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", p: "xl", shadow: "sm", children: /* @__PURE__ */ jsxDEV4(Grid, { gutter: "xl", children: [
       /* @__PURE__ */ jsxDEV4(Grid.Col, { span: { base: 12, md: 7 }, children: /* @__PURE__ */ jsxDEV4(Stack2, { gap: "sm", children: [
         insertionOrder.orderTitle && /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 500, c: "dimmed", children: insertionOrder.orderTitle }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 594,
+          lineNumber: 575,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV4(Title2, { order: 3, c: "blue", children: insertionOrder.projectName ?? insertionOrder.title ?? "\u672A\u547D\u540D\u5C08\u6848" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 596,
+          lineNumber: 577,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", children: [
@@ -1361,7 +1377,7 @@ function InsertionOrderDetailPage() {
             insertionOrder.clientName
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 600,
+            lineNumber: 581,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Badge, { variant: "light", color: "cyan", children: [
@@ -1369,7 +1385,7 @@ function InsertionOrderDetailPage() {
             insertionOrder.brand ?? insertionOrder.clientName
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 601,
+            lineNumber: 582,
             columnNumber: 19
           }, this),
           insertionOrder.mcnName && /* @__PURE__ */ jsxDEV4(Badge, { variant: "light", color: "violet", children: [
@@ -1377,12 +1393,12 @@ function InsertionOrderDetailPage() {
             insertionOrder.mcnName
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 605,
+            lineNumber: 586,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 599,
+          lineNumber: 580,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", children: [
@@ -1390,7 +1406,7 @@ function InsertionOrderDetailPage() {
           insertionOrder.industryPath ?? insertionOrder.industry ?? "-"
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 608,
+          lineNumber: 589,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", children: [
@@ -1401,7 +1417,7 @@ function InsertionOrderDetailPage() {
           insertionOrder.kolManager ?? "-"
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 611,
+          lineNumber: 592,
           columnNumber: 17
         }, this),
         insertionOrder.documentUrl && /* @__PURE__ */ jsxDEV4(
@@ -1420,7 +1436,7 @@ function InsertionOrderDetailPage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 616,
+            lineNumber: 597,
             columnNumber: 19
           },
           this
@@ -1428,17 +1444,17 @@ function InsertionOrderDetailPage() {
         description && /* @__PURE__ */ jsxDEV4(Box, { mt: "xs", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", fw: 700, c: "dimmed", mb: 4, children: "\u5C08\u6848\u8AAA\u660E" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 630,
+            lineNumber: 611,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", style: { whiteSpace: "pre-wrap" }, children: description }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 631,
+            lineNumber: 612,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 629,
+          lineNumber: 610,
           columnNumber: 19
         }, this),
         internalNotes && /* @__PURE__ */ jsxDEV4(
@@ -1454,12 +1470,12 @@ function InsertionOrderDetailPage() {
             children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", fw: 700, c: "dimmed", mb: 4, children: "\u{1F512} \u5167\u90E8\u5099\u8A3B" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 644,
+                lineNumber: 625,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", style: { whiteSpace: "pre-wrap" }, children: internalNotes }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 645,
+                lineNumber: 626,
                 columnNumber: 21
               }, this)
             ]
@@ -1468,25 +1484,25 @@ function InsertionOrderDetailPage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 635,
+            lineNumber: 616,
             columnNumber: 19
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 592,
+        lineNumber: 573,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 591,
+        lineNumber: 572,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV4(Grid.Col, { span: { base: 12, md: 5 }, children: /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: 2, spacing: "md", children: [
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u5408\u4F5C KOL" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 653,
+            lineNumber: 634,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: [
@@ -1494,98 +1510,98 @@ function InsertionOrderDetailPage() {
             " \u4F4D"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 656,
+            lineNumber: 637,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 652,
+          lineNumber: 633,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u5C08\u6848\u5831\u50F9(\u672A\u7A05)" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 661,
+            lineNumber: 642,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: currency(insertionOrder.totalBudget) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 664,
+            lineNumber: 645,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 660,
+          lineNumber: 641,
           columnNumber: 17
         }, this),
         insertionOrder.tax != null && /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u7A05\u91D1" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 668,
+            lineNumber: 649,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: currency(insertionOrder.tax) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 671,
+            lineNumber: 652,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 667,
+          lineNumber: 648,
           columnNumber: 19
         }, this),
         insertionOrder.totalWithTax != null && /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u542B\u7A05\u7E3D\u984D" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 676,
+            lineNumber: 657,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: currency(insertionOrder.totalWithTax) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 679,
+            lineNumber: 660,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 675,
+          lineNumber: 656,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u7E3D\u89F8\u53CA" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 683,
+            lineNumber: 664,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: n(totalReach) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 686,
+            lineNumber: 667,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 682,
+          lineNumber: 663,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u7E3D\u4E92\u52D5" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 689,
+            lineNumber: 670,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: n(totalEngagement) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 692,
+            lineNumber: 673,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 688,
+          lineNumber: 669,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u5E73\u5747\u4E92\u52D5\u7387" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 695,
+            lineNumber: 676,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: [
@@ -1593,18 +1609,18 @@ function InsertionOrderDetailPage() {
             "%"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 698,
+            lineNumber: 679,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 694,
+          lineNumber: 675,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", fw: 700, children: "\u5E73\u5747\u8A55\u50F9" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 701,
+            lineNumber: 682,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV4(Title2, { order: 4, children: [
@@ -1612,47 +1628,47 @@ function InsertionOrderDetailPage() {
             avgRating.toFixed(1)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 704,
+            lineNumber: 685,
             columnNumber: 19
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 700,
+          lineNumber: 681,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 651,
+        lineNumber: 632,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 650,
+        lineNumber: 631,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 590,
+      lineNumber: 571,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 589,
+      lineNumber: 570,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
       /* @__PURE__ */ jsxDEV4(Title2, { order: 3, mb: "lg", children: "\u{1F4C8} \u6210\u6548\u6578\u64DA\u5C0D\u6BD4" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 713,
+        lineNumber: 694,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV4(ClientOnly, { fallback: /* @__PURE__ */ jsxDEV4(Box, { h: 250, style: { background: "#f8f9fa" } }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 716,
+        lineNumber: 697,
         columnNumber: 31
       }, this), children: () => /* @__PURE__ */ jsxDEV4(Grid, { children: [
         /* @__PURE__ */ jsxDEV4(Grid.Col, { span: { base: 12, md: 6 }, children: [
           /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, mb: "sm", ta: "center", children: "\u89F8\u53CA\u4EBA\u6578\u5C0D\u6BD4 (Reach)" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 720,
+            lineNumber: 701,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV4(
@@ -1670,20 +1686,20 @@ function InsertionOrderDetailPage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 723,
+              lineNumber: 704,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 719,
+          lineNumber: 700,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV4(Grid.Col, { span: { base: 12, md: 6 }, children: [
           /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, mb: "sm", ta: "center", children: "\u4E92\u52D5\u6B21\u6578\u5C0D\u6BD4 (Engagement)" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 734,
+            lineNumber: 715,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV4(
@@ -1701,34 +1717,34 @@ function InsertionOrderDetailPage() {
             !1,
             {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 737,
+              lineNumber: 718,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 733,
+          lineNumber: 714,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 718,
+        lineNumber: 699,
         columnNumber: 13
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 716,
+        lineNumber: 697,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 712,
+      lineNumber: 693,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, radius: "md", children: [
       /* @__PURE__ */ jsxDEV4(Title2, { order: 3, mb: "sm", children: "\u5408\u4F5C KOL \u5217\u8868" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 754,
+        lineNumber: 735,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: collaborations.map((kol) => /* @__PURE__ */ jsxDEV4(
@@ -1742,18 +1758,18 @@ function InsertionOrderDetailPage() {
         !1,
         {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 759,
+          lineNumber: 740,
           columnNumber: 13
         },
         this
       )) }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 757,
+        lineNumber: 738,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 753,
+      lineNumber: 734,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV4(
@@ -1769,7 +1785,7 @@ function InsertionOrderDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 770,
+        lineNumber: 751,
         columnNumber: 7
       },
       this
@@ -1784,29 +1800,29 @@ function InsertionOrderDetailPage() {
         children: /* @__PURE__ */ jsxDEV4(fetcher.Form, { method: "post", onSubmit: closeReview, children: [
           /* @__PURE__ */ jsxDEV4("input", { type: "hidden", name: "intent", value: "review" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 785,
+            lineNumber: 766,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4("input", { type: "hidden", name: "kolId", value: selectedKol?.id }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 786,
+            lineNumber: 767,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: [
             /* @__PURE__ */ jsxDEV4(Stack2, { gap: 5, children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 500, children: "\u661F\u7D1A\u8A55\u5206" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 789,
+                lineNumber: 770,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV4(Rating, { defaultValue: 4.5, name: "rating", fractions: 2 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 792,
+                lineNumber: 773,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 788,
+              lineNumber: 769,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV4(
@@ -1821,7 +1837,7 @@ function InsertionOrderDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 794,
+                lineNumber: 775,
                 columnNumber: 13
               },
               this
@@ -1838,7 +1854,7 @@ function InsertionOrderDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 800,
+                lineNumber: 781,
                 columnNumber: 13
               },
               this
@@ -1846,27 +1862,27 @@ function InsertionOrderDetailPage() {
             /* @__PURE__ */ jsxDEV4(Group, { justify: "flex-end", children: [
               /* @__PURE__ */ jsxDEV4(Button2, { type: "button", variant: "default", onClick: closeReview, children: "\u53D6\u6D88" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 807,
+                lineNumber: 788,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV4(Button2, { color: "yellow", type: "submit", loading: isSubmitting, children: "\u63D0\u4EA4\u8A55\u50F9" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 810,
+                lineNumber: 791,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 806,
+              lineNumber: 787,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 787,
+            lineNumber: 768,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 784,
+          lineNumber: 765,
           columnNumber: 9
         }, this)
       },
@@ -1874,7 +1890,7 @@ function InsertionOrderDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 778,
+        lineNumber: 759,
         columnNumber: 7
       },
       this
@@ -1886,7 +1902,7 @@ function InsertionOrderDetailPage() {
         onClose: closeGenModal,
         title: /* @__PURE__ */ jsxDEV4(Text2, { fw: 700, size: "lg", children: "\u751F\u6210\u7D50\u6848\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 822,
+          lineNumber: 803,
           columnNumber: 16
         }, this),
         size: "xl",
@@ -1895,7 +1911,7 @@ function InsertionOrderDetailPage() {
             /* @__PURE__ */ jsxDEV4(Box, { children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u7DE8\u865F" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 831,
+                lineNumber: 812,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: [
@@ -1903,71 +1919,71 @@ function InsertionOrderDetailPage() {
                 activeOrder.orderNo
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 832,
+                lineNumber: 813,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 830,
+              lineNumber: 811,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV4(Box, { children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u540D\u7A31" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 835,
+                lineNumber: 816,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: activeOrder.title }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 836,
+                lineNumber: 817,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 834,
+              lineNumber: 815,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV4(Box, { children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u5BA2\u6236" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 839,
+                lineNumber: 820,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: activeOrder.clientName }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 840,
+                lineNumber: 821,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 838,
+              lineNumber: 819,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 829,
+            lineNumber: 810,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 828,
+            lineNumber: 809,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV4(Box, { children: [
             /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, size: "lg", mb: 4, children: "\u6B65\u9A5F 1\uFF1A\u78BA\u8A8D KOL \u6210\u6548\u8CC7\u6599" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 847,
+              lineNumber: 828,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "dimmed", mb: "md", children: "\u7CFB\u7D71\u5C07\u81EA\u52D5\u9078\u64C7\u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 848,
+              lineNumber: 829,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: [
               /* @__PURE__ */ jsxDEV4(Box, { children: [
                 /* @__PURE__ */ jsxDEV4(Text2, { fw: 500, size: "sm", c: "green.7", mb: "xs", children: "\u2705 \u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL (\u9810\u8A2D\u9078\u64C7)" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 853,
+                  lineNumber: 834,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", children: [
@@ -1992,68 +2008,68 @@ function InsertionOrderDetailPage() {
                           !1,
                           {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 866,
+                            lineNumber: 847,
                             columnNumber: 27
                           },
                           this
                         ),
                         /* @__PURE__ */ jsxDEV4(Avatar, { src: kol.avatarUrl, radius: "xl", size: "md" }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 871,
+                          lineNumber: 852,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV4(Box, { style: { flexGrow: 1 }, children: [
                           /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: kol.name || "KOL Name" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 873,
+                            lineNumber: 854,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: [
                             "IG\u8CBC\u6587 ",
                             /* @__PURE__ */ jsxDEV4(IconCheck, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                              lineNumber: 875,
+                              lineNumber: 856,
                               columnNumber: 63
                             }, this),
                             " | IG\u9650\u52D5 ",
                             /* @__PURE__ */ jsxDEV4(IconCheck, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                              lineNumber: 875,
+                              lineNumber: 856,
                               columnNumber: 140
                             }, this)
                           ] }, void 0, !0, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 875,
+                            lineNumber: 856,
                             columnNumber: 31
                           }, this) }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 874,
+                            lineNumber: 855,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 872,
+                          lineNumber: 853,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV4(Box, { style: { textAlign: "right" }, children: [
                           /* @__PURE__ */ jsxDEV4(Badge, { variant: "dot", color: "blue", children: "\u7E3D\u89F8\u53CA 80K" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 879,
+                            lineNumber: 860,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mt: 4, children: "\u4E92\u52D5\u7387 7.8%" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 880,
+                            lineNumber: 861,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 878,
+                          lineNumber: 859,
                           columnNumber: 27
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 865,
+                        lineNumber: 846,
                         columnNumber: 25
                       }, this)
                     },
@@ -2061,7 +2077,7 @@ function InsertionOrderDetailPage() {
                     !1,
                     {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 856,
+                      lineNumber: 837,
                       columnNumber: 23
                     },
                     this
@@ -2078,72 +2094,72 @@ function InsertionOrderDetailPage() {
                       !1,
                       {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 889,
+                        lineNumber: 870,
                         columnNumber: 27
                       },
                       this
                     ),
                     /* @__PURE__ */ jsxDEV4(Avatar, { color: "blue", radius: "xl", size: "md", children: "G" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 894,
+                      lineNumber: 875,
                       columnNumber: 27
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Box, { style: { flexGrow: 1 }, children: [
                       /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, children: "Gina (Demo)" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 896,
+                        lineNumber: 877,
                         columnNumber: 29
                       }, this),
                       /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: [
                         "IG\u8CBC\u6587 ",
                         /* @__PURE__ */ jsxDEV4(IconCheck, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 898,
+                          lineNumber: 879,
                           columnNumber: 63
                         }, this),
                         " | IG\u9650\u52D5 ",
                         /* @__PURE__ */ jsxDEV4(IconCheck, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 898,
+                          lineNumber: 879,
                           columnNumber: 140
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 898,
+                        lineNumber: 879,
                         columnNumber: 31
                       }, this) }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 897,
+                        lineNumber: 878,
                         columnNumber: 29
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 895,
+                      lineNumber: 876,
                       columnNumber: 27
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 888,
+                    lineNumber: 869,
                     columnNumber: 25
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 887,
+                    lineNumber: 868,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 854,
+                  lineNumber: 835,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 852,
+                lineNumber: 833,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV4(Box, { children: [
                 /* @__PURE__ */ jsxDEV4(Text2, { fw: 500, size: "sm", c: "orange.7", mb: "xs", children: "\u26A0\uFE0F \u5C1A\u672A\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 909,
+                  lineNumber: 890,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", children: (activeOrder.collaborations || []).filter((k) => !(k.performanceItems || []).length).map((kol, idx) => /* @__PURE__ */ jsxDEV4(
@@ -2167,51 +2183,51 @@ function InsertionOrderDetailPage() {
                         !1,
                         {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 922,
+                          lineNumber: 903,
                           columnNumber: 27
                         },
                         this
                       ),
                       /* @__PURE__ */ jsxDEV4(Avatar, { src: kol.avatarUrl, radius: "xl", size: "md", style: { filter: "grayscale(100%)" } }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 927,
+                        lineNumber: 908,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV4(Box, { style: { flexGrow: 1 }, children: [
                         /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, c: "dimmed", children: kol.name || "KOL Name" }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 929,
+                          lineNumber: 910,
                           columnNumber: 29
                         }, this),
                         /* @__PURE__ */ jsxDEV4(Group, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "red.7", children: [
                           /* @__PURE__ */ jsxDEV4(IconX, { size: 12, style: { display: "inline" } }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                            lineNumber: 931,
+                            lineNumber: 912,
                             columnNumber: 57
                           }, this),
                           " \u7121\u6210\u6548\u8CC7\u6599"
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 931,
+                          lineNumber: 912,
                           columnNumber: 31
                         }, this) }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                          lineNumber: 930,
+                          lineNumber: 911,
                           columnNumber: 29
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 928,
+                        lineNumber: 909,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV4(Button2, { variant: "subtle", size: "xs", color: "blue", rightSection: "\u2192", children: "\u524D\u5F80\u4E0A\u50B3\u6210\u6548" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 934,
+                        lineNumber: 915,
                         columnNumber: 27
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 921,
+                      lineNumber: 902,
                       columnNumber: 25
                     }, this)
                   },
@@ -2219,63 +2235,63 @@ function InsertionOrderDetailPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 912,
+                    lineNumber: 893,
                     columnNumber: 23
                   },
                   this
                 )) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 910,
+                  lineNumber: 891,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 908,
+                lineNumber: 889,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV4(Card, { bg: "blue.0", p: "sm", radius: "md", mt: "xs", children: /* @__PURE__ */ jsxDEV4(Group, { wrap: "nowrap", align: "flex-start", children: [
                 /* @__PURE__ */ jsxDEV4(ThemeIcon, { color: "blue", variant: "light", size: "sm", mt: 2, children: /* @__PURE__ */ jsxDEV4(IconBulb, { size: 14 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 944,
+                  lineNumber: 925,
                   columnNumber: 78
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 944,
+                  lineNumber: 925,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "blue.9", style: { lineHeight: 1.4 }, children: "\u672A\u52FE\u9078\u7684 KOL \u5C07\u4E0D\u6703\u51FA\u73FE\u5728\u5831\u544A\u4E2D\u3002\u5EFA\u8B70\u5148\u4E0A\u50B3\u6240\u6709 KOL \u7684\u6210\u6548\u8CC7\u6599\u5F8C\u518D\u751F\u6210\u5831\u544A\u3002" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 945,
+                  lineNumber: 926,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 943,
+                lineNumber: 924,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 942,
+                lineNumber: 923,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 850,
+              lineNumber: 831,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 846,
+            lineNumber: 827,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV4(Divider, {}, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 953,
+            lineNumber: 934,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV4(Box, { children: [
             /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, size: "lg", mb: "md", children: "\u6B65\u9A5F 2\uFF1A\u5831\u544A\u8A2D\u5B9A" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 957,
+              lineNumber: 938,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV4(Stack2, { gap: "lg", children: [
@@ -2290,7 +2306,7 @@ function InsertionOrderDetailPage() {
                 !1,
                 {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 960,
+                  lineNumber: 941,
                   columnNumber: 17
                 },
                 this
@@ -2298,164 +2314,164 @@ function InsertionOrderDetailPage() {
               /* @__PURE__ */ jsxDEV4(Box, { children: [
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 500, mb: "xs", children: "PowerPoint \u6A21\u677F" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 967,
+                  lineNumber: 948,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Group, { grow: !0, children: [
                   /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("standard"), style: { borderColor: selectedTemplate === "standard" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV4(Stack2, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV4(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "standard" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV4(IconTemplate, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 971,
+                      lineNumber: 952,
                       columnNumber: 120
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 971,
+                      lineNumber: 952,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Text2, { fw: 500, size: "sm", c: selectedTemplate === "standard" ? "" : "dimmed", children: "\u516C\u53F8\u6A19\u6E96\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 972,
+                      lineNumber: 953,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 970,
+                    lineNumber: 951,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 969,
+                    lineNumber: 950,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("simple"), style: { borderColor: selectedTemplate === "simple" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV4(Stack2, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV4(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "simple" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV4(IconTemplate, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 977,
+                      lineNumber: 958,
                       columnNumber: 118
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 977,
+                      lineNumber: 958,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Text2, { fw: 500, size: "sm", c: selectedTemplate === "simple" ? "" : "dimmed", children: "\u7C21\u7D04\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 978,
+                      lineNumber: 959,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 976,
+                    lineNumber: 957,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 975,
+                    lineNumber: 956,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("none"), style: { borderColor: selectedTemplate === "none" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV4(Stack2, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV4(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "none" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV4(IconFile, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 983,
+                      lineNumber: 964,
                       columnNumber: 116
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 983,
+                      lineNumber: 964,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Text2, { fw: 500, size: "sm", c: selectedTemplate === "none" ? "" : "dimmed", children: "\u4E0D\u5957\u7528\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 984,
+                      lineNumber: 965,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 982,
+                    lineNumber: 963,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 981,
+                    lineNumber: 962,
                     columnNumber: 21
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 968,
+                  lineNumber: 949,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 966,
+                lineNumber: 947,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV4(Card, { bg: "gray.0", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV4(Group, { wrap: "nowrap", children: [
                 /* @__PURE__ */ jsxDEV4(ThemeIcon, { color: "gray", variant: "light", children: /* @__PURE__ */ jsxDEV4(IconFileDescription, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 992,
+                  lineNumber: 973,
                   columnNumber: 61
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 992,
+                  lineNumber: 973,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Box, { children: [
                   /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: "\u9810\u4F30\u9801\u6578: \u7D04 18 \u9801" }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 994,
+                    lineNumber: 975,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "(\u5C01\u9762 + 3\u500BKOL \xD7 \u5E73\u57475\u9801 + \u7E3D\u7D50)" }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 995,
+                    lineNumber: 976,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 993,
+                  lineNumber: 974,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 991,
+                lineNumber: 972,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 990,
+                lineNumber: 971,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 959,
+              lineNumber: 940,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 956,
+            lineNumber: 937,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV4(Group, { justify: "flex-end", mt: "md", children: [
             /* @__PURE__ */ jsxDEV4(Button2, { variant: "ghost", color: "gray", onClick: closeGenModal, children: "\u53D6\u6D88" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1003,
+              lineNumber: 984,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV4(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: !0, children: /* @__PURE__ */ jsxDEV4(Button2, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ jsxDEV4(IconRobot, { size: 20 }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1005,
+              lineNumber: 986,
               columnNumber: 87
             }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1005,
+              lineNumber: 986,
               columnNumber: 17
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1004,
+              lineNumber: 985,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1002,
+            lineNumber: 983,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 826,
+          lineNumber: 807,
           columnNumber: 11
         }, this)
       },
@@ -2463,7 +2479,7 @@ function InsertionOrderDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 819,
+        lineNumber: 800,
         columnNumber: 7
       },
       this
@@ -2480,17 +2496,17 @@ function InsertionOrderDetailPage() {
         children: /* @__PURE__ */ jsxDEV4(Stack2, { align: "center", ta: "center", gap: "md", py: "md", children: [
           /* @__PURE__ */ jsxDEV4(ThemeIcon, { size: 64, radius: "100%", variant: "light", color: "blue", style: { animation: "pulse 2s infinite" }, children: /* @__PURE__ */ jsxDEV4(IconRobot, { size: 40 }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1025,
+            lineNumber: 1006,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1024,
+            lineNumber: 1005,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Box, { children: [
             /* @__PURE__ */ jsxDEV4(Title2, { order: 3, children: "AI \u6B63\u5728\u70BA\u60A8\u751F\u6210\u5831\u544A" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1028,
+              lineNumber: 1009,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV4(Text2, { c: "dimmed", mt: 4, children: [
@@ -2500,19 +2516,19 @@ function InsertionOrderDetailPage() {
               activeOrder?.title
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1029,
+              lineNumber: 1010,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1027,
+            lineNumber: 1008,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Box, { w: "100%", my: "sm", children: [
             /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", mb: 8, children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: "\u9032\u5EA6" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1036,
+                lineNumber: 1017,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, c: "blue", children: [
@@ -2520,12 +2536,12 @@ function InsertionOrderDetailPage() {
                 "%"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1037,
+                lineNumber: 1018,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1035,
+              lineNumber: 1016,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV4(
@@ -2542,14 +2558,14 @@ function InsertionOrderDetailPage() {
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1039,
+                lineNumber: 1020,
                 columnNumber: 13
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1034,
+            lineNumber: 1015,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", w: "100%", align: "flex-start", pl: "md", children: [
@@ -2563,88 +2579,88 @@ function InsertionOrderDetailPage() {
             return /* @__PURE__ */ jsxDEV4(Group, { wrap: "nowrap", gap: "sm", children: [
               isCompleted ? /* @__PURE__ */ jsxDEV4(ThemeIcon, { color: "green", size: 20, radius: "xl", variant: "filled", children: /* @__PURE__ */ jsxDEV4(IconCheck, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1063,
+                lineNumber: 1044,
                 columnNumber: 85
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1063,
+                lineNumber: 1044,
                 columnNumber: 21
               }, this) : isCurrent ? /* @__PURE__ */ jsxDEV4(ThemeIcon, { color: "blue", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV4(IconRobot, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1065,
+                lineNumber: 1046,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1065,
+                lineNumber: 1046,
                 columnNumber: 21
               }, this) : /* @__PURE__ */ jsxDEV4(ThemeIcon, { color: "gray", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV4(IconClockHour4, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1067,
+                lineNumber: 1048,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1067,
+                lineNumber: 1048,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: isCurrent ? 600 : 400, c: isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5", children: stepDesc }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1069,
+                lineNumber: 1050,
                 columnNumber: 19
               }, this)
             ] }, idx, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1061,
+              lineNumber: 1042,
               columnNumber: 17
             }, this);
           }) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1050,
+            lineNumber: 1031,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mt: "xs", children: "\u9810\u8A08\u9084\u9700 2 \u5206\u9418" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1077,
+            lineNumber: 1058,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Card, { bg: "blue.0", w: "100%", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV4(Group, { wrap: "nowrap", align: "center", justify: "center", children: [
             /* @__PURE__ */ jsxDEV4(IconBulb, { size: 18, color: "var(--mantine-color-blue-7)" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1081,
+              lineNumber: 1062,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", c: "blue.9", children: "\u60A8\u53EF\u4EE5\u95DC\u9589\u6B64\u8996\u7A97\u7E7C\u7E8C\u5176\u4ED6\u5DE5\u4F5C\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1082,
+              lineNumber: 1063,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1080,
+            lineNumber: 1061,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1079,
+            lineNumber: 1060,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Group, { w: "100%", grow: !0, mt: "sm", children: [
             /* @__PURE__ */ jsxDEV4(Button2, { variant: "outline", color: "red", onClick: closeProgressModal, children: "\u53D6\u6D88\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1087,
+              lineNumber: 1068,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV4(Button2, { onClick: closeProgressModal, children: "\u5728\u80CC\u666F\u7E7C\u7E8C" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1088,
+              lineNumber: 1069,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1086,
+            lineNumber: 1067,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 1023,
+          lineNumber: 1004,
           columnNumber: 9
         }, this)
       },
@@ -2652,7 +2668,7 @@ function InsertionOrderDetailPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 1015,
+        lineNumber: 996,
         columnNumber: 7
       },
       this
@@ -2665,12 +2681,12 @@ function InsertionOrderDetailPage() {
         }
       ` }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 1093,
+      lineNumber: 1074,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-    lineNumber: 536,
+    lineNumber: 517,
     columnNumber: 5
   }, this);
 }
@@ -2729,19 +2745,19 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
       onClose: closeAndReset,
       title: /* @__PURE__ */ jsxDEV4(Text2, { fw: 600, size: "lg", children: "\u65B0\u589E\u6210\u6548\u6578\u64DA" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 1189,
+        lineNumber: 1170,
         columnNumber: 14
       }, this),
       size: "700px",
       children: /* @__PURE__ */ jsxDEV4(fetcher.Form, { method: "post", onSubmit: closeAndReset, children: [
         /* @__PURE__ */ jsxDEV4("input", { type: "hidden", name: "intent", value: "performance" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 1193,
+          lineNumber: 1174,
           columnNumber: 9
         }, this),
         /* @__PURE__ */ jsxDEV4("input", { type: "hidden", name: "kolId", value: selectedKol?.id }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 1194,
+          lineNumber: 1175,
           columnNumber: 9
         }, this),
         /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xl", children: [
@@ -2749,7 +2765,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
             /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "\u6848\u4EF6" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1201,
+                lineNumber: 1182,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: [
@@ -2759,28 +2775,28 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 insertionOrder.projectName
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1202,
+                lineNumber: 1183,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1200,
+              lineNumber: 1181,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV4(Stack2, { gap: 0, children: [
               /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", children: "KOL" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1205,
+                lineNumber: 1186,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, children: selectedKol?.name }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1206,
+                lineNumber: 1187,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1204,
+              lineNumber: 1185,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV4(
@@ -2796,18 +2812,18 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1208,
+                lineNumber: 1189,
                 columnNumber: 17
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1199,
+            lineNumber: 1180,
             columnNumber: 14
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1198,
+            lineNumber: 1179,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Box, { children: [
@@ -2835,7 +2851,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 !1,
                 {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1222,
+                  lineNumber: 1203,
                   columnNumber: 17
                 },
                 this
@@ -2863,18 +2879,18 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 !1,
                 {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1240,
+                  lineNumber: 1221,
                   columnNumber: 17
                 },
                 this
               )
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1221,
+              lineNumber: 1202,
               columnNumber: 15
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1220,
+              lineNumber: 1201,
               columnNumber: 13
             }, this),
             activeTab === "post" && /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: [
@@ -2895,7 +2911,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                       !1,
                       {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 1268,
+                        lineNumber: 1249,
                         columnNumber: 21
                       },
                       this
@@ -2903,18 +2919,18 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     /* @__PURE__ */ jsxDEV4(Text2, { size: "md", fw: 500, c: "dimmed", children: [
                       /* @__PURE__ */ jsxDEV4(Text2, { span: !0, c: "blue", inherit: !0, children: "\u9EDE\u64CA\u4E0A\u50B3" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 1275,
+                        lineNumber: 1256,
                         columnNumber: 23
                       }, this),
                       " \u6216\u62D6\u66F3\u6A94\u6848\u81F3\u6B64"
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1274,
+                      lineNumber: 1255,
                       columnNumber: 21
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mt: 4, children: "\u652F\u63F4\u4E0A\u50B3\u591A\u5F35\u8CBC\u6587\u5716\u7247" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1277,
+                      lineNumber: 1258,
                       columnNumber: 21
                     }, this)
                   ]
@@ -2923,7 +2939,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 !0,
                 {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1265,
+                  lineNumber: 1246,
                   columnNumber: 19
                 },
                 this
@@ -2931,28 +2947,28 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
               postUploadState === "uploading" && /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "xl", ta: "center", children: [
                 /* @__PURE__ */ jsxDEV4(Loader, { size: "sm", mb: "sm", mx: "auto" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1283,
+                  lineNumber: 1264,
                   columnNumber: 22
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", children: "\u5716\u7247\u4E0A\u50B3\u4E2D..." }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1284,
+                  lineNumber: 1265,
                   columnNumber: 22
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Progress, { value: 75, mt: "md", animated: !0 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1285,
+                  lineNumber: 1266,
                   columnNumber: 22
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1282,
+                lineNumber: 1263,
                 columnNumber: 19
               }, this),
               postUploadState === "success" && /* @__PURE__ */ jsxDEV4(Group, { gap: "sm", children: [
                 postImages.map((src, i) => /* @__PURE__ */ jsxDEV4(Image, { src, w: 100, h: 100, radius: "md", style: { objectFit: "cover" } }, i, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1292,
+                  lineNumber: 1273,
                   columnNumber: 23
                 }, this)),
                 /* @__PURE__ */ jsxDEV4(Box, { style: { width: 100, height: 100, border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative" }, children: [
@@ -2968,29 +2984,29 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     !1,
                     {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1295,
+                      lineNumber: 1276,
                       columnNumber: 24
                     },
                     this
                   ),
                   /* @__PURE__ */ jsxDEV4(Text2, { size: "xl", c: "dimmed", children: "+" }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1301,
+                    lineNumber: 1282,
                     columnNumber: 24
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1294,
+                  lineNumber: 1275,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1290,
+                lineNumber: 1271,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1263,
+              lineNumber: 1244,
               columnNumber: 15
             }, this),
             activeTab === "performance" && /* @__PURE__ */ jsxDEV4(Stack2, { gap: "md", children: [
@@ -3011,7 +3027,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                       !1,
                       {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 1315,
+                        lineNumber: 1296,
                         columnNumber: 21
                       },
                       this
@@ -3019,18 +3035,18 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     /* @__PURE__ */ jsxDEV4(Text2, { size: "md", fw: 500, c: "dimmed", children: [
                       /* @__PURE__ */ jsxDEV4(Text2, { span: !0, c: "blue", inherit: !0, children: "\u9EDE\u64CA\u4E0A\u50B3" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                        lineNumber: 1322,
+                        lineNumber: 1303,
                         columnNumber: 23
                       }, this),
                       " \u6216\u62D6\u66F3\u6A94\u6848\u81F3\u6B64"
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1321,
+                      lineNumber: 1302,
                       columnNumber: 21
                     }, this),
                     /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "dimmed", mt: 4, children: "\u6210\u6548\u622A\u5716\u53EF\u80FD\u5F88\u9577\uFF0C\u652F\u63F4\u4E0A\u50B3\u591A\u5F35\u5716\u7247" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1324,
+                      lineNumber: 1305,
                       columnNumber: 21
                     }, this)
                   ]
@@ -3039,7 +3055,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 !0,
                 {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1312,
+                  lineNumber: 1293,
                   columnNumber: 19
                 },
                 this
@@ -3047,77 +3063,77 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
               perfUploadState === "uploading" && /* @__PURE__ */ jsxDEV4(Card, { withBorder: !0, p: "xl", ta: "center", children: [
                 /* @__PURE__ */ jsxDEV4(Loader, { size: "sm", mb: "sm", mx: "auto" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1330,
+                  lineNumber: 1311,
                   columnNumber: 22
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", children: "\u5716\u7247\u4E0A\u50B3\u4E2D..." }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1331,
+                  lineNumber: 1312,
                   columnNumber: 22
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Progress, { value: 75, mt: "md", animated: !0 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1332,
+                  lineNumber: 1313,
                   columnNumber: 22
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1329,
+                lineNumber: 1310,
                 columnNumber: 19
               }, this),
               ["recognizing", "success"].includes(perfUploadState) && /* @__PURE__ */ jsxDEV4(Group, { gap: "sm", mb: "sm", children: perfImages.map((src, i) => /* @__PURE__ */ jsxDEV4(Image, { src, w: 100, h: 100, radius: "md", style: { objectFit: "cover" } }, i, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1339,
+                lineNumber: 1320,
                 columnNumber: 23
               }, this)) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1337,
+                lineNumber: 1318,
                 columnNumber: 19
               }, this),
               perfUploadState === "recognizing" && /* @__PURE__ */ jsxDEV4(Card, { p: "md", radius: "md", bg: "blue.0", children: /* @__PURE__ */ jsxDEV4(Group, { gap: "sm", children: [
                 /* @__PURE__ */ jsxDEV4(Loader, { color: "blue", size: "sm" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1347,
+                  lineNumber: 1328,
                   columnNumber: 24
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, c: "blue.9", children: "\u2728 \u{1F916} AI \u6B63\u5728\u8FA8\u8B58\u4E2D..." }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1348,
+                  lineNumber: 1329,
                   columnNumber: 24
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1346,
+                lineNumber: 1327,
                 columnNumber: 22
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1345,
+                lineNumber: 1326,
                 columnNumber: 19
               }, this),
               perfUploadState === "success" && /* @__PURE__ */ jsxDEV4(Card, { p: "md", radius: "md", bg: "blue.0", style: { opacity: 0.8 }, children: /* @__PURE__ */ jsxDEV4(Group, { gap: "sm", children: [
                 /* @__PURE__ */ jsxDEV4(IconCheck, { size: 20, color: "var(--mantine-color-blue-filled)" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1356,
+                  lineNumber: 1337,
                   columnNumber: 24
                 }, this),
                 /* @__PURE__ */ jsxDEV4(Text2, { size: "sm", fw: 600, c: "blue.9", children: "\u2728 \u{1F916} AI \u8FA8\u8B58\u5B8C\u6210\uFF0C\u8ACB\u78BA\u8A8D\u4EE5\u4E0B\u6578\u64DA" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1357,
+                  lineNumber: 1338,
                   columnNumber: 24
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1355,
+                lineNumber: 1336,
                 columnNumber: 22
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1354,
+                lineNumber: 1335,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV4(Stack2, { gap: "xs", mt: "sm", children: /* @__PURE__ */ jsxDEV4(SimpleGrid, { cols: 2, spacing: "md", children: [
                 /* @__PURE__ */ jsxDEV4(NumberInput, { label: "\u4E0A\u7DDA\u65E5\u671F (\u9078\u586B)", placeholder: "YYYY / MM / DD", disabled: perfUploadState === "recognizing" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                  lineNumber: 1365,
+                  lineNumber: 1346,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV4(
@@ -3130,7 +3146,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1368,
+                      lineNumber: 1349,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3139,7 +3155,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1366,
+                    lineNumber: 1347,
                     columnNumber: 21
                   },
                   this
@@ -3154,7 +3170,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1373,
+                      lineNumber: 1354,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3163,7 +3179,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1371,
+                    lineNumber: 1352,
                     columnNumber: 21
                   },
                   this
@@ -3178,7 +3194,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1378,
+                      lineNumber: 1359,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3187,7 +3203,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1376,
+                    lineNumber: 1357,
                     columnNumber: 21
                   },
                   this
@@ -3202,7 +3218,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1383,
+                      lineNumber: 1364,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3211,7 +3227,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1381,
+                    lineNumber: 1362,
                     columnNumber: 21
                   },
                   this
@@ -3225,7 +3241,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1388,
+                      lineNumber: 1369,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3234,7 +3250,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1386,
+                    lineNumber: 1367,
                     columnNumber: 21
                   },
                   this
@@ -3248,7 +3264,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1393,
+                      lineNumber: 1374,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3257,7 +3273,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1391,
+                    lineNumber: 1372,
                     columnNumber: 21
                   },
                   this
@@ -3271,7 +3287,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                     disabled: perfUploadState === "recognizing",
                     rightSection: perfUploadState === "success" ? /* @__PURE__ */ jsxDEV4(Text2, { size: "xs", c: "blue", children: "\u2728" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                      lineNumber: 1398,
+                      lineNumber: 1379,
                       columnNumber: 69
                     }, this) : null,
                     styles: { input: { borderColor: perfUploadState === "success" ? "var(--mantine-color-blue-filled)" : void 0 } }
@@ -3280,7 +3296,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1396,
+                    lineNumber: 1377,
                     columnNumber: 21
                   },
                   this
@@ -3298,54 +3314,54 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                    lineNumber: 1402,
+                    lineNumber: 1383,
                     columnNumber: 21
                   },
                   this
                 )
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1364,
+                lineNumber: 1345,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-                lineNumber: 1363,
+                lineNumber: 1344,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1310,
+              lineNumber: 1291,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1219,
+            lineNumber: 1200,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV4(Group, { justify: "space-between", mt: "md", children: [
             /* @__PURE__ */ jsxDEV4(Button2, { type: "button", variant: "default", onClick: closeAndReset, children: "\u53D6\u6D88" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1417,
+              lineNumber: 1398,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV4(Button2, { color: "blue", type: "submit", loading: fetcher.state !== "idle", children: "\u5132\u5B58\u6210\u6548" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-              lineNumber: 1418,
+              lineNumber: 1399,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-            lineNumber: 1416,
+            lineNumber: 1397,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-          lineNumber: 1196,
+          lineNumber: 1177,
           columnNumber: 9
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-        lineNumber: 1192,
+        lineNumber: 1173,
         columnNumber: 7
       }, this)
     },
@@ -3353,7 +3369,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
     !1,
     {
       fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
-      lineNumber: 1186,
+      lineNumber: 1167,
       columnNumber: 5
     },
     this
@@ -17957,7 +17973,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-JMNJOZTK.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-S2S6JEDU.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-GKPSU2GY.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-FNGSD2EA.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-CHJGZQVU.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-Q4E3X3PT.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-NB5U2VTK.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-53SGY6CV.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-EMMUGV47.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-IC3MZWRM.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-ZLR2U6CY.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-S3L77JIN.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-HQRGP3TE.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-4QW5PISH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-NMWYVUJI.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-UYHJ4WX4.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-MGATQNB4.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "4ee87302", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774607465220 }, url: "/build/manifest-4EE87302.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-RHXNLVRX.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-HJTATZWM.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-G7FKO4SE.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-IQUXPVOV.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-7JUM33CN.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-B66TRS3M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-4LMVX47X.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-IZXVN76N.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-TVJB4PEH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-PVD36O4Y.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-Y4VWLQAD.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-OHES2SUE.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-UTOD2A6H.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-HMM4O3P5.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-B4G5QB2M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-FBFUPTUH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-SUNZP7T3.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "213d0fec", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774609081157 }, url: "/build/manifest-213D0FEC.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {
