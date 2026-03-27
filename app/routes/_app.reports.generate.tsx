@@ -62,10 +62,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const orders = await listInsertionOrders();
   const allClients = Array.from(new Set(orders.map((o) => o.clientName)));
 
-  const mappedOrders = orders.map((order, idx) => ({
+  const mappedOrders = orders.map((order) => ({
     ...order,
-    hasDraft: idx === 0 || idx === 1,
-    hasOfficial: idx === 0,
+    hasDraft: order.hasDraft ?? false,
+    hasOfficial: order.hasOfficial ?? false,
+    reports: order.reports ?? [],
   }));
 
   const filtered = mappedOrders.filter((order) => {
@@ -308,23 +309,27 @@ export default function ReportManagementPage() {
                       {hasDraft && (
                         <Card withBorder bg="gray.0" radius="sm" p="sm">
                           <Text size="sm" fw={600} mb="sm" c="dimmed">系統生成（草稿）</Text>
-                          <Group justify="space-between" wrap="nowrap" style={{ border: '1px solid #eaeaea', background: 'white', padding: 12, borderRadius: 8 }}>
-                            <Group>
-                              <ThemeIcon size="lg" variant="light" color="gray"><IconFileTypePpt size={20} /></ThemeIcon>
-                              <Box>
-                                <Group gap="xs">
-                                  <Text fw={500}>結案報告_v1.pptx</Text>
-                                  <Badge color="gray" variant="filled" size="xs">草稿</Badge>
+                          <Stack gap="xs">
+                            {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
+                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid #eaeaea', background: 'white', padding: 12, borderRadius: 8 }}>
+                                <Group>
+                                  <ThemeIcon size="lg" variant="light" color="gray"><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box>
+                                    <Group gap="xs">
+                                      <Text fw={500}>{report.name}</Text>
+                                      <Badge color="gray" variant="filled" size="xs">草稿</Badge>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">生成時間: {report.createdAt} | 生成者: {report.createdBy}</Text>
+                                  </Box>
                                 </Group>
-                                <Text size="xs" c="dimmed">生成時間: 2024-10-20 14:30 | 生成者: 系統 AI</Text>
-                              </Box>
-                            </Group>
-                            <Group gap="xs">
-                              <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
-                              <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
-                              <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
-                            </Group>
-                          </Group>
+                                <Group gap="xs">
+                                  <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                                </Group>
+                              </Group>
+                            ))}
+                          </Stack>
                         </Card>
                       )}
 
@@ -332,23 +337,27 @@ export default function ReportManagementPage() {
                       {hasOfficial && (
                         <Card withBorder bg="green.0" radius="sm" p="sm">
                           <Text size="sm" fw={600} mb="sm" c="green.8">正式版本</Text>
-                          <Group justify="space-between" wrap="nowrap" style={{ border: '1px solid #b2f2bb', background: 'white', padding: 12, borderRadius: 8 }}>
-                            <Group>
-                              <ThemeIcon size="lg" variant="light" color="green"><IconFileTypePpt size={20} /></ThemeIcon>
-                              <Box>
-                                <Group gap="xs">
-                                  <Text fw={500}>結案報告_完整版.pptx</Text>
-                                  <Badge color="green" variant="filled" size="xs">⭐ 正式版</Badge>
+                          <Stack gap="xs">
+                            {order.reports?.filter((r: any) => r.type === "official").map((report: any) => (
+                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid #b2f2bb', background: 'white', padding: 12, borderRadius: 8 }}>
+                                <Group>
+                                  <ThemeIcon size="lg" variant="light" color="green"><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box>
+                                    <Group gap="xs">
+                                      <Text fw={500}>{report.name}</Text>
+                                      <Badge color="green" variant="filled" size="xs">⭐ 正式版</Badge>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">上傳時間: {report.createdAt} | 上傳者: {report.createdBy}</Text>
+                                    {report.note && <Text size="xs" c="dimmed" mt={2}>說明: {report.note}</Text>}
+                                  </Box>
                                 </Group>
-                                <Text size="xs" c="dimmed">上傳時間: 2024-10-22 10:15 | 上傳者: 管理員</Text>
-                                <Text size="xs" c="dimmed" mt={2}>說明: 已根據客戶回饋修正數據呈現方式</Text>
-                              </Box>
-                            </Group>
-                            <Group gap="xs">
-                              <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
-                              <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
-                            </Group>
-                          </Group>
+                                <Group gap="xs">
+                                  <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                                </Group>
+                              </Group>
+                            ))}
+                          </Stack>
                         </Card>
                       )}
                     </SimpleGrid>

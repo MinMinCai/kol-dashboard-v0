@@ -3,7 +3,7 @@ import {
   IconPencil,
   IconTrash
 } from "/build/_shared/chunk-ZHSZHK33.js";
-import "/build/_shared/chunk-NNH5CGJ5.js";
+import "/build/_shared/chunk-HZBBB3MW.js";
 import {
   require_node
 } from "/build/_shared/chunk-G7CHZRZX.js";
@@ -343,4 +343,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals._index-Q2RBBJYY.js.map
+//# sourceMappingURL=/build/routes/_app.proposals._index-4QW5PISH.js.map

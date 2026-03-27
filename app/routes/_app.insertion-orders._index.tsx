@@ -24,11 +24,14 @@ import { useDisclosure } from "@mantine/hooks";
 import {
   json,
   type LoaderFunctionArgs,
+  type ActionFunctionArgs,
 } from "@remix-run/node";
 import { 
   Link, 
-  useLoaderData, 
+  useLoaderData,
+  useFetcher,
 } from "@remix-run/react";
+import { useNotificationStore } from "~/store/notification";
 import { useState, useEffect } from "react";
 import {
   IconFileTypePpt,
@@ -47,7 +50,8 @@ import {
   IconUpload,
   IconCloudUpload
 } from "@tabler/icons-react";
-import { listInsertionOrders, type InsertionOrder } from "~/lib/mock-api";
+import { listInsertionOrders, updateInsertionOrder, type InsertionOrder } from "~/lib/mock-api";
+
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
 
@@ -139,7 +143,37 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 }
 
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "generateReport") {
+    const orderId = formData.get("orderId") as string;
+    if (orderId) {
+      const { getInsertionOrder } = await import("~/lib/mock-api");
+      const io = await getInsertionOrder(orderId);
+      if (io) {
+        const newReport = {
+          id: `rep_${Date.now()}`,
+          name: `結案報告_v${(io.reports?.filter(r => r.type === "draft").length || 0) + 1}.pptx`,
+          type: "draft" as const,
+          createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
+          createdBy: "系統 AI",
+        };
+        await updateInsertionOrder(orderId, { 
+          hasDraft: true,
+          reports: [...(io.reports || []), newReport]
+        });
+      }
+    }
+    return json({ success: true });
+  }
+
+  return json({ success: false }, { status: 400 });
+}
+
 function formatShortDate(date: string): string {
+
   if (!date) return "-";
   return date.slice(0, 7);
 }
@@ -160,7 +194,11 @@ export default function InsertionOrderListPage() {
     timeFilter,
   } = useLoaderData<typeof loader>();
 
+  const fetcher = useFetcher();
+  const { showToast, showBanner } = useNotificationStore();
+
   // ── Report Generation State ──
+
   const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
@@ -215,10 +253,21 @@ export default function InsertionOrderListPage() {
     else if (progressPercentage < 100) setCurrentStepIndex(4);
     else if (progressPercentage === 100) {
       setTimeout(() => {
-        // Success state would go here
+        if (activeOrder) {
+          fetcher.submit(
+            { intent: "generateReport", orderId: activeOrder.id },
+            { method: "post" }
+          );
+          const title = "結案報告已生成完成！";
+          const message = `${activeOrder.orderNo} ${activeOrder.title || activeOrder.projectName}|結案報告_v1.pptx`;
+          showToast(title, message, "/reports/generate");
+          showBanner(title, message, "/reports/generate");
+        }
+        closeProgressModal();
       }, 500);
     }
   }, [progressPercentage]);
+
 
   return (
     <Stack gap="md">

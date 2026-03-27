@@ -2,7 +2,7 @@ import {
   IconArrowLeft,
   IconTrash
 } from "/build/_shared/chunk-ZHSZHK33.js";
-import "/build/_shared/chunk-NNH5CGJ5.js";
+import "/build/_shared/chunk-HZBBB3MW.js";
 import {
   require_node
 } from "/build/_shared/chunk-G7CHZRZX.js";
@@ -1014,4 +1014,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalDetailPage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-L4Y7IOZX.js.map
+//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-HQRGP3TE.js.map

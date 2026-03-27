@@ -179,6 +179,16 @@ export type TeamMember = {
   group: "AE" | "KOL" | "Tech" | "Media" | "其他";
 };
 
+export type Report = {
+  id: string;
+  name: string;
+  type: "draft" | "official";
+  createdAt: string;
+  createdBy: string;
+  fileSize?: string;
+  note?: string;
+};
+
 export type SystemPreferences = {
   currency: string;
   defaultTaxRate: number;
@@ -213,6 +223,9 @@ export type InsertionOrder = {
   totalWithTax?: number;
   startDate: string;
   endDate: string;
+  hasDraft?: boolean;
+  hasOfficial?: boolean;
+  reports?: Report[];
 };
 
 export async function listKols(): Promise<Kol[]> {

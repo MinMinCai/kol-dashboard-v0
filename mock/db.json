@@ -944,6 +944,16 @@
             }
           ]
         }
+      ],
+      "hasDraft": true,
+      "reports": [
+        {
+          "id": "rep_1774605577467",
+          "name": "結案報告_v1.pptx",
+          "type": "draft",
+          "createdAt": "2026-03-27 09:59",
+          "createdBy": "系統 AI"
+        }
       ]
     },
     {

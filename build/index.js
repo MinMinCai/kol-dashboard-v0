@@ -1,8 +1,321 @@
 var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: !0 });
 };
+
+// app/lib/mock-api.ts
+var mock_api_exports = {};
+__export(mock_api_exports, {
+  MOCK_API_BASE: () => MOCK_API_BASE,
+  addBrandCatalog: () => addBrandCatalog,
+  addIOReview: () => addIOReview,
+  addIndustryCatalog: () => addIndustryCatalog,
+  addPlatformCatalog: () => addPlatformCatalog,
+  addProposalKol: () => addProposalKol,
+  addTagCatalog: () => addTagCatalog,
+  addTeamMember: () => addTeamMember,
+  deleteBrandCatalog: () => deleteBrandCatalog,
+  deleteIndustryCatalog: () => deleteIndustryCatalog,
+  deleteInsertionOrder: () => deleteInsertionOrder,
+  deleteKol: () => deleteKol,
+  deletePlatformCatalog: () => deletePlatformCatalog,
+  deleteProposal: () => deleteProposal,
+  deleteProposalKol: () => deleteProposalKol,
+  deleteTagCatalog: () => deleteTagCatalog,
+  deleteTeamMember: () => deleteTeamMember,
+  getInsertionOrder: () => getInsertionOrder,
+  getKol: () => getKol,
+  getProposal: () => getProposal,
+  getSystemPreferences: () => getSystemPreferences,
+  listBrandCatalog: () => listBrandCatalog,
+  listIndustryCatalog: () => listIndustryCatalog,
+  listInsertionOrders: () => listInsertionOrders,
+  listKols: () => listKols,
+  listPlatformCatalog: () => listPlatformCatalog,
+  listProposalKols: () => listProposalKols,
+  listProposals: () => listProposals,
+  listTagCatalog: () => listTagCatalog,
+  listTeamMembers: () => listTeamMembers,
+  updateBrandCatalog: () => updateBrandCatalog,
+  updateIOPerformance: () => updateIOPerformance,
+  updateIndustryCatalog: () => updateIndustryCatalog,
+  updateInsertionOrder: () => updateInsertionOrder,
+  updateKol: () => updateKol,
+  updatePlatformCatalog: () => updatePlatformCatalog,
+  updateProposal: () => updateProposal,
+  updateProposalKolStatus: () => updateProposalKolStatus,
+  updateSystemPreferences: () => updateSystemPreferences,
+  updateTagCatalog: () => updateTagCatalog,
+  updateTeamMember: () => updateTeamMember
+});
+async function listKols() {
+  return (await fetch(`${MOCK_API_BASE}/kols`)).json();
+}
+async function getKol(id) {
+  let res = await fetch(`${MOCK_API_BASE}/kols/${id}`);
+  return res.status === 404 ? null : res.json();
+}
+async function listProposals() {
+  return (await fetch(`${MOCK_API_BASE}/proposals`)).json();
+}
+async function updateProposal(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deleteProposal(id) {
+  return (await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function getProposal(id) {
+  let res = await fetch(`${MOCK_API_BASE}/proposals/${id}`);
+  return res.status === 404 ? null : res.json();
+}
+async function listProposalKols(proposalId) {
+  return (await fetch(`${MOCK_API_BASE}/proposalKols?proposalId=${proposalId}`)).json();
+}
+async function addProposalKol(data) {
+  let payload = { ...data, status: "pending", feedbackText: "" };
+  return (await fetch(`${MOCK_API_BASE}/proposalKols`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })).json();
+}
+async function updateProposalKolStatus(id, status, feedbackText) {
+  return (await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status, feedbackText })
+  })).json();
+}
+async function deleteProposalKol(id) {
+  return (await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function listInsertionOrders() {
+  return (await fetch(`${MOCK_API_BASE}/insertionOrders`)).json();
+}
+async function listTagCatalog() {
+  try {
+    let res = await fetch(`${MOCK_API_BASE}/tagCatalog`);
+    return res.ok ? res.json() : [];
+  } catch {
+    return [];
+  }
+}
+async function addTagCatalog(data) {
+  return (await fetch(`${MOCK_API_BASE}/tagCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function updateTagCatalog(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deleteTagCatalog(id) {
+  return (await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function listBrandCatalog() {
+  try {
+    let res = await fetch(`${MOCK_API_BASE}/brandCatalog`);
+    return res.ok ? res.json() : [];
+  } catch {
+    return [];
+  }
+}
+async function addBrandCatalog(data) {
+  return (await fetch(`${MOCK_API_BASE}/brandCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function updateBrandCatalog(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deleteBrandCatalog(id) {
+  return (await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function listIndustryCatalog() {
+  try {
+    let res = await fetch(`${MOCK_API_BASE}/industryCatalog`);
+    return res.ok ? res.json() : [];
+  } catch {
+    return [];
+  }
+}
+async function addIndustryCatalog(data) {
+  return (await fetch(`${MOCK_API_BASE}/industryCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function updateIndustryCatalog(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deleteIndustryCatalog(id) {
+  return (await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function listPlatformCatalog() {
+  try {
+    let res = await fetch(`${MOCK_API_BASE}/platformCatalog`);
+    return res.ok ? res.json() : [];
+  } catch {
+    return [];
+  }
+}
+async function addPlatformCatalog(data) {
+  return (await fetch(`${MOCK_API_BASE}/platformCatalog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function updatePlatformCatalog(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deletePlatformCatalog(id) {
+  return (await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function listTeamMembers() {
+  return (await fetch(`${MOCK_API_BASE}/teamMembers`)).json();
+}
+async function getSystemPreferences() {
+  return (await fetch(`${MOCK_API_BASE}/systemPreferences`)).json();
+}
+async function updateSystemPreferences(data) {
+  return (await fetch(`${MOCK_API_BASE}/systemPreferences`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function addTeamMember(data) {
+  return (await fetch(`${MOCK_API_BASE}/teamMembers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function updateTeamMember(id, data) {
+  return (await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })).json();
+}
+async function deleteTeamMember(id) {
+  return (await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+async function getInsertionOrder(id) {
+  let res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`);
+  return res.status === 404 ? null : res.json();
+}
+async function deleteKol(id) {
+  return (await fetch(`${MOCK_API_BASE}/kols/${id}`, { method: "DELETE" })).ok;
+}
+async function updateKol(id, data) {
+  let res = await fetch(`${MOCK_API_BASE}/kols/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok)
+    throw new Error("Update failed");
+  return res.json();
+}
+async function updateInsertionOrder(id, data) {
+  let res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok)
+    throw new Error("Update failed");
+  return res.json();
+}
+async function addIOReview(orderId, kolId, review) {
+  let io = await getInsertionOrder(orderId);
+  if (!io)
+    throw new Error("Order not found");
+  let collabs = io.collaborations ?? [], collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (collabIndex === -1)
+    throw new Error("Collaboration not found");
+  let newReview = {
+    ...review,
+    id: `rv_${Date.now()}`,
+    date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+  }, updatedCollabs = [...collabs];
+  return updatedCollabs[collabIndex] = {
+    ...updatedCollabs[collabIndex],
+    reviews: [...updatedCollabs[collabIndex].reviews ?? [], newReview]
+  }, updateInsertionOrder(orderId, { collaborations: updatedCollabs });
+}
+async function updateIOPerformance(orderId, kolId, performance) {
+  let io = await getInsertionOrder(orderId);
+  if (!io)
+    throw new Error("Order not found");
+  let collabs = io.collaborations ?? [], collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (collabIndex === -1)
+    throw new Error("Collaboration not found");
+  let newItem = {
+    ...performance,
+    id: `perf_${Date.now()}`
+  }, updatedCollabs = [...collabs];
+  return updatedCollabs[collabIndex] = {
+    ...updatedCollabs[collabIndex],
+    performanceItems: [...updatedCollabs[collabIndex].performanceItems ?? [], newItem]
+  }, updateInsertionOrder(orderId, { collaborations: updatedCollabs });
+}
+async function deleteInsertionOrder(id) {
+  return (await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
+    method: "DELETE"
+  })).ok;
+}
+var MOCK_API_BASE, init_mock_api = __esm({
+  "app/lib/mock-api.ts"() {
+    "use strict";
+    MOCK_API_BASE = process.env.MOCK_API_BASE_URL ?? "http://127.0.0.1:4000";
+  }
+});
 
 // app/entry.server.tsx
 var entry_server_exports = {};
@@ -320,257 +633,8 @@ function ClientOnly({ children, fallback = null }) {
   }, this);
 }
 
-// app/lib/mock-api.ts
-var MOCK_API_BASE = process.env.MOCK_API_BASE_URL ?? "http://127.0.0.1:4000";
-async function listKols() {
-  return (await fetch(`${MOCK_API_BASE}/kols`)).json();
-}
-async function getKol(id) {
-  let res = await fetch(`${MOCK_API_BASE}/kols/${id}`);
-  return res.status === 404 ? null : res.json();
-}
-async function listProposals() {
-  return (await fetch(`${MOCK_API_BASE}/proposals`)).json();
-}
-async function updateProposal(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deleteProposal(id) {
-  return (await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function getProposal(id) {
-  let res = await fetch(`${MOCK_API_BASE}/proposals/${id}`);
-  return res.status === 404 ? null : res.json();
-}
-async function listProposalKols(proposalId) {
-  return (await fetch(`${MOCK_API_BASE}/proposalKols?proposalId=${proposalId}`)).json();
-}
-async function addProposalKol(data) {
-  let payload = { ...data, status: "pending", feedbackText: "" };
-  return (await fetch(`${MOCK_API_BASE}/proposalKols`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  })).json();
-}
-async function updateProposalKolStatus(id, status, feedbackText) {
-  return (await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status, feedbackText })
-  })).json();
-}
-async function deleteProposalKol(id) {
-  return (await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function listInsertionOrders() {
-  return (await fetch(`${MOCK_API_BASE}/insertionOrders`)).json();
-}
-async function listTagCatalog() {
-  try {
-    let res = await fetch(`${MOCK_API_BASE}/tagCatalog`);
-    return res.ok ? res.json() : [];
-  } catch {
-    return [];
-  }
-}
-async function addTagCatalog(data) {
-  return (await fetch(`${MOCK_API_BASE}/tagCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function updateTagCatalog(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deleteTagCatalog(id) {
-  return (await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function listBrandCatalog() {
-  try {
-    let res = await fetch(`${MOCK_API_BASE}/brandCatalog`);
-    return res.ok ? res.json() : [];
-  } catch {
-    return [];
-  }
-}
-async function addBrandCatalog(data) {
-  return (await fetch(`${MOCK_API_BASE}/brandCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function updateBrandCatalog(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deleteBrandCatalog(id) {
-  return (await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function listIndustryCatalog() {
-  try {
-    let res = await fetch(`${MOCK_API_BASE}/industryCatalog`);
-    return res.ok ? res.json() : [];
-  } catch {
-    return [];
-  }
-}
-async function addIndustryCatalog(data) {
-  return (await fetch(`${MOCK_API_BASE}/industryCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function updateIndustryCatalog(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deleteIndustryCatalog(id) {
-  return (await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function listPlatformCatalog() {
-  try {
-    let res = await fetch(`${MOCK_API_BASE}/platformCatalog`);
-    return res.ok ? res.json() : [];
-  } catch {
-    return [];
-  }
-}
-async function addPlatformCatalog(data) {
-  return (await fetch(`${MOCK_API_BASE}/platformCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function updatePlatformCatalog(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deletePlatformCatalog(id) {
-  return (await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function listTeamMembers() {
-  return (await fetch(`${MOCK_API_BASE}/teamMembers`)).json();
-}
-async function addTeamMember(data) {
-  return (await fetch(`${MOCK_API_BASE}/teamMembers`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function updateTeamMember(id, data) {
-  return (await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })).json();
-}
-async function deleteTeamMember(id) {
-  return (await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-async function getInsertionOrder(id) {
-  let res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`);
-  return res.status === 404 ? null : res.json();
-}
-async function deleteKol(id) {
-  return (await fetch(`${MOCK_API_BASE}/kols/${id}`, { method: "DELETE" })).ok;
-}
-async function updateKol(id, data) {
-  let res = await fetch(`${MOCK_API_BASE}/kols/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  if (!res.ok)
-    throw new Error("Update failed");
-  return res.json();
-}
-async function updateInsertionOrder(id, data) {
-  let res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  if (!res.ok)
-    throw new Error("Update failed");
-  return res.json();
-}
-async function addIOReview(orderId, kolId, review) {
-  let io = await getInsertionOrder(orderId);
-  if (!io)
-    throw new Error("Order not found");
-  let collabs = io.collaborations ?? [], collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
-  if (collabIndex === -1)
-    throw new Error("Collaboration not found");
-  let newReview = {
-    ...review,
-    id: `rv_${Date.now()}`,
-    date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
-  }, updatedCollabs = [...collabs];
-  return updatedCollabs[collabIndex] = {
-    ...updatedCollabs[collabIndex],
-    reviews: [...updatedCollabs[collabIndex].reviews ?? [], newReview]
-  }, updateInsertionOrder(orderId, { collaborations: updatedCollabs });
-}
-async function updateIOPerformance(orderId, kolId, performance) {
-  let io = await getInsertionOrder(orderId);
-  if (!io)
-    throw new Error("Order not found");
-  let collabs = io.collaborations ?? [], collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
-  if (collabIndex === -1)
-    throw new Error("Collaboration not found");
-  let newItem = {
-    ...performance,
-    id: `perf_${Date.now()}`
-  }, updatedCollabs = [...collabs];
-  return updatedCollabs[collabIndex] = {
-    ...updatedCollabs[collabIndex],
-    performanceItems: [...updatedCollabs[collabIndex].performanceItems ?? [], newItem]
-  }, updateInsertionOrder(orderId, { collaborations: updatedCollabs });
-}
-async function deleteInsertionOrder(id) {
-  return (await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
-    method: "DELETE"
-  })).ok;
-}
-
 // app/routes/_app.insertion-orders.$insertionOrderId._index.tsx
+init_mock_api();
 import { jsxDEV as jsxDEV4 } from "react/jsx-dev-runtime";
 function n(value) {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -2461,6 +2525,7 @@ __export(app_insertion_orders_insertionOrderId_edit_exports, {
   default: () => InsertionOrderEditPage,
   loader: () => loader2
 });
+init_mock_api();
 import {
   Alert,
   Box as Box2,
@@ -3408,6 +3473,7 @@ function InsertionOrderEditPage() {
 // app/routes/_app.insertion-orders._index.tsx
 var app_insertion_orders_index_exports = {};
 __export(app_insertion_orders_index_exports, {
+  action: () => action3,
   default: () => InsertionOrderListPage,
   loader: () => loader3
 });
@@ -3436,8 +3502,25 @@ import {
 } from "@remix-run/node";
 import {
   Link as Link3,
-  useLoaderData as useLoaderData3
+  useLoaderData as useLoaderData3,
+  useFetcher as useFetcher2
 } from "@remix-run/react";
+
+// app/store/notification.ts
+import { create } from "zustand";
+var useNotificationStore = create((set) => ({
+  toast: null,
+  banner: null,
+  showToast: (title, message, actionLink) => {
+    set({ toast: { isOpen: !0, title, message, actionLink } });
+  },
+  hideToast: () => set({ toast: null }),
+  showBanner: (title, message, actionLink) => set({ banner: { isOpen: !0, title, message, actionLink } }),
+  hideBanner: () => set({ banner: null })
+}));
+
+// app/routes/_app.insertion-orders._index.tsx
+init_mock_api();
 import { useState as useState4, useEffect as useEffect4 } from "react";
 import {
   IconBulb,
@@ -3494,6 +3577,30 @@ async function loader3({ request }) {
     throw console.error("Loader error in IO list:", error), new Response(error.message || "Internal Server Error", { status: 500 });
   }
 }
+async function action3({ request }) {
+  let formData = await request.formData();
+  if (formData.get("intent") === "generateReport") {
+    let orderId = formData.get("orderId");
+    if (orderId) {
+      let { getInsertionOrder: getInsertionOrder2 } = await Promise.resolve().then(() => (init_mock_api(), mock_api_exports)), io = await getInsertionOrder2(orderId);
+      if (io) {
+        let newReport = {
+          id: `rep_${Date.now()}`,
+          name: `\u7D50\u6848\u5831\u544A_v${(io.reports?.filter((r) => r.type === "draft").length || 0) + 1}.pptx`,
+          type: "draft",
+          createdAt: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").slice(0, 16),
+          createdBy: "\u7CFB\u7D71 AI"
+        };
+        await updateInsertionOrder(orderId, {
+          hasDraft: !0,
+          reports: [...io.reports || [], newReport]
+        });
+      }
+    }
+    return json3({ success: !0 });
+  }
+  return json3({ success: !1 }, { status: 400 });
+}
 function InsertionOrderListPage() {
   let {
     rows,
@@ -3508,7 +3615,7 @@ function InsertionOrderListPage() {
     industryFilter,
     statusFilter,
     timeFilter
-  } = useLoaderData3(), [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure2(!1), [activeOrder, setActiveOrder] = useState4(null), [selectedKolIds, setSelectedKolIds] = useState4([]), [selectedTemplate, setSelectedTemplate] = useState4("standard"), [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure2(!1), [progressPercentage, setProgressPercentage] = useState4(0), [currentStepIndex, setCurrentStepIndex] = useState4(0), handleOpenGenModal = (order) => {
+  } = useLoaderData3(), fetcher = useFetcher2(), { showToast, showBanner } = useNotificationStore(), [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure2(!1), [activeOrder, setActiveOrder] = useState4(null), [selectedKolIds, setSelectedKolIds] = useState4([]), [selectedTemplate, setSelectedTemplate] = useState4("standard"), [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure2(!1), [progressPercentage, setProgressPercentage] = useState4(0), [currentStepIndex, setCurrentStepIndex] = useState4(0), handleOpenGenModal = (order) => {
     setActiveOrder(order);
     let readyIds = (order.collaborations || []).filter((k) => (k.performanceItems || []).length > 0).map((k) => k.id);
     setSelectedKolIds(readyIds.length > 0 ? readyIds : ["demo-gina"]), openGenModal();
@@ -3530,33 +3637,42 @@ function InsertionOrderListPage() {
   };
   return useEffect4(() => {
     progressPercentage < 20 ? setCurrentStepIndex(0) : progressPercentage < 45 ? setCurrentStepIndex(1) : progressPercentage < 70 ? setCurrentStepIndex(2) : progressPercentage < 90 ? setCurrentStepIndex(3) : progressPercentage < 100 ? setCurrentStepIndex(4) : progressPercentage === 100 && setTimeout(() => {
+      if (activeOrder) {
+        fetcher.submit(
+          { intent: "generateReport", orderId: activeOrder.id },
+          { method: "post" }
+        );
+        let title = "\u7D50\u6848\u5831\u544A\u5DF2\u751F\u6210\u5B8C\u6210\uFF01", message = `${activeOrder.orderNo} ${activeOrder.title || activeOrder.projectName}|\u7D50\u6848\u5831\u544A_v1.pptx`;
+        showToast(title, message, "/reports/generate"), showBanner(title, message, "/reports/generate");
+      }
+      closeProgressModal();
     }, 500);
   }, [progressPercentage]), /* @__PURE__ */ jsxDEV6(Stack4, { gap: "md", children: [
     /* @__PURE__ */ jsxDEV6(Group3, { justify: "space-between", children: [
       /* @__PURE__ */ jsxDEV6(Title4, { order: 2, children: "\u59D4\u520A\u55AE\u7BA1\u7406" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 226,
+        lineNumber: 275,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV6(Group3, { children: /* @__PURE__ */ jsxDEV6(Button4, { component: Link3, to: "/insertion-orders/new", children: "\u65B0\u589E\u59D4\u520A\u55AE" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 228,
+        lineNumber: 277,
         columnNumber: 11
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 227,
+        lineNumber: 276,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 225,
+      lineNumber: 274,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV6("form", { method: "get", style: { display: "contents" }, children: /* @__PURE__ */ jsxDEV6(Stack4, { gap: "sm", children: /* @__PURE__ */ jsxDEV6(Group3, { align: "end", wrap: "wrap", children: [
       /* @__PURE__ */ jsxDEV6("div", { style: { flex: 1, minWidth: 200 }, children: [
         /* @__PURE__ */ jsxDEV6("label", { style: { display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }, children: "\u641C\u5C0B" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 238,
+          lineNumber: 287,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV6(
@@ -3580,20 +3696,20 @@ function InsertionOrderListPage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 241,
+            lineNumber: 290,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 237,
+        lineNumber: 286,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6("div", { children: [
         /* @__PURE__ */ jsxDEV6("label", { style: { display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }, children: "\u5BA2\u6236" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 260,
+          lineNumber: 309,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV6(
@@ -3613,12 +3729,12 @@ function InsertionOrderListPage() {
             children: [
               /* @__PURE__ */ jsxDEV6("option", { value: "", children: "\u5168\u90E8" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 274,
+                lineNumber: 323,
                 columnNumber: 17
               }, this),
               allClients.map((c) => /* @__PURE__ */ jsxDEV6("option", { value: c, children: c }, c, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 276,
+                lineNumber: 325,
                 columnNumber: 19
               }, this))
             ]
@@ -3627,20 +3743,20 @@ function InsertionOrderListPage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 261,
+            lineNumber: 310,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 259,
+        lineNumber: 308,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6("div", { children: [
         /* @__PURE__ */ jsxDEV6("label", { style: { display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }, children: "\u7522\u696D" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 283,
+          lineNumber: 332,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV6(
@@ -3660,12 +3776,12 @@ function InsertionOrderListPage() {
             children: [
               /* @__PURE__ */ jsxDEV6("option", { value: "", children: "\u5168\u90E8" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 297,
+                lineNumber: 346,
                 columnNumber: 17
               }, this),
               allIndustries.map((i) => /* @__PURE__ */ jsxDEV6("option", { value: i, children: i }, i, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 299,
+                lineNumber: 348,
                 columnNumber: 19
               }, this))
             ]
@@ -3674,20 +3790,20 @@ function InsertionOrderListPage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 284,
+            lineNumber: 333,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 282,
+        lineNumber: 331,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6("div", { children: [
         /* @__PURE__ */ jsxDEV6("label", { style: { display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }, children: "\u72C0\u614B" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 306,
+          lineNumber: 355,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV6(
@@ -3707,22 +3823,22 @@ function InsertionOrderListPage() {
             children: [
               /* @__PURE__ */ jsxDEV6("option", { value: "", children: "\u5168\u90E8" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 320,
+                lineNumber: 369,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "planned", children: "\u898F\u5283\u4E2D" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 321,
+                lineNumber: 370,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "in_progress", children: "\u57F7\u884C\u4E2D" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 322,
+                lineNumber: 371,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "completed", children: "\u5DF2\u7D50\u6848" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 323,
+                lineNumber: 372,
                 columnNumber: 17
               }, this)
             ]
@@ -3731,20 +3847,20 @@ function InsertionOrderListPage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 307,
+            lineNumber: 356,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 305,
+        lineNumber: 354,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6("div", { children: [
         /* @__PURE__ */ jsxDEV6("label", { style: { display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }, children: "\u6642\u9593" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 329,
+          lineNumber: 378,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV6(
@@ -3764,22 +3880,22 @@ function InsertionOrderListPage() {
             children: [
               /* @__PURE__ */ jsxDEV6("option", { value: "all", children: "\u5168\u90E8" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 343,
+                lineNumber: 392,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "last30", children: "\u8FD1 30 \u5929" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 344,
+                lineNumber: 393,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "last90", children: "\u8FD1 90 \u5929" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 345,
+                lineNumber: 394,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6("option", { value: "thisYear", children: "2026 \u5E74" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 346,
+                lineNumber: 395,
                 columnNumber: 17
               }, this)
             ]
@@ -3788,19 +3904,19 @@ function InsertionOrderListPage() {
           !0,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 330,
+            lineNumber: 379,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 328,
+        lineNumber: 377,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "pageSize", value: pageSize }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 351,
+        lineNumber: 400,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV6(
@@ -3823,7 +3939,7 @@ function InsertionOrderListPage() {
         !1,
         {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 353,
+          lineNumber: 402,
           columnNumber: 13
         },
         this
@@ -3847,45 +3963,45 @@ function InsertionOrderListPage() {
         !1,
         {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 370,
+          lineNumber: 419,
           columnNumber: 15
         },
         this
       )
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 235,
+      lineNumber: 284,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 234,
+      lineNumber: 283,
       columnNumber: 9
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 233,
+      lineNumber: 282,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV6(SimpleGrid3, { cols: { base: 2, md: 4 }, spacing: "sm", children: [
       /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, children: [
         /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", size: "sm", children: "\u59D4\u520A\u55AE\u6578" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 392,
+          lineNumber: 441,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: stats.total }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 393,
+          lineNumber: 442,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 391,
+        lineNumber: 440,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, children: [
         /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", size: "sm", children: "\u7E3D\u9810\u7B97" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 396,
+          lineNumber: 445,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: [
@@ -3893,75 +4009,75 @@ function InsertionOrderListPage() {
           stats.budget.toLocaleString()
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 397,
+          lineNumber: 446,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 395,
+        lineNumber: 444,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, children: [
         /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", size: "sm", children: "\u7E3D\u89F8\u53CA" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 400,
+          lineNumber: 449,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: numberShort(stats.reach) }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 401,
+          lineNumber: 450,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 399,
+        lineNumber: 448,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, children: [
         /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", size: "sm", children: "\u7E3D\u4E92\u52D5" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 404,
+          lineNumber: 453,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: numberShort(stats.engagement) }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 405,
+          lineNumber: 454,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 403,
+        lineNumber: 452,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 390,
+      lineNumber: 439,
       columnNumber: 7
     }, this),
     rows.length === 0 ? /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, p: "xl", style: { textAlign: "center" }, children: [
       /* @__PURE__ */ jsxDEV6(Text4, { size: "48px", children: "\u{1F4C4}" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 412,
+        lineNumber: 461,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: "\u5C1A\u7121\u59D4\u520A\u55AE" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 413,
+        lineNumber: 462,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", mb: "md", children: "\u8ABF\u6574\u7BE9\u9078\u689D\u4EF6\uFF0C\u6216\u5EFA\u7ACB\u60A8\u7684\u7B2C\u4E00\u500B\u59D4\u520A\u55AE" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 414,
+        lineNumber: 463,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV6(Button4, { component: Link3, to: "/insertion-orders/new", children: "\u958B\u59CB\u5EFA\u7ACB" }, void 0, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 415,
+        lineNumber: 464,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 411,
+      lineNumber: 460,
       columnNumber: 9
     }, this) : /* @__PURE__ */ jsxDEV6(Stack4, { gap: "md", children: rows.map((order) => {
       let status = statusMeta(order.status);
@@ -3974,17 +4090,17 @@ function InsertionOrderListPage() {
             order.title ?? "\u672A\u547D\u540D\u5C08\u6848"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 425,
+            lineNumber: 474,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Badge2, { color: status.color, variant: "light", children: status.label }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 426,
+            lineNumber: 475,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 424,
+          lineNumber: 473,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV6(SimpleGrid3, { cols: { base: 1, md: 2 }, children: [
@@ -3995,7 +4111,7 @@ function InsertionOrderListPage() {
             order.industry ?? "-"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 430,
+            lineNumber: 479,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", children: [
@@ -4005,12 +4121,12 @@ function InsertionOrderListPage() {
             order.kolManager ?? "-"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 431,
+            lineNumber: 480,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 429,
+          lineNumber: 478,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV6(SimpleGrid3, { cols: { base: 2, md: 5 }, children: [
@@ -4020,7 +4136,7 @@ function InsertionOrderListPage() {
             " \u4F4D"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 435,
+            lineNumber: 484,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", children: [
@@ -4028,7 +4144,7 @@ function InsertionOrderListPage() {
             (order.totalBudget ?? 0).toLocaleString()
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 436,
+            lineNumber: 485,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", children: [
@@ -4036,7 +4152,7 @@ function InsertionOrderListPage() {
             (order.avgRating ?? 0).toFixed(1)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 437,
+            lineNumber: 486,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", children: [
@@ -4044,7 +4160,7 @@ function InsertionOrderListPage() {
             numberShort(order.totalReach)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 438,
+            lineNumber: 487,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", children: [
@@ -4052,84 +4168,84 @@ function InsertionOrderListPage() {
             numberShort(order.totalEngagement)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 439,
+            lineNumber: 488,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 434,
+          lineNumber: 483,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV6(Group3, { justify: "space-between", children: /* @__PURE__ */ jsxDEV6(Group3, { children: [
           /* @__PURE__ */ jsxDEV6(Button4, { component: Link3, to: `/insertion-orders/${order.id}`, children: "\u67E5\u770B\u8A73\u60C5" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 444,
+            lineNumber: 493,
             columnNumber: 23
           }, this),
           /* @__PURE__ */ jsxDEV6(Button4, { variant: "default", onClick: () => handleOpenGenModal(order), children: "\u{1F4CA} \u7522\u751F\u5831\u544A" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 445,
+            lineNumber: 494,
             columnNumber: 23
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 443,
+          lineNumber: 492,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 442,
+          lineNumber: 491,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 423,
+        lineNumber: 472,
         columnNumber: 17
       }, this) }, order.id, !1, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 422,
+        lineNumber: 471,
         columnNumber: 15
       }, this);
     }) }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 418,
+      lineNumber: 467,
       columnNumber: 9
     }, this),
     totalPages > 1 && /* @__PURE__ */ jsxDEV6(Group3, { justify: "space-between", align: "center", children: [
       /* @__PURE__ */ jsxDEV6(Group3, { children: [
         /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", c: "dimmed", children: "\u6BCF\u9801\u7B46\u6578" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 459,
+          lineNumber: 508,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV6("form", { method: "get", style: { display: "inline" }, children: [
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "search", value: search }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 461,
+            lineNumber: 510,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "client", value: clientFilter }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 462,
+            lineNumber: 511,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "industry", value: industryFilter }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 463,
+            lineNumber: 512,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "status", value: statusFilter }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 464,
+            lineNumber: 513,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "time", value: timeFilter }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 465,
+            lineNumber: 514,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6("input", { type: "hidden", name: "page", value: "1" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 466,
+            lineNumber: 515,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV6(
@@ -4149,17 +4265,17 @@ function InsertionOrderListPage() {
               children: [
                 /* @__PURE__ */ jsxDEV6("option", { value: "5", children: "5" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 480,
+                  lineNumber: 529,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV6("option", { value: "10", children: "10" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 481,
+                  lineNumber: 530,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV6("option", { value: "20", children: "20" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 482,
+                  lineNumber: 531,
                   columnNumber: 17
                 }, this)
               ]
@@ -4168,19 +4284,19 @@ function InsertionOrderListPage() {
             !0,
             {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 467,
+              lineNumber: 516,
               columnNumber: 15
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 460,
+          lineNumber: 509,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 458,
+        lineNumber: 507,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV6(Group3, { gap: 4, children: [
@@ -4202,7 +4318,7 @@ function InsertionOrderListPage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 489,
+            lineNumber: 538,
             columnNumber: 15
           },
           this
@@ -4227,7 +4343,7 @@ function InsertionOrderListPage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 505,
+            lineNumber: 554,
             columnNumber: 15
           },
           this
@@ -4250,19 +4366,19 @@ function InsertionOrderListPage() {
           !1,
           {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 524,
+            lineNumber: 573,
             columnNumber: 15
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 487,
+        lineNumber: 536,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 457,
+      lineNumber: 506,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ jsxDEV6(
@@ -4272,7 +4388,7 @@ function InsertionOrderListPage() {
         onClose: closeGenModal,
         title: /* @__PURE__ */ jsxDEV6(Text4, { fw: 700, size: "lg", children: "\u751F\u6210\u7D50\u6848\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 545,
+          lineNumber: 594,
           columnNumber: 16
         }, this),
         size: "xl",
@@ -4281,7 +4397,7 @@ function InsertionOrderListPage() {
             /* @__PURE__ */ jsxDEV6(Box3, { children: [
               /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u7DE8\u865F" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 554,
+                lineNumber: 603,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, children: [
@@ -4289,71 +4405,71 @@ function InsertionOrderListPage() {
                 activeOrder.orderNo
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 555,
+                lineNumber: 604,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 553,
+              lineNumber: 602,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV6(Box3, { children: [
               /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u540D\u7A31" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 558,
+                lineNumber: 607,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, children: activeOrder.title }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 559,
+                lineNumber: 608,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 557,
+              lineNumber: 606,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV6(Box3, { children: [
               /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: "\u5BA2\u6236" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 562,
+                lineNumber: 611,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, children: activeOrder.clientName }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 563,
+                lineNumber: 612,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 561,
+              lineNumber: 610,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 552,
+            lineNumber: 601,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 551,
+            lineNumber: 600,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV6(Box3, { children: [
             /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, size: "lg", mb: 4, children: "\u6B65\u9A5F 1\uFF1A\u78BA\u8A8D KOL \u6210\u6548\u8CC7\u6599" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 570,
+              lineNumber: 619,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", c: "dimmed", mb: "md", children: "\u7CFB\u7D71\u5C07\u81EA\u52D5\u9078\u64C7\u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 571,
+              lineNumber: 620,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV6(Stack4, { gap: "md", children: [
               /* @__PURE__ */ jsxDEV6(Box3, { children: [
                 /* @__PURE__ */ jsxDEV6(Text4, { fw: 500, size: "sm", c: "green.7", mb: "xs", children: "\u2705 \u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL (\u9810\u8A2D\u9078\u64C7)" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 576,
+                  lineNumber: 625,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV6(Stack4, { gap: "xs", children: [
@@ -4378,68 +4494,68 @@ function InsertionOrderListPage() {
                           !1,
                           {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 589,
+                            lineNumber: 638,
                             columnNumber: 27
                           },
                           this
                         ),
                         /* @__PURE__ */ jsxDEV6(Avatar3, { src: kol.avatarUrl, radius: "xl", size: "md" }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 594,
+                          lineNumber: 643,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV6(Box3, { style: { flexGrow: 1 }, children: [
                           /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, children: kol.name || "KOL Name" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 596,
+                            lineNumber: 645,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV6(Group3, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: [
                             "IG\u8CBC\u6587 ",
                             /* @__PURE__ */ jsxDEV6(IconCheck2, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.insertion-orders._index.tsx",
-                              lineNumber: 598,
+                              lineNumber: 647,
                               columnNumber: 63
                             }, this),
                             " | IG\u9650\u52D5 ",
                             /* @__PURE__ */ jsxDEV6(IconCheck2, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.insertion-orders._index.tsx",
-                              lineNumber: 598,
+                              lineNumber: 647,
                               columnNumber: 140
                             }, this)
                           ] }, void 0, !0, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 598,
+                            lineNumber: 647,
                             columnNumber: 31
                           }, this) }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 597,
+                            lineNumber: 646,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 595,
+                          lineNumber: 644,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV6(Box3, { style: { textAlign: "right" }, children: [
                           /* @__PURE__ */ jsxDEV6(Badge2, { variant: "dot", color: "blue", children: "\u7E3D\u89F8\u53CA 80K" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 602,
+                            lineNumber: 651,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", mt: 4, children: "\u4E92\u52D5\u7387 7.8%" }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 603,
+                            lineNumber: 652,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 601,
+                          lineNumber: 650,
                           columnNumber: 27
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 588,
+                        lineNumber: 637,
                         columnNumber: 25
                       }, this)
                     },
@@ -4447,7 +4563,7 @@ function InsertionOrderListPage() {
                     !1,
                     {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 579,
+                      lineNumber: 628,
                       columnNumber: 23
                     },
                     this
@@ -4464,72 +4580,72 @@ function InsertionOrderListPage() {
                       !1,
                       {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 612,
+                        lineNumber: 661,
                         columnNumber: 27
                       },
                       this
                     ),
                     /* @__PURE__ */ jsxDEV6(Avatar3, { color: "blue", radius: "xl", size: "md", children: "G" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 617,
+                      lineNumber: 666,
                       columnNumber: 27
                     }, this),
                     /* @__PURE__ */ jsxDEV6(Box3, { style: { flexGrow: 1 }, children: [
                       /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, children: "Gina (Demo)" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 619,
+                        lineNumber: 668,
                         columnNumber: 29
                       }, this),
                       /* @__PURE__ */ jsxDEV6(Group3, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: [
                         "IG\u8CBC\u6587 ",
                         /* @__PURE__ */ jsxDEV6(IconCheck2, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 621,
+                          lineNumber: 670,
                           columnNumber: 63
                         }, this),
                         " | IG\u9650\u52D5 ",
                         /* @__PURE__ */ jsxDEV6(IconCheck2, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 621,
+                          lineNumber: 670,
                           columnNumber: 140
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 621,
+                        lineNumber: 670,
                         columnNumber: 31
                       }, this) }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 620,
+                        lineNumber: 669,
                         columnNumber: 29
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 618,
+                      lineNumber: 667,
                       columnNumber: 27
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 611,
+                    lineNumber: 660,
                     columnNumber: 25
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 610,
+                    lineNumber: 659,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 577,
+                  lineNumber: 626,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 575,
+                lineNumber: 624,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6(Box3, { children: [
                 /* @__PURE__ */ jsxDEV6(Text4, { fw: 500, size: "sm", c: "orange.7", mb: "xs", children: "\u26A0\uFE0F \u5C1A\u672A\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 632,
+                  lineNumber: 681,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV6(Stack4, { gap: "xs", children: (activeOrder.collaborations || []).filter((k) => !(k.performanceItems || []).length).map((kol, idx) => /* @__PURE__ */ jsxDEV6(
@@ -4553,51 +4669,51 @@ function InsertionOrderListPage() {
                         !1,
                         {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 645,
+                          lineNumber: 694,
                           columnNumber: 27
                         },
                         this
                       ),
                       /* @__PURE__ */ jsxDEV6(Avatar3, { src: kol.avatarUrl, radius: "xl", size: "md", style: { filter: "grayscale(100%)" } }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 650,
+                        lineNumber: 699,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV6(Box3, { style: { flexGrow: 1 }, children: [
                         /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, c: "dimmed", children: kol.name || "KOL Name" }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 652,
+                          lineNumber: 701,
                           columnNumber: 29
                         }, this),
                         /* @__PURE__ */ jsxDEV6(Group3, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "red.7", children: [
                           /* @__PURE__ */ jsxDEV6(IconX2, { size: 12, style: { display: "inline" } }, void 0, !1, {
                             fileName: "app/routes/_app.insertion-orders._index.tsx",
-                            lineNumber: 654,
+                            lineNumber: 703,
                             columnNumber: 57
                           }, this),
                           " \u7121\u6210\u6548\u8CC7\u6599"
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 654,
+                          lineNumber: 703,
                           columnNumber: 31
                         }, this) }, void 0, !1, {
                           fileName: "app/routes/_app.insertion-orders._index.tsx",
-                          lineNumber: 653,
+                          lineNumber: 702,
                           columnNumber: 29
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 651,
+                        lineNumber: 700,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV6(Button4, { variant: "subtle", size: "xs", color: "blue", rightSection: "\u2192", children: "\u524D\u5F80\u4E0A\u50B3\u6210\u6548" }, void 0, !1, {
                         fileName: "app/routes/_app.insertion-orders._index.tsx",
-                        lineNumber: 657,
+                        lineNumber: 706,
                         columnNumber: 27
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 644,
+                      lineNumber: 693,
                       columnNumber: 25
                     }, this)
                   },
@@ -4605,63 +4721,63 @@ function InsertionOrderListPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 635,
+                    lineNumber: 684,
                     columnNumber: 23
                   },
                   this
                 )) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 633,
+                  lineNumber: 682,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 631,
+                lineNumber: 680,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6(Card3, { bg: "blue.0", p: "sm", radius: "md", mt: "xs", children: /* @__PURE__ */ jsxDEV6(Group3, { wrap: "nowrap", align: "flex-start", children: [
                 /* @__PURE__ */ jsxDEV6(ThemeIcon, { color: "blue", variant: "light", size: "sm", mt: 2, children: /* @__PURE__ */ jsxDEV6(IconBulb, { size: 14 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 667,
+                  lineNumber: 716,
                   columnNumber: 78
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 667,
+                  lineNumber: 716,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", c: "blue.9", style: { lineHeight: 1.4 }, children: "\u672A\u52FE\u9078\u7684 KOL \u5C07\u4E0D\u6703\u51FA\u73FE\u5728\u5831\u544A\u4E2D\u3002\u5EFA\u8B70\u5148\u4E0A\u50B3\u6240\u6709 KOL \u7684\u6210\u6548\u8CC7\u6599\u5F8C\u518D\u751F\u6210\u5831\u544A\u3002" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 668,
+                  lineNumber: 717,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 666,
+                lineNumber: 715,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 665,
+                lineNumber: 714,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 573,
+              lineNumber: 622,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 569,
+            lineNumber: 618,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV6(Divider3, {}, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 676,
+            lineNumber: 725,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV6(Box3, { children: [
             /* @__PURE__ */ jsxDEV6(Text4, { fw: 600, size: "lg", mb: "md", children: "\u6B65\u9A5F 2\uFF1A\u5831\u544A\u8A2D\u5B9A" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 680,
+              lineNumber: 729,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV6(Stack4, { gap: "lg", children: [
@@ -4676,7 +4792,7 @@ function InsertionOrderListPage() {
                 !1,
                 {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 683,
+                  lineNumber: 732,
                   columnNumber: 17
                 },
                 this
@@ -4684,164 +4800,164 @@ function InsertionOrderListPage() {
               /* @__PURE__ */ jsxDEV6(Box3, { children: [
                 /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", fw: 500, mb: "xs", children: "PowerPoint \u6A21\u677F" }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 690,
+                  lineNumber: 739,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV6(Group3, { grow: !0, children: [
                   /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("standard"), style: { borderColor: selectedTemplate === "standard" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV6(Stack4, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV6(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "standard" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV6(IconTemplate, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 694,
+                      lineNumber: 743,
                       columnNumber: 120
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 694,
+                      lineNumber: 743,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV6(Text4, { fw: 500, size: "sm", c: selectedTemplate === "standard" ? "" : "dimmed", children: "\u516C\u53F8\u6A19\u6E96\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 695,
+                      lineNumber: 744,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 693,
+                    lineNumber: 742,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 692,
+                    lineNumber: 741,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("simple"), style: { borderColor: selectedTemplate === "simple" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV6(Stack4, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV6(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "simple" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV6(IconTemplate, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 700,
+                      lineNumber: 749,
                       columnNumber: 118
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 700,
+                      lineNumber: 749,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV6(Text4, { fw: 500, size: "sm", c: selectedTemplate === "simple" ? "" : "dimmed", children: "\u7C21\u7D04\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 701,
+                      lineNumber: 750,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 699,
+                    lineNumber: 748,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 698,
+                    lineNumber: 747,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV6(Card3, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("none"), style: { borderColor: selectedTemplate === "none" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV6(Stack4, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV6(ThemeIcon, { size: "xl", variant: "light", color: selectedTemplate === "none" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV6(IconFile, {}, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 706,
+                      lineNumber: 755,
                       columnNumber: 116
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 706,
+                      lineNumber: 755,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV6(Text4, { fw: 500, size: "sm", c: selectedTemplate === "none" ? "" : "dimmed", children: "\u4E0D\u5957\u7528\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.insertion-orders._index.tsx",
-                      lineNumber: 707,
+                      lineNumber: 756,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 705,
+                    lineNumber: 754,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 704,
+                    lineNumber: 753,
                     columnNumber: 21
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 691,
+                  lineNumber: 740,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 689,
+                lineNumber: 738,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV6(Card3, { bg: "gray.0", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV6(Group3, { wrap: "nowrap", children: [
                 /* @__PURE__ */ jsxDEV6(ThemeIcon, { color: "gray", variant: "light", children: /* @__PURE__ */ jsxDEV6(IconFileDescription, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 715,
+                  lineNumber: 764,
                   columnNumber: 61
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 715,
+                  lineNumber: 764,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV6(Box3, { children: [
                   /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", fw: 600, children: "\u9810\u4F30\u9801\u6578: \u7D04 18 \u9801" }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 717,
+                    lineNumber: 766,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", children: "(\u5C01\u9762 + 3\u500BKOL \xD7 \u5E73\u57475\u9801 + \u7E3D\u7D50)" }, void 0, !1, {
                     fileName: "app/routes/_app.insertion-orders._index.tsx",
-                    lineNumber: 718,
+                    lineNumber: 767,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.insertion-orders._index.tsx",
-                  lineNumber: 716,
+                  lineNumber: 765,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 714,
+                lineNumber: 763,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 713,
+                lineNumber: 762,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 682,
+              lineNumber: 731,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 679,
+            lineNumber: 728,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV6(Group3, { justify: "flex-end", mt: "md", children: [
             /* @__PURE__ */ jsxDEV6(Button4, { variant: "ghost", color: "gray", onClick: closeGenModal, children: "\u53D6\u6D88" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 726,
+              lineNumber: 775,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV6(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: !0, children: /* @__PURE__ */ jsxDEV6(Button4, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ jsxDEV6(IconRobot, { size: 20 }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 728,
+              lineNumber: 777,
               columnNumber: 87
             }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 728,
+              lineNumber: 777,
               columnNumber: 17
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 727,
+              lineNumber: 776,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 725,
+            lineNumber: 774,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 549,
+          lineNumber: 598,
           columnNumber: 11
         }, this)
       },
@@ -4849,7 +4965,7 @@ function InsertionOrderListPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 542,
+        lineNumber: 591,
         columnNumber: 7
       },
       this
@@ -4866,17 +4982,17 @@ function InsertionOrderListPage() {
         children: /* @__PURE__ */ jsxDEV6(Stack4, { align: "center", ta: "center", gap: "md", py: "md", children: [
           /* @__PURE__ */ jsxDEV6(ThemeIcon, { size: 64, radius: "100%", variant: "light", color: "blue", style: { animation: "pulse 2s infinite" }, children: /* @__PURE__ */ jsxDEV6(IconRobot, { size: 40 }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 748,
+            lineNumber: 797,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 747,
+            lineNumber: 796,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Box3, { children: [
             /* @__PURE__ */ jsxDEV6(Title4, { order: 3, children: "AI \u6B63\u5728\u70BA\u60A8\u751F\u6210\u5831\u544A" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 751,
+              lineNumber: 800,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV6(Text4, { c: "dimmed", mt: 4, children: [
@@ -4886,19 +5002,19 @@ function InsertionOrderListPage() {
               activeOrder?.title
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 752,
+              lineNumber: 801,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 750,
+            lineNumber: 799,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Box3, { w: "100%", my: "sm", children: [
             /* @__PURE__ */ jsxDEV6(Group3, { justify: "space-between", mb: 8, children: [
               /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", fw: 600, children: "\u9032\u5EA6" }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 759,
+                lineNumber: 808,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", fw: 600, c: "blue", children: [
@@ -4906,12 +5022,12 @@ function InsertionOrderListPage() {
                 "%"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 760,
+                lineNumber: 809,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 758,
+              lineNumber: 807,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV6(
@@ -4928,14 +5044,14 @@ function InsertionOrderListPage() {
               !1,
               {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 762,
+                lineNumber: 811,
                 columnNumber: 13
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 757,
+            lineNumber: 806,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Stack4, { gap: "xs", w: "100%", align: "flex-start", pl: "md", children: [
@@ -4949,88 +5065,88 @@ function InsertionOrderListPage() {
             return /* @__PURE__ */ jsxDEV6(Group3, { wrap: "nowrap", gap: "sm", children: [
               isCompleted ? /* @__PURE__ */ jsxDEV6(ThemeIcon, { color: "green", size: 20, radius: "xl", variant: "filled", children: /* @__PURE__ */ jsxDEV6(IconCheck2, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 786,
+                lineNumber: 835,
                 columnNumber: 85
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 786,
+                lineNumber: 835,
                 columnNumber: 21
               }, this) : isCurrent ? /* @__PURE__ */ jsxDEV6(ThemeIcon, { color: "blue", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV6(IconRobot, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 788,
+                lineNumber: 837,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 788,
+                lineNumber: 837,
                 columnNumber: 21
               }, this) : /* @__PURE__ */ jsxDEV6(ThemeIcon, { color: "gray", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV6(IconClockHour4, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 790,
+                lineNumber: 839,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 790,
+                lineNumber: 839,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", fw: isCurrent ? 600 : 400, c: isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5", children: stepDesc }, void 0, !1, {
                 fileName: "app/routes/_app.insertion-orders._index.tsx",
-                lineNumber: 792,
+                lineNumber: 841,
                 columnNumber: 19
               }, this)
             ] }, idx, !0, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 784,
+              lineNumber: 833,
               columnNumber: 17
             }, this);
           }) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 773,
+            lineNumber: 822,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Text4, { size: "xs", c: "dimmed", mt: "xs", children: "\u9810\u8A08\u9084\u9700 2 \u5206\u9418" }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 800,
+            lineNumber: 849,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Card3, { bg: "blue.0", w: "100%", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV6(Group3, { wrap: "nowrap", align: "center", justify: "center", children: [
             /* @__PURE__ */ jsxDEV6(IconBulb, { size: 18, color: "var(--mantine-color-blue-7)" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 804,
+              lineNumber: 853,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV6(Text4, { size: "sm", c: "blue.9", children: "\u60A8\u53EF\u4EE5\u95DC\u9589\u6B64\u8996\u7A97\u7E7C\u7E8C\u5176\u4ED6\u5DE5\u4F5C\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 805,
+              lineNumber: 854,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 803,
+            lineNumber: 852,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 802,
+            lineNumber: 851,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV6(Group3, { w: "100%", grow: !0, mt: "sm", children: [
             /* @__PURE__ */ jsxDEV6(Button4, { variant: "outline", color: "red", onClick: closeProgressModal, children: "\u53D6\u6D88\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 810,
+              lineNumber: 859,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV6(Button4, { onClick: closeProgressModal, children: "\u5728\u80CC\u666F\u7E7C\u7E8C" }, void 0, !1, {
               fileName: "app/routes/_app.insertion-orders._index.tsx",
-              lineNumber: 811,
+              lineNumber: 860,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.insertion-orders._index.tsx",
-            lineNumber: 809,
+            lineNumber: 858,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
-          lineNumber: 746,
+          lineNumber: 795,
           columnNumber: 9
         }, this)
       },
@@ -5038,7 +5154,7 @@ function InsertionOrderListPage() {
       !1,
       {
         fileName: "app/routes/_app.insertion-orders._index.tsx",
-        lineNumber: 738,
+        lineNumber: 787,
         columnNumber: 7
       },
       this
@@ -5051,12 +5167,12 @@ function InsertionOrderListPage() {
         }
       ` }, void 0, !1, {
       fileName: "app/routes/_app.insertion-orders._index.tsx",
-      lineNumber: 816,
+      lineNumber: 865,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.insertion-orders._index.tsx",
-    lineNumber: 224,
+    lineNumber: 273,
     columnNumber: 5
   }, this);
 }
@@ -5064,10 +5180,11 @@ function InsertionOrderListPage() {
 // app/routes/_app.proposals.$proposalId.tsx
 var app_proposals_proposalId_exports = {};
 __export(app_proposals_proposalId_exports, {
-  action: () => action3,
+  action: () => action4,
   default: () => ProposalDetailPage,
   loader: () => loader4
 });
+init_mock_api();
 import {
   ActionIcon as ActionIcon2,
   Badge as Badge3,
@@ -5102,7 +5219,7 @@ async function loader4({ params }) {
     throw new Response("Not Found", { status: 404 });
   return json4({ proposal, candidates, allKols });
 }
-async function action3({ request, params }) {
+async function action4({ request, params }) {
   let proposalId = params.proposalId ?? "", formData = await request.formData(), intent = formData.get("intent");
   if (intent === "add_candidate") {
     let kolId = String(formData.get("kolId")), priceStr = String(formData.get("price") || "0").replace(/,/g, ""), price = Number(priceStr), role = String(formData.get("role")), reason = String(formData.get("reason")), kolName = String(formData.get("kolName"));
@@ -6342,10 +6459,11 @@ function ProposalDetailPage() {
 // app/routes/_app.insertion-orders.new.tsx
 var app_insertion_orders_new_exports = {};
 __export(app_insertion_orders_new_exports, {
-  action: () => action4,
+  action: () => action5,
   default: () => InsertionOrderCreatePage,
   loader: () => loader5
 });
+init_mock_api();
 import {
   Alert as Alert2,
   Box as Box5,
@@ -6389,7 +6507,7 @@ async function loader5({ request }) {
   let salesOwners = teamMembers.filter((m) => m.group === "AE").map((m) => m.name), kolManagers = teamMembers.filter((m) => m.group === "KOL").map((m) => m.name), orderBrands = orders.map((o) => o.brand).filter(Boolean), catalogBrands = brandCatalog.map((b) => b.name), brands = Array.from(/* @__PURE__ */ new Set([...orderBrands, ...catalogBrands])), catalogIndustries = industryCatalog.map((i) => i.name), kolIndustries = kols.map((k) => k.industry).filter(Boolean), industries = Array.from(/* @__PURE__ */ new Set([...catalogIndustries, ...kolIndustries]));
   return json5({ kols, salesOwners, kolManagers, brands, industries, proposalData });
 }
-async function action4({ request }) {
+async function action5({ request }) {
   let formData = await request.formData(), intent = String(formData.get("intent") ?? "create"), orderTitle = String(formData.get("orderTitle") ?? "").trim(), projectName = String(formData.get("projectName") ?? "").trim(), clientName = String(formData.get("clientName") ?? "").trim(), mcnName = String(formData.get("mcnName") ?? "").trim(), brandsRaw = String(formData.get("brands") ?? "").trim(), industriesRaw = String(formData.get("industries") ?? "").trim(), salesOwnersRaw = String(formData.get("salesOwners") ?? "").trim(), kolManagersRaw = String(formData.get("kolManagers") ?? "").trim(), description = String(formData.get("description") ?? "").trim(), internalNotes = String(formData.get("internalNotes") ?? "").trim(), selectedKolsJson = String(formData.get("selectedKolsJson") ?? "[]"), startDate = String(formData.get("startDate") ?? "").trim(), endDate = String(formData.get("endDate") ?? "").trim(), taxRate = Number(formData.get("taxRate") ?? 5), projectQuote = Number(formData.get("projectQuote") ?? 0);
   if (!orderTitle || !clientName)
     return json5({ error: "\u59D4\u520A\u55AE\u6A19\u984C\u8207\u5BA2\u6236\u70BA\u5FC5\u586B" }, { status: 400 });
@@ -7384,6 +7502,7 @@ __export(app_kols_kolId_index_exports, {
   default: () => KolDetailPage,
   loader: () => loader6
 });
+init_mock_api();
 import {
   Avatar as Avatar5,
   Badge as Badge4,
@@ -8320,10 +8439,11 @@ function KolDetailPage() {
 // app/routes/_app.kols.$kolId.edit.tsx
 var app_kols_kolId_edit_exports = {};
 __export(app_kols_kolId_edit_exports, {
-  action: () => action5,
+  action: () => action6,
   default: () => KolEditPage,
   loader: () => loader7
 });
+init_mock_api();
 import {
   Alert as Alert3,
   Avatar as Avatar6,
@@ -8353,7 +8473,7 @@ async function loader7({ params }) {
     throw new Response("KOL not found", { status: 404 });
   return json7({ kol });
 }
-async function action5({ request, params }) {
+async function action6({ request, params }) {
   let kolId = params.kolId;
   if (!kolId)
     return json7({ error: "Missing KOL id" }, { status: 400 });
@@ -8981,10 +9101,11 @@ function KolEditPage() {
 // app/routes/_app.proposals._index.tsx
 var app_proposals_index_exports = {};
 __export(app_proposals_index_exports, {
-  action: () => action6,
+  action: () => action7,
   default: () => ProposalListPage,
   loader: () => loader8
 });
+init_mock_api();
 import { Button as Button9, Card as Card8, Group as Group8, Stack as Stack9, Table as Table2, Title as Title9, ActionIcon as ActionIcon3, Modal as Modal5, TextInput as TextInput8, NumberInput as NumberInput3, Select as Select5 } from "@mantine/core";
 import { useDisclosure as useDisclosure4 } from "@mantine/hooks";
 import { json as json8 } from "@remix-run/node";
@@ -8992,7 +9113,7 @@ import { Link as Link8, useLoaderData as useLoaderData8, Form as Form5 } from "@
 import { useState as useState9 } from "react";
 import { IconEye, IconPencil as IconPencil3, IconTrash as IconTrash4 } from "@tabler/icons-react";
 import { jsxDEV as jsxDEV11 } from "react/jsx-dev-runtime";
-async function action6({ request }) {
+async function action7({ request }) {
   let formData = await request.formData(), intent = formData.get("intent");
   if (intent === "delete_proposal") {
     let id = String(formData.get("id"));
@@ -9385,21 +9506,7 @@ import {
 import { useDisclosure as useDisclosure5 } from "@mantine/hooks";
 import { json as json9 } from "@remix-run/node";
 import { Link as Link9, useLoaderData as useLoaderData9 } from "@remix-run/react";
-
-// app/store/notification.ts
-import { create } from "zustand";
-var useNotificationStore = create((set) => ({
-  toast: null,
-  banner: null,
-  showToast: (title, message, actionLink) => {
-    set({ toast: { isOpen: !0, title, message, actionLink } });
-  },
-  hideToast: () => set({ toast: null }),
-  showBanner: (title, message, actionLink) => set({ banner: { isOpen: !0, title, message, actionLink } }),
-  hideBanner: () => set({ banner: null })
-}));
-
-// app/routes/_app.reports.generate.tsx
+init_mock_api();
 import { useState as useState10 } from "react";
 import {
   IconFileTypePpt as IconFileTypePpt2,
@@ -9422,10 +9529,11 @@ function formatShortDate(date) {
   return date.slice(0, 7);
 }
 async function loader9({ request }) {
-  let url = new URL(request.url), clientFilter = url.searchParams.get("client") ?? "", timeFilter = url.searchParams.get("time") ?? "all", statusFilter = url.searchParams.get("status") ?? "all", page = Math.max(1, Number(url.searchParams.get("page") ?? "1")), pageSize = Number(url.searchParams.get("pageSize") ?? "10"), orders = await listInsertionOrders(), allClients = Array.from(new Set(orders.map((o) => o.clientName))), filtered = orders.map((order, idx) => ({
+  let url = new URL(request.url), clientFilter = url.searchParams.get("client") ?? "", timeFilter = url.searchParams.get("time") ?? "all", statusFilter = url.searchParams.get("status") ?? "all", page = Math.max(1, Number(url.searchParams.get("page") ?? "1")), pageSize = Number(url.searchParams.get("pageSize") ?? "10"), orders = await listInsertionOrders(), allClients = Array.from(new Set(orders.map((o) => o.clientName))), filtered = orders.map((order) => ({
     ...order,
-    hasDraft: idx === 0 || idx === 1,
-    hasOfficial: idx === 0
+    hasDraft: order.hasDraft ?? !1,
+    hasOfficial: order.hasOfficial ?? !1,
+    reports: order.reports ?? []
   })).filter((order) => !(clientFilter && order.clientName !== clientFilter || timeFilter === "this_year" && !order.startDate.startsWith("2026") || timeFilter === "2024_10" && !order.startDate.startsWith("2024-10") || statusFilter === "draft" && !order.hasDraft || statusFilter === "official" && !order.hasOfficial || statusFilter === "none" && (order.hasDraft || order.hasOfficial))), totalPages = Math.max(1, Math.ceil(filtered.length / pageSize)), currentPage = Math.min(page, totalPages), paginatedOrders = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   return json9({
     orders: paginatedOrders,
@@ -9483,133 +9591,133 @@ function ReportManagementPage() {
       /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", align: "center", children: [
         /* @__PURE__ */ jsxDEV12(Title10, { order: 2, children: "\u7D50\u6848\u5831\u544A\u7BA1\u7406" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 215,
+          lineNumber: 216,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV12(Button10, { color: "blue", onClick: openSelectOrderModal, children: "+ \u751F\u6210\u65B0\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 216,
+          lineNumber: 217,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 214,
+        lineNumber: 215,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV12("form", { method: "get", children: /* @__PURE__ */ jsxDEV12(Group9, { align: "end", wrap: "wrap", gap: "md", children: [
         /* @__PURE__ */ jsxDEV12(Stack10, { gap: 4, children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 500, children: "\u5BA2\u6236" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 225,
+            lineNumber: 226,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV12("select", { name: "client", defaultValue: clientFilter, style: { padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }, children: [
             /* @__PURE__ */ jsxDEV12("option", { value: "", children: "\u5168\u90E8" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 227,
+              lineNumber: 228,
               columnNumber: 17
             }, this),
             allClients.map((c) => /* @__PURE__ */ jsxDEV12("option", { value: c, children: c }, c, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 228,
+              lineNumber: 229,
               columnNumber: 40
             }, this))
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 226,
+            lineNumber: 227,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 224,
+          lineNumber: 225,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV12(Stack10, { gap: 4, children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 500, children: "\u6642\u9593\u7BC4\u570D" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 232,
+            lineNumber: 233,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV12("select", { name: "time", defaultValue: timeFilter, style: { padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }, children: [
             /* @__PURE__ */ jsxDEV12("option", { value: "all", children: "\u5168\u90E8" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 234,
+              lineNumber: 235,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12("option", { value: "this_year", children: "2026 \u5E74" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 235,
+              lineNumber: 236,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12("option", { value: "2024_10", children: "2024-10" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 236,
+              lineNumber: 237,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 233,
+            lineNumber: 234,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 231,
+          lineNumber: 232,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV12(Stack10, { gap: 4, children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 500, children: "\u72C0\u614B" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 240,
+            lineNumber: 241,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV12("select", { name: "status", defaultValue: statusFilter, style: { padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }, children: [
             /* @__PURE__ */ jsxDEV12("option", { value: "all", children: "\u5168\u90E8" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 242,
+              lineNumber: 243,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12("option", { value: "draft", children: "\u6709\u8349\u7A3F" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 243,
+              lineNumber: 244,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12("option", { value: "official", children: "\u6709\u6B63\u5F0F\u7248" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 244,
+              lineNumber: 245,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12("option", { value: "none", children: "\u7121\u5831\u544A" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 245,
+              lineNumber: 246,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 241,
+            lineNumber: 242,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 239,
+          lineNumber: 240,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV12(Button10, { type: "submit", variant: "light", children: "\u5957\u7528\u7BE9\u9078" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 248,
+          lineNumber: 249,
           columnNumber: 13
         }, this),
         (clientFilter || timeFilter !== "all") && /* @__PURE__ */ jsxDEV12(Button10, { variant: "subtle", color: "gray", component: "a", href: "/reports/generate", children: "\u6E05\u9664" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 250,
+          lineNumber: 251,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 223,
+        lineNumber: 224,
         columnNumber: 11
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 222,
+        lineNumber: 223,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV12(Stack10, { gap: "lg", children: orders.map((order) => {
@@ -9626,7 +9734,7 @@ function ReportManagementPage() {
                 order.title ?? order.projectName ?? "\u672A\u547D\u540D\u6848\u4EF6"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 273,
+                lineNumber: 274,
                 columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { c: "dimmed", size: "sm", mt: 4, children: [
@@ -9639,41 +9747,41 @@ function ReportManagementPage() {
                 " \u4F4D"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 274,
+                lineNumber: 275,
                 columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 272,
+              lineNumber: 273,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ jsxDEV12(Group9, { children: [
               /* @__PURE__ */ jsxDEV12(Link9, { to: `/insertion-orders/${order.id}`, style: { textDecoration: "none" }, children: /* @__PURE__ */ jsxDEV12(Button10, { variant: "subtle", size: "sm", children: "\u67E5\u770B\u6848\u4EF6\u8A73\u60C5" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 280,
+                lineNumber: 281,
                 columnNumber: 25
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 279,
+                lineNumber: 280,
                 columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV12(Button10, { size: "sm", variant: "outline", onClick: () => handleOpenGenModal(order), children: "+ \u751F\u6210\u65B0\u5831\u544A" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 284,
+                lineNumber: 285,
                 columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 278,
+              lineNumber: 279,
               columnNumber: 21
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 271,
+            lineNumber: 272,
             columnNumber: 19
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 270,
+            lineNumber: 271,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { p: "md", bg: "#fdfdfd", children: !hasDraft && !hasOfficial ? (
@@ -9681,7 +9789,7 @@ function ReportManagementPage() {
             /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", py: "xl", gap: "sm", children: [
               /* @__PURE__ */ jsxDEV12(Text10, { c: "dimmed", fw: 500, children: "\u5C1A\u672A\u751F\u6210\u7D50\u6848\u5831\u544A" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 296,
+                lineNumber: 297,
                 columnNumber: 23
               }, this),
               missingCount > 0 && /* @__PURE__ */ jsxDEV12(Badge5, { color: "yellow", variant: "light", size: "lg", children: [
@@ -9690,269 +9798,290 @@ function ReportManagementPage() {
                 " \u4F4D KOL \u5C1A\u672A\u4E0A\u50B3\u6210\u6548"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 298,
+                lineNumber: 299,
                 columnNumber: 25
               }, this),
               /* @__PURE__ */ jsxDEV12(Group9, { gap: "sm", mt: "sm", children: [
                 /* @__PURE__ */ jsxDEV12(Button10, { onClick: () => handleOpenGenModal(order), children: "\u958B\u59CB\u751F\u6210\u5831\u544A" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 301,
+                  lineNumber: 302,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Button10, { variant: "outline", color: "blue", onClick: () => handleOpenUploadModal(order), children: "+ \u4E0A\u50B3\u6B63\u5F0F\u7248" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 302,
+                  lineNumber: 303,
                   columnNumber: 25
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 300,
+                lineNumber: 301,
                 columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 295,
+              lineNumber: 296,
               columnNumber: 21
             }, this)
           ) : /* @__PURE__ */ jsxDEV12(SimpleGrid7, { cols: { base: 1, lg: 2 }, spacing: "md", children: [
             hasDraft && /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, bg: "gray.0", radius: "sm", p: "sm", children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 600, mb: "sm", c: "dimmed", children: "\u7CFB\u7D71\u751F\u6210\uFF08\u8349\u7A3F\uFF09" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 310,
+                lineNumber: 311,
                 columnNumber: 27
               }, this),
-              /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", wrap: "nowrap", style: { border: "1px solid #eaeaea", background: "white", padding: 12, borderRadius: 8 }, children: [
+              /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", children: order.reports?.filter((r) => r.type === "draft").map((report) => /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", wrap: "nowrap", style: { border: "1px solid #eaeaea", background: "white", padding: 12, borderRadius: 8 }, children: [
                 /* @__PURE__ */ jsxDEV12(Group9, { children: [
                   /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "lg", variant: "light", color: "gray", children: /* @__PURE__ */ jsxDEV12(IconFileTypePpt2, { size: 20 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 313,
-                    columnNumber: 81
+                    lineNumber: 316,
+                    columnNumber: 85
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 313,
-                    columnNumber: 31
+                    lineNumber: 316,
+                    columnNumber: 35
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Box8, { children: [
                     /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", children: [
-                      /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, children: "\u7D50\u6848\u5831\u544A_v1.pptx" }, void 0, !1, {
+                      /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, children: report.name }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 316,
-                        columnNumber: 35
+                        lineNumber: 319,
+                        columnNumber: 39
                       }, this),
                       /* @__PURE__ */ jsxDEV12(Badge5, { color: "gray", variant: "filled", size: "xs", children: "\u8349\u7A3F" }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 317,
-                        columnNumber: 35
+                        lineNumber: 320,
+                        columnNumber: 39
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 315,
-                      columnNumber: 33
+                      lineNumber: 318,
+                      columnNumber: 37
                     }, this),
-                    /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u751F\u6210\u6642\u9593: 2024-10-20 14:30 | \u751F\u6210\u8005: \u7CFB\u7D71 AI" }, void 0, !1, {
+                    /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
+                      "\u751F\u6210\u6642\u9593: ",
+                      report.createdAt,
+                      " | \u751F\u6210\u8005: ",
+                      report.createdBy
+                    ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 319,
-                      columnNumber: 33
+                      lineNumber: 322,
+                      columnNumber: 37
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 314,
-                    columnNumber: 31
+                    lineNumber: 317,
+                    columnNumber: 35
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 312,
-                  columnNumber: 29
+                  lineNumber: 315,
+                  columnNumber: 33
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", children: [
                   /* @__PURE__ */ jsxDEV12(ActionIcon4, { variant: "light", color: "blue", onClick: handleDownload, children: /* @__PURE__ */ jsxDEV12(IconDownload2, { size: 18 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 323,
-                    columnNumber: 97
+                    lineNumber: 326,
+                    columnNumber: 101
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 323,
-                    columnNumber: 31
+                    lineNumber: 326,
+                    columnNumber: 35
                   }, this),
                   /* @__PURE__ */ jsxDEV12(ActionIcon4, { variant: "light", color: "indigo", onClick: () => handleOpenGenModal(order), children: /* @__PURE__ */ jsxDEV12(IconPencil4, { size: 18 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 324,
-                    columnNumber: 116
+                    lineNumber: 327,
+                    columnNumber: 120
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 324,
-                    columnNumber: 31
+                    lineNumber: 327,
+                    columnNumber: 35
                   }, this),
                   /* @__PURE__ */ jsxDEV12(ActionIcon4, { variant: "light", color: "red", onClick: handleDelete, children: /* @__PURE__ */ jsxDEV12(IconTrash5, { size: 18 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 325,
-                    columnNumber: 94
+                    lineNumber: 328,
+                    columnNumber: 98
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 325,
-                    columnNumber: 31
+                    lineNumber: 328,
+                    columnNumber: 35
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 322,
-                  columnNumber: 29
+                  lineNumber: 325,
+                  columnNumber: 33
                 }, this)
-              ] }, void 0, !0, {
+              ] }, report.id, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 311,
+                lineNumber: 314,
+                columnNumber: 31
+              }, this)) }, void 0, !1, {
+                fileName: "app/routes/_app.reports.generate.tsx",
+                lineNumber: 312,
                 columnNumber: 27
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 309,
+              lineNumber: 310,
               columnNumber: 25
             }, this),
             hasOfficial && /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, bg: "green.0", radius: "sm", p: "sm", children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 600, mb: "sm", c: "green.8", children: "\u6B63\u5F0F\u7248\u672C" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 334,
+                lineNumber: 339,
                 columnNumber: 27
               }, this),
-              /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", wrap: "nowrap", style: { border: "1px solid #b2f2bb", background: "white", padding: 12, borderRadius: 8 }, children: [
+              /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", children: order.reports?.filter((r) => r.type === "official").map((report) => /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", wrap: "nowrap", style: { border: "1px solid #b2f2bb", background: "white", padding: 12, borderRadius: 8 }, children: [
                 /* @__PURE__ */ jsxDEV12(Group9, { children: [
                   /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "lg", variant: "light", color: "green", children: /* @__PURE__ */ jsxDEV12(IconFileTypePpt2, { size: 20 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 337,
-                    columnNumber: 82
+                    lineNumber: 344,
+                    columnNumber: 86
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 337,
-                    columnNumber: 31
+                    lineNumber: 344,
+                    columnNumber: 35
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Box8, { children: [
                     /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", children: [
-                      /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, children: "\u7D50\u6848\u5831\u544A_\u5B8C\u6574\u7248.pptx" }, void 0, !1, {
+                      /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, children: report.name }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 340,
-                        columnNumber: 35
+                        lineNumber: 347,
+                        columnNumber: 39
                       }, this),
                       /* @__PURE__ */ jsxDEV12(Badge5, { color: "green", variant: "filled", size: "xs", children: "\u2B50 \u6B63\u5F0F\u7248" }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 341,
-                        columnNumber: 35
+                        lineNumber: 348,
+                        columnNumber: 39
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 339,
-                      columnNumber: 33
+                      lineNumber: 346,
+                      columnNumber: 37
                     }, this),
-                    /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u4E0A\u50B3\u6642\u9593: 2024-10-22 10:15 | \u4E0A\u50B3\u8005: \u7BA1\u7406\u54E1" }, void 0, !1, {
+                    /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
+                      "\u4E0A\u50B3\u6642\u9593: ",
+                      report.createdAt,
+                      " | \u4E0A\u50B3\u8005: ",
+                      report.createdBy
+                    ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 343,
-                      columnNumber: 33
+                      lineNumber: 350,
+                      columnNumber: 37
                     }, this),
-                    /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", mt: 2, children: "\u8AAA\u660E: \u5DF2\u6839\u64DA\u5BA2\u6236\u56DE\u994B\u4FEE\u6B63\u6578\u64DA\u5448\u73FE\u65B9\u5F0F" }, void 0, !1, {
+                    report.note && /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", mt: 2, children: [
+                      "\u8AAA\u660E: ",
+                      report.note
+                    ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 344,
-                      columnNumber: 33
+                      lineNumber: 351,
+                      columnNumber: 53
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 338,
-                    columnNumber: 31
+                    lineNumber: 345,
+                    columnNumber: 35
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 336,
-                  columnNumber: 29
+                  lineNumber: 343,
+                  columnNumber: 33
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", children: [
                   /* @__PURE__ */ jsxDEV12(ActionIcon4, { variant: "light", color: "blue", onClick: handleDownload, children: /* @__PURE__ */ jsxDEV12(IconDownload2, { size: 18 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 348,
-                    columnNumber: 97
+                    lineNumber: 355,
+                    columnNumber: 101
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 348,
-                    columnNumber: 31
+                    lineNumber: 355,
+                    columnNumber: 35
                   }, this),
                   /* @__PURE__ */ jsxDEV12(ActionIcon4, { variant: "light", color: "red", onClick: handleDelete, children: /* @__PURE__ */ jsxDEV12(IconTrash5, { size: 18 }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 349,
-                    columnNumber: 94
+                    lineNumber: 356,
+                    columnNumber: 98
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 349,
-                    columnNumber: 31
+                    lineNumber: 356,
+                    columnNumber: 35
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 347,
-                  columnNumber: 29
+                  lineNumber: 354,
+                  columnNumber: 33
                 }, this)
-              ] }, void 0, !0, {
+              ] }, report.id, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 335,
+                lineNumber: 342,
+                columnNumber: 31
+              }, this)) }, void 0, !1, {
+                fileName: "app/routes/_app.reports.generate.tsx",
+                lineNumber: 340,
                 columnNumber: 27
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 333,
+              lineNumber: 338,
               columnNumber: 25
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 306,
+            lineNumber: 307,
             columnNumber: 21
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 292,
+            lineNumber: 293,
             columnNumber: 17
           }, this),
           (hasDraft || hasOfficial) && /* @__PURE__ */ jsxDEV12(Box8, { p: "sm", style: { borderTop: "1px solid #eee", background: "#f8f9fa" }, children: /* @__PURE__ */ jsxDEV12(Group9, { justify: "flex-end", children: /* @__PURE__ */ jsxDEV12(Button10, { variant: "default", size: "sm", onClick: () => handleOpenUploadModal(order), children: hasOfficial ? "\u66F4\u65B0\u6B63\u5F0F\u7248" : "+ \u4E0A\u50B3\u6B63\u5F0F\u7248" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 362,
+            lineNumber: 371,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 361,
+            lineNumber: 370,
             columnNumber: 21
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 360,
+            lineNumber: 369,
             columnNumber: 19
           }, this)
         ] }, order.id, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 268,
+          lineNumber: 269,
           columnNumber: 15
         }, this);
       }) }, void 0, !1, {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 256,
+        lineNumber: 257,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", align: "center", mt: "xl", py: "md", style: { borderTop: "1px solid var(--mantine-color-default-border)" }, children: [
         /* @__PURE__ */ jsxDEV12(Group9, { children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "dimmed", children: "\u6BCF\u9801\u7B46\u6578" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 376,
+            lineNumber: 385,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12("form", { method: "get", style: { display: "inline" }, children: [
             /* @__PURE__ */ jsxDEV12("input", { type: "hidden", name: "client", value: clientFilter }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 378,
+              lineNumber: 387,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12("input", { type: "hidden", name: "time", value: timeFilter }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 379,
+              lineNumber: 388,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12("input", { type: "hidden", name: "status", value: statusFilter }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 380,
+              lineNumber: 389,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12("input", { type: "hidden", name: "page", value: "1" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 381,
+              lineNumber: 390,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(
@@ -9972,17 +10101,17 @@ function ReportManagementPage() {
                 children: [
                   /* @__PURE__ */ jsxDEV12("option", { value: "5", children: "5" }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 395,
+                    lineNumber: 404,
                     columnNumber: 17
                   }, this),
                   /* @__PURE__ */ jsxDEV12("option", { value: "10", children: "10" }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 396,
+                    lineNumber: 405,
                     columnNumber: 17
                   }, this),
                   /* @__PURE__ */ jsxDEV12("option", { value: "20", children: "20" }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 397,
+                    lineNumber: 406,
                     columnNumber: 17
                   }, this)
                 ]
@@ -9991,14 +10120,14 @@ function ReportManagementPage() {
               !0,
               {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 382,
+                lineNumber: 391,
                 columnNumber: 15
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 377,
+            lineNumber: 386,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "dimmed", children: [
@@ -10007,12 +10136,12 @@ function ReportManagementPage() {
             " \u7B46"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 400,
+            lineNumber: 409,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 375,
+          lineNumber: 384,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV12(Group9, { gap: 4, children: [
@@ -10034,7 +10163,7 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 405,
+              lineNumber: 414,
               columnNumber: 15
             },
             this
@@ -10059,7 +10188,7 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 421,
+              lineNumber: 430,
               columnNumber: 15
             },
             this
@@ -10082,24 +10211,24 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 440,
+              lineNumber: 449,
               columnNumber: 15
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 403,
+          lineNumber: 412,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 374,
+        lineNumber: 383,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.reports.generate.tsx",
-      lineNumber: 212,
+      lineNumber: 213,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV12(
@@ -10109,7 +10238,7 @@ function ReportManagementPage() {
         onClose: closeSelectOrderModal,
         title: /* @__PURE__ */ jsxDEV12(Text10, { fw: 700, size: "lg", children: "\u9078\u64C7\u59D4\u520A\u55AE\u751F\u6210\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 462,
+          lineNumber: 471,
           columnNumber: 16
         }, this),
         size: "lg",
@@ -10117,7 +10246,7 @@ function ReportManagementPage() {
         children: /* @__PURE__ */ jsxDEV12(Stack10, { gap: "md", children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "dimmed", children: "\u8ACB\u9078\u64C7\u4E00\u500B\u6848\u4EF6\u4F86\u958B\u59CB\u751F\u6210\u65B0\u7684\u7D50\u6848\u5831\u544A\uFF1A" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 467,
+            lineNumber: 476,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { style: { maxHeight: 400, overflowY: "auto" }, children: /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", children: orders.map((order) => /* @__PURE__ */ jsxDEV12(
@@ -10142,7 +10271,7 @@ function ReportManagementPage() {
                     order.title || order.projectName
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 487,
+                    lineNumber: 496,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
@@ -10151,22 +10280,22 @@ function ReportManagementPage() {
                     formatShortDate(order.startDate)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 488,
+                    lineNumber: 497,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 486,
+                  lineNumber: 495,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Button10, { variant: "light", size: "xs", children: "\u9078\u64C7" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 490,
+                  lineNumber: 499,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 485,
+                lineNumber: 494,
                 columnNumber: 19
               }, this)
             },
@@ -10174,31 +10303,31 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 471,
+              lineNumber: 480,
               columnNumber: 17
             },
             this
           )) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 469,
+            lineNumber: 478,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 468,
+            lineNumber: 477,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Group9, { justify: "flex-end", mt: "md", children: /* @__PURE__ */ jsxDEV12(Button10, { variant: "default", onClick: closeSelectOrderModal, children: "\u53D6\u6D88" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 497,
+            lineNumber: 506,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 496,
+            lineNumber: 505,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 466,
+          lineNumber: 475,
           columnNumber: 9
         }, this)
       },
@@ -10206,7 +10335,7 @@ function ReportManagementPage() {
       !1,
       {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 459,
+        lineNumber: 468,
         columnNumber: 7
       },
       this
@@ -10218,7 +10347,7 @@ function ReportManagementPage() {
         onClose: closeGenModal,
         title: /* @__PURE__ */ jsxDEV12(Text10, { fw: 700, size: "lg", children: "\u751F\u6210\u7D50\u6848\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 506,
+          lineNumber: 515,
           columnNumber: 16
         }, this),
         size: "xl",
@@ -10227,7 +10356,7 @@ function ReportManagementPage() {
             /* @__PURE__ */ jsxDEV12(Box8, { children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u7DE8\u865F" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 515,
+                lineNumber: 524,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, children: [
@@ -10235,71 +10364,71 @@ function ReportManagementPage() {
                 activeOrder.orderNo
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 516,
+                lineNumber: 525,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 514,
+              lineNumber: 523,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12(Box8, { children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u6848\u4EF6\u540D\u7A31" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 519,
+                lineNumber: 528,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, children: activeOrder.title || activeOrder.projectName }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 520,
+                lineNumber: 529,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 518,
+              lineNumber: 527,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12(Box8, { children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u5BA2\u6236" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 523,
+                lineNumber: 532,
                 columnNumber: 19
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, children: activeOrder.clientName }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 524,
+                lineNumber: 533,
                 columnNumber: 19
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 522,
+              lineNumber: 531,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 513,
+            lineNumber: 522,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 512,
+            lineNumber: 521,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { children: [
             /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, size: "lg", mb: 4, children: "\u6B65\u9A5F 1\uFF1A\u78BA\u8A8D KOL \u6210\u6548\u8CC7\u6599" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 531,
+              lineNumber: 540,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "dimmed", mb: "md", children: "\u7CFB\u7D71\u5C07\u81EA\u52D5\u9078\u64C7\u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 532,
+              lineNumber: 541,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Stack10, { gap: "md", children: [
               /* @__PURE__ */ jsxDEV12(Box8, { children: [
                 /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", c: "green.7", mb: "xs", children: "\u2705 \u5DF2\u4E0A\u50B3\u6210\u6548\u7684 KOL (\u9810\u8A2D\u9078\u64C7)" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 537,
+                  lineNumber: 546,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", children: [
@@ -10324,68 +10453,68 @@ function ReportManagementPage() {
                           !1,
                           {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 550,
+                            lineNumber: 559,
                             columnNumber: 27
                           },
                           this
                         ),
                         /* @__PURE__ */ jsxDEV12(Avatar7, { src: kol.kol?.avatarUrl, radius: "xl", size: "md" }, void 0, !1, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 555,
+                          lineNumber: 564,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV12(Box8, { style: { flexGrow: 1 }, children: [
                           /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, children: kol.kol?.name || "KOL Name" }, void 0, !1, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 557,
+                            lineNumber: 566,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
                             "IG\u8CBC\u6587 ",
                             /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.reports.generate.tsx",
-                              lineNumber: 559,
+                              lineNumber: 568,
                               columnNumber: 63
                             }, this),
                             " | IG\u9650\u52D5 ",
                             /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                               fileName: "app/routes/_app.reports.generate.tsx",
-                              lineNumber: 559,
+                              lineNumber: 568,
                               columnNumber: 135
                             }, this)
                           ] }, void 0, !0, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 559,
+                            lineNumber: 568,
                             columnNumber: 31
                           }, this) }, void 0, !1, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 558,
+                            lineNumber: 567,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 556,
+                          lineNumber: 565,
                           columnNumber: 27
                         }, this),
                         /* @__PURE__ */ jsxDEV12(Box8, { style: { textAlign: "right" }, children: [
                           /* @__PURE__ */ jsxDEV12(Badge5, { variant: "dot", color: "blue", children: "\u7E3D\u89F8\u53CA 80K" }, void 0, !1, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 563,
+                            lineNumber: 572,
                             columnNumber: 29
                           }, this),
                           /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", mt: 4, children: "\u4E92\u52D5\u7387 7.8%" }, void 0, !1, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 564,
+                            lineNumber: 573,
                             columnNumber: 29
                           }, this)
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 562,
+                          lineNumber: 571,
                           columnNumber: 27
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 549,
+                        lineNumber: 558,
                         columnNumber: 25
                       }, this)
                     },
@@ -10393,7 +10522,7 @@ function ReportManagementPage() {
                     !1,
                     {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 540,
+                      lineNumber: 549,
                       columnNumber: 23
                     },
                     this
@@ -10410,72 +10539,72 @@ function ReportManagementPage() {
                       !1,
                       {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 573,
+                        lineNumber: 582,
                         columnNumber: 27
                       },
                       this
                     ),
                     /* @__PURE__ */ jsxDEV12(Avatar7, { color: "blue", radius: "xl", size: "md", children: "G" }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 578,
+                      lineNumber: 587,
                       columnNumber: 27
                     }, this),
                     /* @__PURE__ */ jsxDEV12(Box8, { style: { flexGrow: 1 }, children: [
                       /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, children: "Gina (Demo)" }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 580,
+                        lineNumber: 589,
                         columnNumber: 29
                       }, this),
                       /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
                         "IG\u8CBC\u6587 ",
                         /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 582,
+                          lineNumber: 591,
                           columnNumber: 63
                         }, this),
                         " | IG\u9650\u52D5 ",
                         /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 12, style: { display: "inline", color: "green" } }, void 0, !1, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 582,
+                          lineNumber: 591,
                           columnNumber: 135
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 582,
+                        lineNumber: 591,
                         columnNumber: 31
                       }, this) }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 581,
+                        lineNumber: 590,
                         columnNumber: 29
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 579,
+                      lineNumber: 588,
                       columnNumber: 27
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 572,
+                    lineNumber: 581,
                     columnNumber: 25
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 571,
+                    lineNumber: 580,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 538,
+                  lineNumber: 547,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 536,
+                lineNumber: 545,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV12(Box8, { children: [
                 /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", c: "orange.7", mb: "xs", children: "\u26A0\uFE0F \u5C1A\u672A\u4E0A\u50B3\u6210\u6548\u7684 KOL" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 593,
+                  lineNumber: 602,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", children: (activeOrder.collaborations || []).filter((k) => !(k.performanceItems || []).length).map((kol, idx) => /* @__PURE__ */ jsxDEV12(
@@ -10499,51 +10628,51 @@ function ReportManagementPage() {
                         !1,
                         {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 606,
+                          lineNumber: 615,
                           columnNumber: 27
                         },
                         this
                       ),
                       /* @__PURE__ */ jsxDEV12(Avatar7, { src: kol.kol?.avatarUrl, radius: "xl", size: "md", style: { filter: "grayscale(100%)" } }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 611,
+                        lineNumber: 620,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV12(Box8, { style: { flexGrow: 1 }, children: [
                         /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, c: "dimmed", children: kol.kol?.name || "KOL Name" }, void 0, !1, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 613,
+                          lineNumber: 622,
                           columnNumber: 29
                         }, this),
                         /* @__PURE__ */ jsxDEV12(Group9, { gap: "xs", mt: 4, children: /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "red.7", children: [
                           /* @__PURE__ */ jsxDEV12(IconX4, { size: 12, style: { display: "inline" } }, void 0, !1, {
                             fileName: "app/routes/_app.reports.generate.tsx",
-                            lineNumber: 615,
+                            lineNumber: 624,
                             columnNumber: 57
                           }, this),
                           " \u7121\u6210\u6548\u8CC7\u6599"
                         ] }, void 0, !0, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 615,
+                          lineNumber: 624,
                           columnNumber: 31
                         }, this) }, void 0, !1, {
                           fileName: "app/routes/_app.reports.generate.tsx",
-                          lineNumber: 614,
+                          lineNumber: 623,
                           columnNumber: 29
                         }, this)
                       ] }, void 0, !0, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 612,
+                        lineNumber: 621,
                         columnNumber: 27
                       }, this),
                       /* @__PURE__ */ jsxDEV12(Button10, { variant: "subtle", size: "xs", color: "blue", rightSection: "\u2192", children: "\u524D\u5F80\u4E0A\u50B3\u6210\u6548" }, void 0, !1, {
                         fileName: "app/routes/_app.reports.generate.tsx",
-                        lineNumber: 618,
+                        lineNumber: 627,
                         columnNumber: 27
                       }, this)
                     ] }, void 0, !0, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 605,
+                      lineNumber: 614,
                       columnNumber: 25
                     }, this)
                   },
@@ -10551,63 +10680,63 @@ function ReportManagementPage() {
                   !1,
                   {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 596,
+                    lineNumber: 605,
                     columnNumber: 23
                   },
                   this
                 )) }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 594,
+                  lineNumber: 603,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 592,
+                lineNumber: 601,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV12(Card9, { bg: "blue.0", p: "sm", radius: "md", mt: "xs", children: /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", align: "flex-start", children: [
                 /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "blue", variant: "light", size: "sm", mt: 2, children: /* @__PURE__ */ jsxDEV12(IconBulb3, { size: 14 }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 628,
+                  lineNumber: 637,
                   columnNumber: 78
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 628,
+                  lineNumber: 637,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "blue.9", style: { lineHeight: 1.4 }, children: "\u672A\u52FE\u9078\u7684 KOL \u5C07\u4E0D\u6703\u51FA\u73FE\u5728\u5831\u544A\u4E2D\u3002\u5EFA\u8B70\u5148\u4E0A\u50B3\u6240\u6709 KOL \u7684\u6210\u6548\u8CC7\u6599\u5F8C\u518D\u751F\u6210\u5831\u544A\u3002" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 629,
+                  lineNumber: 638,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 627,
+                lineNumber: 636,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 626,
+                lineNumber: 635,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 534,
+              lineNumber: 543,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 530,
+            lineNumber: 539,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Divider7, {}, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 637,
+            lineNumber: 646,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { children: [
             /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, size: "lg", mb: "md", children: "\u6B65\u9A5F 2\uFF1A\u5831\u544A\u8A2D\u5B9A" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 641,
+              lineNumber: 650,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Stack10, { gap: "lg", children: [
@@ -10622,7 +10751,7 @@ function ReportManagementPage() {
                 !1,
                 {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 644,
+                  lineNumber: 653,
                   columnNumber: 17
                 },
                 this
@@ -10630,164 +10759,164 @@ function ReportManagementPage() {
               /* @__PURE__ */ jsxDEV12(Box8, { children: [
                 /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 500, mb: "xs", children: "PowerPoint \u6A21\u677F" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 651,
+                  lineNumber: 660,
                   columnNumber: 19
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Group9, { grow: !0, children: [
                   /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("standard"), style: { borderColor: selectedTemplate === "standard" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "xl", variant: "light", color: selectedTemplate === "standard" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV12(IconTemplate2, {}, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 655,
+                      lineNumber: 664,
                       columnNumber: 120
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 655,
+                      lineNumber: 664,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", c: selectedTemplate === "standard" ? "" : "dimmed", children: "\u516C\u53F8\u6A19\u6E96\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 656,
+                      lineNumber: 665,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 654,
+                    lineNumber: 663,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 653,
+                    lineNumber: 662,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("simple"), style: { borderColor: selectedTemplate === "simple" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "xl", variant: "light", color: selectedTemplate === "simple" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV12(IconTemplate2, {}, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 661,
+                      lineNumber: 670,
                       columnNumber: 118
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 661,
+                      lineNumber: 670,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", c: selectedTemplate === "simple" ? "" : "dimmed", children: "\u7C21\u7D04\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 662,
+                      lineNumber: 671,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 660,
+                    lineNumber: 669,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 659,
+                    lineNumber: 668,
                     columnNumber: 21
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, p: "sm", onClick: () => setSelectedTemplate("none"), style: { borderColor: selectedTemplate === "none" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-default-border)", cursor: "pointer" }, children: /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", gap: "xs", children: [
                     /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "xl", variant: "light", color: selectedTemplate === "none" ? "blue" : "gray", children: /* @__PURE__ */ jsxDEV12(IconFile2, {}, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 667,
+                      lineNumber: 676,
                       columnNumber: 116
                     }, this) }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 667,
+                      lineNumber: 676,
                       columnNumber: 25
                     }, this),
                     /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", c: selectedTemplate === "none" ? "" : "dimmed", children: "\u4E0D\u5957\u7528\u6A21\u677F" }, void 0, !1, {
                       fileName: "app/routes/_app.reports.generate.tsx",
-                      lineNumber: 668,
+                      lineNumber: 677,
                       columnNumber: 25
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 666,
+                    lineNumber: 675,
                     columnNumber: 23
                   }, this) }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 665,
+                    lineNumber: 674,
                     columnNumber: 21
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 652,
+                  lineNumber: 661,
                   columnNumber: 19
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 650,
+                lineNumber: 659,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV12(Card9, { bg: "gray.0", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", children: [
                 /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "gray", variant: "light", children: /* @__PURE__ */ jsxDEV12(IconFileDescription2, { size: 16 }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 676,
+                  lineNumber: 685,
                   columnNumber: 61
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 676,
+                  lineNumber: 685,
                   columnNumber: 21
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Box8, { children: [
                   /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 600, children: "\u9810\u4F30\u9801\u6578: \u7D04 18 \u9801" }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 678,
+                    lineNumber: 687,
                     columnNumber: 23
                   }, this),
                   /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "(\u5C01\u9762 + 3\u500BKOL \xD7 \u5E73\u57475\u9801 + \u7E3D\u7D50)" }, void 0, !1, {
                     fileName: "app/routes/_app.reports.generate.tsx",
-                    lineNumber: 679,
+                    lineNumber: 688,
                     columnNumber: 23
                   }, this)
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 677,
+                  lineNumber: 686,
                   columnNumber: 21
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 675,
+                lineNumber: 684,
                 columnNumber: 19
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 674,
+                lineNumber: 683,
                 columnNumber: 17
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 643,
+              lineNumber: 652,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 640,
+            lineNumber: 649,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Group9, { justify: "flex-end", mt: "md", children: [
             /* @__PURE__ */ jsxDEV12(Button10, { variant: "ghost", color: "gray", onClick: closeGenModal, children: "\u53D6\u6D88" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 687,
+              lineNumber: 696,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Tooltip2, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: !0, children: /* @__PURE__ */ jsxDEV12(Button10, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ jsxDEV12(IconRobot2, { size: 20 }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 689,
+              lineNumber: 698,
               columnNumber: 87
             }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 689,
+              lineNumber: 698,
               columnNumber: 17
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 688,
+              lineNumber: 697,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 686,
+            lineNumber: 695,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 510,
+          lineNumber: 519,
           columnNumber: 11
         }, this)
       },
@@ -10795,7 +10924,7 @@ function ReportManagementPage() {
       !1,
       {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 503,
+        lineNumber: 512,
         columnNumber: 7
       },
       this
@@ -10812,17 +10941,17 @@ function ReportManagementPage() {
         children: /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", ta: "center", gap: "md", py: "md", children: [
           /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: 64, radius: "100%", variant: "light", color: "blue", style: { animation: "pulse 2s infinite" }, children: /* @__PURE__ */ jsxDEV12(IconRobot2, { size: 40 }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 709,
+            lineNumber: 718,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 708,
+            lineNumber: 717,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { children: [
             /* @__PURE__ */ jsxDEV12(Title10, { order: 3, children: "AI \u6B63\u5728\u70BA\u60A8\u751F\u6210\u5831\u544A" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 712,
+              lineNumber: 721,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV12(Text10, { c: "dimmed", mt: 4, children: [
@@ -10832,19 +10961,19 @@ function ReportManagementPage() {
               activeOrder?.title || activeOrder?.projectName
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 713,
+              lineNumber: 722,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 711,
+            lineNumber: 720,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { w: "100%", my: "sm", children: [
             /* @__PURE__ */ jsxDEV12(Group9, { justify: "space-between", mb: 8, children: [
               /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 600, children: "\u9032\u5EA6" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 720,
+                lineNumber: 729,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: 600, c: "blue", children: [
@@ -10852,12 +10981,12 @@ function ReportManagementPage() {
                 "%"
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 721,
+                lineNumber: 730,
                 columnNumber: 15
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 719,
+              lineNumber: 728,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV12(
@@ -10874,14 +11003,14 @@ function ReportManagementPage() {
               !1,
               {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 723,
+                lineNumber: 732,
                 columnNumber: 13
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 718,
+            lineNumber: 727,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Stack10, { gap: "xs", w: "100%", align: "flex-start", pl: "md", children: [
@@ -10895,88 +11024,88 @@ function ReportManagementPage() {
             return /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", gap: "sm", children: [
               isCompleted ? /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "green", size: 20, radius: "xl", variant: "filled", children: /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 747,
+                lineNumber: 756,
                 columnNumber: 85
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 747,
+                lineNumber: 756,
                 columnNumber: 21
               }, this) : isCurrent ? /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "blue", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV12(IconRobot2, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 749,
+                lineNumber: 758,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 749,
+                lineNumber: 758,
                 columnNumber: 21
               }, this) : /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "gray", size: 20, radius: "xl", variant: "light", children: /* @__PURE__ */ jsxDEV12(IconClockHour42, { size: 14 }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 751,
+                lineNumber: 760,
                 columnNumber: 83
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 751,
+                lineNumber: 760,
                 columnNumber: 21
               }, this),
               /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", fw: isCurrent ? 600 : 400, c: isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5", children: stepDesc }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 753,
+                lineNumber: 762,
                 columnNumber: 19
               }, this)
             ] }, idx, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 745,
+              lineNumber: 754,
               columnNumber: 17
             }, this);
           }) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 734,
+            lineNumber: 743,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", mt: "xs", children: "\u9810\u8A08\u9084\u9700 2 \u5206\u9418" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 761,
+            lineNumber: 770,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Card9, { bg: "blue.0", w: "100%", p: "sm", radius: "md", children: /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", align: "center", justify: "center", children: [
             /* @__PURE__ */ jsxDEV12(IconBulb3, { size: 18, color: "var(--mantine-color-blue-7)" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 765,
+              lineNumber: 774,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "blue.9", children: "\u60A8\u53EF\u4EE5\u95DC\u9589\u6B64\u8996\u7A97\u7E7C\u7E8C\u5176\u4ED6\u5DE5\u4F5C\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 766,
+              lineNumber: 775,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 764,
+            lineNumber: 773,
             columnNumber: 13
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 763,
+            lineNumber: 772,
             columnNumber: 11
           }, this),
           /* @__PURE__ */ jsxDEV12(Group9, { w: "100%", grow: !0, mt: "sm", children: [
             /* @__PURE__ */ jsxDEV12(Button10, { variant: "outline", color: "red", onClick: closeProgressModal, children: "\u53D6\u6D88\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 771,
+              lineNumber: 780,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV12(Button10, { onClick: closeProgressModal, children: "\u5728\u80CC\u666F\u7E7C\u7E8C" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 772,
+              lineNumber: 781,
               columnNumber: 13
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 770,
+            lineNumber: 779,
             columnNumber: 11
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 707,
+          lineNumber: 716,
           columnNumber: 9
         }, this)
       },
@@ -10984,7 +11113,7 @@ function ReportManagementPage() {
       !1,
       {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 699,
+        lineNumber: 708,
         columnNumber: 7
       },
       this
@@ -10996,7 +11125,7 @@ function ReportManagementPage() {
         onClose: closeUploadModal,
         title: /* @__PURE__ */ jsxDEV12(Text10, { fw: 700, size: "lg", children: "\u4E0A\u50B3\u6B63\u5F0F\u7D50\u6848\u5831\u544A" }, void 0, !1, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 781,
+          lineNumber: 790,
           columnNumber: 16
         }, this),
         centered: !0,
@@ -11006,35 +11135,35 @@ function ReportManagementPage() {
         children: uploadSuccess ? /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", ta: "center", py: "xl", gap: "md", children: [
           /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: 64, radius: "100%", color: "green", variant: "filled", children: /* @__PURE__ */ jsxDEV12(IconCheck4, { size: 40 }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 790,
+            lineNumber: 799,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 789,
+            lineNumber: 798,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Title10, { order: 3, children: "\u4E0A\u50B3\u6210\u529F\uFF01" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 792,
+            lineNumber: 801,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Button10, { mt: "md", variant: "outline", onClick: closeUploadModal, children: "\u67E5\u770B\u5831\u544A" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 793,
+            lineNumber: 802,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 788,
+          lineNumber: 797,
           columnNumber: 11
         }, this) : uploadProgress !== null ? /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", ta: "center", py: "xl", gap: "md", children: [
           /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: 64, radius: "md", color: "blue", variant: "light", style: { animation: "pulse 2s infinite" }, children: /* @__PURE__ */ jsxDEV12(IconCloudUpload2, { size: 40 }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 798,
+            lineNumber: 807,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 797,
+            lineNumber: 806,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { w: "100%", children: [
@@ -11044,31 +11173,31 @@ function ReportManagementPage() {
               "%"
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 802,
+              lineNumber: 811,
               columnNumber: 17
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 801,
+              lineNumber: 810,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Progress4, { value: uploadProgress, size: "lg", radius: "xl", striped: !0, animated: !0 }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 804,
+              lineNumber: 813,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 800,
+            lineNumber: 809,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Button10, { mt: "md", variant: "subtle", color: "red", onClick: closeUploadModal, children: "\u53D6\u6D88" }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 806,
+            lineNumber: 815,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 796,
+          lineNumber: 805,
           columnNumber: 11
         }, this) : /* @__PURE__ */ jsxDEV12(Stack10, { gap: "lg", children: [
           /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "dimmed", mt: "-xs", children: [
@@ -11078,24 +11207,24 @@ function ReportManagementPage() {
             activeOrder?.title || activeOrder?.projectName
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 810,
+            lineNumber: 819,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Box8, { children: uploadFile ? /* @__PURE__ */ jsxDEV12(Card9, { withBorder: !0, radius: "md", p: "sm", bg: "gray.0", children: /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", justify: "space-between", children: [
             /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", children: [
               /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: "lg", variant: "light", color: "blue", children: /* @__PURE__ */ jsxDEV12(IconFile2, { size: 20 }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 855,
+                lineNumber: 864,
                 columnNumber: 25
               }, this) }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 854,
+                lineNumber: 863,
                 columnNumber: 23
               }, this),
               /* @__PURE__ */ jsxDEV12(Box8, { children: [
                 /* @__PURE__ */ jsxDEV12(Text10, { fw: 500, size: "sm", lineClamp: 1, children: uploadFile.name }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 858,
+                  lineNumber: 867,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: [
@@ -11103,35 +11232,35 @@ function ReportManagementPage() {
                   " MB"
                 ] }, void 0, !0, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 859,
+                  lineNumber: 868,
                   columnNumber: 25
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 857,
+                lineNumber: 866,
                 columnNumber: 23
               }, this)
             ] }, void 0, !0, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 853,
+              lineNumber: 862,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ jsxDEV12(ActionIcon4, { color: "red", variant: "subtle", onClick: () => setUploadFile(null), children: /* @__PURE__ */ jsxDEV12(IconX4, { size: 16 }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 863,
+              lineNumber: 872,
               columnNumber: 23
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 862,
+              lineNumber: 871,
               columnNumber: 21
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 852,
+            lineNumber: 861,
             columnNumber: 19
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 851,
+            lineNumber: 860,
             columnNumber: 17
           }, this) : /* @__PURE__ */ jsxDEV12(FileButton, { onChange: setUploadFile, accept: "application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation", children: (props) => /* @__PURE__ */ jsxDEV12(
             Card9,
@@ -11157,31 +11286,31 @@ function ReportManagementPage() {
               children: /* @__PURE__ */ jsxDEV12(Stack10, { align: "center", gap: "xs", children: [
                 /* @__PURE__ */ jsxDEV12(ThemeIcon2, { size: 48, variant: "light", color: "blue", radius: "md", children: /* @__PURE__ */ jsxDEV12(IconUpload2, { size: 24 }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 841,
+                  lineNumber: 850,
                   columnNumber: 27
                 }, this) }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 840,
+                  lineNumber: 849,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, mt: "sm", children: "\u62D6\u66F3\u6A94\u6848\u81F3\u6B64\u6216\u9EDE\u64CA\u9078\u64C7" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 843,
+                  lineNumber: 852,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Text10, { size: "xs", c: "dimmed", children: "\u652F\u63F4\u683C\u5F0F: .pptx, .pdf \u2022 \u6700\u5927 50MB" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 844,
+                  lineNumber: 853,
                   columnNumber: 25
                 }, this),
                 /* @__PURE__ */ jsxDEV12(Button10, { variant: "light", size: "xs", mt: "sm", children: "\u9078\u64C7\u6A94\u6848" }, void 0, !1, {
                   fileName: "app/routes/_app.reports.generate.tsx",
-                  lineNumber: 845,
+                  lineNumber: 854,
                   columnNumber: 25
                 }, this)
               ] }, void 0, !0, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 839,
+                lineNumber: 848,
                 columnNumber: 23
               }, this)
             },
@@ -11189,17 +11318,17 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 817,
+              lineNumber: 826,
               columnNumber: 21
             },
             this
           ) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 815,
+            lineNumber: 824,
             columnNumber: 17
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 813,
+            lineNumber: 822,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(
@@ -11214,7 +11343,7 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 871,
+              lineNumber: 880,
               columnNumber: 13
             },
             this
@@ -11226,7 +11355,7 @@ function ReportManagementPage() {
               onChange: (evt) => setIsOfficial(evt.currentTarget.checked),
               label: /* @__PURE__ */ jsxDEV12(Text10, { fw: 600, size: "md", children: "\u6A19\u8A18\u70BA\u6B63\u5F0F\u7248\u672C" }, void 0, !1, {
                 fileName: "app/routes/_app.reports.generate.tsx",
-                lineNumber: 882,
+                lineNumber: 891,
                 columnNumber: 22
               }, this),
               description: "\u6B63\u5F0F\u7248\u6703\u986F\u793A \u2B50 \u6A19\u8A18\uFF0C\u4E26\u512A\u5148\u5C55\u793A\u7D66\u5718\u968A\u6210\u54E1",
@@ -11236,7 +11365,7 @@ function ReportManagementPage() {
             !1,
             {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 879,
+              lineNumber: 888,
               columnNumber: 13
             },
             this
@@ -11244,46 +11373,46 @@ function ReportManagementPage() {
           /* @__PURE__ */ jsxDEV12(Card9, { bg: "blue.0", p: "sm", radius: "md", mt: "xs", children: /* @__PURE__ */ jsxDEV12(Group9, { wrap: "nowrap", align: "flex-start", children: [
             /* @__PURE__ */ jsxDEV12(ThemeIcon2, { color: "blue", variant: "light", size: "sm", mt: 2, children: /* @__PURE__ */ jsxDEV12(IconBulb3, { size: 14 }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 889,
+              lineNumber: 898,
               columnNumber: 74
             }, this) }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 889,
+              lineNumber: 898,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV12(Text10, { size: "sm", c: "blue.9", style: { lineHeight: 1.4 }, children: "\u4E0A\u50B3\u6B63\u5F0F\u7248\u5F8C\uFF0C\u7CFB\u7D71\u8349\u7A3F\u4ECD\u6703\u4FDD\u7559\u3002\u60A8\u53EF\u4EE5\u96A8\u6642\u67E5\u770B\u6216\u4E0B\u8F09\u4EFB\u4E00\u7248\u672C\u3002" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 890,
+              lineNumber: 899,
               columnNumber: 17
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 888,
+            lineNumber: 897,
             columnNumber: 15
           }, this) }, void 0, !1, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 887,
+            lineNumber: 896,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ jsxDEV12(Group9, { justify: "flex-end", mt: "md", children: [
             /* @__PURE__ */ jsxDEV12(Button10, { variant: "ghost", color: "gray", onClick: closeUploadModal, children: "\u53D6\u6D88" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 897,
+              lineNumber: 906,
               columnNumber: 15
             }, this),
             /* @__PURE__ */ jsxDEV12(Button10, { color: "blue", disabled: !uploadFile, onClick: startOfficialUpload, children: "\u78BA\u8A8D\u4E0A\u50B3" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
-              lineNumber: 898,
+              lineNumber: 907,
               columnNumber: 15
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.reports.generate.tsx",
-            lineNumber: 896,
+            lineNumber: 905,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.reports.generate.tsx",
-          lineNumber: 809,
+          lineNumber: 818,
           columnNumber: 11
         }, this)
       },
@@ -11291,7 +11420,7 @@ function ReportManagementPage() {
       !1,
       {
         fileName: "app/routes/_app.reports.generate.tsx",
-        lineNumber: 778,
+        lineNumber: 787,
         columnNumber: 7
       },
       this
@@ -11304,12 +11433,12 @@ function ReportManagementPage() {
         }
       ` }, void 0, !1, {
       fileName: "app/routes/_app.reports.generate.tsx",
-      lineNumber: 904,
+      lineNumber: 913,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
     fileName: "app/routes/_app.reports.generate.tsx",
-    lineNumber: 211,
+    lineNumber: 212,
     columnNumber: 5
   }, this);
 }
@@ -11372,14 +11501,15 @@ async function loader11({ request }) {
 // app/routes/_app.proposals.new.tsx
 var app_proposals_new_exports = {};
 __export(app_proposals_new_exports, {
-  action: () => action7,
+  action: () => action8,
   default: () => ProposalCreatePage
 });
+init_mock_api();
 import { Button as Button11, Card as Card10, Group as Group10, Stack as Stack11, TextInput as TextInput10, Title as Title11 } from "@mantine/core";
 import { json as json12, redirect as redirect5 } from "@remix-run/node";
 import { Form as Form6, Link as Link10, useActionData as useActionData4 } from "@remix-run/react";
 import { jsxDEV as jsxDEV13 } from "react/jsx-dev-runtime";
-async function action7({ request }) {
+async function action8({ request }) {
   let formData = await request.formData(), title = String(formData.get("title") ?? "").trim(), clientName = String(formData.get("clientName") ?? "").trim(), budget = Number(formData.get("budget") ?? 0), dueDate = String(formData.get("dueDate") ?? "").trim();
   if (!title || !clientName)
     return json12({ error: "\u6A19\u984C\u8207\u5BA2\u6236\u70BA\u5FC5\u586B" }, { status: 400 });
@@ -11469,10 +11599,11 @@ function ProposalCreatePage() {
 // app/routes/_app.kols._index.tsx
 var app_kols_index_exports = {};
 __export(app_kols_index_exports, {
-  action: () => action8,
+  action: () => action9,
   default: () => KolListPage,
   loader: () => loader12
 });
+init_mock_api();
 import {
   Alert as Alert4,
   Avatar as Avatar8,
@@ -11548,7 +11679,7 @@ async function loader12({ request }) {
     activeFilterCount: followerRanges.length + industries.length + tags.length + (minRating > 0 || maxRating < 5 ? 1 : 0)
   });
 }
-async function action8({ request }) {
+async function action9({ request }) {
   let formData = await request.formData(), intent = formData.get("intent"), kolId = String(formData.get("kolId") ?? "");
   if (intent === "toggleFavorite") {
     let isFavorite = formData.get("isFavorite") === "true";
@@ -13099,10 +13230,11 @@ function DashboardPage() {
 // app/routes/_app.favorites.tsx
 var app_favorites_exports = {};
 __export(app_favorites_exports, {
-  action: () => action9,
+  action: () => action10,
   default: () => FavoritesPage,
   loader: () => loader13
 });
+init_mock_api();
 import {
   Avatar as Avatar9,
   Badge as Badge7,
@@ -13126,7 +13258,7 @@ async function loader13({ request }) {
   let url = new URL(request.url), search = url.searchParams.get("search") ?? "", sort = url.searchParams.get("sort") ?? "rating_desc", folder = url.searchParams.get("folder") ?? "\u5168\u90E8", favorites = (await listKols()).filter((k) => k.isFavorite), fromRows = favorites.map((r) => r.favoriteFolder).filter(Boolean), folderSet = /* @__PURE__ */ new Set(["\u5BB6\u96FB\u5C08\u6848", "\u7F8E\u599D\u5C08\u6848", ...fromRows]), allFolders = ["\u5168\u90E8", ...Array.from(folderSet)], folderFiltered = folder === "\u5168\u90E8" ? favorites : favorites.filter((r) => (r.favoriteFolder ?? "\u672A\u5206\u985E") === folder), q = search.trim().toLowerCase(), searched = folderFiltered.filter((r) => q ? r.displayName.toLowerCase().includes(q) || (r.instagramHandle ?? "").toLowerCase().includes(q) || (r.industry ?? "").toLowerCase().includes(q) || (r.tags ?? r.categories).some((t) => t.toLowerCase().includes(q)) : !0), rows = sortRows(searched, sort), folderCounts = allFolders.reduce((acc, f) => (acc[f] = f === "\u5168\u90E8" ? favorites.length : favorites.filter((r) => (r.favoriteFolder ?? "\u672A\u5206\u985E") === f).length, acc), {});
   return json14({ rows, allFolders, folderCounts, search, sort, folder });
 }
-async function action9({ request }) {
+async function action10({ request }) {
   let formData = await request.formData();
   if (formData.get("intent") === "removeFavorite") {
     let kolId = String(formData.get("kolId") ?? "");
@@ -13640,9 +13772,10 @@ function FavoritesPage() {
 // app/routes/_app.kols.new.tsx
 var app_kols_new_exports = {};
 __export(app_kols_new_exports, {
-  action: () => action10,
+  action: () => action11,
   default: () => KolCreatePage
 });
+init_mock_api();
 import {
   Alert as Alert5,
   Avatar as Avatar10,
@@ -13671,7 +13804,7 @@ function parseHandle(url) {
   let parts = raw.split("/").filter(Boolean);
   return (parts[parts.length - 1] ?? "").replace("@", "");
 }
-async function action10({ request }) {
+async function action11({ request }) {
   let formData = await request.formData(), intent = String(formData.get("intent") ?? "create"), displayName = String(formData.get("displayName") ?? "").trim(), gender = String(formData.get("gender") ?? "\u5176\u4ED6"), age = Number(formData.get("age") ?? 0), phone = String(formData.get("contactPhone") ?? "").trim(), email = String(formData.get("email") ?? "").trim(), tagsRaw = String(formData.get("tagsInput") ?? ""), socialsRaw = String(formData.get("socialsJson") ?? "[]"), avatarUrl = String(formData.get("avatarUrl") ?? "").trim(), description = String(formData.get("description") ?? "").trim(), internalComments = String(formData.get("internalComments") ?? "").trim(), paymentMethod = formData.get("paymentMethod"), engagementRate = Number(formData.get("engagementRate") ?? 0), exposureRate = Number(formData.get("exposureRate") ?? 0), audienceMale = Number(formData.get("audienceMale") ?? 0), audienceFemale = Number(formData.get("audienceFemale") ?? 100 - audienceMale), audienceAge = String(formData.get("audienceAge") ?? "").trim(), introduction = String(formData.get("introduction") ?? "").trim();
   if (!displayName)
     return json15({ error: "KOL \u540D\u7A31\u70BA\u5FC5\u586B" }, { status: 400 });
@@ -14373,10 +14506,11 @@ function KolCreatePage() {
 // app/routes/_app.settings.tsx
 var app_settings_exports = {};
 __export(app_settings_exports, {
-  action: () => action11,
+  action: () => action12,
   default: () => SettingsRoute,
   loader: () => loader14
 });
+init_mock_api();
 import {
   ActionIcon as ActionIcon5,
   Avatar as Avatar11,
@@ -14464,7 +14598,7 @@ async function loader14({ request }) {
     currentUserRole: "admin"
   });
 }
-async function action11({ request }) {
+async function action12({ request }) {
   let formData = await request.formData(), intent = String(formData.get("intent") ?? ""), url = new URL(request.url);
   if (intent.startsWith("brand.")) {
     if (intent === "brand.add") {
@@ -17015,7 +17149,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-JMNJOZTK.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-S2S6JEDU.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-GKPSU2GY.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-24NMI776.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-BOIUNWQZ.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-OLJ74EP6.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-G4UARI2F.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-RDNZHFZ7.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-YEEWRVXB.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-4BJM725H.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-4TGHOWMA.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-HZIFP2TZ.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-L4Y7IOZX.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-Q2RBBJYY.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-5CSC4K5N.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-KLFMAX6R.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-KMV4676X.js", imports: ["/build/_shared/chunk-NNH5CGJ5.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "018f6f42", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774602287167 }, url: "/build/manifest-018F6F42.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-JMNJOZTK.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-S2S6JEDU.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-GKPSU2GY.js", imports: ["/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-FNGSD2EA.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-ZGAN2A5B.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-Q4E3X3PT.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-NB5U2VTK.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-53SGY6CV.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-EMMUGV47.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-IC3MZWRM.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-ZLR2U6CY.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-S3L77JIN.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-HQRGP3TE.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-4QW5PISH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-NMWYVUJI.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-U63CV5YS.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-MGATQNB4.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-DPI5I7LX.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "919b1068", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774603379856 }, url: "/build/manifest-919B1068.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {
