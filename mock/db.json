@@ -612,6 +612,17 @@
                 "engagementRate": 5.5
               },
               "id": "perf_1773304109095"
+            },
+            {
+              "title": "IG限動",
+              "metrics": {
+                "impressions": 0,
+                "reach": 0,
+                "likes": 0,
+                "comments": 0,
+                "engagementRate": 0
+              },
+              "id": "perf_1774595331587"
             }
           ],
           "reviews": [

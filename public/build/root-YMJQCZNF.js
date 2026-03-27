@@ -6,7 +6,7 @@ import {
   Stack,
   Text,
   Title
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Links,
@@ -289,4 +289,4 @@ export {
   App as default,
   links
 };
-//# sourceMappingURL=/build/root-OBX4HXJB.js.map
+//# sourceMappingURL=/build/root-YMJQCZNF.js.map

@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
   Title
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Link,
@@ -761,4 +761,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   InsertionOrderListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.insertion-orders._index-7D52TDZR.js.map
+//# sourceMappingURL=/build/routes/_app.insertion-orders._index-M5MCUKS7.js.map

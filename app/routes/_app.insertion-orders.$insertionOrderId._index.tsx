@@ -18,6 +18,9 @@ import {
   Textarea,
   TextInput,
   Title,
+  FileInput,
+  Loader,
+  Progress,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BarChart } from "@mantine/charts";
@@ -60,13 +63,11 @@ const TAB_LABELS: Record<string, string> = {
 
 function KolCollabCard({
   kol,
-  onOpenUpload,
-  onOpenPerf,
+  onOpenUploadAndPerf,
   onOpenReview,
 }: {
   kol: OrderKolCollaboration;
-  onOpenUpload: (k: { id: string; name: string }) => void;
-  onOpenPerf: (k: { id: string; name: string }) => void;
+  onOpenUploadAndPerf: (k: { id: string; name: string }) => void;
   onOpenReview: (k: { id: string; name: string }) => void;
 }) {
   const [activeTab, setActiveTab] = useState<"actions" | "performance" | "reviews">("actions");
@@ -146,17 +147,9 @@ function KolCollabCard({
               type="button"
               size="xs"
               variant="light"
-              onClick={() => onOpenUpload(kol)}
+              onClick={() => onOpenUploadAndPerf(kol)}
             >
-              📸 上傳貼文
-            </Button>
-            <Button
-              type="button"
-              size="xs"
-              variant="light"
-              onClick={() => onOpenPerf(kol)}
-            >
-              📊 新增成效
+              📸 上傳貼文成效
             </Button>
             <Button
               type="button"
@@ -400,9 +393,7 @@ export default function InsertionOrderDetailPage() {
   // Modal states
   const [reviewOpened, { open: openReview, close: closeReview }] =
     useDisclosure(false);
-  const [perfOpened, { open: openPerf, close: closePerf }] =
-    useDisclosure(false);
-  const [uploadOpened, { open: openUpload, close: closeUpload }] =
+  const [perfModalOpened, { open: openPerfModal, close: closePerfModal }] =
     useDisclosure(false);
 
   const [selectedKol, setSelectedKol] = useState<{
@@ -436,14 +427,9 @@ export default function InsertionOrderDetailPage() {
     openReview();
   };
 
-  const handleOpenPerf = (kol: { id: string; name: string }) => {
+  const handleOpenUploadAndPerf = (kol: { id: string; name: string }) => {
     setSelectedKol(kol);
-    openPerf();
-  };
-
-  const handleOpenUpload = (kol: { id: string; name: string }) => {
-    setSelectedKol(kol);
-    openUpload();
+    openPerfModal();
   };
 
   const isSubmitting = fetcher.state !== "idle";
@@ -678,8 +664,7 @@ export default function InsertionOrderDetailPage() {
             <KolCollabCard
               key={kol.id}
               kol={kol}
-              onOpenUpload={handleOpenUpload}
-              onOpenPerf={handleOpenPerf}
+              onOpenUploadAndPerf={handleOpenUploadAndPerf}
               onOpenReview={handleOpenReview}
             />
           ))}
@@ -687,75 +672,13 @@ export default function InsertionOrderDetailPage() {
       </Card>
 
       {/* ── Modals ── */}
-      <Modal
-        id="upload-modal"
-        opened={uploadOpened}
-        onClose={closeUpload}
-        title={`上傳貼文圖片 - ${selectedKol?.name}`}
-      >
-        <Stack gap="md">
-          <TextInput label="貼文連結" placeholder="https://instagram.com/p/xxxxx" />
-          <TextInput label="圖片連結" placeholder="可先貼上圖片 URL" />
-          <Group justify="flex-end">
-            <Button type="button" variant="default" onClick={closeUpload}>
-              取消
-            </Button>
-            <Button type="button" color="blue" onClick={closeUpload}>
-              儲存
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
-
-      <Modal
-        id="perf-modal"
-        opened={perfOpened}
-        onClose={closePerf}
-        title={`新增成效 - ${selectedKol?.name}`}
-        size="lg"
-      >
-        <fetcher.Form method="post" onSubmit={closePerf}>
-          <input type="hidden" name="intent" value="performance" />
-          <input type="hidden" name="kolId" value={selectedKol?.id} />
-          <Stack gap="md">
-            <Card withBorder p="sm" bg="blue.0" style={{ borderColor: "#339af0" }}>
-              <Stack gap={5}>
-                <Group gap={5}>
-                  <Text size="sm" fw={700} c="blue">
-                    🤖 AI OCR 智能識別
-                  </Text>
-                  <Badge variant="dot" size="xs">
-                    Auto-fill
-                  </Badge>
-                </Group>
-                <Text size="xs" c="dimmed">
-                  上傳後台成效截圖，AI 將自動為您提取數據並填入下方表單。
-                </Text>
-                <Button type="button" size="xs" mt={5} color="blue">
-                  📸 掃描截圖並帶入數據
-                </Button>
-              </Stack>
-            </Card>
-
-            <TextInput label="內容標題" name="title" defaultValue="IG 貼文" required />
-            <SimpleGrid cols={2}>
-              <TextInput label="曝光數" name="impressions" type="number" required />
-              <TextInput label="觸及人數" name="reach" type="number" required />
-              <TextInput label="互動次數 (按讚)" name="likes" type="number" required />
-              <TextInput label="留言數" name="comments" type="number" required />
-            </SimpleGrid>
-            <Textarea label="備註" name="notes" rows={3} />
-            <Group justify="flex-end">
-              <Button type="button" variant="default" onClick={closePerf}>
-                取消
-              </Button>
-              <Button color="blue" type="submit" loading={isSubmitting}>
-                儲存數據
-              </Button>
-            </Group>
-          </Stack>
-        </fetcher.Form>
-      </Modal>
+      <PerformanceModal 
+        opened={perfModalOpened} 
+        onClose={closePerfModal} 
+        insertionOrder={insertionOrder} 
+        selectedKol={selectedKol} 
+        fetcher={fetcher} 
+      />
 
       <Modal
         id="review-modal"
@@ -797,5 +720,197 @@ export default function InsertionOrderDetailPage() {
         </fetcher.Form>
       </Modal>
     </Stack >
+  );
+}
+
+function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher }: any) {
+  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "recognizing" | "success">("idle");
+  
+  // Simulated form state
+  const [metrics, setMetrics] = useState({
+    impressions: 0,
+    reach: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    views: 0,
+  });
+
+  const handleFileChange = (files: File[]) => {
+    if (files.length === 0) return;
+    setUploadState("uploading");
+    setTimeout(() => {
+      setUploadState("recognizing");
+      setTimeout(() => {
+        setUploadState("success");
+        setMetrics({
+          impressions: 12500,
+          reach: 8400,
+          likes: 1200,
+          comments: 45,
+          shares: 20,
+          saves: 150,
+          views: 9500,
+        });
+      }, 2000);
+    }, 1000);
+  };
+
+  const engagementRate = metrics.impressions > 0 
+    ? ((metrics.likes + metrics.comments + metrics.shares + metrics.saves) / metrics.impressions * 100).toFixed(2) 
+    : "0.00";
+
+  const closeAndReset = () => {
+    onClose();
+    setTimeout(() => {
+      setUploadState("idle");
+      setMetrics({
+        impressions: 0,
+        reach: 0,
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        saves: 0,
+        views: 0,
+      });
+    }, 300);
+  };
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={closeAndReset}
+      title={<Text fw={600} size="lg">新增成效數據</Text>}
+      size="700px"
+    >
+      <Text size="sm" c="dimmed" mb="lg">上傳成效截圖，AI 將自動辨識數據</Text>
+      
+      <fetcher.Form method="post" onSubmit={closeAndReset}>
+        <input type="hidden" name="intent" value="performance" />
+        <input type="hidden" name="kolId" value={selectedKol?.id} />
+        
+        <Stack gap="xl">
+          {/* Section 1: Context */}
+          <Card withBorder p="md" radius="md" bg="gray.0">
+             <SimpleGrid cols={3}>
+                <Stack gap={0}>
+                  <Text size="xs" c="dimmed">案件</Text>
+                  <Text size="sm" fw={600}>#{insertionOrder.orderNo} {insertionOrder.projectName}</Text>
+                </Stack>
+                <Stack gap={0}>
+                  <Text size="xs" c="dimmed">KOL</Text>
+                  <Text size="sm" fw={600}>{selectedKol?.name}</Text>
+                </Stack>
+                <Select
+                  label="曝光點"
+                  name="title"
+                  defaultValue="IG貼文"
+                  data={["IG貼文", "IG限動", "IG Reels", "FB貼文", "YouTube影片"]}
+                  size="xs"
+                />
+             </SimpleGrid>
+          </Card>
+
+          {/* Section 2 & 3: Upload & AI */}
+          <Stack gap="xs">
+            <Group justify="space-between">
+              <Box>
+                <Text fw={600} size="sm">上傳成效截圖</Text>
+                <Text size="xs" c="dimmed">成效截圖可能很長，支援上傳多張圖片</Text>
+              </Box>
+            </Group>
+            
+            {uploadState === "idle" && (
+              <Box 
+                style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 30, textAlign: "center", cursor: "pointer", position: "relative" }}
+              >
+                <FileInput 
+                  multiple 
+                  accept="image/*" 
+                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                  onChange={handleFileChange}
+                />
+                <Text size="sm" c="blue" fw={500}>點擊或拖曳圖片至此處</Text>
+              </Box>
+            )}
+
+            {uploadState === "uploading" && (
+              <Card withBorder p="md" ta="center">
+                 <Loader size="sm" mb="sm" mx="auto" />
+                 <Text size="sm">圖片上傳中...</Text>
+                 <Progress value={75} mt="md" animated />
+              </Card>
+            )}
+
+            {uploadState === "recognizing" && (
+              <Card withBorder p="md" ta="center" bg="blue.0" style={{ borderColor: "#339af0" }}>
+                 <Loader color="blue" type="bars" size="sm" mb="sm" mx="auto" />
+                 <Text size="sm" fw={600} c="blue">🤖 AI 正在辨識中...</Text>
+                 <Text size="xs" c="dimmed">正在從截圖提取數據，請稍候</Text>
+              </Card>
+            )}
+
+            {uploadState === "success" && (
+              <Card withBorder p="md" ta="center" bg="green.0" style={{ borderColor: "#40c057" }}>
+                 <Group justify="center" gap="xs">
+                   <IconCheck size={20} color="#40c057" />
+                   <Text size="sm" fw={600} c="green.9">✅ AI 辨識完成</Text>
+                 </Group>
+                 <Text size="xs" c="dimmed">成功提取 7 項數據</Text>
+              </Card>
+            )}
+          </Stack>
+
+          {/* Section 4: Data fields */}
+          <Stack gap="xs">
+            <Text fw={600} size="sm">數據確認與修改</Text>
+            <SimpleGrid cols={2} spacing="md">
+              <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({...m, impressions: Number(v)}))} 
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({...m, reach: Number(v)}))}
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({...m, likes: Number(v)}))}
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+               />
+              <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({...m, comments: Number(v)}))} 
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({...m, shares: Number(v)}))} 
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({...m, saves: Number(v)}))} 
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({...m, views: Number(v)}))} 
+                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+              />
+              
+              <TextInput 
+                label="互動率 (系統運算)" 
+                value={`${engagementRate}%`} 
+                readOnly 
+                variant="filled" 
+                styles={{ input: { backgroundColor: 'var(--mantine-color-gray-1)', fontWeight: 600 } }}
+              />
+            </SimpleGrid>
+          </Stack>
+
+          <Group justify="space-between" mt="md">
+            <Button type="button" variant="default" onClick={closeAndReset}>取消</Button>
+            <Button color="blue" type="submit" loading={fetcher.state !== "idle"}>儲存成效</Button>
+          </Group>
+        </Stack>
+      </fetcher.Form>
+    </Modal>
   );
 }

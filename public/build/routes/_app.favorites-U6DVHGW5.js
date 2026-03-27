@@ -13,7 +13,7 @@ import {
   Stack,
   Text,
   Title
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Form,
@@ -518,4 +518,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   FavoritesPage as default
 };
-//# sourceMappingURL=/build/routes/_app.favorites-KUGCTJ5V.js.map
+//# sourceMappingURL=/build/routes/_app.favorites-U6DVHGW5.js.map

@@ -20,7 +20,7 @@ import {
   TextInput,
   Title,
   useDisclosure
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Form,
@@ -343,4 +343,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals._index-R5YIPVDV.js.map
+//# sourceMappingURL=/build/routes/_app.proposals._index-RBS3JR44.js.map

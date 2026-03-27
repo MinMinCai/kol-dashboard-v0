@@ -9,7 +9,7 @@ import {
   Stack,
   TextInput,
   Title
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Form,
@@ -135,4 +135,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalCreatePage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals.new-STJGBEEZ.js.map
+//# sourceMappingURL=/build/routes/_app.proposals.new-ITTUYJID.js.map

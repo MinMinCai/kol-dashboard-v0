@@ -24,7 +24,7 @@ import {
   Textarea,
   Title,
   useDisclosure
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Form,
@@ -1014,4 +1014,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ProposalDetailPage as default
 };
-//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-Y3PFWPU3.js.map
+//# sourceMappingURL=/build/routes/_app.proposals.$proposalId-PRZBIEGU.js.map

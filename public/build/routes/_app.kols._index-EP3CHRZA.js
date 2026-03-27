@@ -16,7 +16,7 @@ import {
   Table,
   Text,
   Title
-} from "/build/_shared/chunk-EK4DUNM5.js";
+} from "/build/_shared/chunk-MZUJIQGU.js";
 import "/build/_shared/chunk-B43JI2TA.js";
 import {
   Form,
@@ -1292,4 +1292,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   KolListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.kols._index-QM5VVINX.js.map
+//# sourceMappingURL=/build/routes/_app.kols._index-EP3CHRZA.js.map
