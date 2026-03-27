@@ -276,9 +276,11 @@ export default function ReportManagementPage() {
                       </Text>
                     </Box>
                     <Group>
-                      <Button variant="subtle" size="sm" component={Link} to={`/insertion-orders/${order.id}`}>
-                        查看案件詳情
-                      </Button>
+                      <Link to={`/insertion-orders/${order.id}`} style={{ textDecoration: 'none' }}>
+                        <Button variant="subtle" size="sm">
+                          查看案件詳情
+                        </Button>
+                      </Link>
                       <Button size="sm" variant="outline" onClick={() => handleOpenGenModal(order)}>
                         + 生成新報告
                       </Button>

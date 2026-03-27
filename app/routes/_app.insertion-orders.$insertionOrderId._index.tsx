@@ -13,7 +13,6 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  TagsInput,
   Text,
   Textarea,
   TextInput,
@@ -21,6 +20,7 @@ import {
   FileInput,
   Loader,
   Progress,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BarChart } from "@mantine/charts";
@@ -254,21 +254,29 @@ function KolCollabCard({
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const insertionOrderId = params.insertionOrderId ?? "";
-  const [insertionOrder, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
-    getInsertionOrder(insertionOrderId),
-    listBrandCatalog(),
-    listIndustryCatalog(),
-    listTeamMembers(),
-  ]);
+  try {
+    const [insertionOrder, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
+      getInsertionOrder(insertionOrderId).catch(() => null),
+      listBrandCatalog().catch(() => []),
+      listIndustryCatalog().catch(() => []),
+      listTeamMembers().catch(() => []),
+    ]);
 
-  if (!insertionOrder) throw new Response("Not Found", { status: 404 });
+    if (!insertionOrder) {
+      throw new Response("Not Found", { status: 404 });
+    }
 
-  const salesOwners = teamMembers.filter(m => m.group === 'AE').map(m => m.name);
-  const kolManagers = teamMembers.filter(m => m.group === 'KOL').map(m => m.name);
-  const brands = brandCatalog.map(b => b.name);
-  const industries = industryCatalog.map(i => i.name);
+    const salesOwners = (teamMembers ?? []).filter(m => m.group === 'AE').map(m => m.name);
+    const kolManagers = (teamMembers ?? []).filter(m => m.group === 'KOL').map(m => m.name);
+    const brands = (brandCatalog ?? []).map(b => b.name);
+    const industries = (industryCatalog ?? []).map(i => i.name);
 
-  return json({ insertionOrder, salesOwners, kolManagers, brands, industries });
+    return json({ insertionOrder, salesOwners, kolManagers, brands, industries });
+  } catch (error: any) {
+    if (error instanceof Response) throw error;
+    console.error("Loader error:", error);
+    throw new Response(error.message || "Internal Server Error", { status: 500 });
+  }
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -724,7 +732,13 @@ export default function InsertionOrderDetailPage() {
 }
 
 function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher }: any) {
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "recognizing" | "success">("idle");
+  const [activeTab, setActiveTab] = useState<"post" | "performance">("performance");
+  
+  const [postUploadState, setPostUploadState] = useState<"idle" | "uploading" | "success">("idle");
+  const [postImages, setPostImages] = useState<string[]>([]);
+
+  const [perfUploadState, setPerfUploadState] = useState<"idle" | "uploading" | "recognizing" | "success">("idle");
+  const [perfImages, setPerfImages] = useState<string[]>([]);
   
   // Simulated form state
   const [metrics, setMetrics] = useState({
@@ -737,13 +751,30 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
     views: 0,
   });
 
-  const handleFileChange = (files: File[]) => {
+  const handlePostFileChange = (files: File[]) => {
     if (files.length === 0) return;
-    setUploadState("uploading");
+    setPostUploadState("uploading");
+    
+    // Simulate converting files to object URLs for preview
+    const urls = files.map(f => URL.createObjectURL(f));
+    setPostImages(urls);
+    
     setTimeout(() => {
-      setUploadState("recognizing");
+      setPostUploadState("success");
+    }, 1500);
+  };
+
+  const handlePerfFileChange = (files: File[]) => {
+    if (files.length === 0) return;
+    setPerfUploadState("uploading");
+    
+    const urls = files.map(f => URL.createObjectURL(f));
+    setPerfImages(urls);
+
+    setTimeout(() => {
+      setPerfUploadState("recognizing");
       setTimeout(() => {
-        setUploadState("success");
+        setPerfUploadState("success");
         setMetrics({
           impressions: 12500,
           reach: 8400,
@@ -764,7 +795,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
   const closeAndReset = () => {
     onClose();
     setTimeout(() => {
-      setUploadState("idle");
+      setActiveTab("performance");
+      setPostUploadState("idle");
+      setPostImages([]);
+      setPerfUploadState("idle");
+      setPerfImages([]);
       setMetrics({
         impressions: 0,
         reach: 0,
@@ -784,8 +819,6 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
       title={<Text fw={600} size="lg">新增成效數據</Text>}
       size="700px"
     >
-      <Text size="sm" c="dimmed" mb="lg">上傳成效截圖，AI 將自動辨識數據</Text>
-      
       <fetcher.Form method="post" onSubmit={closeAndReset}>
         <input type="hidden" name="intent" value="performance" />
         <input type="hidden" name="kolId" value={selectedKol?.id} />
@@ -812,98 +845,203 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
              </SimpleGrid>
           </Card>
 
-          {/* Section 2 & 3: Upload & AI */}
-          <Stack gap="xs">
-            <Group justify="space-between">
-              <Box>
-                <Text fw={600} size="sm">上傳成效截圖</Text>
-                <Text size="xs" c="dimmed">成效截圖可能很長，支援上傳多張圖片</Text>
-              </Box>
-            </Group>
-            
-            {uploadState === "idle" && (
-              <Box 
-                style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 30, textAlign: "center", cursor: "pointer", position: "relative" }}
-              >
-                <FileInput 
-                  multiple 
-                  accept="image/*" 
-                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
-                  onChange={handleFileChange}
-                />
-                <Text size="sm" c="blue" fw={500}>點擊或拖曳圖片至此處</Text>
-              </Box>
+          {/* Sections: Tabs */}
+          <Box>
+            <Box style={{ borderBottom: "1px solid var(--mantine-color-default-border)", marginBottom: "16px" }}>
+              <Group gap={0}>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("post")}
+                  style={{
+                    padding: "8px 16px",
+                    border: "none",
+                    borderBottom: activeTab === "post" ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
+                    background: "none",
+                    cursor: "pointer",
+                    color: activeTab === "post" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-dimmed)",
+                    fontWeight: activeTab === "post" ? 600 : 400,
+                    fontSize: "var(--mantine-font-size-sm)",
+                    fontFamily: "inherit",
+                    transition: "color 0.1s, border-color 0.1s",
+                  }}
+                >
+                  貼文圖片
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("performance")}
+                  style={{
+                    padding: "8px 16px",
+                    border: "none",
+                    borderBottom: activeTab === "performance" ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
+                    background: "none",
+                    cursor: "pointer",
+                    color: activeTab === "performance" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-dimmed)",
+                    fontWeight: activeTab === "performance" ? 600 : 400,
+                    fontSize: "var(--mantine-font-size-sm)",
+                    fontFamily: "inherit",
+                    transition: "color 0.1s, border-color 0.1s",
+                  }}
+                >
+                  成效截圖
+                </button>
+              </Group>
+            </Box>
+
+            {/* Content for Post Images */}
+            {activeTab === "post" && (
+              <Stack gap="md">
+                {postUploadState === "idle" && (
+                  <Box 
+                    style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
+                  >
+                    <FileInput 
+                      multiple 
+                      accept="image/*" 
+                      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                      onChange={handlePostFileChange}
+                    />
+                    <Text size="md" fw={500} c="dimmed">
+                      <Text span c="blue" inherit>點擊上傳</Text> 或拖曳檔案至此
+                    </Text>
+                    <Text size="xs" c="dimmed" mt={4}>支援上傳多張貼文圖片</Text>
+                  </Box>
+                )}
+
+                {postUploadState === "uploading" && (
+                  <Card withBorder p="xl" ta="center">
+                     <Loader size="sm" mb="sm" mx="auto" />
+                     <Text size="sm">圖片上傳中...</Text>
+                     <Progress value={75} mt="md" animated />
+                  </Card>
+                )}
+
+                {postUploadState === "success" && (
+                  <Group gap="sm">
+                    {postImages.map((src, i) => (
+                      <Image key={i} src={src} w={100} h={100} radius="md" style={{ objectFit: 'cover' }} />
+                    ))}
+                    <Box style={{ width: 100, height: 100, border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+                       <FileInput 
+                          multiple 
+                          accept="image/*" 
+                          style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                          onChange={handlePostFileChange}
+                        />
+                       <Text size="xl" c="dimmed">+</Text>
+                    </Box>
+                  </Group>
+                )}
+              </Stack>
             )}
 
-            {uploadState === "uploading" && (
-              <Card withBorder p="md" ta="center">
-                 <Loader size="sm" mb="sm" mx="auto" />
-                 <Text size="sm">圖片上傳中...</Text>
-                 <Progress value={75} mt="md" animated />
-              </Card>
+            {/* Content for Performance Screenshots */}
+            {activeTab === "performance" && (
+              <Stack gap="md">
+                {perfUploadState === "idle" && (
+                  <Box 
+                    style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
+                  >
+                    <FileInput 
+                      multiple 
+                      accept="image/*" 
+                      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                      onChange={handlePerfFileChange}
+                    />
+                    <Text size="md" fw={500} c="dimmed">
+                      <Text span c="blue" inherit>點擊上傳</Text> 或拖曳檔案至此
+                    </Text>
+                    <Text size="xs" c="dimmed" mt={4}>成效截圖可能很長，支援上傳多張圖片</Text>
+                  </Box>
+                )}
+
+                {perfUploadState === "uploading" && (
+                  <Card withBorder p="xl" ta="center">
+                     <Loader size="sm" mb="sm" mx="auto" />
+                     <Text size="sm">圖片上傳中...</Text>
+                     <Progress value={75} mt="md" animated />
+                  </Card>
+                )}
+
+                {['recognizing', 'success'].includes(perfUploadState) && (
+                  <Group gap="sm" mb="sm">
+                    {perfImages.map((src, i) => (
+                      <Image key={i} src={src} w={100} h={100} radius="md" style={{ objectFit: 'cover' }} />
+                    ))}
+                  </Group>
+                )}
+
+                {perfUploadState === "recognizing" && (
+                  <Card p="md" radius="md" bg="blue.0">
+                     <Group gap="sm">
+                       <Loader color="blue" size="sm" />
+                       <Text size="sm" fw={600} c="blue.9">✨ 🤖 AI 正在辨識中...</Text>
+                     </Group>
+                  </Card>
+                )}
+
+                {perfUploadState === "success" && (
+                  <Card p="md" radius="md" bg="blue.0" style={{ opacity: 0.8 }}>
+                     <Group gap="sm">
+                       <IconCheck size={20} color="var(--mantine-color-blue-filled)" />
+                       <Text size="sm" fw={600} c="blue.9">✨ 🤖 AI 辨識完成，請確認以下數據</Text>
+                     </Group>
+                  </Card>
+                )}
+
+                {/* Section 4: Data fields (Visible only under Performance Tab for AI connection) */}
+                <Stack gap="xs" mt="sm">
+                  <SimpleGrid cols={2} spacing="md">
+                    <NumberInput label="上線日期 (選填)" placeholder="YYYY / MM / DD" disabled={perfUploadState === 'recognizing'} />
+                    <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({...m, reach: Number(v)}))}
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({...m, impressions: Number(v)}))} 
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({...m, likes: Number(v)}))}
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                     />
+                    <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({...m, comments: Number(v)}))} 
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({...m, shares: Number(v)}))} 
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({...m, saves: Number(v)}))} 
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({...m, views: Number(v)}))} 
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+                    
+                    <TextInput 
+                      label="互動率 (系統運算)" 
+                      value={`${engagementRate}%`} 
+                      readOnly 
+                      variant="filled" 
+                      styles={{ input: { backgroundColor: 'var(--mantine-color-gray-1)', fontWeight: 600 } }}
+                    />
+                  </SimpleGrid>
+                </Stack>
+              </Stack>
             )}
 
-            {uploadState === "recognizing" && (
-              <Card withBorder p="md" ta="center" bg="blue.0" style={{ borderColor: "#339af0" }}>
-                 <Loader color="blue" type="bars" size="sm" mb="sm" mx="auto" />
-                 <Text size="sm" fw={600} c="blue">🤖 AI 正在辨識中...</Text>
-                 <Text size="xs" c="dimmed">正在從截圖提取數據，請稍候</Text>
-              </Card>
-            )}
-
-            {uploadState === "success" && (
-              <Card withBorder p="md" ta="center" bg="green.0" style={{ borderColor: "#40c057" }}>
-                 <Group justify="center" gap="xs">
-                   <IconCheck size={20} color="#40c057" />
-                   <Text size="sm" fw={600} c="green.9">✅ AI 辨識完成</Text>
-                 </Group>
-                 <Text size="xs" c="dimmed">成功提取 7 項數據</Text>
-              </Card>
-            )}
-          </Stack>
-
-          {/* Section 4: Data fields */}
-          <Stack gap="xs">
-            <Text fw={600} size="sm">數據確認與修改</Text>
-            <SimpleGrid cols={2} spacing="md">
-              <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({...m, impressions: Number(v)}))} 
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({...m, reach: Number(v)}))}
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({...m, likes: Number(v)}))}
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-               />
-              <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({...m, comments: Number(v)}))} 
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({...m, shares: Number(v)}))} 
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({...m, saves: Number(v)}))} 
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({...m, views: Number(v)}))} 
-                rightSection={uploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                styles={{ input: { borderColor: uploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-              />
-              
-              <TextInput 
-                label="互動率 (系統運算)" 
-                value={`${engagementRate}%`} 
-                readOnly 
-                variant="filled" 
-                styles={{ input: { backgroundColor: 'var(--mantine-color-gray-1)', fontWeight: 600 } }}
-              />
-            </SimpleGrid>
-          </Stack>
+          </Box>
 
           <Group justify="space-between" mt="md">
             <Button type="button" variant="default" onClick={closeAndReset}>取消</Button>
