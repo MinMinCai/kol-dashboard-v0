@@ -1069,9 +1069,9 @@
       "kolManager": "John",
       "kolCount": 2,
       "status": "planned",
-      "totalBudget": 299998,
+      "totalBudget": 300000,
       "tax": 15000,
-      "totalWithTax": 314998,
+      "totalWithTax": 315000,
       "totalReach": 0,
       "totalEngagement": 0,
       "avgRating": 0,
@@ -1112,7 +1112,7 @@
       ],
       "startDate": "2026-03-27",
       "endDate": "2026-04-30",
-      "notes": "春季專案",
+      "notes": "春季專案\ninternal:合作期限再確認",
       "documentUrl": ""
     }
   ],

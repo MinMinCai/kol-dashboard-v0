@@ -371,13 +371,31 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return json({ success: false });
 }
 
+function parseNotes(raw: string | undefined | null): { description: string; internalNotes: string } {
+  if (!raw) return { description: "", internalNotes: "" };
+  const lines = raw.split("\n");
+  const descLines: string[] = [];
+  const noteLines: string[] = [];
+  for (const line of lines) {
+    if (line.startsWith("internal:")) {
+      noteLines.push(line.slice("internal:".length));
+    } else {
+      descLines.push(line);
+    }
+  }
+  return {
+    description: descLines.join("\n").trim(),
+    internalNotes: noteLines.join("\n").trim(),
+  };
+}
+
 export default function InsertionOrderDetailPage() {
   const { insertionOrder, salesOwners, kolManagers, brands, industries } = useLoaderData<typeof loader>();
   const collaborations = insertionOrder.collaborations ?? [];
   const fetcher = useFetcher();
   const submit = useSubmit();
   const [isEditing, setIsEditing] = useState(false);
-
+  const { description, internalNotes } = parseNotes((insertionOrder as any).notes);
 
   // Modal states
   const [reviewOpened, { open: openReview, close: closeReview }] =
@@ -525,6 +543,26 @@ export default function InsertionOrderDetailPage() {
                   >
                     下載委刊單合約
                   </Button>
+                )}
+                {description && (
+                  <Box mt="xs">
+                    <Text size="xs" fw={700} c="dimmed" mb={4}>專案說明</Text>
+                    <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>{description}</Text>
+                  </Box>
+                )}
+                {internalNotes && (
+                  <Box
+                    mt="xs"
+                    p="sm"
+                    style={{
+                      background: "var(--mantine-color-gray-0)",
+                      border: "1px solid var(--mantine-color-gray-3)",
+                      borderRadius: 6,
+                    }}
+                  >
+                    <Text size="xs" fw={700} c="dimmed" mb={4}>🔒 內部備註</Text>
+                    <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap" }}>{internalNotes}</Text>
+                  </Box>
                 )}
               </Stack>
             </Grid.Col>
