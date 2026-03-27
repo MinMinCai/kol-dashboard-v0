@@ -267,8 +267,8 @@ export default function ReportManagementPage() {
 
             return (
               <Card key={order.id} withBorder shadow="sm" radius="md" p={0}>
-                {/* 1. Campaign Header */}
-                <Box p="md" style={{ borderBottom: "1px solid #eee" }}>
+                {/* 1. Campaign Header - All action buttons consolidated here */}
+                <Box p="md" style={{ borderBottom: hasDraft || hasOfficial ? "1px solid #eee" : "none" }}>
                   <Group justify="space-between" align="flex-start">
                     <Box>
                       <Text fw={700} size="lg">📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
@@ -276,13 +276,15 @@ export default function ReportManagementPage() {
                         客戶: {order.clientName} | 日期: {formatShortDate(order.startDate)} | 合作 KOL: {order.kolCount ?? kols.length} 位
                       </Text>
                     </Box>
-                    <Group>
+                    {/* ALL action buttons in top-right */}
+                    <Group gap="xs" wrap="nowrap">
                       <Link to={`/insertion-orders/${order.id}`} style={{ textDecoration: 'none' }}>
-                        <Button variant="subtle" size="sm">
-                          查看案件詳情
-                        </Button>
+                        <Button variant="subtle" size="sm">查看案件詳情</Button>
                       </Link>
-                      <Button size="sm" variant="outline" onClick={() => handleOpenGenModal(order)}>
+                      <Button size="sm" variant="outline" onClick={() => handleOpenUploadModal(order)}>
+                        {hasOfficial ? "更新正式版" : "+ 上傳正式版"}
+                      </Button>
+                      <Button size="sm" variant="filled" onClick={() => handleOpenGenModal(order)}>
                         + 生成新報告
                       </Button>
                     </Group>
@@ -292,16 +294,13 @@ export default function ReportManagementPage() {
                 {/* 2. Reports Section */}
                 <Box p="md" bg="#fdfdfd">
                   {!hasDraft && !hasOfficial ? (
-                    // Empty State
+                    // Empty State - no duplicate buttons (they live in the header now)
                     <Stack align="center" py="xl" gap="sm">
                       <Text c="dimmed" fw={500}>尚未生成結案報告</Text>
                       {missingCount > 0 && (
                         <Badge color="yellow" variant="light" size="lg">⚠️ 提示: {missingCount} 位 KOL 尚未上傳成效</Badge>
                       )}
-                      <Group gap="sm" mt="sm">
-                        <Button onClick={() => handleOpenGenModal(order)}>開始生成報告</Button>
-                        <Button variant="outline" color="blue" onClick={() => handleOpenUploadModal(order)}>+ 上傳正式版</Button>
-                      </Group>
+                      <Text size="sm" c="dimmed">請點擊右上角的「+ 生成新報告」開始生成</Text>
                     </Stack>
                   ) : (
                     <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
@@ -363,17 +362,6 @@ export default function ReportManagementPage() {
                     </SimpleGrid>
                   )}
                 </Box>
-
-                {/* 3. Bottom Action Bar */}
-                {(hasDraft || hasOfficial) && (
-                  <Box p="sm" style={{ borderTop: "1px solid #eee", background: "#f8f9fa" }}>
-                    <Group justify="flex-end">
-                      <Button variant="default" size="sm" onClick={() => handleOpenUploadModal(order)}>
-                        {hasOfficial ? "更新正式版" : "+ 上傳正式版"}
-                      </Button>
-                    </Group>
-                  </Box>
-                )}
               </Card>
             );
           })}
