@@ -86,7 +86,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.reports.generate.tsx"
   );
-  import.meta.hot.lastModified = "1774606155076.0537";
+  import.meta.hot.lastModified = "1774856973302.5337";
 }
 function formatShortDate(date) {
   return date.slice(0, 7);
@@ -433,7 +433,7 @@ function ReportManagementPage() {
             lineNumber: 260,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Box, { p: "md", bg: "#fdfdfd", children: !hasDraft && !hasOfficial ? (
+          /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Box, { p: "md", bg: "transparent", children: !hasDraft && !hasOfficial ? (
             // Empty State - no duplicate buttons (they live in the header now)
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { align: "center", py: "xl", gap: "sm", children: [
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { c: "dimmed", fw: 500, children: "\u5C1A\u672A\u751F\u6210\u7D50\u6848\u5831\u544A" }, void 0, false, {
@@ -464,15 +464,15 @@ function ReportManagementPage() {
             base: 1,
             lg: 2
           }, spacing: "md", children: [
-            hasDraft && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, bg: "gray.0", radius: "sm", p: "sm", children: [
+            hasDraft && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, bg: "var(--mantine-color-gray-light)", radius: "sm", p: "sm", children: [
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: "sm", c: "dimmed", children: "\u7CFB\u7D71\u751F\u6210\uFF08\u8349\u7A3F\uFF09" }, void 0, false, {
                 fileName: "app/routes/_app.reports.generate.tsx",
                 lineNumber: 301,
                 columnNumber: 27
               }, this),
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: "xs", children: order.reports?.filter((r) => r.type === "draft").map((report) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", wrap: "nowrap", style: {
-                border: "1px solid #eaeaea",
-                background: "white",
+                border: "1px solid var(--mantine-color-default-border)",
+                background: "var(--mantine-color-body)",
                 padding: 12,
                 borderRadius: 8
               }, children: [
@@ -570,15 +570,15 @@ function ReportManagementPage() {
               lineNumber: 300,
               columnNumber: 36
             }, this),
-            hasOfficial && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, bg: "green.0", radius: "sm", p: "sm", children: [
-              /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: "sm", c: "green.8", children: "\u6B63\u5F0F\u7248\u672C" }, void 0, false, {
+            hasOfficial && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, bg: "var(--mantine-color-green-light)", radius: "sm", p: "sm", children: [
+              /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: "sm", c: "green", children: "\u6B63\u5F0F\u7248\u672C" }, void 0, false, {
                 fileName: "app/routes/_app.reports.generate.tsx",
                 lineNumber: 330,
                 columnNumber: 27
               }, this),
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: "xs", children: order.reports?.filter((r) => r.type === "official").map((report) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", wrap: "nowrap", style: {
-                border: "1px solid #b2f2bb",
-                background: "white",
+                border: "1px solid var(--mantine-color-green-outline)",
+                background: "var(--mantine-color-body)",
                 padding: 12,
                 borderRadius: 8
               }, children: [
@@ -1902,4 +1902,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ReportManagementPage as default
 };
-//# sourceMappingURL=/build/routes/_app.reports.generate-FBFUPTUH.js.map
+//# sourceMappingURL=/build/routes/_app.reports.generate-G7EXDE5M.js.map

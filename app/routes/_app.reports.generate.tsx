@@ -292,7 +292,7 @@ export default function ReportManagementPage() {
                 </Box>
 
                 {/* 2. Reports Section */}
-                <Box p="md" bg="#fdfdfd">
+                <Box p="md" bg="transparent">
                   {!hasDraft && !hasOfficial ? (
                     // Empty State - no duplicate buttons (they live in the header now)
                     <Stack align="center" py="xl" gap="sm">
@@ -306,11 +306,11 @@ export default function ReportManagementPage() {
                     <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
                       {/* Draft Section */}
                       {hasDraft && (
-                        <Card withBorder bg="gray.0" radius="sm" p="sm">
+                        <Card withBorder bg="var(--mantine-color-gray-light)" radius="sm" p="sm">
                           <Text size="sm" fw={600} mb="sm" c="dimmed">系統生成（草稿）</Text>
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid #eaeaea', background: 'white', padding: 12, borderRadius: 8 }}>
+                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-default-border)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
                                 <Group>
                                   <ThemeIcon size="lg" variant="light" color="gray"><IconFileTypePpt size={20} /></ThemeIcon>
                                   <Box>
@@ -334,11 +334,11 @@ export default function ReportManagementPage() {
 
                       {/* Official Section */}
                       {hasOfficial && (
-                        <Card withBorder bg="green.0" radius="sm" p="sm">
-                          <Text size="sm" fw={600} mb="sm" c="green.8">正式版本</Text>
+                        <Card withBorder bg="var(--mantine-color-green-light)" radius="sm" p="sm">
+                          <Text size="sm" fw={600} mb="sm" c="green">正式版本</Text>
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "official").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid #b2f2bb', background: 'white', padding: 12, borderRadius: 8 }}>
+                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-green-outline)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
                                 <Group>
                                   <ThemeIcon size="lg" variant="light" color="green"><IconFileTypePpt size={20} /></ThemeIcon>
                                   <Box>
