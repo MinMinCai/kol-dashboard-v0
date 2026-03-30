@@ -76,7 +76,26 @@ function KolCollabCard({
           <Group align="flex-start">
             <Avatar src={kol.avatarUrl} radius="xl" size={50} />
             <div>
-              <Text fw={700} size="lg">{kol.name}</Text>
+              <Group gap="xs" align="center">
+                <Text fw={700} size="lg">{kol.name}</Text>
+                <Button
+                  variant="subtle"
+                  color="gray"
+                  size="compact-xs"
+                  p={0}
+                  onClick={toggle}
+                  aria-label={expanded ? "收起明細" : "展開明細"}
+                >
+                  <IconChevronDown 
+                    size={18} 
+                    style={{ 
+                      transform: expanded ? 'rotate(180deg)' : 'none', 
+                      transition: 'transform 0.2s',
+                      display: 'block'
+                    }} 
+                  />
+                </Button>
+              </Group>
               <Text size="xs" c="dimmed" mb={2}>
                 {kol.services} | NT$ {(kol.price ?? 0).toLocaleString("zh-TW")}
               </Text>
@@ -133,18 +152,7 @@ function KolCollabCard({
           </Group>
         </Group>
 
-        <Divider />
-        <Group justify="center" mt={expanded ? "xs" : -10} mb={expanded ? 0 : -10}>
-          <Button 
-            variant="subtle" 
-            size="sm" 
-            color="gray"
-            onClick={toggle} 
-            rightSection={<IconChevronDown size={14} style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />}
-          >
-            {expanded ? "收起成效與評價" : "展開成效與評價"}
-          </Button>
-        </Group>
+        {expanded && <Divider />}
         
         <Collapse in={expanded}>
           <Stack gap="xl">

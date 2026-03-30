@@ -19,6 +19,7 @@ import {
   Tooltip,
   SimpleGrid,
   Textarea,
+  Select,
   FileButton
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -222,30 +223,40 @@ export default function ReportManagementPage() {
         {/* Filter Bar */}
         <form method="get">
           <Group align="end" wrap="wrap" gap="md">
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>客戶</Text>
-              <select name="client" defaultValue={clientFilter} style={{ padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }}>
-                <option value="">全部</option>
-                {allClients.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>時間範圍</Text>
-              <select name="time" defaultValue={timeFilter} style={{ padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }}>
-                <option value="all">全部</option>
-                <option value="this_year">2026 年</option>
-                <option value="2024_10">2024-10</option>
-              </select>
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>狀態</Text>
-              <select name="status" defaultValue={statusFilter} style={{ padding: "8px 12px", borderRadius: 4, border: "1px solid #ddd" }}>
-                <option value="all">全部</option>
-                <option value="draft">有草稿</option>
-                <option value="official">有正式版</option>
-                <option value="none">無報告</option>
-              </select>
-            </Stack>
+            <Select
+              label="客戶"
+              name="client"
+              placeholder="全部"
+              defaultValue={clientFilter}
+              data={["", ...allClients].map(c => ({ value: c, label: c || "全部" }))}
+              allowDeselect={false}
+              style={{ width: 200 }}
+            />
+            <Select
+              label="時間範圍"
+              name="time"
+              defaultValue={timeFilter}
+              data={[
+                { value: "all", label: "全部" },
+                { value: "this_year", label: "2026 年" },
+                { value: "2024_10", label: "2024-10" },
+              ]}
+              allowDeselect={false}
+              style={{ width: 140 }}
+            />
+            <Select
+              label="狀態"
+              name="status"
+              defaultValue={statusFilter}
+              data={[
+                { value: "all", label: "全部" },
+                { value: "draft", label: "有草稿" },
+                { value: "official", label: "有正式版" },
+                { value: "none", label: "無報告" },
+              ]}
+              allowDeselect={false}
+              style={{ width: 140 }}
+            />
             <Button type="submit" variant="light">套用篩選</Button>
             {(clientFilter || timeFilter !== "all") && (
               <Button variant="subtle" color="gray" component="a" href="/reports/generate">清除</Button>
