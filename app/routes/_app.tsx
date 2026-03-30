@@ -1,6 +1,8 @@
 import { AppShell, Group, Stack, Text, Title } from "@mantine/core";
-import { Outlet, useLocation } from "@remix-run/react";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import { GlobalNotification } from "~/components/GlobalNotification";
+import { listTeamMembers } from "~/lib/mock-api";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -31,6 +33,7 @@ function navLinkStyle(active: boolean) {
 
 export default function AppLayoutRoute() {
   const location = useLocation();
+  const { currentUserName } = useLoaderData<typeof loader>();
 
   return (
     <>
@@ -199,7 +202,23 @@ export default function AppLayoutRoute() {
           })}
         </Stack>
 
-                <div style={{ marginTop: "auto", paddingTop: 12 }}>
+        <div style={{ marginTop: "auto", paddingTop: 12 }}>
+          <div
+            style={{
+              padding: "8px 12px",
+              borderRadius: 10,
+              background: "var(--mantine-color-default-hover)",
+              border: "1px solid var(--mantine-color-default-border)",
+              marginBottom: 8,
+            }}
+          >
+            <Text size="xs" c="dimmed" mb={2} className="nav-label">
+              目前登入
+            </Text>
+            <Text size="sm" fw={600} className="nav-label">
+              {currentUserName}
+            </Text>
+          </div>
           <a
             href="/settings"
             style={{
@@ -246,6 +265,16 @@ export default function AppLayoutRoute() {
     </AppShell>
     </>
   );
+}
+
+export async function loader(_: LoaderFunctionArgs) {
+  const teamMembers = await listTeamMembers();
+  const currentUser =
+    teamMembers.find((member) => member.role === "admin") ?? teamMembers[0];
+
+  return json({
+    currentUserName: currentUser?.name ?? "未登入",
+  });
 }
 
 

@@ -1,5 +1,15 @@
 *.log
 node_modules/
 .env
-dist/
+.env.*
+.DS_Store
+Thumbs.db
+
+# Remix/Vite build output
+public/build/
+build/
+.cache/
+.vscode/
+
+# Ignore .exe files
 *.exe
