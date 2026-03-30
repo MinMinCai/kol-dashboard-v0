@@ -533,7 +533,17 @@ export default function ReportManagementPage() {
                 <Box>
                   <Text fw={500} size="sm" c="green.7" mb="xs">✅ 已上傳成效的 KOL (預設選擇)</Text>
                   <Stack gap="xs">
-                    {activeOrder.collaborations?.filter((k:any) => (k.performanceItems||[]).length > 0).map((kol:any, idx:number) => (
+                    {(activeOrder.collaborations||[]).filter((k:any) => (k.performanceItems||[]).length > 0).length === 0 && (
+                      <Text size="sm" c="dimmed" py="xs">此委刊單目前沒有已上傳成效的 KOL</Text>
+                    )}
+                    {activeOrder.collaborations?.filter((k:any) => (k.performanceItems||[]).length > 0).map((kol:any, idx:number) => {
+                      const totalReach = kol.totalReach || 0;
+                      const totalEngagement = kol.totalEngagement || 0;
+                      const engRate = totalReach > 0 ? ((totalEngagement / totalReach) * 100).toFixed(1) : "–";
+                      const reachLabel = totalReach >= 10000 ? `${(totalReach/1000).toFixed(0)}K` : totalReach.toLocaleString();
+                      // Parse services string to show individual service badges
+                      const servicesList = (kol.services || "").split(/[+、,]/).map((s: string) => s.trim()).filter(Boolean);
+                      return (
                       <Card 
                         key={kol.id || idx} 
                         withBorder 
@@ -549,39 +559,27 @@ export default function ReportManagementPage() {
                             onChange={() => toggleKolSelection(kol.id)}
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <Avatar src={kol.kol?.avatarUrl} radius="xl" size="md" />
+                          <Avatar src={kol.avatarUrl} radius="xl" size="md" />
                           <Box style={{ flexGrow: 1 }}>
-                            <Text fw={600}>{kol.kol?.name || "KOL Name"}</Text>
-                            <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{display:'inline', color:'green'}}/> | IG限動 <IconCheck size={12} style={{display:'inline', color:'green'}}/></Text>
+                            <Text fw={600}>{kol.name || kol.kolName || "(未知 KOL)"}</Text>
+                            <Group gap={4} mt={4} wrap="wrap">
+                              {servicesList.length > 0 ? servicesList.map((svc: string, si: number) => (
+                                <Badge key={si} size="xs" variant="light" color="teal" leftSection={<IconCheck size={10} />}>
+                                  {svc}
+                                </Badge>
+                              )) : (
+                                <Text size="xs" c="dimmed">{kol.services || "–"}</Text>
+                              )}
                             </Group>
                           </Box>
                           <Box style={{ textAlign: 'right' }}>
-                            <Badge variant="dot" color="blue">總觸及 80K</Badge>
-                            <Text size="xs" c="dimmed" mt={4}>互動率 7.8%</Text>
+                            <Badge variant="dot" color="blue">總觸及 {reachLabel}</Badge>
+                            <Text size="xs" c="dimmed" mt={4}>互動率 {engRate}%</Text>
                           </Box>
                         </Group>
                       </Card>
-                    ))}
-                    {/* Mock empty check context */}
-                    {(activeOrder.collaborations||[]).filter((k:any) => (k.performanceItems||[]).length > 0).length === 0 && (
-                      <Card withBorder p="sm" radius="md" style={{ cursor: 'pointer' }} onClick={() => toggleKolSelection("demo-gina")}>
-                        <Group wrap="nowrap">
-                          <Checkbox 
-                            checked={selectedKolIds.includes("demo-gina")} 
-                            onChange={() => toggleKolSelection("demo-gina")}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <Avatar color="blue" radius="xl" size="md">G</Avatar>
-                          <Box style={{ flexGrow: 1 }}>
-                            <Text fw={600}>Gina (Demo)</Text>
-                            <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{display:'inline', color:'green'}}/> | IG限動 <IconCheck size={12} style={{display:'inline', color:'green'}}/></Text>
-                            </Group>
-                          </Box>
-                        </Group>
-                      </Card>
-                    )}
+                      );
+                    })}
                   </Stack>
                 </Box>
 
@@ -589,6 +587,9 @@ export default function ReportManagementPage() {
                 <Box>
                   <Text fw={500} size="sm" c="orange.7" mb="xs">⚠️ 尚未上傳成效的 KOL</Text>
                   <Stack gap="xs">
+                    {(activeOrder.collaborations||[]).filter((k:any) => !(k.performanceItems||[]).length).length === 0 && (
+                      <Text size="sm" c="dimmed" py="xs">所有 KOL 均已上傳成效資料 🎉</Text>
+                    )}
                     {(activeOrder.collaborations||[]).filter((k:any) => !(k.performanceItems||[]).length).map((kol:any, idx:number) => (
                       <Card 
                         key={kol.id || idx} 
@@ -605,12 +606,13 @@ export default function ReportManagementPage() {
                             onChange={() => toggleKolSelection(kol.id)}
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <Avatar src={kol.kol?.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
+                          <Avatar src={kol.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
                           <Box style={{ flexGrow: 1 }}>
-                            <Text fw={600} c="dimmed">{kol.kol?.name || "KOL Name"}</Text>
+                            <Text fw={600} c="dimmed">{kol.name || kol.kolName || "(未知 KOL)"}</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="red.7"><IconX size={12} style={{display:'inline'}}/> 無成效資料</Text>
+                              <Text size="xs" c="dimmed">{kol.services || ""}</Text>
                             </Group>
+                            <Text size="xs" c="red.7" mt={2}><IconX size={12} style={{display:'inline'}}/> 尚未上傳成效資料</Text>
                           </Box>
                           <Button variant="subtle" size="xs" color="blue" rightSection="→">前往上傳成效</Button>
                         </Group>

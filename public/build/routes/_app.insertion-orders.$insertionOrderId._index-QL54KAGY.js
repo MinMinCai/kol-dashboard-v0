@@ -25597,7 +25597,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.insertion-orders.$insertionOrderId._index.tsx"
   );
-  import.meta.hot.lastModified = "1774609061955.5022";
+  import.meta.hot.lastModified = "1774863612790.2869";
 }
 function n(value) {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -26208,7 +26208,7 @@ function InsertionOrderDetailPage() {
           lineNumber: 488,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Button, { onClick: () => handleOpenGenModal(insertionOrder), children: "\u{1F4CA} \u7522\u751F\u7D50\u6848\u5831\u544A" }, void 0, false, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Button, { onClick: () => handleOpenGenModal(insertionOrder), children: "\u{1F4CA} \u7522\u751F\u5831\u544A" }, void 0, false, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
           lineNumber: 503,
           columnNumber: 11
@@ -27189,10 +27189,10 @@ function InsertionOrderDetailPage() {
           lineNumber: 878,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Button, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(Button, { color: "blue", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
           lineNumber: 880,
-          columnNumber: 87
+          columnNumber: 77
         }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, false, {
           fileName: "app/routes/_app.insertion-orders.$insertionOrderId._index.tsx",
           lineNumber: 880,
@@ -28038,4 +28038,4 @@ object-assign/index.js:
   @license MIT
   *)
 */
-//# sourceMappingURL=/build/routes/_app.insertion-orders.$insertionOrderId._index-MLJP2TYR.js.map
+//# sourceMappingURL=/build/routes/_app.insertion-orders.$insertionOrderId._index-QL54KAGY.js.map

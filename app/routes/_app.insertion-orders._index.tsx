@@ -774,7 +774,7 @@ export default function InsertionOrderListPage() {
             <Group justify="flex-end" mt="md">
               <Button variant="ghost" color="gray" onClick={closeGenModal}>取消</Button>
               <Tooltip label="報告將在背景生成，完成後會通知您" position="top" withArrow>
-                <Button color="blue" size="lg" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
+                <Button color="blue" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
                   開始生成
                 </Button>
               </Tooltip>

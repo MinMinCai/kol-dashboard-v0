@@ -78,7 +78,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.insertion-orders._index.tsx"
   );
-  import.meta.hot.lastModified = "1774603357818.9087";
+  import.meta.hot.lastModified = "1774863750233.1973";
 }
 function statusMeta(status) {
   if (status === "completed")
@@ -1362,10 +1362,10 @@ function InsertionOrderListPage() {
           lineNumber: 724,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { color: "blue", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
           lineNumber: 726,
-          columnNumber: 87
+          columnNumber: 77
         }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, false, {
           fileName: "app/routes/_app.insertion-orders._index.tsx",
           lineNumber: 726,
@@ -1577,4 +1577,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   InsertionOrderListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.insertion-orders._index-VWN5BBT4.js.map
+//# sourceMappingURL=/build/routes/_app.insertion-orders._index-ATH4U5E7.js.map

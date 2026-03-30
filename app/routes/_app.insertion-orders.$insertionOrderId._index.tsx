@@ -560,7 +560,7 @@ export default function InsertionOrderDetailPage() {
               </fetcher.Form>
             </Group>
           <Button onClick={() => handleOpenGenModal(insertionOrder)}>
-            📊 產生結案報告
+            📊 產生報告
           </Button>
           <Button type="button" variant="default">💾 匯出 Excel</Button>
         </Group>
@@ -983,7 +983,7 @@ export default function InsertionOrderDetailPage() {
             <Group justify="flex-end" mt="md">
               <Button variant="ghost" color="gray" onClick={closeGenModal}>取消</Button>
               <Tooltip label="報告將在背景生成，完成後會通知您" position="top" withArrow>
-                <Button color="blue" size="lg" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
+                <Button color="blue" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
                   開始生成
                 </Button>
               </Tooltip>
