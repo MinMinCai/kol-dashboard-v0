@@ -54,7 +54,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.favorites.tsx"
   );
-  import.meta.hot.lastModified = "1774861948449.2805";
+  import.meta.hot.lastModified = "1774866225326.8982";
 }
 function FavoritesPage() {
   _s();
@@ -89,8 +89,10 @@ function FavoritesPage() {
         ...inputStyle,
         cursor: "pointer",
         fontWeight: 500
-      }, ...{
-        onclick: 'document.getElementById("add-folder-dialog").showModal()'
+      }, onClick: () => {
+        const d = document.getElementById("add-folder-dialog");
+        if (d)
+          d.showModal();
       }, children: "+ \u65B0\u589E\u8CC7\u6599\u593E" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
         lineNumber: 111,
@@ -106,7 +108,7 @@ function FavoritesPage() {
     }, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "folder", value: folder }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 126,
+        lineNumber: 127,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { children: [
@@ -116,28 +118,28 @@ function FavoritesPage() {
           minWidth: 200
         } }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 128,
+          lineNumber: 129,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("select", { name: "sort", defaultValue: sort, style: inputStyle, children: [
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("option", { value: "rating_desc", children: "\u8A55\u5206\u7531\u9AD8\u5230\u4F4E" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 134,
+            lineNumber: 135,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("option", { value: "followers_desc", children: "\u7C89\u7D72\u7531\u9AD8\u5230\u4F4E" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 135,
+            lineNumber: 136,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("option", { value: "name_asc", children: "\u540D\u7A31 A-Z" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 136,
+            lineNumber: 137,
             columnNumber: 13
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 133,
+          lineNumber: 134,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "submit", style: {
@@ -149,17 +151,17 @@ function FavoritesPage() {
           fontWeight: 600
         }, children: "\u5957\u7528" }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 138,
+          lineNumber: 139,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 127,
+        lineNumber: 128,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 123,
+      lineNumber: 124,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { children: [
@@ -179,7 +181,7 @@ function FavoritesPage() {
         ")"
       ] }, f, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 153,
+        lineNumber: 154,
         columnNumber: 30
       }, this)),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
@@ -188,16 +190,18 @@ function FavoritesPage() {
         background: "transparent",
         border: "none",
         color: "var(--mantine-color-blue-filled)"
-      }, ...{
-        onclick: 'document.getElementById("add-folder-dialog").showModal()'
+      }, onClick: () => {
+        const d = document.getElementById("add-folder-dialog");
+        if (d)
+          d.showModal();
       }, children: "+ \u65B0\u589E" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 165,
+        lineNumber: 166,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 152,
+      lineNumber: 153,
       columnNumber: 7
     }, this),
     rows.length === 0 ? /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, p: "xl", style: {
@@ -205,27 +209,27 @@ function FavoritesPage() {
     }, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "48px", children: "\u{1F4C2}" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 182,
+        lineNumber: 184,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Title, { order: 3, children: "\u6B64\u8CC7\u6599\u593E\u5C1A\u7121 KOL" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 183,
+        lineNumber: 185,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { c: "dimmed", mb: "md", children: "\u8ACB\u5207\u63DB\u8CC7\u6599\u593E\uFF0C\u6216\u524D\u5F80 KOL \u9801\u9762\u52A0\u5165\u6536\u85CF" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 184,
+        lineNumber: 186,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { component: Link, to: "/kols", children: "\u700F\u89BD KOL" }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 185,
+        lineNumber: 187,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 179,
+      lineNumber: 181,
       columnNumber: 28
     }, this) : /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(SimpleGrid, { cols: {
       base: 1,
@@ -236,12 +240,12 @@ function FavoritesPage() {
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { align: "center", gap: 6, children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Avatar, { src: kol.avatarUrl, size: 72, radius: 999 }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 194,
+          lineNumber: 196,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { fw: 600, children: kol.displayName }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 195,
+          lineNumber: 197,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", c: "dimmed", children: [
@@ -249,12 +253,12 @@ function FavoritesPage() {
           kol.instagramHandle ?? "-"
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 196,
+          lineNumber: 198,
           columnNumber: 17
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 193,
+        lineNumber: 195,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { mt: "sm", gap: 4, children: [
@@ -263,7 +267,7 @@ function FavoritesPage() {
           (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 200,
+          lineNumber: 202,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", children: [
@@ -271,7 +275,7 @@ function FavoritesPage() {
           (kol.social?.youtube ?? 0).toLocaleString()
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 201,
+          lineNumber: 203,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", children: [
@@ -279,27 +283,27 @@ function FavoritesPage() {
           (kol.social?.tiktok ?? 0).toLocaleString()
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 202,
+          lineNumber: 204,
           columnNumber: 17
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 199,
+        lineNumber: 201,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 6, mt: "sm", children: (kol.tags ?? kol.categories).slice(0, 3).map((tag) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Badge, { variant: "light", radius: "xl", children: tag }, tag, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 206,
+        lineNumber: 208,
         columnNumber: 70
       }, this)) }, void 0, false, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 205,
+        lineNumber: 207,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Box, { mt: "sm", children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "xs", c: "dimmed", mb: 4, children: "\u79FB\u81F3\u8CC7\u6599\u593E\uFF1A" }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 211,
+          lineNumber: 213,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 4, children: ["\u5BB6\u96FB\u5C08\u6848", "\u7F8E\u599D\u5C08\u6848"].map((f) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("span", { style: {
@@ -312,16 +316,16 @@ function FavoritesPage() {
           color: "var(--mantine-color-text)"
         }, children: f }, f, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 213,
+          lineNumber: 215,
           columnNumber: 46
         }, this)) }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 212,
+          lineNumber: 214,
           columnNumber: 17
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 210,
+        lineNumber: 212,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", mt: "sm", children: [
@@ -330,7 +334,7 @@ function FavoritesPage() {
           (kol.rating ?? 0).toFixed(1)
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 228,
+          lineNumber: 230,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: "xs", children: [
@@ -338,7 +342,7 @@ function FavoritesPage() {
             fontSize: 14
           }, children: "\u67E5\u770B\u8A73\u7D30" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 230,
+            lineNumber: 232,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Form, { method: "post", style: {
@@ -346,12 +350,12 @@ function FavoritesPage() {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "intent", value: "removeFavorite" }, void 0, false, {
               fileName: "app/routes/_app.favorites.tsx",
-              lineNumber: 236,
+              lineNumber: 238,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, false, {
               fileName: "app/routes/_app.favorites.tsx",
-              lineNumber: 237,
+              lineNumber: 239,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "submit", style: {
@@ -364,31 +368,31 @@ function FavoritesPage() {
               cursor: "pointer"
             }, children: "\u53D6\u6D88\u6536\u85CF" }, void 0, false, {
               fileName: "app/routes/_app.favorites.tsx",
-              lineNumber: 238,
+              lineNumber: 240,
               columnNumber: 21
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 233,
+            lineNumber: 235,
             columnNumber: 19
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 229,
+          lineNumber: 231,
           columnNumber: 17
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 227,
+        lineNumber: 229,
         columnNumber: 15
       }, this)
     ] }, kol.id, true, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 192,
+      lineNumber: 194,
       columnNumber: 28
     }, this)) }, void 0, false, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 186,
+      lineNumber: 188,
       columnNumber: 19
     }, this),
     /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("dialog", { id: "add-folder-dialog", style: {
@@ -403,7 +407,7 @@ function FavoritesPage() {
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", mb: "md", children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Title, { order: 4, children: "\u65B0\u589E\u8CC7\u6599\u593E" }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 266,
+          lineNumber: 268,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
@@ -412,16 +416,18 @@ function FavoritesPage() {
           cursor: "pointer",
           fontSize: 18,
           color: "var(--mantine-color-text)"
-        }, ...{
-          onclick: 'document.getElementById("add-folder-dialog").close()'
+        }, onClick: () => {
+          const d = document.getElementById("add-folder-dialog");
+          if (d)
+            d.close();
         }, children: "\u2715" }, void 0, false, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 267,
+          lineNumber: 269,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 265,
+        lineNumber: 267,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: "md", children: [
@@ -433,7 +439,7 @@ function FavoritesPage() {
             marginBottom: 4
           }, children: "\u8CC7\u6599\u593E\u540D\u7A31" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 281,
+            lineNumber: 284,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { id: "new-folder-name", type: "text", placeholder: "\u4F8B\u5982\uFF1A\u6BCD\u5B30\u5C08\u6848", style: {
@@ -447,12 +453,12 @@ function FavoritesPage() {
             boxSizing: "border-box"
           } }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 287,
+            lineNumber: 290,
             columnNumber: 13
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 280,
+          lineNumber: 283,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "flex-end", children: [
@@ -463,11 +469,13 @@ function FavoritesPage() {
             background: "var(--mantine-color-body)",
             cursor: "pointer",
             fontSize: 14
-          }, ...{
-            onclick: 'document.getElementById("add-folder-dialog").close()'
+          }, onClick: () => {
+            const d = document.getElementById("add-folder-dialog");
+            if (d)
+              d.close();
           }, children: "\u53D6\u6D88" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 299,
+            lineNumber: 302,
             columnNumber: 13
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
@@ -479,26 +487,28 @@ function FavoritesPage() {
             cursor: "pointer",
             fontSize: 14,
             fontWeight: 600
-          }, ...{
-            onclick: 'document.getElementById("add-folder-dialog").close()'
+          }, onClick: () => {
+            const d = document.getElementById("add-folder-dialog");
+            if (d)
+              d.close();
           }, children: "\u5EFA\u7ACB" }, void 0, false, {
             fileName: "app/routes/_app.favorites.tsx",
-            lineNumber: 311,
+            lineNumber: 315,
             columnNumber: 13
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.favorites.tsx",
-          lineNumber: 298,
+          lineNumber: 301,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.favorites.tsx",
-        lineNumber: 279,
+        lineNumber: 282,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.favorites.tsx",
-      lineNumber: 256,
+      lineNumber: 258,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
@@ -518,4 +528,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   FavoritesPage as default
 };
-//# sourceMappingURL=/build/routes/_app.favorites-3SZCSELY.js.map
+//# sourceMappingURL=/build/routes/_app.favorites-7ITKMY4K.js.map

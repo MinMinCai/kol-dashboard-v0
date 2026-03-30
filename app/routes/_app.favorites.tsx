@@ -98,7 +98,7 @@ export default function FavoritesPage() {
         <button
           type="button"
           style={{ ...inputStyle, cursor: "pointer", fontWeight: 500 }}
-          {...({ onclick: 'document.getElementById("add-folder-dialog").showModal()' } as any)}
+          onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.showModal(); }}
         >
           + 新增資料夾
         </button>
@@ -148,7 +148,7 @@ export default function FavoritesPage() {
         <button
           type="button"
           style={{ ...inputStyle, cursor: "pointer", background: "transparent", border: "none", color: "var(--mantine-color-blue-filled)" }}
-          {...({ onclick: 'document.getElementById("add-folder-dialog").showModal()' } as any)}
+          onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.showModal(); }}
         >
           + 新增
         </button>
@@ -254,7 +254,7 @@ export default function FavoritesPage() {
           <button
             type="button"
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
-            {...({ onclick: 'document.getElementById("add-folder-dialog").close()' } as any)}
+            onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
           >
             ✕
           </button>
@@ -282,14 +282,14 @@ export default function FavoritesPage() {
             <button
               type="button"
               style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
-              {...({ onclick: 'document.getElementById("add-folder-dialog").close()' } as any)}
+              onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
             >
               取消
             </button>
             <button
               type="button"
               style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
-              {...({ onclick: 'document.getElementById("add-folder-dialog").close()' } as any)}
+              onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
             >
               建立
             </button>

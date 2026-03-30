@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IconChevronDown } from "@tabler/icons-react";
 import {
   addBrandCatalog,
@@ -340,6 +340,28 @@ export default function InsertionOrderCreatePage() {
     }
   `;
 
+  useEffect(() => {
+    const scriptId = "dynamic-kol-script";
+    let script = document.getElementById(scriptId);
+    if (script) {
+      script.remove();
+    }
+    script = document.createElement("script");
+    script.id = scriptId;
+    script.innerHTML = nativeDialogScript;
+    document.body.appendChild(script);
+
+    // Initial render triggering
+    setTimeout(() => {
+      // @ts-ignore
+      if (typeof window.kolRenderSelected === "function") window.kolRenderSelected();
+    }, 50);
+
+    return () => {
+      if (script) script.remove();
+    };
+  }, [nativeDialogScript]);
+
   /* ── Excel autofill handler (React-controlled fields) ── */
   const handleExcelUpload = (file: File) => {
     // Simulate parsing delay
@@ -382,8 +404,6 @@ export default function InsertionOrderCreatePage() {
 
   return (
     <Stack gap="md">
-      <script dangerouslySetInnerHTML={{ __html: nativeDialogScript }} />
-
       <Group justify="space-between">
         <Title order={2}>建立委刊單</Title>
         <Button component={Link} to="/insertion-orders" variant="default">取消</Button>

@@ -201,9 +201,9 @@ export default function InsertionOrderEditPage() {
   const [selectedKolManagers, setSelectedKolManagers] = useState<string | null>(insertionOrder.kolManager || null);
 
   
-  const initialNotes = insertionOrder.notes ? insertionOrder.notes.split('\n') : [];
-  const initialDescription = initialNotes.filter(n => !n.startsWith('internal:')).join('\n');
-  const initialInternalNotes = initialNotes.filter(n => n.startsWith('internal:')).map(n => n.slice(9)).join('\n');
+  const initialNotes = (insertionOrder as any).notes ? ((insertionOrder as any).notes as string).split('\n') : [];
+  const initialDescription = initialNotes.filter((n: string) => !n.startsWith('internal:')).join('\n');
+  const initialInternalNotes = initialNotes.filter((n: string) => n.startsWith('internal:')).map((n: string) => n.slice(9)).join('\n');
   
   const brandSuggestions = brands;
   const industrySuggestions = industries;
@@ -218,14 +218,7 @@ export default function InsertionOrderEditPage() {
   const [taxRate, setTaxRate] = useState(insertionOrder.totalBudget ? Math.round(((insertionOrder.totalWithTax || 0) - (insertionOrder.totalBudget)) / insertionOrder.totalBudget * 100) : 5);
   const totalWithTax = Math.round(projectQuote * (1 + taxRate / 100));
 
-  // Trigger KOL rendering after hydration
-  useEffect(() => {
-    // @ts-ignore
-    if (typeof window.kolRenderSelected === "function") {
-      // @ts-ignore
-      setTimeout(() => window.kolRenderSelected(), 100);
-    }
-  }, []);
+
 
   /* ── Embed KOL data for native JS dialog ── */
   const kolsJson = JSON.stringify(
@@ -342,6 +335,27 @@ export default function InsertionOrderEditPage() {
 
 
 
+  useEffect(() => {
+    const scriptId = "dynamic-kol-script-edit";
+    let script = document.getElementById(scriptId);
+    if (script) {
+      script.remove();
+    }
+    script = document.createElement("script");
+    script.id = scriptId;
+    script.innerHTML = nativeDialogScript;
+    document.body.appendChild(script);
+
+    setTimeout(() => {
+      // @ts-ignore
+      if (typeof window.kolRenderSelected === "function") window.kolRenderSelected();
+    }, 50);
+
+    return () => {
+      if (script) script.remove();
+    };
+  }, [nativeDialogScript]);
+
       // Transform initial collaborations into SelectedKolRow
       const initialCollabs = (insertionOrder.collaborations || []).map((c: any) => ({
         id: c.id,
@@ -362,8 +376,6 @@ export default function InsertionOrderEditPage() {
 
   return (
     <Stack gap="md">
-      <script dangerouslySetInnerHTML={{ __html: nativeDialogScript }} />
-
       <Group justify="space-between">
         <Title order={2}>編輯委刊單</Title>
         <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
@@ -554,8 +566,6 @@ export default function InsertionOrderEditPage() {
                 defaultValue={JSON.stringify(initialCollabs)}
                 readOnly
               />
-              {/* Trigger initial render of selected KOLs */}
-              <script dangerouslySetInnerHTML={{ __html: "setTimeout(function(){ if(typeof kolRenderSelected==='function') kolRenderSelected(); }, 100);" }} />
             </Box>
 
             
