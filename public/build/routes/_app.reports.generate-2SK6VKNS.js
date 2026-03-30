@@ -16,7 +16,7 @@ import {
   IconTrash,
   IconUpload,
   IconX
-} from "/build/_shared/chunk-ZHSZHK33.js";
+} from "/build/_shared/chunk-CIOZZPJ7.js";
 import "/build/_shared/chunk-HZBBB3MW.js";
 import {
   require_node
@@ -86,7 +86,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.reports.generate.tsx"
   );
-  import.meta.hot.lastModified = "1774856973302.5337";
+  import.meta.hot.lastModified = "1774862709683.7964";
 }
 function formatShortDate(date) {
   return date.slice(0, 7);
@@ -1431,10 +1431,10 @@ function ReportManagementPage() {
           lineNumber: 647,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Tooltip, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { color: "blue", onClick: startGeneration, leftSection: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(IconRobot, { size: 20 }, void 0, false, {
           fileName: "app/routes/_app.reports.generate.tsx",
           lineNumber: 649,
-          columnNumber: 87
+          columnNumber: 77
         }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, false, {
           fileName: "app/routes/_app.reports.generate.tsx",
           lineNumber: 649,
@@ -1902,4 +1902,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   ReportManagementPage as default
 };
-//# sourceMappingURL=/build/routes/_app.reports.generate-G7EXDE5M.js.map
+//# sourceMappingURL=/build/routes/_app.reports.generate-2SK6VKNS.js.map

@@ -4,7 +4,7 @@ import {
 import {
   IconCheck,
   IconX
-} from "/build/_shared/chunk-ZHSZHK33.js";
+} from "/build/_shared/chunk-CIOZZPJ7.js";
 import {
   ActionIcon,
   Affix,
@@ -293,7 +293,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.tsx"
   );
-  import.meta.hot.lastModified = "1774256624314.1282";
+  import.meta.hot.lastModified = "1774861285474.2007";
 }
 var navItems = [{
   to: "/dashboard",
@@ -314,7 +314,7 @@ var navItems = [{
 }, {
   to: "/favorites",
   label: "\u6211\u7684\u6536\u85CF",
-  icon: "\u2B50"
+  icon: "\u2764\uFE0F"
 }, {
   to: "/reports/generate",
   label: "\u7D50\u6848\u5831\u544A\u7522\u751F",
@@ -662,4 +662,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   AppLayoutRoute as default
 };
-//# sourceMappingURL=/build/routes/_app-HJTATZWM.js.map
+//# sourceMappingURL=/build/routes/_app-5QGISXWF.js.map

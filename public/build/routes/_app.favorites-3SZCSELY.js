@@ -54,7 +54,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.favorites.tsx"
   );
-  import.meta.hot.lastModified = "1773822961840.2456";
+  import.meta.hot.lastModified = "1774861948449.2805";
 }
 function FavoritesPage() {
   _s();
@@ -518,4 +518,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   FavoritesPage as default
 };
-//# sourceMappingURL=/build/routes/_app.favorites-IQUXPVOV.js.map
+//# sourceMappingURL=/build/routes/_app.favorites-3SZCSELY.js.map

@@ -7,7 +7,7 @@ const navItems = [
   { to: "/proposals", label: "提案管理", icon: "📋" },
   { to: "/kols", label: "KOL 管理", icon: "👥" },
   { to: "/insertion-orders", label: "委刊單管理", icon: "📝" },
-  { to: "/favorites", label: "我的收藏", icon: "⭐" },
+  { to: "/favorites", label: "我的收藏", icon: "❤️" },
   { to: "/reports/generate", label: "結案報告產生", icon: "📈" },
 ];
 

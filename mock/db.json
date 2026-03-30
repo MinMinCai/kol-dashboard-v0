@@ -35,8 +35,106 @@
       "notes": "女性 18-24 受眾集中",
       "favoriteFolder": "家電專案",
       "contact": {
-        "phone": "",
-        "email": ""
+        "phone": "0912-345-678",
+        "email": "amy.manager@starlight.com",
+        "manager": "Lisa"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_a01",
+          "date": "2025-09-28",
+          "projectTitle": "開學季輕食推廣",
+          "clientName": "FitMeal",
+          "industry": "食品",
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "rating": 4.6,
+          "orderId": "io_008"
+        },
+        {
+          "id": "ch_a02",
+          "date": "2025-11-28",
+          "projectTitle": "母嬰新品上線",
+          "clientName": "BabyCare",
+          "industry": "母嬰",
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "rating": 4.8,
+          "orderId": "io_005"
+        },
+        {
+          "id": "ch_a03",
+          "date": "2024-10-16",
+          "projectTitle": "Panasonic 洗碟機發表會",
+          "clientName": "Panasonic",
+          "industry": "家電",
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "rating": 4.6,
+          "orderId": "io_001"
+        },
+        {
+          "id": "ch_a04",
+          "date": "2026-02-10",
+          "projectTitle": "新春親子食品導購",
+          "clientName": "Happy Food",
+          "industry": "食品",
+          "price": 52000,
+          "services": "IG Reels",
+          "rating": 0,
+          "orderId": "io_002"
+        },
+        {
+          "id": "ch_a05",
+          "date": "2026-03-15",
+          "projectTitle": "智慧家電口碑計畫",
+          "clientName": "Aqua Home",
+          "industry": "家電",
+          "price": 52000,
+          "services": "IG Reels",
+          "rating": 0,
+          "orderId": "io_004"
+        },
+        {
+          "id": "ch_a06",
+          "date": "2026-03-27",
+          "projectTitle": "DAC_ALLIE_KOL行銷活動",
+          "clientName": "ALLIE",
+          "industry": "美妝保養",
+          "price": 52000,
+          "services": "IG貼文",
+          "rating": 0,
+          "orderId": "d7cf"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2025-09",
+          "price": 54000
+        },
+        {
+          "date": "2025-11",
+          "price": 54000
+        },
+        {
+          "date": "2026-02",
+          "price": 52000
+        },
+        {
+          "date": "2026-03",
+          "price": 52000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 120000,
+        "engagementRate": 8.7,
+        "averageViews": 98000,
+        "conversionRate": 4.2,
+        "platformPerformance": {
+          "instagram": 1050,
+          "youtube": 420,
+          "tiktok": 580
+        }
       }
     },
     {
@@ -71,7 +169,57 @@
         "tiktok": 18000
       },
       "city": "Taichung",
-      "notes": "轉換率穩定"
+      "notes": "轉換率穩定",
+      "contact": {
+        "phone": "0933-567-890",
+        "email": "allen.collab@techworld.com",
+        "manager": "Kevin"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_t01",
+          "date": "2024-10-18",
+          "projectTitle": "Panasonic 洗碟機發表會",
+          "clientName": "Panasonic",
+          "industry": "家電",
+          "price": 52000,
+          "services": "YouTube Shorts + IG 貼文",
+          "rating": 4.4,
+          "orderId": "io_001"
+        },
+        {
+          "id": "ch_t02",
+          "date": "2026-02-22",
+          "projectTitle": "車用品社群擴散",
+          "clientName": "AutoMax",
+          "industry": "汽車",
+          "price": 62000,
+          "services": "YouTube Shorts + IG 貼文",
+          "rating": 4.2,
+          "orderId": "io_007"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2024-10",
+          "price": 52000
+        },
+        {
+          "date": "2026-02",
+          "price": 62000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 85000,
+        "engagementRate": 6.7,
+        "averageViews": 72000,
+        "conversionRate": 3.8,
+        "platformPerformance": {
+          "instagram": 650,
+          "youtube": 1100,
+          "tiktok": 310
+        }
+      }
     },
     {
       "id": "kol_003",
@@ -282,7 +430,99 @@
         "youtube": 34000,
         "tiktok": 9000
       },
-      "city": "Taipei"
+      "city": "Taipei",
+      "notes": "居家斜槽",
+      "contact": {
+        "phone": "0966-234-567",
+        "email": "ken.food@chefstudio.com",
+        "manager": "自申請"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_k01",
+          "date": "2024-10-17",
+          "projectTitle": "Panasonic 洗碟機發表會",
+          "clientName": "Panasonic",
+          "industry": "家電",
+          "price": 42000,
+          "services": "IG 貼文 + 限動",
+          "rating": 4.3,
+          "orderId": "io_001"
+        },
+        {
+          "id": "ch_k02",
+          "date": "2025-09-25",
+          "projectTitle": "開學季輕食推廣",
+          "clientName": "FitMeal",
+          "industry": "食品",
+          "price": 42000,
+          "services": "IG 貼文",
+          "rating": 4.4,
+          "orderId": "io_008"
+        },
+        {
+          "id": "ch_k03",
+          "date": "2025-12-01",
+          "projectTitle": "母嬰新品上線",
+          "clientName": "BabyCare",
+          "industry": "母嬰",
+          "price": 42000,
+          "services": "IG 貼文",
+          "rating": 4.5,
+          "orderId": "io_005"
+        },
+        {
+          "id": "ch_k04",
+          "date": "2026-03-01",
+          "projectTitle": "智慧家電口碑計畫",
+          "clientName": "Aqua Home",
+          "industry": "家電",
+          "price": 42000,
+          "services": "IG 貼文",
+          "rating": 4.1,
+          "orderId": "io_004"
+        },
+        {
+          "id": "ch_k05",
+          "date": "2026-03-10",
+          "projectTitle": "車用品社群擴散",
+          "clientName": "AutoMax",
+          "industry": "汽車",
+          "price": 42000,
+          "services": "IG 貼文",
+          "rating": 0,
+          "orderId": "io_007"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2024-10",
+          "price": 42000
+        },
+        {
+          "date": "2025-09",
+          "price": 42000
+        },
+        {
+          "date": "2025-12",
+          "price": 42000
+        },
+        {
+          "date": "2026-03",
+          "price": 42000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 62000,
+        "engagementRate": 6.8,
+        "averageViews": 52000,
+        "conversionRate": 2.9,
+        "platformPerformance": {
+          "instagram": 720,
+          "youtube": 480,
+          "tiktok": 140
+        }
+      }
     },
     {
       "id": "kol_005",
@@ -302,7 +542,7 @@
       "engagementRate": 5.1,
       "rating": 4.3,
       "collaborations": 9,
-      "isFavorite": false,
+      "isFavorite": true,
       "avatarUrl": "https://i.pravatar.cc/160?img=25",
       "social": {
         "instagram": 134000,
@@ -310,7 +550,72 @@
         "tiktok": 41000
       },
       "city": "Hsinchu",
-      "favoriteFolder": "美妝專案"
+      "favoriteFolder": "美妝專案",
+      "contact": {
+        "phone": "0921-678-901",
+        "email": "luna.fit@wellness.com",
+        "manager": "張小華"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_l01",
+          "date": "2025-09-10",
+          "projectTitle": "開學季輕食推廣",
+          "clientName": "FitMeal",
+          "industry": "食品",
+          "price": 48000,
+          "services": "IG 貼文 + Reels",
+          "rating": 4.8,
+          "orderId": "io_008"
+        },
+        {
+          "id": "ch_l02",
+          "date": "2025-11-25",
+          "projectTitle": "母嬰新品上線",
+          "clientName": "BabyCare",
+          "industry": "母嬰",
+          "price": 46000,
+          "services": "IG 貼文",
+          "rating": 4.7,
+          "orderId": "io_005"
+        },
+        {
+          "id": "ch_l03",
+          "date": "2026-03-05",
+          "projectTitle": "新春親子食品導購",
+          "clientName": "Happy Food",
+          "industry": "食品",
+          "price": 46000,
+          "services": "IG 貼文",
+          "rating": 0,
+          "orderId": "io_002"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2025-09",
+          "price": 48000
+        },
+        {
+          "date": "2025-11",
+          "price": 46000
+        },
+        {
+          "date": "2026-03",
+          "price": 46000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 116000,
+        "engagementRate": 8.4,
+        "averageViews": 95000,
+        "conversionRate": 4.1,
+        "platformPerformance": {
+          "instagram": 980,
+          "youtube": 320,
+          "tiktok": 760
+        }
+      }
     },
     {
       "id": "kol_006",
@@ -337,7 +642,43 @@
         "youtube": 47000,
         "tiktok": 7000
       },
-      "city": "Taipei"
+      "city": "Taipei",
+      "notes": "財經知識型 KOL，理性受眾為主",
+      "contact": {
+        "phone": "0955-789-012",
+        "email": "nora.finance@moneywise.com",
+        "manager": "自申請"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_n01",
+          "date": "2026-03-20",
+          "projectTitle": "車用品社群擴散",
+          "clientName": "AutoMax",
+          "industry": "汽車",
+          "price": 48000,
+          "services": "YouTube 短片 + IG 貼文",
+          "rating": 0,
+          "orderId": "io_007"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2026-03",
+          "price": 48000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 42000,
+        "engagementRate": 4.2,
+        "averageViews": 38000,
+        "conversionRate": 2.1,
+        "platformPerformance": {
+          "instagram": 480,
+          "youtube": 920,
+          "tiktok": 210
+        }
+      }
     },
     {
       "id": "kol_007",
@@ -365,7 +706,87 @@
         "tiktok": 38000
       },
       "city": "Tainan",
-      "favoriteFolder": "美妝專案"
+      "favoriteFolder": "美妝專案",
+      "contact": {
+        "phone": "0988-123-456",
+        "email": "zoe.family@brightlife.com",
+        "manager": "Vanny"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_z01",
+          "date": "2024-10-16",
+          "projectTitle": "Panasonic 洗碟機發表會",
+          "clientName": "Panasonic",
+          "industry": "家電",
+          "price": 52000,
+          "services": "IG Reels + 限動",
+          "rating": 4.7,
+          "orderId": "io_001"
+        },
+        {
+          "id": "ch_z02",
+          "date": "2025-09-20",
+          "projectTitle": "開學季輕食推廣",
+          "clientName": "FitMeal",
+          "industry": "食品",
+          "price": 52000,
+          "services": "IG Reels",
+          "rating": 4.7,
+          "orderId": "io_008"
+        },
+        {
+          "id": "ch_z03",
+          "date": "2025-11-18",
+          "projectTitle": "母嬰新品上線",
+          "clientName": "BabyCare",
+          "industry": "母嬰",
+          "price": 52000,
+          "services": "IG Reels + 限動",
+          "rating": 4.8,
+          "orderId": "io_005"
+        },
+        {
+          "id": "ch_z04",
+          "date": "2026-02-12",
+          "projectTitle": "新春親子食品導購",
+          "clientName": "Happy Food",
+          "industry": "食品",
+          "price": 52000,
+          "services": "IG 貼文 + 限動",
+          "rating": 4.7,
+          "orderId": "io_002"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2024-10",
+          "price": 52000
+        },
+        {
+          "date": "2025-09",
+          "price": 52000
+        },
+        {
+          "date": "2025-11",
+          "price": 52000
+        },
+        {
+          "date": "2026-02",
+          "price": 52000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 118000,
+        "engagementRate": 8.9,
+        "averageViews": 102000,
+        "conversionRate": 4.5,
+        "platformPerformance": {
+          "instagram": 1080,
+          "youtube": 280,
+          "tiktok": 820
+        }
+      }
     },
     {
       "id": "kol_008",
@@ -392,7 +813,43 @@
         "youtube": 205000,
         "tiktok": 12000
       },
-      "city": "Taichung"
+      "city": "Taichung",
+      "notes": "汽車評測積累豐富",
+      "contact": {
+        "phone": "0977-345-678",
+        "email": "ray.auto@carlab.com",
+        "manager": "自申請"
+      },
+      "collaborationHistory": [
+        {
+          "id": "ch_r01",
+          "date": "2026-02-18",
+          "projectTitle": "車用品社群擴散",
+          "clientName": "AutoMax",
+          "industry": "汽車",
+          "price": 85000,
+          "services": "YouTube 評測 + IG 貼文",
+          "rating": 4.5,
+          "orderId": "io_007"
+        }
+      ],
+      "priceTrend": [
+        {
+          "date": "2026-02",
+          "price": 85000
+        }
+      ],
+      "performanceStats": {
+        "averageReach": 168000,
+        "engagementRate": 4.4,
+        "averageViews": 145000,
+        "conversionRate": 3.2,
+        "platformPerformance": {
+          "instagram": 580,
+          "youtube": 1850,
+          "tiktok": 220
+        }
+      }
     }
   ],
   "proposals": [
@@ -869,120 +1326,967 @@
       "id": "io_002",
       "orderNo": "IO-2026-002",
       "title": "新春親子食品導購",
+      "projectName": "Happy Food 新春親子導購活動",
       "clientName": "Happy Food",
+      "brand": "Happy Food",
       "industry": "食品",
+      "industryPath": "食品 > 親子食品",
       "salesOwner": "Nina",
       "kolManager": "Cindy",
+      "mcnName": "",
       "kolCount": 4,
       "status": "in_progress",
       "totalBudget": 320000,
-      "avgRating": 4.4,
+      "tax": 16000,
+      "totalWithTax": 336000,
+      "avgRating": 4.65,
       "totalReach": 380000,
       "totalEngagement": 29100,
+      "avgEngagementRate": 7.7,
       "startDate": "2026-02-01",
-      "endDate": "2026-03-15"
+      "endDate": "2026-03-15",
+      "notes": "春節親子食品導購，主打家庭共食情境",
+      "documentUrl": "",
+      "collaborations": [
+        {
+          "id": "ioc_io2_001",
+          "kolId": "kol_003",
+          "name": "Gina",
+          "avatarUrl": "https://i.pravatar.cc/120?img=5",
+          "price": 48000,
+          "services": "IG Reels + 限時動態",
+          "executionDate": "2026-02-10",
+          "authorization": "3個月社群使用",
+          "rating": 4.6,
+          "totalReach": 92000,
+          "totalEngagement": 7200,
+          "performanceItems": [
+            {
+              "id": "io2_pf_001",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 72000,
+                "reach": 58000,
+                "likes": 4300,
+                "comments": 150,
+                "shares": 120,
+                "saves": 510,
+                "engagementRate": 8.4
+              }
+            },
+            {
+              "id": "io2_pf_002",
+              "title": "IG 限時動態",
+              "metrics": {
+                "impressions": 20000,
+                "reach": 16000,
+                "likes": 950,
+                "comments": 35,
+                "shares": 40,
+                "saves": 80,
+                "engagementRate": 5.9
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io2_001",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2026-02-28",
+              "comment": "受眾精準，媽媽粉絲主動詢問商品，轉換率高。",
+              "rating": 4.6,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io2_002",
+          "kolId": "kol_007",
+          "name": "Zoe Family",
+          "avatarUrl": "https://i.pravatar.cc/120?img=47",
+          "price": 52000,
+          "services": "IG 貼文 + 限動",
+          "executionDate": "2026-02-12",
+          "authorization": "6個月素材授權",
+          "rating": 4.7,
+          "totalReach": 110000,
+          "totalEngagement": 9800,
+          "performanceItems": [
+            {
+              "id": "io2_pf_003",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 88000,
+                "reach": 71000,
+                "likes": 5500,
+                "comments": 230,
+                "shares": 180,
+                "saves": 720,
+                "engagementRate": 9.2
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io2_002",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=25",
+              "date": "2026-02-28",
+              "comment": "親子受眾精準，留言品質高，轉換超預期。",
+              "rating": 4.7,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io2_003",
+          "kolId": "kol_005",
+          "name": "Luna Fit",
+          "avatarUrl": "https://i.pravatar.cc/120?img=25",
+          "price": 46000,
+          "services": "IG 貼文",
+          "executionDate": "2026-03-05",
+          "authorization": "",
+          "rating": 0,
+          "totalReach": 0,
+          "totalEngagement": 0,
+          "performanceItems": [],
+          "reviews": []
+        },
+        {
+          "id": "ioc_io2_004",
+          "kolId": "kol_001",
+          "name": "Amy Beauty",
+          "avatarUrl": "https://i.pravatar.cc/120?img=32",
+          "price": 52000,
+          "services": "IG Reels",
+          "executionDate": "2026-03-10",
+          "authorization": "",
+          "rating": 0,
+          "totalReach": 0,
+          "totalEngagement": 0,
+          "performanceItems": [],
+          "reviews": []
+        }
+      ]
     },
     {
       "id": "io_003",
       "orderNo": "IO-2026-003",
       "title": "夏季保養新品檔期",
+      "projectName": "DermaLab 夏季防曬保養新品上市",
       "clientName": "DermaLab",
-      "industry": "美妝",
+      "brand": "DermaLab",
+      "industry": "美妝保養",
+      "industryPath": "美妝保養 > 保養",
       "salesOwner": "Amy",
       "kolManager": "Ivy",
+      "mcnName": "",
       "kolCount": 6,
       "status": "planned",
       "totalBudget": 410000,
+      "tax": 20500,
+      "totalWithTax": 430500,
       "avgRating": 0,
       "totalReach": 0,
       "totalEngagement": 0,
+      "avgEngagementRate": 0,
       "startDate": "2026-04-01",
-      "endDate": "2026-05-15"
+      "endDate": "2026-05-15",
+      "notes": "夏季防曬保養新品，目標受眾 18-35 女性，主打成分科學感",
+      "documentUrl": "",
+      "collaborations": []
     },
     {
       "id": "io_004",
       "orderNo": "IO-2026-004",
       "title": "智慧家電口碑計畫",
+      "projectName": "Aqua Home 智慧家電口碑行銷",
       "clientName": "Aqua Home",
+      "brand": "Aqua Home",
       "industry": "家電",
+      "industryPath": "家電 > 智慧家電",
       "salesOwner": "Leo",
       "kolManager": "John",
+      "mcnName": "",
       "kolCount": 3,
       "status": "in_progress",
       "totalBudget": 210000,
+      "tax": 10500,
+      "totalWithTax": 220500,
       "avgRating": 4.2,
       "totalReach": 190000,
       "totalEngagement": 14400,
+      "avgEngagementRate": 7.6,
       "startDate": "2026-02-20",
-      "endDate": "2026-03-25"
+      "endDate": "2026-03-25",
+      "notes": "智慧家電清潔產品，主打生活感與實用情境",
+      "documentUrl": "",
+      "collaborations": [
+        {
+          "id": "ioc_io4_001",
+          "kolId": "kol_003",
+          "name": "Gina",
+          "avatarUrl": "https://i.pravatar.cc/120?img=5",
+          "price": 50000,
+          "services": "IG 貼文 + 限時動態",
+          "executionDate": "2026-02-25",
+          "authorization": "6個月社群使用",
+          "rating": 4.7,
+          "totalReach": 98000,
+          "totalEngagement": 7800,
+          "performanceItems": [
+            {
+              "id": "io4_pf_001",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 78000,
+                "reach": 62000,
+                "likes": 4600,
+                "comments": 180,
+                "shares": 130,
+                "saves": 590,
+                "engagementRate": 8.9
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io4_001",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=12",
+              "date": "2026-03-01",
+              "comment": "家電融入生活場景自然，讀者反應熱絡。",
+              "rating": 4.7,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io4_002",
+          "kolId": "kol_004",
+          "name": "Chef Ken",
+          "avatarUrl": "https://i.pravatar.cc/120?img=14",
+          "price": 42000,
+          "services": "IG 貼文",
+          "executionDate": "2026-03-01",
+          "authorization": "3個月社群使用",
+          "rating": 4.1,
+          "totalReach": 58000,
+          "totalEngagement": 4100,
+          "performanceItems": [
+            {
+              "id": "io4_pf_002",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 48000,
+                "reach": 38000,
+                "likes": 2500,
+                "comments": 90,
+                "shares": 70,
+                "saves": 320,
+                "engagementRate": 6.4
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io4_002",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=12",
+              "date": "2026-03-02",
+              "comment": "居家料理情境搭配家電，說服力強。",
+              "rating": 4.1,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io4_003",
+          "kolId": "kol_001",
+          "name": "Amy Beauty",
+          "avatarUrl": "https://i.pravatar.cc/120?img=32",
+          "price": 52000,
+          "services": "IG Reels",
+          "executionDate": "2026-03-15",
+          "authorization": "",
+          "rating": 0,
+          "totalReach": 0,
+          "totalEngagement": 0,
+          "performanceItems": [],
+          "reviews": []
+        }
+      ]
     },
     {
       "id": "io_005",
       "orderNo": "IO-2026-005",
       "title": "母嬰新品上線",
+      "projectName": "BabyCare 冬季母嬰新品上市活動",
       "clientName": "BabyCare",
+      "brand": "BabyCare",
       "industry": "母嬰",
+      "industryPath": "母嬰親子 > 嬰幼児保養",
       "salesOwner": "Nina",
-      "kolManager": "Mia",
-      "kolCount": 7,
+      "kolManager": "Cindy",
+      "mcnName": "星橙娛樂",
+      "kolCount": 5,
       "status": "completed",
       "totalBudget": 560000,
-      "avgRating": 4.8,
+      "tax": 28000,
+      "totalWithTax": 588000,
+      "avgRating": 4.74,
       "totalReach": 720000,
       "totalEngagement": 61800,
+      "avgEngagementRate": 8.6,
       "startDate": "2025-11-05",
-      "endDate": "2025-12-20"
+      "endDate": "2025-12-20",
+      "notes": "年末母嬰新品，主打冬季嬰幼児保養需求",
+      "documentUrl": "",
+      "hasDraft": true,
+      "hasOfficial": true,
+      "reports": [
+        {
+          "id": "rep_io5_d1",
+          "name": "BabyCare_母嬰新品_結案報告_v1.pptx",
+          "type": "draft",
+          "createdAt": "2025-12-22 14:30",
+          "createdBy": "系統 AI"
+        },
+        {
+          "id": "rep_io5_o1",
+          "name": "BabyCare_母嬰新品_結案報告_Final.pptx",
+          "type": "official",
+          "createdAt": "2025-12-28 10:15",
+          "createdBy": "Nina",
+          "note": "含品牌視覚調整版本"
+        }
+      ],
+      "collaborations": [
+        {
+          "id": "ioc_io5_001",
+          "kolId": "kol_003",
+          "name": "Gina",
+          "avatarUrl": "https://i.pravatar.cc/120?img=5",
+          "price": 50000,
+          "services": "IG 貼文 + 限時動態",
+          "executionDate": "2025-11-15",
+          "authorization": "6個月素材授權",
+          "rating": 4.9,
+          "totalReach": 165000,
+          "totalEngagement": 14200,
+          "performanceItems": [
+            {
+              "id": "io5_pf_001",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 128000,
+                "reach": 102000,
+                "likes": 8500,
+                "comments": 340,
+                "shares": 210,
+                "saves": 1100,
+                "engagementRate": 10.2
+              }
+            },
+            {
+              "id": "io5_pf_002",
+              "title": "IG 限時動態",
+              "metrics": {
+                "impressions": 37000,
+                "reach": 29000,
+                "likes": 1800,
+                "comments": 55,
+                "shares": 80,
+                "saves": 200,
+                "engagementRate": 7.3
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io5_001",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-12-01",
+              "comment": "母嬰受眾精準，互動數創新高，強力推薦續合作。",
+              "rating": 4.9,
+              "type": "external"
+            },
+            {
+              "id": "rv_io5_001i",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-12-01",
+              "comment": "Gina 執行效率高，素材一次過稿。",
+              "rating": 4.9,
+              "type": "internal"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io5_002",
+          "kolId": "kol_007",
+          "name": "Zoe Family",
+          "avatarUrl": "https://i.pravatar.cc/120?img=47",
+          "price": 52000,
+          "services": "IG Reels + 限動",
+          "executionDate": "2025-11-18",
+          "authorization": "6個月素材授權",
+          "rating": 4.8,
+          "totalReach": 148000,
+          "totalEngagement": 13500,
+          "performanceItems": [
+            {
+              "id": "io5_pf_003",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 115000,
+                "reach": 92000,
+                "likes": 7800,
+                "comments": 310,
+                "shares": 250,
+                "saves": 980,
+                "engagementRate": 9.9
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io5_002",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=25",
+              "date": "2025-12-05",
+              "comment": "親子家庭感強，內容自然帶動購買欲。",
+              "rating": 4.8,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io5_003",
+          "kolId": "kol_005",
+          "name": "Luna Fit",
+          "avatarUrl": "https://i.pravatar.cc/120?img=25",
+          "price": 46000,
+          "services": "IG 貼文",
+          "executionDate": "2025-11-25",
+          "authorization": "3個月社群使用",
+          "rating": 4.7,
+          "totalReach": 132000,
+          "totalEngagement": 10800,
+          "performanceItems": [
+            {
+              "id": "io5_pf_004",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 105000,
+                "reach": 84000,
+                "likes": 6200,
+                "comments": 220,
+                "shares": 190,
+                "saves": 730,
+                "engagementRate": 8.7
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io5_003",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-12-10",
+              "comment": "健康育兒角度切入，受眾共鳴度高。",
+              "rating": 4.7,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io5_004",
+          "kolId": "kol_001",
+          "name": "Amy Beauty",
+          "avatarUrl": "https://i.pravatar.cc/120?img=32",
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "executionDate": "2025-11-28",
+          "authorization": "6個月廣告投放",
+          "rating": 4.8,
+          "totalReach": 160000,
+          "totalEngagement": 13800,
+          "performanceItems": [
+            {
+              "id": "io5_pf_005",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 120000,
+                "reach": 96000,
+                "likes": 7600,
+                "comments": 280,
+                "shares": 220,
+                "saves": 910,
+                "engagementRate": 9.3
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io5_004",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=25",
+              "date": "2025-12-12",
+              "comment": "美妝+母嬰雙向受眾，拉支效果佳。",
+              "rating": 4.8,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io5_005",
+          "kolId": "kol_004",
+          "name": "Chef Ken",
+          "avatarUrl": "https://i.pravatar.cc/120?img=14",
+          "price": 42000,
+          "services": "IG 貼文",
+          "executionDate": "2025-12-01",
+          "authorization": "3個月社群使用",
+          "rating": 4.5,
+          "totalReach": 82000,
+          "totalEngagement": 6500,
+          "performanceItems": [
+            {
+              "id": "io5_pf_006",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 65000,
+                "reach": 52000,
+                "likes": 3800,
+                "comments": 140,
+                "shares": 95,
+                "saves": 430,
+                "engagementRate": 7.3
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io5_005",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-12-15",
+              "comment": "裙裙視角切入新穎，評論中父母共鳴強。",
+              "rating": 4.5,
+              "type": "external"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "io_006",
       "orderNo": "IO-2026-006",
       "title": "618 科技整合導購",
+      "projectName": "NovaTech 618 全通路科技導購計畫",
       "clientName": "NovaTech",
+      "brand": "NovaTech",
       "industry": "3C",
+      "industryPath": "3C 科技 > 消費電子",
       "salesOwner": "Leo",
-      "kolManager": "Allen",
+      "kolManager": "John",
+      "mcnName": "",
       "kolCount": 8,
       "status": "planned",
       "totalBudget": 880000,
+      "tax": 44000,
+      "totalWithTax": 924000,
       "avgRating": 0,
       "totalReach": 0,
       "totalEngagement": 0,
+      "avgEngagementRate": 0,
       "startDate": "2026-05-20",
-      "endDate": "2026-06-25"
+      "endDate": "2026-06-25",
+      "notes": "618 電商檔期，主打 3C 開筆與生產力工具導購",
+      "documentUrl": "",
+      "collaborations": []
     },
     {
       "id": "io_007",
       "orderNo": "IO-2026-007",
       "title": "車用品社群擴散",
+      "projectName": "AutoMax 車用品廊 社群口碑計畫",
       "clientName": "AutoMax",
+      "brand": "AutoMax",
       "industry": "汽車",
+      "industryPath": "汽車 > 車用品",
       "salesOwner": "Amy",
-      "kolManager": "Ray",
+      "kolManager": "John",
+      "mcnName": "",
       "kolCount": 4,
       "status": "in_progress",
       "totalBudget": 290000,
+      "tax": 14500,
+      "totalWithTax": 304500,
       "avgRating": 4.1,
       "totalReach": 240000,
       "totalEngagement": 18200,
+      "avgEngagementRate": 7.6,
       "startDate": "2026-02-10",
-      "endDate": "2026-04-01"
+      "endDate": "2026-04-01",
+      "notes": "車用品庺，汽車改装 / 清洗 / 電子配件類",
+      "documentUrl": "",
+      "collaborations": [
+        {
+          "id": "ioc_io7_001",
+          "kolId": "kol_008",
+          "name": "Ray Auto",
+          "avatarUrl": "https://i.pravatar.cc/120?img=59",
+          "price": 85000,
+          "services": "YouTube 評測 + IG 貼文",
+          "executionDate": "2026-02-18",
+          "authorization": "6個月素材二次使用",
+          "rating": 4.5,
+          "totalReach": 98000,
+          "totalEngagement": 7800,
+          "performanceItems": [
+            {
+              "id": "io7_pf_001",
+              "title": "YouTube 評測影片",
+              "metrics": {
+                "impressions": 75000,
+                "reach": 62000,
+                "likes": 4200,
+                "comments": 180,
+                "shares": 95,
+                "saves": 310,
+                "engagementRate": 7.1
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io7_001",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=12",
+              "date": "2026-03-01",
+              "comment": "車用品專業知識豌富，討論紫热，高度推薦。",
+              "rating": 4.5,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io7_002",
+          "kolId": "kol_002",
+          "name": "Tech Allen",
+          "avatarUrl": "https://i.pravatar.cc/120?img=12",
+          "price": 62000,
+          "services": "YouTube Shorts + IG 貼文",
+          "executionDate": "2026-02-22",
+          "authorization": "3個月社群使用",
+          "rating": 4.2,
+          "totalReach": 86000,
+          "totalEngagement": 6400,
+          "performanceItems": [
+            {
+              "id": "io7_pf_002",
+              "title": "YouTube Shorts",
+              "metrics": {
+                "impressions": 68000,
+                "reach": 55000,
+                "likes": 3500,
+                "comments": 120,
+                "shares": 80,
+                "saves": 240,
+                "engagementRate": 6.5
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io7_002",
+              "author": "John",
+              "avatarUrl": "https://i.pravatar.cc/80?img=12",
+              "date": "2026-03-05",
+              "comment": "3C 引流效果佳，車用電子配件討論副大。",
+              "rating": 4.2,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io7_003",
+          "kolId": "kol_004",
+          "name": "Chef Ken",
+          "avatarUrl": "https://i.pravatar.cc/120?img=14",
+          "price": 42000,
+          "services": "IG 貼文",
+          "executionDate": "2026-03-10",
+          "authorization": "",
+          "rating": 0,
+          "totalReach": 0,
+          "totalEngagement": 0,
+          "performanceItems": [],
+          "reviews": []
+        },
+        {
+          "id": "ioc_io7_004",
+          "kolId": "kol_006",
+          "name": "Nora Finance",
+          "avatarUrl": "https://i.pravatar.cc/120?img=44",
+          "price": 48000,
+          "services": "YouTube 短片 + IG 貼文",
+          "executionDate": "2026-03-20",
+          "authorization": "",
+          "rating": 0,
+          "totalReach": 0,
+          "totalEngagement": 0,
+          "performanceItems": [],
+          "reviews": []
+        }
+      ]
     },
     {
       "id": "io_008",
       "orderNo": "IO-2026-008",
       "title": "開學季輕食推廣",
+      "projectName": "FitMeal 開學季輕食健康行銷",
       "clientName": "FitMeal",
+      "brand": "FitMeal",
       "industry": "食品",
+      "industryPath": "食品 > 健康食品",
       "salesOwner": "Nina",
-      "kolManager": "Zoey",
+      "kolManager": "Cindy",
+      "mcnName": "",
       "kolCount": 5,
       "status": "completed",
       "totalBudget": 330000,
-      "avgRating": 4.6,
+      "tax": 16500,
+      "totalWithTax": 346500,
+      "avgRating": 4.58,
       "totalReach": 410000,
       "totalEngagement": 33800,
+      "avgEngagementRate": 8.2,
       "startDate": "2025-09-01",
-      "endDate": "2025-10-10"
+      "endDate": "2025-10-10",
+      "notes": "開學賦能輕食，主打母嬰 / 女大生 / 上班族健康飲食被計畫",
+      "documentUrl": "",
+      "hasDraft": true,
+      "hasOfficial": true,
+      "reports": [
+        {
+          "id": "rep_io8_d1",
+          "name": "FitMeal_開學季_結案報告_v1.pptx",
+          "type": "draft",
+          "createdAt": "2025-10-12 16:40",
+          "createdBy": "系統 AI"
+        },
+        {
+          "id": "rep_io8_o1",
+          "name": "FitMeal_開學季_結案報告_Final.pptx",
+          "type": "official",
+          "createdAt": "2025-10-18 11:00",
+          "createdBy": "Nina",
+          "note": "已加入品牌宣傳數據與黑子分析"
+        }
+      ],
+      "collaborations": [
+        {
+          "id": "ioc_io8_001",
+          "kolId": "kol_005",
+          "name": "Luna Fit",
+          "avatarUrl": "https://i.pravatar.cc/120?img=25",
+          "price": 48000,
+          "services": "IG 貼文 + Reels",
+          "executionDate": "2025-09-10",
+          "authorization": "6個月素材授權",
+          "rating": 4.8,
+          "totalReach": 130000,
+          "totalEngagement": 10500,
+          "performanceItems": [
+            {
+              "id": "io8_pf_001",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 102000,
+                "reach": 82000,
+                "likes": 6100,
+                "comments": 220,
+                "shares": 200,
+                "saves": 780,
+                "engagementRate": 9.1
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io8_001",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-09-30",
+              "comment": "健康飲食訴求切合，女性受眾確滿，互動超預期。",
+              "rating": 4.8,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io8_002",
+          "kolId": "kol_003",
+          "name": "Gina",
+          "avatarUrl": "https://i.pravatar.cc/120?img=5",
+          "price": 50000,
+          "services": "IG 貼文 + 限時動態",
+          "executionDate": "2025-09-15",
+          "authorization": "3個月社群使用",
+          "rating": 4.6,
+          "totalReach": 95000,
+          "totalEngagement": 7900,
+          "performanceItems": [
+            {
+              "id": "io8_pf_002",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 76000,
+                "reach": 61000,
+                "likes": 4500,
+                "comments": 170,
+                "shares": 130,
+                "saves": 600,
+                "engagementRate": 8.4
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io8_002",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=25",
+              "date": "2025-10-01",
+              "comment": "媽媽族帶購流流暢暢，導購效果佳。",
+              "rating": 4.6,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io8_003",
+          "kolId": "kol_007",
+          "name": "Zoe Family",
+          "avatarUrl": "https://i.pravatar.cc/120?img=47",
+          "price": 52000,
+          "services": "IG Reels",
+          "executionDate": "2025-09-20",
+          "authorization": "6個月素材授權",
+          "rating": 4.7,
+          "totalReach": 115000,
+          "totalEngagement": 9800,
+          "performanceItems": [
+            {
+              "id": "io8_pf_003",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 92000,
+                "reach": 74000,
+                "likes": 5800,
+                "comments": 210,
+                "shares": 170,
+                "saves": 740,
+                "engagementRate": 9.3
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io8_003",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-10-02",
+              "comment": "親子家庭健康飲食訴求高，留言豐富。",
+              "rating": 4.7,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io8_004",
+          "kolId": "kol_004",
+          "name": "Chef Ken",
+          "avatarUrl": "https://i.pravatar.cc/120?img=14",
+          "price": 42000,
+          "services": "IG 貼文",
+          "executionDate": "2025-09-25",
+          "authorization": "3個月社群使用",
+          "rating": 4.4,
+          "totalReach": 68000,
+          "totalEngagement": 5200,
+          "performanceItems": [
+            {
+              "id": "io8_pf_004",
+              "title": "IG 貼文",
+              "metrics": {
+                "impressions": 55000,
+                "reach": 44000,
+                "likes": 3000,
+                "comments": 110,
+                "shares": 80,
+                "saves": 380,
+                "engagementRate": 7.4
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io8_004",
+              "author": "Nina",
+              "avatarUrl": "https://i.pravatar.cc/80?img=25",
+              "date": "2025-10-05",
+              "comment": "食譜與健康輕食結合自然，讀者反應良好。",
+              "rating": 4.4,
+              "type": "external"
+            }
+          ]
+        },
+        {
+          "id": "ioc_io8_005",
+          "kolId": "kol_001",
+          "name": "Amy Beauty",
+          "avatarUrl": "https://i.pravatar.cc/120?img=32",
+          "price": 54000,
+          "services": "IG Reels + 貼文",
+          "executionDate": "2025-09-28",
+          "authorization": "6個月廣告投放",
+          "rating": 4.6,
+          "totalReach": 98000,
+          "totalEngagement": 7800,
+          "performanceItems": [
+            {
+              "id": "io8_pf_005",
+              "title": "IG Reels",
+              "metrics": {
+                "impressions": 78000,
+                "reach": 62000,
+                "likes": 4500,
+                "comments": 160,
+                "shares": 140,
+                "saves": 590,
+                "engagementRate": 8.5
+              }
+            }
+          ],
+          "reviews": [
+            {
+              "id": "rv_io8_005",
+              "author": "Cindy",
+              "avatarUrl": "https://i.pravatar.cc/80?img=44",
+              "date": "2025-10-08",
+              "comment": "美妆+健康雙囟，健康飲食女大生受眾就持。",
+              "rating": 4.6,
+              "type": "external"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "d7cf",

@@ -4,7 +4,7 @@ import {
   IconPlus,
   IconTrash,
   IconX
-} from "/build/_shared/chunk-ZHSZHK33.js";
+} from "/build/_shared/chunk-CIOZZPJ7.js";
 import "/build/_shared/chunk-HZBBB3MW.js";
 import {
   require_node
@@ -1082,4 +1082,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   SettingsRoute as default
 };
-//# sourceMappingURL=/build/routes/_app.settings-SUNZP7T3.js.map
+//# sourceMappingURL=/build/routes/_app.settings-6J4QFSCT.js.map

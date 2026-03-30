@@ -56,7 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const statusFilter = url.searchParams.get("status") ?? "all";
   
   const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
-  const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
+  const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
   
 
   const orders = await listInsertionOrders();
@@ -683,7 +683,7 @@ export default function ReportManagementPage() {
             <Group justify="flex-end" mt="md">
               <Button variant="ghost" color="gray" onClick={closeGenModal}>取消</Button>
               <Tooltip label="報告將在背景生成，完成後會通知您" position="top" withArrow>
-                <Button color="blue" size="lg" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
+                <Button color="blue" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
                   開始生成
                 </Button>
               </Tooltip>

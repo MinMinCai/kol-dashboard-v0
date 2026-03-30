@@ -10372,7 +10372,7 @@ function formatShortDate(date) {
   return date.slice(0, 7);
 }
 async function loader9({ request }) {
-  let url = new URL(request.url), clientFilter = url.searchParams.get("client") ?? "", timeFilter = url.searchParams.get("time") ?? "all", statusFilter = url.searchParams.get("status") ?? "all", page = Math.max(1, Number(url.searchParams.get("page") ?? "1")), pageSize = Number(url.searchParams.get("pageSize") ?? "10"), orders = await listInsertionOrders(), allClients = Array.from(new Set(orders.map((o) => o.clientName))), filtered = orders.map((order) => ({
+  let url = new URL(request.url), clientFilter = url.searchParams.get("client") ?? "", timeFilter = url.searchParams.get("time") ?? "all", statusFilter = url.searchParams.get("status") ?? "all", page = Math.max(1, Number(url.searchParams.get("page") ?? "1")), pageSize = Number(url.searchParams.get("pageSize") ?? "5"), orders = await listInsertionOrders(), allClients = Array.from(new Set(orders.map((o) => o.clientName))), filtered = orders.map((order) => ({
     ...order,
     hasDraft: order.hasDraft ?? !1,
     hasOfficial: order.hasOfficial ?? !1,
@@ -11720,10 +11720,10 @@ function ReportManagementPage() {
               lineNumber: 684,
               columnNumber: 15
             }, this),
-            /* @__PURE__ */ jsxDEV12(Tooltip3, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: !0, children: /* @__PURE__ */ jsxDEV12(Button10, { color: "blue", size: "lg", onClick: startGeneration, leftSection: /* @__PURE__ */ jsxDEV12(IconRobot3, { size: 20 }, void 0, !1, {
+            /* @__PURE__ */ jsxDEV12(Tooltip3, { label: "\u5831\u544A\u5C07\u5728\u80CC\u666F\u751F\u6210\uFF0C\u5B8C\u6210\u5F8C\u6703\u901A\u77E5\u60A8", position: "top", withArrow: !0, children: /* @__PURE__ */ jsxDEV12(Button10, { color: "blue", onClick: startGeneration, leftSection: /* @__PURE__ */ jsxDEV12(IconRobot3, { size: 20 }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
               lineNumber: 686,
-              columnNumber: 87
+              columnNumber: 77
             }, this), children: "\u958B\u59CB\u751F\u6210" }, void 0, !1, {
               fileName: "app/routes/_app.reports.generate.tsx",
               lineNumber: 686,
@@ -12694,10 +12694,9 @@ document.addEventListener('submit', function(e) {
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { gap: "sm", children: [
           /* @__PURE__ */ jsxDEV14(
-            "button",
+            Button12,
             {
-              type: "button",
-              style: { padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-blue-filled)", background: "var(--mantine-color-blue-light)", color: "var(--mantine-color-blue-filled)", cursor: "pointer", fontWeight: 500 },
+              variant: "light",
               onClick: () => {
                 let dlg = document.getElementById("kol-batch-import-dialog");
                 dlg && dlg.showModal();
@@ -12715,7 +12714,7 @@ document.addEventListener('submit', function(e) {
           ),
           /* @__PURE__ */ jsxDEV14(Button12, { component: Link11, to: "/kols/new", children: "\u65B0\u589E KOL" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 318,
+            lineNumber: 317,
             columnNumber: 13
           }, this)
         ] }, void 0, !0, {
@@ -12733,51 +12732,51 @@ document.addEventListener('submit', function(e) {
       lineNumber: 279,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ jsxDEV14(Group11, { justify: "space-between", align: "flex-end", wrap: "nowrap", children: [
-      /* @__PURE__ */ jsxDEV14("form", { method: "get", action: "/kols", style: { flex: 1, maxWidth: 520, display: "flex", gap: 8 }, children: [
+    /* @__PURE__ */ jsxDEV14(Group11, { justify: "flex-start", align: "flex-end", wrap: "wrap", gap: 8, children: [
+      /* @__PURE__ */ jsxDEV14("form", { method: "get", action: "/kols", style: { flex: 1, display: "flex", gap: 8 }, children: [
         view !== "card" && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "view", value: view }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 331,
+          lineNumber: 330,
           columnNumber: 31
         }, this),
         sortKey !== "followers" && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "sort", value: sortKey }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 332,
+          lineNumber: 331,
           columnNumber: 39
         }, this),
         sortOrder !== "desc" && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "order", value: sortOrder }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 333,
+          lineNumber: 332,
           columnNumber: 36
         }, this),
         showFilters && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "panel", value: "filters" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 334,
+          lineNumber: 333,
           columnNumber: 27
         }, this),
         followerRanges.map((r) => /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "fr", value: r }, r, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 335,
+          lineNumber: 334,
           columnNumber: 38
         }, this)),
         industries.map((i) => /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "ind", value: i }, i, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 336,
+          lineNumber: 335,
           columnNumber: 34
         }, this)),
         tags.map((t) => /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "tag", value: t }, t, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 337,
+          lineNumber: 336,
           columnNumber: 28
         }, this)),
         minRating > 0 && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "minRating", value: String(minRating) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 338,
+          lineNumber: 337,
           columnNumber: 29
         }, this),
         maxRating < 5 && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "maxRating", value: String(maxRating) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 339,
+          lineNumber: 338,
           columnNumber: 29
         }, this),
         /* @__PURE__ */ jsxDEV14(
@@ -12800,7 +12799,7 @@ document.addEventListener('submit', function(e) {
           !1,
           {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 341,
+            lineNumber: 340,
             columnNumber: 11
           },
           this
@@ -12825,7 +12824,7 @@ document.addEventListener('submit', function(e) {
           !1,
           {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 355,
+            lineNumber: 354,
             columnNumber: 11
           },
           this
@@ -12848,14 +12847,14 @@ document.addEventListener('submit', function(e) {
           !1,
           {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 369,
+            lineNumber: 368,
             columnNumber: 13
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 329,
+        lineNumber: 328,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV14(
@@ -12882,53 +12881,53 @@ document.addEventListener('submit', function(e) {
         !0,
         {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 384,
+          lineNumber: 383,
           columnNumber: 9
         },
         this
       )
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 324,
+      lineNumber: 323,
       columnNumber: 7
     }, this),
     showFilters && /* @__PURE__ */ jsxDEV14(Card11, { withBorder: !0, children: [
       /* @__PURE__ */ jsxDEV14(Text11, { fw: 600, mb: "md", children: "\u7BE9\u9078\u689D\u4EF6" }, void 0, !1, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 406,
+        lineNumber: 405,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV14("form", { method: "get", action: "/kols", children: [
         /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "view", value: view }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 409,
+          lineNumber: 408,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "sort", value: sortKey }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 410,
+          lineNumber: 409,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "order", value: sortOrder }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 411,
+          lineNumber: 410,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "panel", value: "filters" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 412,
+          lineNumber: 411,
           columnNumber: 15
         }, this),
         q && /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "q", value: q }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 413,
+          lineNumber: 412,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { align: "flex-start", gap: "xl", wrap: "wrap", children: [
           /* @__PURE__ */ jsxDEV14(Box9, { style: { minWidth: 160 }, children: [
             /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", fw: 600, mb: 6, children: "\u7C89\u7D72\u6578" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 418,
+              lineNumber: 417,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV14(Stack12, { gap: 4, children: FOLLOWER_RANGES.map((r) => /* @__PURE__ */ jsxDEV14("label", { style: { display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14 }, children: [
@@ -12944,7 +12943,7 @@ document.addEventListener('submit', function(e) {
                 !1,
                 {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 422,
+                  lineNumber: 421,
                   columnNumber: 25
                 },
                 this
@@ -12952,27 +12951,27 @@ document.addEventListener('submit', function(e) {
               r.label
             ] }, r.key, !0, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 421,
+              lineNumber: 420,
               columnNumber: 23
             }, this)) }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 419,
+              lineNumber: 418,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 417,
+            lineNumber: 416,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV14(Divider8, { orientation: "vertical" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 434,
+            lineNumber: 433,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV14(Box9, { style: { minWidth: 160 }, children: [
             /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", fw: 600, mb: 6, children: "\u7522\u696D\u5225" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 438,
+              lineNumber: 437,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV14(Stack12, { gap: 4, children: allIndustries.map((ind) => /* @__PURE__ */ jsxDEV14("label", { style: { display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14 }, children: [
@@ -12988,7 +12987,7 @@ document.addEventListener('submit', function(e) {
                 !1,
                 {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 442,
+                  lineNumber: 441,
                   columnNumber: 25
                 },
                 this
@@ -12996,27 +12995,27 @@ document.addEventListener('submit', function(e) {
               ind
             ] }, ind, !0, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 441,
+              lineNumber: 440,
               columnNumber: 23
             }, this)) }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 439,
+              lineNumber: 438,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 437,
+            lineNumber: 436,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV14(Divider8, { orientation: "vertical" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 454,
+            lineNumber: 453,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV14(Box9, { style: { minWidth: 200 }, children: [
             /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", fw: 600, mb: 6, children: "\u6A19\u7C64" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 458,
+              lineNumber: 457,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV14("script", { dangerouslySetInnerHTML: {
@@ -13036,7 +13035,7 @@ document.addEventListener('submit', function(e) {
                 `
             } }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 460,
+              lineNumber: 459,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ jsxDEV14(Group11, { gap: 6, wrap: "wrap", children: allTags.map((tag) => /* @__PURE__ */ jsxDEV14(
@@ -13071,7 +13070,7 @@ document.addEventListener('submit', function(e) {
                     !1,
                     {
                       fileName: "app/routes/_app.kols._index.tsx",
-                      lineNumber: 497,
+                      lineNumber: 496,
                       columnNumber: 25
                     },
                     this
@@ -13083,23 +13082,23 @@ document.addEventListener('submit', function(e) {
               !0,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 477,
+                lineNumber: 476,
                 columnNumber: 23
               },
               this
             )) }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 475,
+              lineNumber: 474,
               columnNumber: 19
             }, this)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 457,
+            lineNumber: 456,
             columnNumber: 17
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 415,
+          lineNumber: 414,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { mt: "md", gap: "sm", children: [
@@ -13123,7 +13122,7 @@ document.addEventListener('submit', function(e) {
             !1,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 513,
+              lineNumber: 512,
               columnNumber: 17
             },
             this
@@ -13146,24 +13145,24 @@ document.addEventListener('submit', function(e) {
             !1,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 526,
+              lineNumber: 525,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 512,
+          lineNumber: 511,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 407,
+        lineNumber: 406,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 405,
+      lineNumber: 404,
       columnNumber: 11
     }, this),
     /* @__PURE__ */ jsxDEV14(Text11, { c: "dimmed", size: "sm", children: [
@@ -13173,7 +13172,7 @@ document.addEventListener('submit', function(e) {
       q ? `\uFF08\u641C\u5C0B\uFF1A${q}\uFF09` : ""
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 544,
+      lineNumber: 543,
       columnNumber: 7
     }, this),
     view === "card" && /* @__PURE__ */ jsxDEV14(SimpleGrid8, { cols: { base: 1, sm: 2, lg: 3, xl: 4 }, spacing: 24, children: pageRows.map((kol) => {
@@ -13182,17 +13181,17 @@ document.addEventListener('submit', function(e) {
         /* @__PURE__ */ jsxDEV14(Form7, { method: "post", style: { position: "absolute", top: 12, right: 12, zIndex: 2 }, children: [
           /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "intent", value: "toggleFavorite" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 555,
+            lineNumber: 554,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 556,
+            lineNumber: 555,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "isFavorite", value: String(kol.isFavorite) }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 557,
+            lineNumber: 556,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(
@@ -13203,38 +13202,38 @@ document.addEventListener('submit', function(e) {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                fontSize: 24,
+                fontSize: 18,
                 padding: 0,
                 lineHeight: 1,
-                color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)",
-                textShadow: kol.isFavorite ? "0 0 2px rgba(250, 176, 5, 0.4)" : "none"
+                color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+                textShadow: kol.isFavorite ? "0 0 2px rgba(250, 82, 82, 0.4)" : "none"
               },
               title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF",
-              children: kol.isFavorite ? "\u2605" : "\u2606"
+              children: kol.isFavorite ? "\u2665" : "\u2661"
             },
             void 0,
             !1,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 558,
+              lineNumber: 557,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 554,
+          lineNumber: 553,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Stack12, { align: "center", gap: "xs", children: [
           /* @__PURE__ */ jsxDEV14(Avatar8, { src: kol.avatarUrl, size: 72, radius: 999 }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 576,
+            lineNumber: 575,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { fw: 600, children: kol.displayName }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 577,
+            lineNumber: 576,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", c: "dimmed", children: [
@@ -13242,17 +13241,17 @@ document.addEventListener('submit', function(e) {
             kol.instagramHandle ?? kol.displayName.toLowerCase().replaceAll(" ", "")
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 578,
+            lineNumber: 577,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 575,
+          lineNumber: 574,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Divider8, { my: "sm" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 582,
+          lineNumber: 581,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Stack12, { gap: 4, children: [
@@ -13261,7 +13260,7 @@ document.addEventListener('submit', function(e) {
             (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 584,
+            lineNumber: 583,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", children: [
@@ -13269,7 +13268,7 @@ document.addEventListener('submit', function(e) {
             (kol.social?.youtube ?? 0).toLocaleString()
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 585,
+            lineNumber: 584,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", children: [
@@ -13277,21 +13276,21 @@ document.addEventListener('submit', function(e) {
             (kol.social?.tiktok ?? 0).toLocaleString()
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 586,
+            lineNumber: 585,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 583,
+          lineNumber: 582,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { gap: 6, mt: "sm", wrap: "wrap", children: kolTags.map((tag) => /* @__PURE__ */ jsxDEV14(Badge6, { variant: "light", radius: "xl", size: "sm", children: tag }, tag, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 590,
+          lineNumber: 589,
           columnNumber: 23
         }, this)) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 588,
+          lineNumber: 587,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { justify: "space-between", mt: "sm", children: [
@@ -13300,7 +13299,7 @@ document.addEventListener('submit', function(e) {
             (kol.rating ?? 0).toFixed(1)
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 594,
+            lineNumber: 593,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "xs", c: "dimmed", children: [
@@ -13309,12 +13308,12 @@ document.addEventListener('submit', function(e) {
             " \u6B21"
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 595,
+            lineNumber: 594,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 593,
+          lineNumber: 592,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Group11, { mt: "sm", gap: "xs", children: [
@@ -13332,7 +13331,7 @@ document.addEventListener('submit', function(e) {
             !1,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 598,
+              lineNumber: 597,
               columnNumber: 21
             },
             this
@@ -13351,7 +13350,7 @@ document.addEventListener('submit', function(e) {
             !1,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 607,
+              lineNumber: 606,
               columnNumber: 21
             },
             this
@@ -13365,17 +13364,17 @@ document.addEventListener('submit', function(e) {
               children: [
                 /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "intent", value: "delete" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 621,
+                  lineNumber: 620,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 622,
+                  lineNumber: 621,
                   columnNumber: 23
                 }, this),
                 /* @__PURE__ */ jsxDEV14(Button12, { type: "submit", color: "red", variant: "light", size: "xs", fullWidth: !0, children: "\u522A\u9664" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 623,
+                  lineNumber: 622,
                   columnNumber: 23
                 }, this)
               ]
@@ -13384,31 +13383,31 @@ document.addEventListener('submit', function(e) {
             !0,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 616,
+              lineNumber: 615,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 597,
+          lineNumber: 596,
           columnNumber: 19
         }, this)
       ] }, kol.id, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 553,
+        lineNumber: 552,
         columnNumber: 17
       }, this);
     }) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 549,
+      lineNumber: 548,
       columnNumber: 11
     }, this),
     view === "table" && /* @__PURE__ */ jsxDEV14(Card11, { withBorder: !0, children: /* @__PURE__ */ jsxDEV14(Table3, { highlightOnHover: !0, children: [
       /* @__PURE__ */ jsxDEV14(Table3.Thead, { children: /* @__PURE__ */ jsxDEV14(Table3.Tr, { children: [
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: "Photo" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 642,
+          lineNumber: 641,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: [
@@ -13416,12 +13415,12 @@ document.addEventListener('submit', function(e) {
           sortLabel("name")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 643,
+          lineNumber: 642,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: "Instagram" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 644,
+          lineNumber: 643,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: [
@@ -13429,17 +13428,17 @@ document.addEventListener('submit', function(e) {
           sortLabel("followers")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 645,
+          lineNumber: 644,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: "\u4E92\u52D5/\u66DD\u5149" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 646,
+          lineNumber: 645,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: "\u6A19\u7C64" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 647,
+          lineNumber: 646,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: [
@@ -13447,7 +13446,7 @@ document.addEventListener('submit', function(e) {
           sortLabel("rating")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 648,
+          lineNumber: 647,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: /* @__PURE__ */ jsxDEV14("a", { href: sortUrl("collaborations"), style: { textDecoration: "none", color: "inherit" }, children: [
@@ -13455,44 +13454,44 @@ document.addEventListener('submit', function(e) {
           sortLabel("collaborations")
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 649,
+          lineNumber: 648,
           columnNumber: 29
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 649,
+          lineNumber: 648,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Th, { children: "\u64CD\u4F5C" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 650,
+          lineNumber: 649,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 641,
+        lineNumber: 640,
         columnNumber: 17
       }, this) }, void 0, !1, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 640,
+        lineNumber: 639,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ jsxDEV14(Table3.Tbody, { children: pageRows.map((kol) => /* @__PURE__ */ jsxDEV14(Table3.Tr, { children: [
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: /* @__PURE__ */ jsxDEV14(Avatar8, { src: kol.avatarUrl, size: 32, radius: "xl" }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 656,
+          lineNumber: 655,
           columnNumber: 31
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 656,
+          lineNumber: 655,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: /* @__PURE__ */ jsxDEV14(Link11, { to: `/kols/${kol.id}`, children: kol.displayName }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 657,
+          lineNumber: 656,
           columnNumber: 31
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 657,
+          lineNumber: 656,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: [
@@ -13500,41 +13499,41 @@ document.addEventListener('submit', function(e) {
           kol.instagramHandle ?? "-"
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 658,
+          lineNumber: 657,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString() }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 659,
+          lineNumber: 658,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: [
           /* @__PURE__ */ jsxDEV14(Text11, { size: "xs", children: kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 661,
+            lineNumber: 660,
             columnNumber: 23
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "xs", c: "dimmed", children: kol.exposureRate ? `${kol.exposureRate.toFixed(1)}%` : "-" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 662,
+            lineNumber: 661,
             columnNumber: 23
           }, this)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 660,
+          lineNumber: 659,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: /* @__PURE__ */ jsxDEV14(Group11, { gap: 4, children: getPrimaryTags(kol).slice(0, 2).map((tag) => /* @__PURE__ */ jsxDEV14(Badge6, { size: "sm", variant: "light", children: tag }, tag, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 667,
+          lineNumber: 666,
           columnNumber: 27
         }, this)) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 665,
+          lineNumber: 664,
           columnNumber: 23
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 664,
+          lineNumber: 663,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: [
@@ -13542,29 +13541,29 @@ document.addEventListener('submit', function(e) {
           (kol.rating ?? 0).toFixed(1)
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 671,
+          lineNumber: 670,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: kol.collaborations ?? 0 }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 672,
+          lineNumber: 671,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV14(Table3.Td, { children: /* @__PURE__ */ jsxDEV14(Group11, { gap: "xs", children: [
           /* @__PURE__ */ jsxDEV14(Form7, { method: "post", style: { display: "inline" }, children: [
             /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "intent", value: "toggleFavorite" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 676,
+              lineNumber: 675,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 677,
+              lineNumber: 676,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "isFavorite", value: String(kol.isFavorite) }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 678,
+              lineNumber: 677,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ jsxDEV14(
@@ -13575,36 +13574,36 @@ document.addEventListener('submit', function(e) {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  fontSize: 20,
+                  fontSize: 16,
                   padding: 0,
                   lineHeight: 1,
-                  color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)"
+                  color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)"
                 },
                 title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF",
-                children: kol.isFavorite ? "\u2605" : "\u2606"
+                children: kol.isFavorite ? "\u2665" : "\u2661"
               },
               void 0,
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 679,
+                lineNumber: 678,
                 columnNumber: 27
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 675,
+            lineNumber: 674,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV14(Button12, { component: Link11, to: `/kols/${kol.id}`, variant: "light", size: "xs", children: "\u67E5\u770B" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 695,
+            lineNumber: 694,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV14(Button12, { component: Link11, to: `/kols/${kol.id}/edit`, variant: "default", size: "xs", children: "\u7DE8\u8F2F" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 696,
+            lineNumber: 695,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV14(
@@ -13616,17 +13615,17 @@ document.addEventListener('submit', function(e) {
               children: [
                 /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "intent", value: "delete" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 702,
+                  lineNumber: 701,
                   columnNumber: 27
                 }, this),
                 /* @__PURE__ */ jsxDEV14("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 703,
+                  lineNumber: 702,
                   columnNumber: 27
                 }, this),
                 /* @__PURE__ */ jsxDEV14(Button12, { type: "submit", color: "red", variant: "subtle", size: "xs", children: "\u522A\u9664" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 704,
+                  lineNumber: 703,
                   columnNumber: 27
                 }, this)
               ]
@@ -13635,36 +13634,36 @@ document.addEventListener('submit', function(e) {
             !0,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 697,
+              lineNumber: 696,
               columnNumber: 25
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 674,
+          lineNumber: 673,
           columnNumber: 23
         }, this) }, void 0, !1, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 673,
+          lineNumber: 672,
           columnNumber: 21
         }, this)
       ] }, kol.id, !0, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 655,
+        lineNumber: 654,
         columnNumber: 19
       }, this)) }, void 0, !1, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 653,
+        lineNumber: 652,
         columnNumber: 15
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 639,
+      lineNumber: 638,
       columnNumber: 13
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 638,
+      lineNumber: 637,
       columnNumber: 11
     }, this),
     totalPages > 1 && /* @__PURE__ */ jsxDEV14(Group11, { justify: "center", children: /* @__PURE__ */ jsxDEV14(Group11, { gap: 4, children: Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => /* @__PURE__ */ jsxDEV14(
@@ -13691,17 +13690,17 @@ document.addEventListener('submit', function(e) {
       !1,
       {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 722,
+        lineNumber: 721,
         columnNumber: 17
       },
       this
     )) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 720,
+      lineNumber: 719,
       columnNumber: 13
     }, this) }, void 0, !1, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 719,
+      lineNumber: 718,
       columnNumber: 11
     }, this),
     /* @__PURE__ */ jsxDEV14(
@@ -13722,7 +13721,7 @@ document.addEventListener('submit', function(e) {
           /* @__PURE__ */ jsxDEV14(Group11, { justify: "space-between", mb: "md", children: [
             /* @__PURE__ */ jsxDEV14(Title12, { order: 4, children: "\u6279\u91CF\u532F\u5165 KOL (Excel)" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 763,
+              lineNumber: 762,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV14(
@@ -13739,19 +13738,19 @@ document.addEventListener('submit', function(e) {
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 764,
+                lineNumber: 763,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 762,
+            lineNumber: 761,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", c: "dimmed", mb: "lg", children: "\u8ACB\u4E0A\u50B3\u5305\u542B KOL \u540D\u7A31\u3001\u5E73\u53F0\u9023\u7D50\u3001\u7C89\u7D72\u6578\u7B49\u8CC7\u8A0A\u7684 Excel \u6A94\u6848\u3002\u7CFB\u7D71\u6703\u81EA\u52D5\u89E3\u6790\u4E26\u5EFA\u6A94\u3002\uFF08\u529F\u80FD\u5C55\u793A\u7248\uFF09" }, void 0, !1, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 772,
+            lineNumber: 771,
             columnNumber: 9
           }, this),
           /* @__PURE__ */ jsxDEV14(
@@ -13783,17 +13782,17 @@ document.addEventListener('submit', function(e) {
               children: [
                 /* @__PURE__ */ jsxDEV14("div", { style: { fontSize: 36, marginBottom: 12 }, children: "\u{1F4E4}" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 801,
+                  lineNumber: 800,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV14(Text11, { fw: 600, color: "var(--mantine-color-blue-filled)", children: "\u9EDE\u64CA\u6216\u62D6\u66F3 Excel \u6A94\u6848\u81F3\u6B64" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 802,
+                  lineNumber: 801,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV14(Text11, { size: "sm", c: "dimmed", mt: 4, children: "\u652F\u63F4 .xlsx, .csv" }, void 0, !1, {
                   fileName: "app/routes/_app.kols._index.tsx",
-                  lineNumber: 803,
+                  lineNumber: 802,
                   columnNumber: 11
                 }, this),
                 /* @__PURE__ */ jsxDEV14(
@@ -13816,7 +13815,7 @@ document.addEventListener('submit', function(e) {
                   !1,
                   {
                     fileName: "app/routes/_app.kols._index.tsx",
-                    lineNumber: 804,
+                    lineNumber: 803,
                     columnNumber: 11
                   },
                   this
@@ -13827,7 +13826,7 @@ document.addEventListener('submit', function(e) {
             !0,
             {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 776,
+              lineNumber: 775,
               columnNumber: 9
             },
             this
@@ -13835,7 +13834,7 @@ document.addEventListener('submit', function(e) {
           /* @__PURE__ */ jsxDEV14(Group11, { justify: "space-between", mt: "xl", children: [
             /* @__PURE__ */ jsxDEV14("a", { href: "#", style: { fontSize: 13, color: "var(--mantine-color-blue-filled)", textDecoration: "none" }, children: "\u4E0B\u8F09 Excel \u5EFA\u6A94\u7BC4\u672C" }, void 0, !1, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 828,
+              lineNumber: 827,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV14(
@@ -13852,14 +13851,14 @@ document.addEventListener('submit', function(e) {
               !1,
               {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 829,
+                lineNumber: 828,
                 columnNumber: 11
               },
               this
             )
           ] }, void 0, !0, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 827,
+            lineNumber: 826,
             columnNumber: 9
           }, this)
         ]
@@ -13868,7 +13867,7 @@ document.addEventListener('submit', function(e) {
       !0,
       {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 749,
+        lineNumber: 748,
         columnNumber: 7
       },
       this
@@ -13890,7 +13889,7 @@ import {
   IconUsers,
   IconFileText,
   IconFileInvoice,
-  IconStar,
+  IconHeart,
   IconReportAnalytics
 } from "@tabler/icons-react";
 import { Fragment as Fragment3, jsxDEV as jsxDEV15 } from "react/jsx-dev-runtime";
@@ -13924,8 +13923,8 @@ var cards = [
   {
     title: "\u6211\u7684\u6536\u85CF",
     description: "\u67E5\u770B\u5DF2\u52A0\u5165\u6536\u85CF\u7684 KOL \u65B9\u4FBF\u5FEB\u901F\u63D0\u6848",
-    icon: IconStar,
-    color: "yellow",
+    icon: IconHeart,
+    color: "pink",
     to: "/favorites"
   },
   {
@@ -17579,7 +17578,7 @@ var navItems = [
   { to: "/proposals", label: "\u63D0\u6848\u7BA1\u7406", icon: "\u{1F4CB}" },
   { to: "/kols", label: "KOL \u7BA1\u7406", icon: "\u{1F465}" },
   { to: "/insertion-orders", label: "\u59D4\u520A\u55AE\u7BA1\u7406", icon: "\u{1F4DD}" },
-  { to: "/favorites", label: "\u6211\u7684\u6536\u85CF", icon: "\u2B50" },
+  { to: "/favorites", label: "\u6211\u7684\u6536\u85CF", icon: "\u2764\uFE0F" },
   { to: "/reports/generate", label: "\u7D50\u6848\u5831\u544A\u7522\u751F", icon: "\u{1F4C8}" }
 ];
 function navLinkStyle(active) {
@@ -17973,7 +17972,7 @@ function SplatRoute() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-RHXNLVRX.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-HJTATZWM.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-ZHSZHK33.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-G7FKO4SE.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-IQUXPVOV.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-7JUM33CN.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-B66TRS3M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-4LMVX47X.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-IZXVN76N.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-TVJB4PEH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-PVD36O4Y.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-Y4VWLQAD.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-OHES2SUE.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-UTOD2A6H.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-HMM4O3P5.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-B4G5QB2M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-G7EXDE5M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-SUNZP7T3.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "0c91e80d", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774857008247 }, url: "/build/manifest-0C91E80D.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-HZV6GBGS.js", imports: ["/build/_shared/chunk-O4BRYNJ4.js", "/build/_shared/chunk-6WKXAUV5.js", "/build/_shared/chunk-U4FRFQSK.js", "/build/_shared/chunk-XGOTYLZ5.js", "/build/_shared/chunk-7M6SC7J5.js", "/build/_shared/chunk-5YHBI2JG.js", "/build/_shared/chunk-UWV35TSL.js", "/build/_shared/chunk-PNG5AS42.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-RHXNLVRX.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !0 }, "routes/$": { id: "routes/$", parentId: "root", path: "*", index: void 0, caseSensitive: void 0, module: "/build/routes/$-PT3HKQQQ.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app": { id: "routes/_app", parentId: "root", path: void 0, index: void 0, caseSensitive: void 0, module: "/build/routes/_app-5QGISXWF.js", imports: ["/build/_shared/chunk-J2J7XYF7.js", "/build/_shared/chunk-CIOZZPJ7.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.dashboard": { id: "routes/_app.dashboard", parentId: "routes/_app", path: "dashboard", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.dashboard-QZWVWLBS.js", imports: ["/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.favorites": { id: "routes/_app.favorites", parentId: "routes/_app", path: "favorites", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.favorites-3SZCSELY.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId._index": { id: "routes/_app.insertion-orders.$insertionOrderId._index", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId._index-MLJP2TYR.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.$insertionOrderId.edit": { id: "routes/_app.insertion-orders.$insertionOrderId.edit", parentId: "routes/_app", path: "insertion-orders/:insertionOrderId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.$insertionOrderId.edit-T46ZVRII.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders._index": { id: "routes/_app.insertion-orders._index", parentId: "routes/_app", path: "insertion-orders", index: !0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders._index-VWN5BBT4.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.insertion-orders.new": { id: "routes/_app.insertion-orders.new", parentId: "routes/_app", path: "insertion-orders/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.insertion-orders.new-QQAOE3YC.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId._index": { id: "routes/_app.kols.$kolId._index", parentId: "routes/_app", path: "kols/:kolId", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId._index-TVJB4PEH.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.$kolId.edit": { id: "routes/_app.kols.$kolId.edit", parentId: "routes/_app", path: "kols/:kolId/edit", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.$kolId.edit-PVD36O4Y.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols._index": { id: "routes/_app.kols._index", parentId: "routes/_app", path: "kols", index: !0, caseSensitive: void 0, module: "/build/routes/_app.kols._index-UJDODLP7.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.kols.new": { id: "routes/_app.kols.new", parentId: "routes/_app", path: "kols/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.kols.new-OHES2SUE.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.$proposalId": { id: "routes/_app.proposals.$proposalId", parentId: "routes/_app", path: "proposals/:proposalId", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.$proposalId-CMIGHCJ5.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals._index": { id: "routes/_app.proposals._index", parentId: "routes/_app", path: "proposals", index: !0, caseSensitive: void 0, module: "/build/routes/_app.proposals._index-DQX3VKA6.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.proposals.new": { id: "routes/_app.proposals.new", parentId: "routes/_app", path: "proposals/new", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.proposals.new-B4G5QB2M.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.reports.generate": { id: "routes/_app.reports.generate", parentId: "routes/_app", path: "reports/generate", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.reports.generate-2SK6VKNS.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_app.settings": { id: "routes/_app.settings", parentId: "routes/_app", path: "settings", index: void 0, caseSensitive: void 0, module: "/build/routes/_app.settings-6J4QFSCT.js", imports: ["/build/_shared/chunk-HZBBB3MW.js", "/build/_shared/chunk-G7CHZRZX.js", "/build/_shared/chunk-O3NZ7MAI.js", "/build/_shared/chunk-B43JI2TA.js"], hasAction: !0, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-DVCTFJQN.js", imports: ["/build/_shared/chunk-G7CHZRZX.js"], hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.ai-parse-order": { id: "routes/api.ai-parse-order", parentId: "root", path: "api/ai-parse-order", index: void 0, caseSensitive: void 0, module: "/build/routes/api.ai-parse-order-OFXOK4LN.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/api.social-followers": { id: "routes/api.social-followers", parentId: "root", path: "api/social-followers", index: void 0, caseSensitive: void 0, module: "/build/routes/api.social-followers-VVGDZ4IC.js", imports: void 0, hasAction: !1, hasLoader: !0, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-5TUIEAR5.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "29265dba", hmr: { runtime: "/build/_shared\\chunk-5YHBI2JG.js", timestamp: 1774863181057 }, url: "/build/manifest-29265DBA.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "development", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

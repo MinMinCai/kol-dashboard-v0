@@ -113,25 +113,25 @@ var IconFileTypePpt = createReactComponent("outline", "file-type-ppt", "FileType
 var __iconNode13 = [["path", { "d": "M14 3v4a1 1 0 0 0 1 1h4", "key": "svg-0" }], ["path", { "d": "M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2", "key": "svg-1" }]];
 var IconFile = createReactComponent("outline", "file", "File", __iconNode13);
 
+// node_modules/@tabler/icons-react/dist/esm/icons/IconHeart.mjs
+var __iconNode14 = [["path", { "d": "M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572", "key": "svg-0" }]];
+var IconHeart = createReactComponent("outline", "heart", "Heart", __iconNode14);
+
 // node_modules/@tabler/icons-react/dist/esm/icons/IconPencil.mjs
-var __iconNode14 = [["path", { "d": "M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4", "key": "svg-0" }], ["path", { "d": "M13.5 6.5l4 4", "key": "svg-1" }]];
-var IconPencil = createReactComponent("outline", "pencil", "Pencil", __iconNode14);
+var __iconNode15 = [["path", { "d": "M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4", "key": "svg-0" }], ["path", { "d": "M13.5 6.5l4 4", "key": "svg-1" }]];
+var IconPencil = createReactComponent("outline", "pencil", "Pencil", __iconNode15);
 
 // node_modules/@tabler/icons-react/dist/esm/icons/IconPlus.mjs
-var __iconNode15 = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M5 12l14 0", "key": "svg-1" }]];
-var IconPlus = createReactComponent("outline", "plus", "Plus", __iconNode15);
+var __iconNode16 = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M5 12l14 0", "key": "svg-1" }]];
+var IconPlus = createReactComponent("outline", "plus", "Plus", __iconNode16);
 
 // node_modules/@tabler/icons-react/dist/esm/icons/IconReportAnalytics.mjs
-var __iconNode16 = [["path", { "d": "M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2", "key": "svg-0" }], ["path", { "d": "M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2", "key": "svg-1" }], ["path", { "d": "M9 17v-5", "key": "svg-2" }], ["path", { "d": "M12 17v-1", "key": "svg-3" }], ["path", { "d": "M15 17v-3", "key": "svg-4" }]];
-var IconReportAnalytics = createReactComponent("outline", "report-analytics", "ReportAnalytics", __iconNode16);
+var __iconNode17 = [["path", { "d": "M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2", "key": "svg-0" }], ["path", { "d": "M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2", "key": "svg-1" }], ["path", { "d": "M9 17v-5", "key": "svg-2" }], ["path", { "d": "M12 17v-1", "key": "svg-3" }], ["path", { "d": "M15 17v-3", "key": "svg-4" }]];
+var IconReportAnalytics = createReactComponent("outline", "report-analytics", "ReportAnalytics", __iconNode17);
 
 // node_modules/@tabler/icons-react/dist/esm/icons/IconRobot.mjs
-var __iconNode17 = [["path", { "d": "M6 6a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2l0 -4", "key": "svg-0" }], ["path", { "d": "M12 2v2", "key": "svg-1" }], ["path", { "d": "M9 12v9", "key": "svg-2" }], ["path", { "d": "M15 12v9", "key": "svg-3" }], ["path", { "d": "M5 16l4 -2", "key": "svg-4" }], ["path", { "d": "M15 14l4 2", "key": "svg-5" }], ["path", { "d": "M9 18h6", "key": "svg-6" }], ["path", { "d": "M10 8v.01", "key": "svg-7" }], ["path", { "d": "M14 8v.01", "key": "svg-8" }]];
-var IconRobot = createReactComponent("outline", "robot", "Robot", __iconNode17);
-
-// node_modules/@tabler/icons-react/dist/esm/icons/IconStar.mjs
-var __iconNode18 = [["path", { "d": "M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245", "key": "svg-0" }]];
-var IconStar = createReactComponent("outline", "star", "Star", __iconNode18);
+var __iconNode18 = [["path", { "d": "M6 6a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2l0 -4", "key": "svg-0" }], ["path", { "d": "M12 2v2", "key": "svg-1" }], ["path", { "d": "M9 12v9", "key": "svg-2" }], ["path", { "d": "M15 12v9", "key": "svg-3" }], ["path", { "d": "M5 16l4 -2", "key": "svg-4" }], ["path", { "d": "M15 14l4 2", "key": "svg-5" }], ["path", { "d": "M9 18h6", "key": "svg-6" }], ["path", { "d": "M10 8v.01", "key": "svg-7" }], ["path", { "d": "M14 8v.01", "key": "svg-8" }]];
+var IconRobot = createReactComponent("outline", "robot", "Robot", __iconNode18);
 
 // node_modules/@tabler/icons-react/dist/esm/icons/IconTemplate.mjs
 var __iconNode19 = [["path", { "d": "M4 5a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1l0 -2", "key": "svg-0" }], ["path", { "d": "M4 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6", "key": "svg-1" }], ["path", { "d": "M14 12l6 0", "key": "svg-2" }], ["path", { "d": "M14 16l6 0", "key": "svg-3" }], ["path", { "d": "M14 20l6 0", "key": "svg-4" }]];
@@ -167,11 +167,11 @@ export {
   IconFileText,
   IconFileTypePpt,
   IconFile,
+  IconHeart,
   IconPencil,
   IconPlus,
   IconReportAnalytics,
   IconRobot,
-  IconStar,
   IconTemplate,
   IconTrash,
   IconUpload,
@@ -300,6 +300,14 @@ export {
    * See the LICENSE file in the root directory of this source tree.
    *)
 
+@tabler/icons-react/dist/esm/icons/IconHeart.mjs:
+  (**
+   * @license @tabler/icons-react v3.40.0 - MIT
+   *
+   * This source code is licensed under the MIT license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
 @tabler/icons-react/dist/esm/icons/IconPencil.mjs:
   (**
    * @license @tabler/icons-react v3.40.0 - MIT
@@ -325,14 +333,6 @@ export {
    *)
 
 @tabler/icons-react/dist/esm/icons/IconRobot.mjs:
-  (**
-   * @license @tabler/icons-react v3.40.0 - MIT
-   *
-   * This source code is licensed under the MIT license.
-   * See the LICENSE file in the root directory of this source tree.
-   *)
-
-@tabler/icons-react/dist/esm/icons/IconStar.mjs:
   (**
    * @license @tabler/icons-react v3.40.0 - MIT
    *
@@ -388,4 +388,4 @@ export {
    * See the LICENSE file in the root directory of this source tree.
    *)
 */
-//# sourceMappingURL=/build/_shared/chunk-ZHSZHK33.js.map
+//# sourceMappingURL=/build/_shared/chunk-CIOZZPJ7.js.map

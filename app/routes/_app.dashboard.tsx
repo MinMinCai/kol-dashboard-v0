@@ -4,7 +4,7 @@ import {
   IconUsers,
   IconFileText,
   IconFileInvoice,
-  IconStar,
+  IconHeart,
   IconReportAnalytics
 } from "@tabler/icons-react";
 
@@ -40,8 +40,8 @@ const modules = [
   {
     title: "我的收藏",
     description: "查看已加入收藏的 KOL 方便快速提案",
-    icon: IconStar,
-    color: "yellow",
+    icon: IconHeart,
+    color: "pink",
     to: "/favorites",
   },
   {

@@ -308,25 +308,24 @@ document.addEventListener('submit', function(e) {
           </Group>
 
           <Group gap="sm">
-            <button
-              type="button"
-              style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-blue-filled)", background: "var(--mantine-color-blue-light)", color: "var(--mantine-color-blue-filled)", cursor: "pointer", fontWeight: 500 }}
+            <Button 
+              variant="light" 
               onClick={() => { const dlg = document.getElementById('kol-batch-import-dialog') as HTMLDialogElement; if (dlg) dlg.showModal(); }}
             >
               📥 批量匯入
-            </button>
+            </Button>
             <Button component={Link} to="/kols/new">新增 KOL</Button>
           </Group>
         </Group>
       </Group>
 
       {/* ── search + filter bar ── */}
-      <Group justify="space-between" align="flex-end" wrap="nowrap">
+      <Group justify="flex-start" align="flex-end" wrap="wrap" gap={8}>
         {/*
           Search: a real HTML form. Submits by pressing Enter or clicking the button.
           Works entirely via browser native GET request.
         */}
-        <form method="get" action="/kols" style={{ flex: 1, maxWidth: 520, display: "flex", gap: 8 }}>
+        <form method="get" action="/kols" style={{ flex: 1, display: "flex", gap: 8 }}>
           {/* preserve other params */}
           {view !== "card" && <input type="hidden" name="view" value={view} />}
           {sortKey !== "followers" && <input type="hidden" name="sort" value={sortKey} />}
@@ -561,15 +560,15 @@ document.addEventListener('submit', function(e) {
                         background: "none",
                         border: "none",
                         cursor: "pointer",
-                        fontSize: 24,
+                        fontSize: 18,
                         padding: 0,
                         lineHeight: 1,
-                        color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)",
-                        textShadow: kol.isFavorite ? "0 0 2px rgba(250, 176, 5, 0.4)" : "none"
+                        color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+                        textShadow: kol.isFavorite ? "0 0 2px rgba(250, 82, 82, 0.4)" : "none"
                       }}
                       title={kol.isFavorite ? "取消收藏" : "加入收藏"}
                     >
-                      {kol.isFavorite ? "★" : "☆"}
+                      {kol.isFavorite ? "♥" : "♡"}
                     </button>
                   </Form>
                   <Stack align="center" gap="xs">
@@ -682,14 +681,14 @@ document.addEventListener('submit', function(e) {
                               background: "none",
                               border: "none",
                               cursor: "pointer",
-                              fontSize: 20,
+                              fontSize: 16,
                               padding: 0,
                               lineHeight: 1,
-                              color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)",
+                              color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
                             }}
                             title={kol.isFavorite ? "取消收藏" : "加入收藏"}
                           >
-                            {kol.isFavorite ? "★" : "☆"}
+                            {kol.isFavorite ? "♥" : "♡"}
                           </button>
                         </Form>
                         <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>

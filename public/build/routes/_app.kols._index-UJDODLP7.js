@@ -57,7 +57,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.kols._index.tsx"
   );
-  import.meta.hot.lastModified = "1774431279445.6338";
+  import.meta.hot.lastModified = "1774863159376.2837";
 }
 var FOLLOWER_RANGES = [{
   key: "1000",
@@ -265,15 +265,7 @@ document.addEventListener('submit', function(e) {
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: "sm", children: [
-          /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
-            padding: "8px 16px",
-            borderRadius: 4,
-            border: "1px solid var(--mantine-color-blue-filled)",
-            background: "var(--mantine-color-blue-light)",
-            color: "var(--mantine-color-blue-filled)",
-            cursor: "pointer",
-            fontWeight: 500
-          }, onClick: () => {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { variant: "light", onClick: () => {
             const dlg = document.getElementById("kol-batch-import-dialog");
             if (dlg)
               dlg.showModal();
@@ -284,7 +276,7 @@ document.addEventListener('submit', function(e) {
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { component: Link, to: "/kols/new", children: "\u65B0\u589E KOL" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 368,
+            lineNumber: 360,
             columnNumber: 13
           }, this)
         ] }, void 0, true, {
@@ -302,56 +294,55 @@ document.addEventListener('submit', function(e) {
       lineNumber: 316,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", align: "flex-end", wrap: "nowrap", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "flex-start", align: "flex-end", wrap: "wrap", gap: 8, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("form", { method: "get", action: "/kols", style: {
         flex: 1,
-        maxWidth: 520,
         display: "flex",
         gap: 8
       }, children: [
         view !== "card" && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "view", value: view }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 386,
+          lineNumber: 377,
           columnNumber: 31
         }, this),
         sortKey !== "followers" && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "sort", value: sortKey }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 387,
+          lineNumber: 378,
           columnNumber: 39
         }, this),
         sortOrder !== "desc" && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "order", value: sortOrder }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 388,
+          lineNumber: 379,
           columnNumber: 36
         }, this),
         showFilters && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "panel", value: "filters" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 389,
+          lineNumber: 380,
           columnNumber: 27
         }, this),
         followerRanges.map((r) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "fr", value: r }, r, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 390,
+          lineNumber: 381,
           columnNumber: 36
         }, this)),
         industries.map((i) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "ind", value: i }, i, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 391,
+          lineNumber: 382,
           columnNumber: 32
         }, this)),
         tags.map((t) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "tag", value: t }, t, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 392,
+          lineNumber: 383,
           columnNumber: 26
         }, this)),
         minRating > 0 && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "minRating", value: String(minRating) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 393,
+          lineNumber: 384,
           columnNumber: 29
         }, this),
         maxRating < 5 && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "maxRating", value: String(maxRating) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 394,
+          lineNumber: 385,
           columnNumber: 29
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { name: "q", defaultValue: q, placeholder: "\u641C\u5C0B KOL \u540D\u7A31\u3001@\u5E33\u865F\u3001\u7522\u696D\u6216\u6A19\u7C64\uFF08\u6309 Enter \u641C\u5C0B\uFF09", style: {
@@ -364,7 +355,7 @@ document.addEventListener('submit', function(e) {
           fontSize: 14
         } }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 396,
+          lineNumber: 387,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "submit", style: {
@@ -378,7 +369,7 @@ document.addEventListener('submit', function(e) {
           fontWeight: 500
         }, children: "\u641C\u5C0B" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 405,
+          lineNumber: 396,
           columnNumber: 11
         }, this),
         q && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("a", { href: buildUrl(current, {
@@ -392,12 +383,12 @@ document.addEventListener('submit', function(e) {
           fontSize: 14
         }, children: "\u2715" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 415,
+          lineNumber: 406,
           columnNumber: 17
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 379,
+        lineNumber: 371,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("a", { href: buildUrl(current, {
@@ -417,44 +408,44 @@ document.addEventListener('submit', function(e) {
         activeFilterCount > 0 ? ` (${activeFilterCount})` : ""
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 428,
+        lineNumber: 419,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 374,
+      lineNumber: 366,
       columnNumber: 7
     }, this),
     showFilters && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { fw: 600, mb: "md", children: "\u7BE9\u9078\u689D\u4EF6" }, void 0, false, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 447,
+        lineNumber: 438,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("form", { method: "get", action: "/kols", children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "view", value: view }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 450,
+          lineNumber: 441,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "sort", value: sortKey }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 451,
+          lineNumber: 442,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "order", value: sortOrder }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 452,
+          lineNumber: 443,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "panel", value: "filters" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 453,
+          lineNumber: 444,
           columnNumber: 15
         }, this),
         q && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "q", value: q }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 454,
+          lineNumber: 445,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { align: "flex-start", gap: "xl", wrap: "wrap", children: [
@@ -463,7 +454,7 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: 6, children: "\u7C89\u7D72\u6578" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 461,
+              lineNumber: 452,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: 4, children: FOLLOWER_RANGES.map((r) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("label", { style: {
@@ -475,27 +466,27 @@ document.addEventListener('submit', function(e) {
             }, children: [
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "checkbox", name: "fr", value: r.key, defaultChecked: followerRanges.includes(r.key) }, void 0, false, {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 470,
+                lineNumber: 461,
                 columnNumber: 25
               }, this),
               r.label
             ] }, r.key, true, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 463,
+              lineNumber: 454,
               columnNumber: 47
             }, this)) }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 462,
+              lineNumber: 453,
               columnNumber: 19
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 458,
+            lineNumber: 449,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Divider, { orientation: "vertical" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 476,
+            lineNumber: 467,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Box, { style: {
@@ -503,7 +494,7 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: 6, children: "\u7522\u696D\u5225" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 482,
+              lineNumber: 473,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: 4, children: allIndustries.map((ind) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("label", { style: {
@@ -515,27 +506,27 @@ document.addEventListener('submit', function(e) {
             }, children: [
               /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "checkbox", name: "ind", value: ind, defaultChecked: industries.includes(ind) }, void 0, false, {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 491,
+                lineNumber: 482,
                 columnNumber: 25
               }, this),
               ind
             ] }, ind, true, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 484,
+              lineNumber: 475,
               columnNumber: 47
             }, this)) }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 483,
+              lineNumber: 474,
               columnNumber: 19
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 479,
+            lineNumber: 470,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Divider, { orientation: "vertical" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 497,
+            lineNumber: 488,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Box, { style: {
@@ -543,7 +534,7 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", fw: 600, mb: 6, children: "\u6A19\u7C64" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 503,
+              lineNumber: 494,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("script", { dangerouslySetInnerHTML: {
@@ -563,7 +554,7 @@ document.addEventListener('submit', function(e) {
                 `
             } }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 505,
+              lineNumber: 496,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 6, wrap: "wrap", children: allTags.map((tag) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("label", { "data-tag-label": "1", style: {
@@ -584,27 +575,27 @@ document.addEventListener('submit', function(e) {
                 display: "none"
               } }, void 0, false, {
                 fileName: "app/routes/_app.kols._index.tsx",
-                lineNumber: 536,
+                lineNumber: 527,
                 columnNumber: 25
               }, this),
               tag
             ] }, tag, true, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 522,
+              lineNumber: 513,
               columnNumber: 41
             }, this)) }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 521,
+              lineNumber: 512,
               columnNumber: 19
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 500,
+            lineNumber: 491,
             columnNumber: 17
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 456,
+          lineNumber: 447,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { mt: "md", gap: "sm", children: [
@@ -619,7 +610,7 @@ document.addEventListener('submit', function(e) {
             fontSize: 14
           }, children: "\u5957\u7528\u7BE9\u9078" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 547,
+            lineNumber: 538,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("a", { href: buildUrl({
@@ -636,22 +627,22 @@ document.addEventListener('submit', function(e) {
             fontSize: 14
           }, children: "\u6E05\u9664\u7BE9\u9078" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 557,
+            lineNumber: 548,
             columnNumber: 17
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 546,
+          lineNumber: 537,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 448,
+        lineNumber: 439,
         columnNumber: 13
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 446,
+      lineNumber: 437,
       columnNumber: 23
     }, this),
     /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { c: "dimmed", size: "sm", children: [
@@ -661,7 +652,7 @@ document.addEventListener('submit', function(e) {
       q ? `\uFF08\u641C\u5C0B\uFF1A${q}\uFF09` : ""
     ] }, void 0, true, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 575,
+      lineNumber: 566,
       columnNumber: 7
     }, this),
     view === "card" && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(SimpleGrid, { cols: {
@@ -682,47 +673,47 @@ document.addEventListener('submit', function(e) {
         }, children: [
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "intent", value: "toggleFavorite" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 595,
+            lineNumber: 586,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 596,
+            lineNumber: 587,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "isFavorite", value: String(kol.isFavorite) }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 597,
+            lineNumber: 588,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "submit", style: {
             background: "none",
             border: "none",
             cursor: "pointer",
-            fontSize: 24,
+            fontSize: 18,
             padding: 0,
             lineHeight: 1,
-            color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)",
-            textShadow: kol.isFavorite ? "0 0 2px rgba(250, 176, 5, 0.4)" : "none"
-          }, title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF", children: kol.isFavorite ? "\u2605" : "\u2606" }, void 0, false, {
+            color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+            textShadow: kol.isFavorite ? "0 0 2px rgba(250, 82, 82, 0.4)" : "none"
+          }, title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF", children: kol.isFavorite ? "\u2665" : "\u2661" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 598,
+            lineNumber: 589,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 589,
+          lineNumber: 580,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { align: "center", gap: "xs", children: [
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Avatar, { src: kol.avatarUrl, size: 72, radius: 999 }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 612,
+            lineNumber: 603,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { fw: 600, children: kol.displayName }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 613,
+            lineNumber: 604,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", c: "dimmed", children: [
@@ -730,17 +721,17 @@ document.addEventListener('submit', function(e) {
             kol.instagramHandle ?? kol.displayName.toLowerCase().replaceAll(" ", "")
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 614,
+            lineNumber: 605,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 611,
+          lineNumber: 602,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Divider, { my: "sm" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 618,
+          lineNumber: 609,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Stack, { gap: 4, children: [
@@ -749,7 +740,7 @@ document.addEventListener('submit', function(e) {
             (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 620,
+            lineNumber: 611,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", children: [
@@ -757,7 +748,7 @@ document.addEventListener('submit', function(e) {
             (kol.social?.youtube ?? 0).toLocaleString()
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 621,
+            lineNumber: 612,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", children: [
@@ -765,21 +756,21 @@ document.addEventListener('submit', function(e) {
             (kol.social?.tiktok ?? 0).toLocaleString()
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 622,
+            lineNumber: 613,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 619,
+          lineNumber: 610,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 6, mt: "sm", wrap: "wrap", children: kolTags.map((tag) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Badge, { variant: "light", radius: "xl", size: "sm", children: tag }, tag, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 625,
+          lineNumber: 616,
           columnNumber: 41
         }, this)) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 624,
+          lineNumber: 615,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", mt: "sm", children: [
@@ -788,7 +779,7 @@ document.addEventListener('submit', function(e) {
             (kol.rating ?? 0).toFixed(1)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 628,
+            lineNumber: 619,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "xs", c: "dimmed", children: [
@@ -797,23 +788,23 @@ document.addEventListener('submit', function(e) {
             " \u6B21"
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 629,
+            lineNumber: 620,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 627,
+          lineNumber: 618,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { mt: "sm", gap: "xs", children: [
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { variant: "light", size: "xs", fullWidth: true, component: Link, to: `/kols/${kol.id}`, children: "\u67E5\u770B\u8A73\u60C5" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 632,
+            lineNumber: 623,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { variant: "default", size: "xs", fullWidth: true, component: Link, to: `/kols/${kol.id}/edit`, children: "\u7DE8\u8F2F" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 635,
+            lineNumber: 626,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Form, { method: "post", "data-confirm": `\u78BA\u5B9A\u8981\u522A\u9664 ${kol.displayName} \u55CE\uFF1F\u6B64\u52D5\u4F5C\u7121\u6CD5\u5FA9\u539F\u3002`, style: {
@@ -821,44 +812,44 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "intent", value: "delete" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 641,
+              lineNumber: 632,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 642,
+              lineNumber: 633,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { type: "submit", color: "red", variant: "light", size: "xs", fullWidth: true, children: "\u522A\u9664" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 643,
+              lineNumber: 634,
               columnNumber: 23
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 638,
+            lineNumber: 629,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 631,
+          lineNumber: 622,
           columnNumber: 19
         }, this)
       ] }, kol.id, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 586,
+        lineNumber: 577,
         columnNumber: 16
       }, this);
     }) }, void 0, false, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 578,
+      lineNumber: 569,
       columnNumber: 27
     }, this),
     view === "table" && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Card, { withBorder: true, children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table, { highlightOnHover: true, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Thead, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Tr, { children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: "Photo" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 657,
+          lineNumber: 648,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: [
@@ -866,12 +857,12 @@ document.addEventListener('submit', function(e) {
           sortLabel("name")
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 658,
+          lineNumber: 649,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: "Instagram" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 659,
+          lineNumber: 650,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: [
@@ -879,17 +870,17 @@ document.addEventListener('submit', function(e) {
           sortLabel("followers")
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 660,
+          lineNumber: 651,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: "\u4E92\u52D5/\u66DD\u5149" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 661,
+          lineNumber: 652,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: "\u6A19\u7C64" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 662,
+          lineNumber: 653,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: [
@@ -897,7 +888,7 @@ document.addEventListener('submit', function(e) {
           sortLabel("rating")
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 663,
+          lineNumber: 654,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("a", { href: sortUrl("collaborations"), style: {
@@ -908,44 +899,44 @@ document.addEventListener('submit', function(e) {
           sortLabel("collaborations")
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 664,
+          lineNumber: 655,
           columnNumber: 29
         }, this) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 664,
+          lineNumber: 655,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Th, { children: "\u64CD\u4F5C" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 668,
+          lineNumber: 659,
           columnNumber: 19
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 656,
+        lineNumber: 647,
         columnNumber: 17
       }, this) }, void 0, false, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 655,
+        lineNumber: 646,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Tbody, { children: pageRows.map((kol) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Tr, { children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Avatar, { src: kol.avatarUrl, size: 32, radius: "xl" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 673,
+          lineNumber: 664,
           columnNumber: 31
         }, this) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 673,
+          lineNumber: 664,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Link, { to: `/kols/${kol.id}`, children: kol.displayName }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 674,
+          lineNumber: 665,
           columnNumber: 31
         }, this) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 674,
+          lineNumber: 665,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: [
@@ -953,41 +944,41 @@ document.addEventListener('submit', function(e) {
           kol.instagramHandle ?? "-"
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 675,
+          lineNumber: 666,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: (kol.social?.instagram ?? kol.followers ?? 0).toLocaleString() }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 676,
+          lineNumber: 667,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: [
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "xs", children: kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 678,
+            lineNumber: 669,
             columnNumber: 23
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "xs", c: "dimmed", children: kol.exposureRate ? `${kol.exposureRate.toFixed(1)}%` : "-" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 679,
+            lineNumber: 670,
             columnNumber: 23
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 677,
+          lineNumber: 668,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 4, children: getPrimaryTags(kol).slice(0, 2).map((tag) => /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Badge, { size: "sm", variant: "light", children: tag }, tag, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 683,
+          lineNumber: 674,
           columnNumber: 69
         }, this)) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 682,
+          lineNumber: 673,
           columnNumber: 23
         }, this) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 681,
+          lineNumber: 672,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: [
@@ -995,12 +986,12 @@ document.addEventListener('submit', function(e) {
           (kol.rating ?? 0).toFixed(1)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 686,
+          lineNumber: 677,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: kol.collaborations ?? 0 }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 687,
+          lineNumber: 678,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Table.Td, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: "xs", children: [
@@ -1009,45 +1000,45 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "intent", value: "toggleFavorite" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 693,
+              lineNumber: 684,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 694,
+              lineNumber: 685,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "isFavorite", value: String(kol.isFavorite) }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 695,
+              lineNumber: 686,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "submit", style: {
               background: "none",
               border: "none",
               cursor: "pointer",
-              fontSize: 20,
+              fontSize: 16,
               padding: 0,
               lineHeight: 1,
-              color: kol.isFavorite ? "var(--mantine-color-yellow-filled)" : "var(--mantine-color-gray-4)"
-            }, title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF", children: kol.isFavorite ? "\u2605" : "\u2606" }, void 0, false, {
+              color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)"
+            }, title: kol.isFavorite ? "\u53D6\u6D88\u6536\u85CF" : "\u52A0\u5165\u6536\u85CF", children: kol.isFavorite ? "\u2665" : "\u2661" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 696,
+              lineNumber: 687,
               columnNumber: 27
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 690,
+            lineNumber: 681,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { component: Link, to: `/kols/${kol.id}`, variant: "light", size: "xs", children: "\u67E5\u770B" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 708,
+            lineNumber: 699,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { component: Link, to: `/kols/${kol.id}/edit`, variant: "default", size: "xs", children: "\u7DE8\u8F2F" }, void 0, false, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 709,
+            lineNumber: 700,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Form, { method: "post", "data-confirm": `\u78BA\u5B9A\u8981\u522A\u9664 ${kol.displayName} \u55CE\uFF1F\u6B64\u52D5\u4F5C\u7121\u6CD5\u5FA9\u539F\u3002`, style: {
@@ -1055,49 +1046,49 @@ document.addEventListener('submit', function(e) {
           }, children: [
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "intent", value: "delete" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 713,
+              lineNumber: 704,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { type: "hidden", name: "kolId", value: kol.id }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 714,
+              lineNumber: 705,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Button, { type: "submit", color: "red", variant: "subtle", size: "xs", children: "\u522A\u9664" }, void 0, false, {
               fileName: "app/routes/_app.kols._index.tsx",
-              lineNumber: 715,
+              lineNumber: 706,
               columnNumber: 27
             }, this)
           ] }, void 0, true, {
             fileName: "app/routes/_app.kols._index.tsx",
-            lineNumber: 710,
+            lineNumber: 701,
             columnNumber: 25
           }, this)
         ] }, void 0, true, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 689,
+          lineNumber: 680,
           columnNumber: 23
         }, this) }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 688,
+          lineNumber: 679,
           columnNumber: 21
         }, this)
       ] }, kol.id, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 672,
+        lineNumber: 663,
         columnNumber: 38
       }, this)) }, void 0, false, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 671,
+        lineNumber: 662,
         columnNumber: 15
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 654,
+      lineNumber: 645,
       columnNumber: 13
     }, this) }, void 0, false, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 653,
+      lineNumber: 644,
       columnNumber: 28
     }, this),
     totalPages > 1 && /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { gap: 4, children: Array.from({
@@ -1120,15 +1111,15 @@ document.addEventListener('submit', function(e) {
       fontWeight: p === page ? 600 : 400
     }, children: p }, p, false, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 729,
+      lineNumber: 720,
       columnNumber: 38
     }, this)) }, void 0, false, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 726,
+      lineNumber: 717,
       columnNumber: 13
     }, this) }, void 0, false, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 725,
+      lineNumber: 716,
       columnNumber: 26
     }, this),
     /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("dialog", { id: "kol-batch-import-dialog", style: {
@@ -1144,7 +1135,7 @@ document.addEventListener('submit', function(e) {
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", mb: "md", children: [
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Title, { order: 4, children: "\u6279\u91CF\u532F\u5165 KOL (Excel)" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 763,
+          lineNumber: 754,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
@@ -1157,17 +1148,17 @@ document.addEventListener('submit', function(e) {
           e.currentTarget.closest("dialog").close();
         }, children: "\u2715" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 764,
+          lineNumber: 755,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 762,
+        lineNumber: 753,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", c: "dimmed", mb: "lg", children: "\u8ACB\u4E0A\u50B3\u5305\u542B KOL \u540D\u7A31\u3001\u5E73\u53F0\u9023\u7D50\u3001\u7C89\u7D72\u6578\u7B49\u8CC7\u8A0A\u7684 Excel \u6A94\u6848\u3002\u7CFB\u7D71\u6703\u81EA\u52D5\u89E3\u6790\u4E26\u5EFA\u6A94\u3002\uFF08\u529F\u80FD\u5C55\u793A\u7248\uFF09" }, void 0, false, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 776,
+        lineNumber: 767,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("label", { style: {
@@ -1201,17 +1192,17 @@ document.addEventListener('submit', function(e) {
           marginBottom: 12
         }, children: "\u{1F4E4}" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 806,
+          lineNumber: 797,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { fw: 600, color: "var(--mantine-color-blue-filled)", children: "\u9EDE\u64CA\u6216\u62D6\u66F3 Excel \u6A94\u6848\u81F3\u6B64" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 810,
+          lineNumber: 801,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Text, { size: "sm", c: "dimmed", mt: 4, children: "\u652F\u63F4 .xlsx, .csv" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 811,
+          lineNumber: 802,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("input", { id: "kol-batch-excel-input", type: "file", accept: ".xlsx, .xls, .csv", style: {
@@ -1233,12 +1224,12 @@ document.addEventListener('submit', function(e) {
           }
         } }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 812,
+          lineNumber: 803,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 780,
+        lineNumber: 771,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)(Group, { justify: "space-between", mt: "xl", children: [
@@ -1248,7 +1239,7 @@ document.addEventListener('submit', function(e) {
           textDecoration: "none"
         }, children: "\u4E0B\u8F09 Excel \u5EFA\u6A94\u7BC4\u672C" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 831,
+          lineNumber: 822,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ (0, import_jsx_dev_runtime.jsxDEV)("button", { type: "button", style: {
@@ -1262,17 +1253,17 @@ document.addEventListener('submit', function(e) {
           e.currentTarget.closest("dialog").close();
         }, children: "\u53D6\u6D88" }, void 0, false, {
           fileName: "app/routes/_app.kols._index.tsx",
-          lineNumber: 836,
+          lineNumber: 827,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "app/routes/_app.kols._index.tsx",
-        lineNumber: 830,
+        lineNumber: 821,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "app/routes/_app.kols._index.tsx",
-      lineNumber: 752,
+      lineNumber: 743,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
@@ -1292,4 +1283,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   KolListPage as default
 };
-//# sourceMappingURL=/build/routes/_app.kols._index-Y4VWLQAD.js.map
+//# sourceMappingURL=/build/routes/_app.kols._index-UJDODLP7.js.map

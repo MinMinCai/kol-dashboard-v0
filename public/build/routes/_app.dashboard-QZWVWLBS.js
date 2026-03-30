@@ -1,10 +1,10 @@
 import {
   IconFileInvoice,
   IconFileText,
+  IconHeart,
   IconReportAnalytics,
-  IconStar,
   IconUsers
-} from "/build/_shared/chunk-ZHSZHK33.js";
+} from "/build/_shared/chunk-CIOZZPJ7.js";
 import {
   Card,
   Group,
@@ -46,7 +46,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\_app.dashboard.tsx"
   );
-  import.meta.hot.lastModified = "1773822961832.0085";
+  import.meta.hot.lastModified = "1774861291491.0647";
 }
 var cards = [{
   label: "KOL \u7E3D\u6578",
@@ -82,8 +82,8 @@ var modules = [{
 }, {
   title: "\u6211\u7684\u6536\u85CF",
   description: "\u67E5\u770B\u5DF2\u52A0\u5165\u6536\u85CF\u7684 KOL \u65B9\u4FBF\u5FEB\u901F\u63D0\u6848",
-  icon: IconStar,
-  color: "yellow",
+  icon: IconHeart,
+  color: "pink",
   to: "/favorites"
 }, {
   title: "\u7D50\u6848\u5831\u544A\u7522\u751F",
@@ -208,4 +208,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   DashboardPage as default
 };
-//# sourceMappingURL=/build/routes/_app.dashboard-G7FKO4SE.js.map
+//# sourceMappingURL=/build/routes/_app.dashboard-QZWVWLBS.js.map
