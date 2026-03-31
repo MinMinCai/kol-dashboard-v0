@@ -319,7 +319,10 @@ export default function InsertionOrderCreatePage() {
           +'<div style="flex:1;">'
           +'<div style="display:flex;justify-content:space-between;align-items:center;">'
           +'<span style="font-weight:600;font-size:14px;">'+row.name+'</span>'
-          +'<span style="font-size:13px;color:var(--mantine-color-dimmed);">NT$ '+(row.price||0).toLocaleString()+'</span>'
+          +'<div style="display:flex;align-items:center;gap:6px;">'
+          +'<span style="font-size:13px;color:var(--mantine-color-dimmed);white-space:nowrap;">NT$</span>'
+          +'<input type="number" min="0" step="1000" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
+          +'</div>'
           +'</div>'
           +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
           +'<label style="font-size:12px;color:var(--mantine-color-dimmed);">執行日期</label>'
@@ -336,6 +339,14 @@ export default function InsertionOrderCreatePage() {
       try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
       var idx = selected.findIndex(function(x){ return x.id === rowId; });
       if (idx !== -1) selected[idx].executionDate = val;
+      if (ta) ta.value = JSON.stringify(selected);
+    }
+    window.kolUpdatePrice = function(rowId, val) {
+      var ta = document.getElementById('kol-selected-json');
+      var selected = [];
+      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
+      var idx = selected.findIndex(function(x){ return x.id === rowId; });
+      if (idx !== -1) selected[idx].price = Number(val) || 0;
       if (ta) ta.value = JSON.stringify(selected);
     }
   `;

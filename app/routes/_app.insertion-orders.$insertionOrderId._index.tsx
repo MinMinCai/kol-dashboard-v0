@@ -22,6 +22,7 @@ import {
   Progress,
   Image,
   Collapse,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BarChart } from "@mantine/charts";
@@ -1091,6 +1092,9 @@ export default function InsertionOrderDetailPage() {
 }
 
 function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher }: any) {
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === "dark";
+
   const [activeTab, setActiveTab] = useState<"post" | "performance">("performance");
   
   const [postUploadState, setPostUploadState] = useState<"idle" | "uploading" | "success">("idle");
@@ -1331,19 +1335,38 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 )}
 
                 {perfUploadState === "recognizing" && (
-                  <Card p="md" radius="md" bg="blue.0">
+                  <Card
+                    p="md"
+                    radius="md"
+                    style={{
+                      background: isDark ? "rgba(51, 154, 240, 0.18)" : "var(--mantine-color-blue-0)",
+                      border: isDark ? "1px solid rgba(51, 154, 240, 0.35)" : undefined,
+                    }}
+                  >
                      <Group gap="sm">
                        <Loader color="blue" size="sm" />
-                       <Text size="sm" fw={600} c="blue.9">✨ 🤖 AI 正在辨識中...</Text>
+                       <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                         ✨ 🤖 AI 正在辨識中...
+                       </Text>
                      </Group>
                   </Card>
                 )}
 
                 {perfUploadState === "success" && (
-                  <Card p="md" radius="md" bg="blue.0" style={{ opacity: 0.8 }}>
+                  <Card
+                    p="md"
+                    radius="md"
+                    style={{
+                      background: isDark ? "rgba(51, 154, 240, 0.16)" : "var(--mantine-color-blue-0)",
+                      border: isDark ? "1px solid rgba(51, 154, 240, 0.35)" : undefined,
+                      opacity: 0.8,
+                    }}
+                  >
                      <Group gap="sm">
                        <IconCheck size={20} color="var(--mantine-color-blue-filled)" />
-                       <Text size="sm" fw={600} c="blue.9">✨ 🤖 AI 辨識完成，請確認以下數據</Text>
+                       <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                         ✨ 🤖 AI 辨識完成，請確認以下數據
+                       </Text>
                      </Group>
                   </Card>
                 )}

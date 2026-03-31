@@ -18,10 +18,11 @@ import {
   Title,
   Checkbox,
 } from "@mantine/core";
+import { useMantineColorScheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   addProposalKol,
   getProposal,
@@ -111,6 +112,9 @@ export default function ProposalDetailPage() {
   const { proposal, candidates, allKols } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
+  const { colorScheme } = useMantineColorScheme();
+  const [domColorScheme, setDomColorScheme] = useState<"light" | "dark" | null>(null);
+  const isDark = (domColorScheme ?? colorScheme) === "dark";
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
@@ -138,6 +142,31 @@ export default function ProposalDetailPage() {
     accepted: "已接受",
     rejected: "已拒絕",
   };
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const readScheme = () => {
+      const scheme = html.getAttribute("data-mantine-color-scheme");
+      setDomColorScheme(scheme === "dark" ? "dark" : "light");
+    };
+    readScheme();
+    const observer = new MutationObserver(readScheme);
+    observer.observe(html, { attributes: true, attributeFilter: ["data-mantine-color-scheme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const aiSearchCardStyle = isDark
+    ? {
+        background: "linear-gradient(135deg, rgba(16, 24, 40, 0.98) 0%, rgba(14, 20, 34, 0.98) 100%)",
+        border: "1px solid rgba(51, 154, 240, 0.28)",
+      }
+    : {
+        background: "linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)",
+        border: "1px solid #cce3ff",
+      };
+
+  const aiAvatarBg = isDark ? "rgba(148, 163, 184, 0.18)" : "#eee";
+  const aiReasonBg = isDark ? "rgba(51, 154, 240, 0.18)" : "rgba(51, 154, 240, 0.1)";
 
   const allKolOptions = useMemo(
     () => allKols.map((k) => ({ value: k.id, label: k.displayName })),
@@ -298,7 +327,7 @@ export default function ProposalDetailPage() {
 
       {/* AI Search Section - Only visible in Edit Mode */}
       {isEditing && (
-        <Card withBorder padding="lg" radius="md" style={{ background: 'linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)', border: '1px solid #cce3ff' }}>
+        <Card withBorder padding="lg" radius="md" style={aiSearchCardStyle}>
         <Stack gap="xs">
           <Group gap={8}>
             <Text size="lg" fw={700} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -500,7 +529,7 @@ export default function ProposalDetailPage() {
                         width: 48,
                         height: 48,
                         borderRadius: "50%",
-                        background: "#eee",
+                        background: aiAvatarBg,
                         overflow: "hidden",
                         flexShrink: 0,
                       }}
@@ -528,7 +557,7 @@ export default function ProposalDetailPage() {
                   mt="sm"
                   p="xs"
                   style={{
-                    background: "rgba(51, 154, 240, 0.1)",
+                    background: aiReasonBg,
                     borderRadius: 4,
                     borderLeft: "3px solid #339af0",
                   }}
@@ -661,7 +690,7 @@ export default function ProposalDetailPage() {
         <Group justify="flex-end" mt="xl" pb="xl">
           <Button
             variant="default"
-            size="lg"
+            size="sm"
             onClick={() => {
               setEditedTitle(proposal.title);
               setEditedClient(proposal.clientName);
@@ -675,7 +704,7 @@ export default function ProposalDetailPage() {
           </Button>
           <Button
             color="blue"
-            size="lg"
+            size="sm"
             onClick={() => {
               const formData = new FormData();
               formData.append("intent", "update_proposal");
