@@ -124,12 +124,16 @@ export default function ProposalDetailPage() {
 
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
   const [aiSearchOpened, { open: openAiSearch, close: closeAiSearch }] = useDisclosure(false);
+  const [deleteConfirmOpened, { open: openDeleteConfirm, close: closeDeleteConfirm }] = useDisclosure(false);
   const [aiSearching, setAiSearching] = useState(false);
   const [aiResults, setAiResults] = useState<any[]>([]);
   const [aiQuery, setAiQuery] = useState("");
   const [feedbackCandidate, setFeedbackCandidate] = useState<{ id: string; name: string } | null>(null);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<
+    { type: "single"; candidateId: string; name: string } | { type: "batch"; candidateIds: string[] } | null
+  >(null);
 
   const statusColor: Record<string, string> = {
     pending: "gray",
@@ -201,6 +205,34 @@ export default function ProposalDetailPage() {
       setAiResults(matches);
       setAiSearching(false);
     }, 900);
+  };
+
+  const requestDeleteSingle = (candidateId: string, name: string) => {
+    setDeleteTarget({ type: "single", candidateId, name });
+    openDeleteConfirm();
+  };
+
+  const requestDeleteBatch = () => {
+    if (selectedCandidateIds.length === 0) return;
+    setDeleteTarget({ type: "batch", candidateIds: selectedCandidateIds });
+    openDeleteConfirm();
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+
+    const formData = new FormData();
+    if (deleteTarget.type === "single") {
+      formData.append("intent", "delete_candidate");
+      formData.append("candidateId", deleteTarget.candidateId);
+    } else {
+      formData.append("intent", "batch_delete_candidates");
+      formData.append("candidateIds", deleteTarget.candidateIds.join(","));
+      setSelectedCandidateIds([]);
+    }
+    submit(formData, { method: "post" });
+    closeDeleteConfirm();
+    setDeleteTarget(null);
   };
 
   return (
@@ -369,19 +401,16 @@ export default function ProposalDetailPage() {
             <Group gap="md">
               <Title order={4}>KOL 候選名單 ({candidates.length})</Title>
               {isEditing && selectedCandidateIds.length > 0 && (
-                <Form method="post" style={{ display: 'inline' }} onSubmit={(e) => {
-                  if (!confirm(`確定要將選中的 ${selectedCandidateIds.length} 位 KOL 從候選名單中移除嗎？`)) {
-                    e.preventDefault();
-                  } else {
-                    setSelectedCandidateIds([]); // Clear selection after submit
-                  }
-                }}>
-                  <input type="hidden" name="intent" value="batch_delete_candidates" />
-                  <input type="hidden" name="candidateIds" value={selectedCandidateIds.join(",")} />
-                  <Button variant="light" color="red" size="xs" leftSection={<IconTrash size={14} />} type="submit">
-                    批量刪除 ({selectedCandidateIds.length})
-                  </Button>
-                </Form>
+                <Button
+                  variant="light"
+                  color="red"
+                  size="xs"
+                  leftSection={<IconTrash size={14} />}
+                  type="button"
+                  onClick={requestDeleteBatch}
+                >
+                  批量刪除 ({selectedCandidateIds.length})
+                </Button>
               )}
             </Group>
             {isEditing && (
@@ -476,22 +505,15 @@ export default function ProposalDetailPage() {
                           >
                             拒絕
                           </Button>
-                          <Form method="post" style={{ display: 'inline' }} onSubmit={(e) => {
-                            if (!confirm("確定要將此 KOL 從候選名單中移除嗎？")) {
-                              e.preventDefault();
-                            }
-                          }}>
-                            <input type="hidden" name="intent" value="delete_candidate" />
-                            <input type="hidden" name="candidateId" value={c.id} />
-                            <ActionIcon
-                              variant="light"
-                              color="gray"
-                              size="sm"
-                              type="submit"
-                            >
-                              <IconTrash size={14} />
-                            </ActionIcon>
-                          </Form>
+                          <ActionIcon
+                            variant="light"
+                            color="gray"
+                            size="sm"
+                            type="button"
+                            onClick={() => requestDeleteSingle(c.id, c.kolName)}
+                          >
+                            <IconTrash size={14} />
+                          </ActionIcon>
                         </Group>
                       </Table.Td>
                     )}
@@ -662,6 +684,35 @@ export default function ProposalDetailPage() {
             </Group>
           </Stack>
         </Form>
+      </Modal>
+
+      <Modal
+        opened={deleteConfirmOpened}
+        onClose={() => {
+          closeDeleteConfirm();
+          setDeleteTarget(null);
+        }}
+        title="確認刪除"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            {deleteTarget?.type === "single"
+              ? `確定要將「${deleteTarget.name}」從候選名單移除嗎？`
+              : `確定要將選中的 ${deleteTarget?.type === "batch" ? deleteTarget.candidateIds.length : 0} 位 KOL 從候選名單移除嗎？`}
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => {
+              closeDeleteConfirm();
+              setDeleteTarget(null);
+            }}>
+              取消
+            </Button>
+            <Button color="red" onClick={confirmDelete}>
+              確認刪除
+            </Button>
+          </Group>
+        </Stack>
       </Modal>
 
       {/* Reject/Feedback Modal */}

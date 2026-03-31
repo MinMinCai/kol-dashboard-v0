@@ -40,10 +40,17 @@ export default function ProposalListPage() {
   const { proposals } = useLoaderData<typeof loader>();
   const [editingProposal, setEditingProposal] = useState<any>(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const handleEdit = (p: any) => {
     setEditingProposal(p);
     open();
+  };
+
+  const handleAskDelete = (p: any) => {
+    setDeleteTarget(p);
+    openDelete();
   };
 
   return (
@@ -96,21 +103,15 @@ export default function ProposalListPage() {
                     >
                       <IconPencil size={16} />
                     </ActionIcon>
-                    <Form
-                      method="post"
-                      onSubmit={(e) => {
-                        if (!confirm("確定要刪除此提案嗎？")) {
-                          e.preventDefault();
-                        }
-                      }}
-                      style={{ display: "inline" }}
+                    <ActionIcon
+                      variant="light"
+                      color="red"
+                      type="button"
+                      title="刪除"
+                      onClick={() => handleAskDelete(p)}
                     >
-                      <input type="hidden" name="intent" value="delete_proposal" />
-                      <input type="hidden" name="id" value={p.id} />
-                      <ActionIcon variant="light" color="red" type="submit" title="刪除">
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Form>
+                      <IconTrash size={16} />
+                    </ActionIcon>
                   </Group>
                 </Table.Td>
               </Table.Tr>
@@ -169,6 +170,26 @@ export default function ProposalListPage() {
             </Stack>
           </Form>
         )}
+      </Modal>
+
+      <Modal opened={deleteOpened} onClose={closeDelete} title="確認刪除提案" centered>
+        <Form method="post" onSubmit={closeDelete}>
+          <input type="hidden" name="intent" value="delete_proposal" />
+          <input type="hidden" name="id" value={deleteTarget?.id ?? ""} />
+          <Stack>
+            <Text size="sm">
+              確定要刪除此提案{deleteTarget ? `「${deleteTarget.title}」` : ""}嗎？此動作無法復原。
+            </Text>
+            <Group justify="flex-end">
+              <Button variant="default" type="button" onClick={closeDelete}>
+                取消
+              </Button>
+              <Button type="submit" color="red">
+                確認刪除
+              </Button>
+            </Group>
+          </Stack>
+        </Form>
       </Modal>
     </Stack>
   );

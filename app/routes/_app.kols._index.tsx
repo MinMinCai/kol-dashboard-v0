@@ -8,6 +8,7 @@ import {
   Checkbox,
   Divider,
   Group,
+  Modal,
   Pagination,
   SimpleGrid,
   Stack,
@@ -16,7 +17,8 @@ import {
   Title,
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useSubmit, useNavigation } from "@remix-run/react";
+import { useState } from "react";
 import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api";
 
 // ─── constants ───────────────────────────────────────────────────────────────
@@ -219,6 +221,10 @@ export default function KolListPage() {
     showFilters, followerRanges, industries, tags, minRating, maxRating,
     q, allIndustries, allTags, activeFilterCount, deleted,
   } = useLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
+  const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
 
   // Current params object for URL building
   const current: Record<string, string | string[]> = {
@@ -246,23 +252,25 @@ export default function KolListPage() {
     return sortOrder === "asc" ? " ↑" : " ↓";
   }
 
+  const isSubmitting = navigation.state === "submitting";
+
+  const requestDeleteKol = (id: string, name: string) => {
+    setDeleteKolId(id);
+    setDeleteKolName(name);
+  };
+
+  const confirmDeleteKol = () => {
+    if (!deleteKolId) return;
+    const formData = new FormData();
+    formData.append("intent", "delete");
+    formData.append("kolId", deleteKolId);
+    submit(formData, { method: "post" });
+    setDeleteKolId(null);
+    setDeleteKolName(null);
+  };
+
   return (
     <Stack gap="md">
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-document.addEventListener('submit', function(e) {
-  var form = e.target;
-  if (!form || !form.getAttribute) return;
-  var msg = form.getAttribute('data-confirm');
-  if (!msg) return;
-  if (!window.confirm(msg)) {
-    e.preventDefault();
-  }
-});
-          `,
-        }}
-      />
       {deleted && (
         <Alert color="green" variant="light">
           KOL 已刪除成功。
@@ -612,17 +620,16 @@ document.addEventListener('submit', function(e) {
                     >
                       編輯
                     </Button>
-                    <Form
-                      method="post"
-                      data-confirm={`確定要刪除 ${kol.displayName} 嗎？此動作無法復原。`}
-                      style={{ flex: 1 }}
+                    <Button
+                      type="button"
+                      color="red"
+                      variant="light"
+                      size="xs"
+                      fullWidth
+                      onClick={() => requestDeleteKol(kol.id, kol.displayName)}
                     >
-                      <input type="hidden" name="intent" value="delete" />
-                      <input type="hidden" name="kolId" value={kol.id} />
-                      <Button type="submit" color="red" variant="light" size="xs" fullWidth>
-                        刪除
-                      </Button>
-                    </Form>
+                      刪除
+                    </Button>
                   </Group>
                 </Card>
               );
@@ -693,15 +700,15 @@ document.addEventListener('submit', function(e) {
                         </Form>
                         <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>
                         <Button component={Link} to={`/kols/${kol.id}/edit`} variant="default" size="xs">編輯</Button>
-                        <Form
-                          method="post"
-                          data-confirm={`確定要刪除 ${kol.displayName} 嗎？此動作無法復原。`}
-                          style={{ display: "inline" }}
+                        <Button
+                          type="button"
+                          color="red"
+                          variant="subtle"
+                          size="xs"
+                          onClick={() => requestDeleteKol(kol.id, kol.displayName)}
                         >
-                          <input type="hidden" name="intent" value="delete" />
-                          <input type="hidden" name="kolId" value={kol.id} />
-                          <Button type="submit" color="red" variant="subtle" size="xs">刪除</Button>
-                        </Form>
+                          刪除
+                        </Button>
                       </Group>
                     </Table.Td>
                   </Table.Tr>
@@ -743,6 +750,36 @@ document.addEventListener('submit', function(e) {
           </Group>
         )
       }
+
+      <Modal
+        opened={!!deleteKolId}
+        onClose={() => {
+          setDeleteKolId(null);
+          setDeleteKolName(null);
+        }}
+        title="確認刪除 KOL"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            確定要刪除 {deleteKolName ? `「${deleteKolName}」` : "此 KOL"} 嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              onClick={() => {
+                setDeleteKolId(null);
+                setDeleteKolName(null);
+              }}
+            >
+              取消
+            </Button>
+            <Button color="red" onClick={confirmDeleteKol} loading={isSubmitting}>
+              確認刪除
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
       {/* ── Batch Import Dialog ── */}
       <dialog

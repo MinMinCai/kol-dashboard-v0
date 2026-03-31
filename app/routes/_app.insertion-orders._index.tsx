@@ -55,12 +55,6 @@ import { listInsertionOrders, updateInsertionOrder, type InsertionOrder } from "
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
 
-function statusMeta(status: string) {
-  if (status === "completed") return { label: "已結案", color: "green" as const };
-  if (status === "in_progress") return { label: "執行中", color: "yellow" as const };
-  return { label: "規劃中", color: "gray" as const };
-}
-
 function numberShort(value: number | undefined): string {
   const n = value ?? 0;
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -85,7 +79,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const search = url.searchParams.get("search") ?? "";
     const clientFilter = url.searchParams.get("client") ?? "";
     const industryFilter = url.searchParams.get("industry") ?? "";
-    const statusFilter = url.searchParams.get("status") ?? "";
     const timeFilter = (url.searchParams.get("time") ?? "all") as TimeFilter;
     const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
     const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
@@ -107,7 +100,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       if (!textMatch) return false;
       if (clientFilter && order.clientName !== clientFilter) return false;
       if (industryFilter && order.industry !== industryFilter) return false;
-      if (statusFilter && order.status !== statusFilter) return false;
       if (!matchesTime(order, timeFilter)) return false;
       return true;
     });
@@ -134,7 +126,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       search,
       clientFilter,
       industryFilter,
-      statusFilter,
       timeFilter,
     });
   } catch (error: any) {
@@ -190,7 +181,6 @@ export default function InsertionOrderListPage() {
     search,
     clientFilter,
     industryFilter,
-    statusFilter,
     timeFilter,
   } = useLoaderData<typeof loader>();
 
@@ -306,8 +296,9 @@ export default function InsertionOrderListPage() {
 
             {/* Client */}
             <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>客戶</label>
+              <label htmlFor="filter-client" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>客戶</label>
               <select
+                id="filter-client"
                 name="client"
                 defaultValue={clientFilter}
                 style={{
@@ -329,8 +320,9 @@ export default function InsertionOrderListPage() {
 
             {/* Industry */}
             <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>產業</label>
+              <label htmlFor="filter-industry" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>產業</label>
               <select
+                id="filter-industry"
                 name="industry"
                 defaultValue={industryFilter}
                 style={{
@@ -350,33 +342,11 @@ export default function InsertionOrderListPage() {
               </select>
             </div>
 
-            {/* Status */}
-            <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>狀態</label>
-              <select
-                name="status"
-                defaultValue={statusFilter}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  minWidth: 120,
-                }}
-              >
-                <option value="">全部</option>
-                <option value="planned">規劃中</option>
-                <option value="in_progress">執行中</option>
-                <option value="completed">已結案</option>
-              </select>
-            </div>
-
             {/* Time */}
             <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>時間</label>
+              <label htmlFor="filter-time" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>時間</label>
               <select
+                id="filter-time"
                 name="time"
                 defaultValue={timeFilter}
                 style={{
@@ -415,7 +385,7 @@ export default function InsertionOrderListPage() {
               套用篩選
             </button>
 
-            {(search || clientFilter || industryFilter || statusFilter || timeFilter !== "all") && (
+            {(search || clientFilter || industryFilter || timeFilter !== "all") && (
               <a
                 href="/insertion-orders"
                 style={{
@@ -466,13 +436,11 @@ export default function InsertionOrderListPage() {
       ) : (
         <Stack gap="md">
           {rows.map((order) => {
-            const status = statusMeta(order.status);
             return (
               <Card key={order.id} withBorder className="io-card">
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Text fw={600}>📋 #{order.orderNo} {order.title ?? "未命名專案"}</Text>
-                    <Badge color={status.color} variant="light">{status.label}</Badge>
                   </Group>
 
                   <SimpleGrid cols={{ base: 1, md: 2 }}>
@@ -510,10 +478,10 @@ export default function InsertionOrderListPage() {
               <input type="hidden" name="search" value={search} />
               <input type="hidden" name="client" value={clientFilter} />
               <input type="hidden" name="industry" value={industryFilter} />
-              <input type="hidden" name="status" value={statusFilter} />
               <input type="hidden" name="time" value={timeFilter} />
               <input type="hidden" name="page" value="1" />
               <select
+                aria-label="每頁筆數"
                 name="pageSize"
                 defaultValue={pageSize}
                 onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
@@ -536,7 +504,7 @@ export default function InsertionOrderListPage() {
           <Group gap={4}>
             {currentPage > 1 && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&status=${encodeURIComponent(statusFilter)}&time=${timeFilter}&page=${currentPage - 1}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${currentPage - 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",
@@ -553,7 +521,7 @@ export default function InsertionOrderListPage() {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <a
                 key={p}
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&status=${encodeURIComponent(statusFilter)}&time=${timeFilter}&page=${p}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${p}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 10px",
                   border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
@@ -571,7 +539,7 @@ export default function InsertionOrderListPage() {
 
             {currentPage < totalPages && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&status=${encodeURIComponent(statusFilter)}&time=${timeFilter}&page=${currentPage + 1}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${currentPage + 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",
