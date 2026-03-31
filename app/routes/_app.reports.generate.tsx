@@ -84,11 +84,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const currentPage = Math.min(page, totalPages);
   const paginatedOrders = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  return json({ 
-    orders: paginatedOrders, 
-    allClients, 
-    clientFilter, 
-    timeFilter, 
+  return json({
+    orders: paginatedOrders,
+    allOrders: mappedOrders,
+    allClients,
+    clientFilter,
+    timeFilter,
     statusFilter,
     totalPages,
     currentPage,
@@ -98,7 +99,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function ReportManagementPage() {
-  const { orders, allClients, clientFilter, timeFilter, statusFilter, totalPages, currentPage, pageSize, totalCount } = useLoaderData<typeof loader>();
+  const { orders, allOrders, allClients, clientFilter, timeFilter, statusFilter, totalPages, currentPage, pageSize, totalCount } = useLoaderData<typeof loader>();
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const { showToast, showBanner } = useNotificationStore();
 
@@ -116,6 +117,7 @@ export default function ReportManagementPage() {
   
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [orderSearch, setOrderSearch] = useState("");
 
   const handleDownload = () => alert("報告下載中...");
   const handleDelete = () => {
@@ -465,17 +467,32 @@ export default function ReportManagementPage() {
 
       {/* ── Select Order Modal ── */}
       <Modal 
-        opened={selectOrderModalOpen} 
-        onClose={closeSelectOrderModal} 
+        opened={selectOrderModalOpen}
+        onClose={() => { closeSelectOrderModal(); setOrderSearch(""); }}
         title={<Text fw={700} size="lg">選擇委刊單生成報告</Text>} 
         size="lg"
         centered
       >
         <Stack gap="md">
           <Text size="sm" c="dimmed">請選擇一個案件來開始生成新的結案報告：</Text>
+          <TextInput
+            placeholder="搜尋委刊單編號、名稱或客戶..."
+            value={orderSearch}
+            onChange={(e) => setOrderSearch(e.currentTarget.value)}
+          />
           <Box style={{ maxHeight: 400, overflowY: 'auto' }}>
             <Stack gap="xs">
-              {orders.map((order: any) => (
+              {allOrders
+                .filter((order: any) => {
+                  if (!orderSearch) return true;
+                  const q = orderSearch.toLowerCase();
+                  return (
+                    order.orderNo?.toLowerCase().includes(q) ||
+                    (order.title || order.projectName || "").toLowerCase().includes(q) ||
+                    order.clientName?.toLowerCase().includes(q)
+                  );
+                })
+                .map((order: any) => (
                 <Card 
                   key={order.id} 
                   withBorder 
@@ -502,7 +519,7 @@ export default function ReportManagementPage() {
             </Stack>
           </Box>
           <Group justify="flex-end" mt="md">
-            <Button variant="default" onClick={closeSelectOrderModal}>取消</Button>
+            <Button variant="default" onClick={() => { closeSelectOrderModal(); setOrderSearch(""); }}>取消</Button>
           </Group>
         </Stack>
       </Modal>
