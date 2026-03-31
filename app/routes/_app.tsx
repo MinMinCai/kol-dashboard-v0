@@ -1,4 +1,4 @@
-import { AppShell, Group, Stack, Text, Title } from "@mantine/core";
+import { AppShell, Avatar, Badge, Group, Stack, Text, Title } from "@mantine/core";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import { GlobalNotification } from "~/components/GlobalNotification";
@@ -33,7 +33,14 @@ function navLinkStyle(active: boolean) {
 
 export default function AppLayoutRoute() {
   const location = useLocation();
-  const { currentUserName } = useLoaderData<typeof loader>();
+  const { currentUserName, currentUserRole } = useLoaderData<typeof loader>();
+  const roleLabel =
+    currentUserRole === "admin"
+      ? "Admin"
+      : currentUserRole === "manager"
+        ? "Manager"
+        : "Member";
+  const nameInitial = currentUserName?.slice(0, 1) ?? "?";
 
   return (
     <>
@@ -205,19 +212,23 @@ export default function AppLayoutRoute() {
         <div style={{ marginTop: "auto", paddingTop: 12 }}>
           <div
             style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              background: "var(--mantine-color-default-hover)",
-              border: "1px solid var(--mantine-color-default-border)",
-              marginBottom: 8,
+              padding: "9px 12px",
+              marginBottom: 6,
             }}
           >
-            <Text size="xs" c="dimmed" mb={2} className="nav-label">
-              目前登入
-            </Text>
-            <Text size="sm" fw={600} className="nav-label">
-              {currentUserName}
-            </Text>
+            <Group gap="sm" wrap="nowrap">
+              <Avatar size={24} radius="xl" color="blue" style={{ flexShrink: 0 }}>
+                {nameInitial}
+              </Avatar>
+              <Group gap={6} wrap="nowrap" style={{ minWidth: 0, alignItems: "center" }}>
+                <Text size="sm" fw={600} className="nav-label" style={{ lineHeight: 1.2 }}>
+                  {currentUserName}
+                </Text>
+                <Badge size="xs" variant="light" color="gray" className="nav-label">
+                  {roleLabel}
+                </Badge>
+              </Group>
+            </Group>
           </div>
           <a
             href="/settings"
@@ -235,7 +246,7 @@ export default function AppLayoutRoute() {
               marginBottom: 4,
             }}
           >
-            <span className="nav-icon" style={{ marginRight: 8 }}>⚙️</span>
+            <span className="nav-icon" style={{ marginRight: 12 }}>⚙️</span>
             <span className="nav-label">系統設定</span>
           </a>
           <a
@@ -253,7 +264,7 @@ export default function AppLayoutRoute() {
               border: "1px solid transparent",
             }}
           >
-            <span className="nav-icon" style={{ marginRight: 8 }}>🚪</span>
+            <span className="nav-icon" style={{ marginRight: 12 }}>🚪</span>
             <span className="nav-label">登出（回登入頁）</span>
           </a>
         </div>
@@ -274,6 +285,7 @@ export async function loader(_: LoaderFunctionArgs) {
 
   return json({
     currentUserName: currentUser?.name ?? "未登入",
+    currentUserRole: currentUser?.role ?? "member",
   });
 }
 
