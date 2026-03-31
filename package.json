@@ -10,7 +10,8 @@
     "dev:mock": "json-server --watch mock/db.json --port 4000",
     "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
     "build": "remix build",
-    "start": "remix-serve build"
+    "start": "remix-serve build",
+    "start:mock": "json-server --watch mock/db.json --port 4000 --host 0.0.0.0"
   },
   "dependencies": {
     "@lucia-auth/adapter-drizzle": "^1.1.0",
