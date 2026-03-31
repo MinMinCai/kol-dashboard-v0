@@ -1,4 +1,3 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   isRouteErrorResponse,
   Links,
@@ -10,10 +9,12 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import { ColorSchemeScript, MantineProvider, Container, Title, Text, Button, Center, Stack } from "@mantine/core";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import mantineStylesHref from "@mantine/core/styles.css";
 import mantineChartsStylesHref from "@mantine/charts/styles.css";
 import stylesHref from "./styles.css";
+
+const cssBundleHref: string | undefined = undefined;
 
 export const links = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -55,6 +56,8 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const [redirectTarget, setRedirectTarget] = useState("/dashboard");
+  const [countdown, setCountdown] = useState(15);
 
   let status = 500;
   let title = "系統發生錯誤";
@@ -69,11 +72,38 @@ export function ErrorBoundary() {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 3000);
-    return () => clearTimeout(timer);
+    // Determine destination by a lightweight auth signal.
+    // If no auth cookie/token is found, send users to login page.
+    try {
+      const cookie = document.cookie || "";
+      const hasSessionCookie =
+        cookie.includes("better-auth") ||
+        cookie.includes("session") ||
+        cookie.includes("auth");
+      const hasLocalAuth =
+        !!localStorage.getItem("kol-db-user") ||
+        !!localStorage.getItem("auth-user") ||
+        !!localStorage.getItem("session-user");
+      setRedirectTarget(hasSessionCookie || hasLocalAuth ? "/dashboard" : "/login");
+    } catch {
+      setRedirectTarget("/login");
+    }
   }, []);
+
+  useEffect(() => {
+    setCountdown(15);
+    const tick = window.setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(tick);
+          window.location.replace(redirectTarget);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(tick);
+  }, [redirectTarget]);
 
   return (
     <html lang="zh-Hant">
@@ -93,9 +123,9 @@ export function ErrorBoundary() {
                 {message}
               </Text>
               <Text c="blue" size="sm" ta="center" mt="xs">
-                系統將於 3 秒後自動為您導向至首頁...
+                系統將於 {countdown} 秒後自動為您導向至首頁（若尚未登入將導向登入頁）...
               </Text>
-              <Button component="a" href="/dashboard" mt="xl" size="lg" variant="light">
+              <Button component="a" href={redirectTarget} mt="xl" size="lg" variant="light">
                 立即返回首頁
               </Button>
             </Stack>
