@@ -8,7 +8,6 @@ Thumbs.db
 # Remix/Vite build output
 public/build/
 build/
-api/
 .cache/
 .vscode/
 
