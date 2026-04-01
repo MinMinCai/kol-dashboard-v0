@@ -1,6 +1,6 @@
 import { AppShell, Avatar, Badge, Group, Stack, Text, Title } from "@mantine/core";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
+import { isRouteErrorResponse, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import { GlobalNotification } from "~/components/GlobalNotification";
 import { listTeamMembers } from "~/lib/mock-api.server";
 
@@ -279,14 +279,57 @@ export default function AppLayoutRoute() {
 }
 
 export async function loader(_: LoaderFunctionArgs) {
-  const teamMembers = await listTeamMembers();
-  const currentUser =
-    teamMembers.find((member) => member.role === "admin") ?? teamMembers[0];
+  try {
+    const teamMembers = await listTeamMembers();
+    const currentUser =
+      teamMembers.find((member) => member.role === "admin") ?? teamMembers[0];
 
-  return json({
-    currentUserName: currentUser?.name ?? "未登入",
-    currentUserRole: currentUser?.role ?? "member",
-  });
+    return json({
+      currentUserName: currentUser?.name ?? "未登入",
+      currentUserRole: currentUser?.role ?? "member",
+    });
+  } catch (err) {
+    console.error("[_app loader]", err);
+    throw err;
+  }
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let title = "發生錯誤";
+  let message = "未知錯誤";
+  let stack: string | undefined;
+
+  if (isRouteErrorResponse(error)) {
+    title = `${error.status} ${error.statusText}`;
+    message = typeof error.data === "string" ? error.data : JSON.stringify(error.data);
+  } else if (error instanceof Error) {
+    message = error.message;
+    stack = error.stack;
+  }
+
+  return (
+    <div style={{ padding: 32, fontFamily: "monospace" }}>
+      <h2 style={{ color: "crimson" }}>{title}</h2>
+      <p style={{ color: "#333" }}>{message}</p>
+      {stack && (
+        <pre
+          style={{
+            background: "#f5f5f5",
+            padding: 16,
+            borderRadius: 6,
+            overflowX: "auto",
+            fontSize: 12,
+            color: "#555",
+            whiteSpace: "pre-wrap",
+          }}
+        >
+          {stack}
+        </pre>
+      )}
+    </div>
+  );
 }
 
 
