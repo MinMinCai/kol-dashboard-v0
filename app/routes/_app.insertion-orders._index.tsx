@@ -141,7 +141,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "generateReport") {
     const orderId = formData.get("orderId") as string;
     if (orderId) {
-      const { getInsertionOrder } = await import("~/lib/mock-api");
+      const { getInsertionOrder } = await import("~/lib/mock-api.server");
       const io = await getInsertionOrder(orderId);
       if (io) {
         const newReport = {
