@@ -371,6 +371,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
   const rows = await db
     .insert(kolsTable)
     .values({
+      id: crypto.randomUUID(),
       displayName: data.displayName,
       city: data.city ?? "",
       industry: data.industry ?? null,
@@ -439,6 +440,7 @@ export async function createProposal(data: Omit<Proposal, "id">): Promise<Propos
   const rows = await db
     .insert(proposalsTable)
     .values({
+      id: crypto.randomUUID(),
       title: data.title,
       clientName: data.clientName ?? null,
       stage: data.stage ?? "draft",
@@ -467,6 +469,7 @@ export async function addProposalKol(
   const rows = await db
     .insert(proposalKolsTable)
     .values({
+      id: crypto.randomUUID(),
       proposalId: data.proposalId,
       kolId: data.kolId || null,
       kolName: data.kolName,
@@ -549,6 +552,7 @@ export async function createInsertionOrder(data: Omit<InsertionOrder, "id">): Pr
   const rows = await db
     .insert(ioTable)
     .values({
+      id: crypto.randomUUID(),
       orderNo: data.orderNo,
       title: data.title ?? null,
       projectName: data.projectName ?? null,
@@ -634,7 +638,7 @@ export async function listTagCatalog(): Promise<TagCatalogItem[]> {
 }
 
 export async function addTagCatalog(data: Omit<TagCatalogItem, "id">): Promise<TagCatalogItem> {
-  const rows = await db.insert(tagCatalogTable).values({ name: data.name }).returning();
+  const rows = await db.insert(tagCatalogTable).values({ id: crypto.randomUUID(), name: data.name }).returning();
   return rows[0];
 }
 
@@ -666,7 +670,7 @@ export async function listBrandCatalog(): Promise<BrandCatalogItem[]> {
 }
 
 export async function addBrandCatalog(data: Omit<BrandCatalogItem, "id">): Promise<BrandCatalogItem> {
-  const rows = await db.insert(brandCatalogTable).values({ name: data.name }).returning();
+  const rows = await db.insert(brandCatalogTable).values({ id: crypto.randomUUID(), name: data.name }).returning();
   return rows[0];
 }
 
@@ -700,7 +704,7 @@ export async function listIndustryCatalog(): Promise<IndustryCatalogItem[]> {
 export async function addIndustryCatalog(
   data: Omit<IndustryCatalogItem, "id">,
 ): Promise<IndustryCatalogItem> {
-  const rows = await db.insert(industryCatalogTable).values({ name: data.name }).returning();
+  const rows = await db.insert(industryCatalogTable).values({ id: crypto.randomUUID(), name: data.name }).returning();
   return rows[0];
 }
 
@@ -734,7 +738,7 @@ export async function listPlatformCatalog(): Promise<PlatformCatalogItem[]> {
 export async function addPlatformCatalog(
   data: Omit<PlatformCatalogItem, "id">,
 ): Promise<PlatformCatalogItem> {
-  const rows = await db.insert(platformCatalogTable).values({ name: data.name }).returning();
+  const rows = await db.insert(platformCatalogTable).values({ id: crypto.randomUUID(), name: data.name }).returning();
   return rows[0];
 }
 
@@ -772,6 +776,7 @@ export async function addTeamMember(data: Omit<TeamMember, "id">): Promise<TeamM
   const rows = await db
     .insert(teamMembersTable)
     .values({
+      id: crypto.randomUUID(),
       name: data.name,
       email: data.email,
       role: data.role,
