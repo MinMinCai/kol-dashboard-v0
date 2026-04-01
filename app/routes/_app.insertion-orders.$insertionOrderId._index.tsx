@@ -48,7 +48,7 @@ import {
   updateInsertionOrder,
   deleteInsertionOrder,
   type OrderKolCollaboration,
-} from "~/lib/mock-api";
+} from "~/lib/mock-api.server";
 
 function n(value: number | undefined): string {
   // Use a stable locale to prevent hydration mismatch

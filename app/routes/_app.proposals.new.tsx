@@ -1,7 +1,7 @@
 import { Button, Card, Group, Stack, TextInput, Title } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
-import { createProposal } from "~/lib/mock-api";
+import { createProposal } from "~/lib/mock-api.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

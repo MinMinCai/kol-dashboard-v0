@@ -19,7 +19,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api";
+import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api.server";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 

@@ -30,7 +30,7 @@ import {
   createInsertionOrder,
   getProposal,
   listProposalKols,
-} from "~/lib/mock-api";
+} from "~/lib/mock-api.server";
 
 type SelectedKolRow = {
   id: string;

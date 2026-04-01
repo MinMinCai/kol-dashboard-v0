@@ -31,7 +31,7 @@ import {
   updateProposalKolStatus,
   deleteProposalKol,
   updateProposal,
-} from "~/lib/mock-api";
+} from "~/lib/mock-api.server";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft } from "@tabler/icons-react";
 
 export async function loader({ params }: LoaderFunctionArgs) {

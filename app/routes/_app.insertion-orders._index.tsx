@@ -50,7 +50,7 @@ import {
   IconUpload,
   IconCloudUpload
 } from "@tabler/icons-react";
-import { listInsertionOrders, updateInsertionOrder, type InsertionOrder } from "~/lib/mock-api";
+import { listInsertionOrders, updateInsertionOrder, type InsertionOrder } from "~/lib/mock-api.server";
 
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";

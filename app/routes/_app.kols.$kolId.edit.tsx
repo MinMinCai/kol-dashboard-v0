@@ -17,7 +17,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { getKol, updateKol, type Kol } from "~/lib/mock-api";
+import { getKol, updateKol, type Kol } from "~/lib/mock-api.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const kolId = params.kolId;

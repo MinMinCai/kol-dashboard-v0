@@ -18,7 +18,7 @@ import {
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { useState, useCallback } from "react";
-import { createKol } from "~/lib/mock-api";
+import { createKol } from "~/lib/mock-api.server";
 
 function parseHandle(url: string): string {
   const raw = url.trim();

@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { listKols, updateKol, type Kol } from "~/lib/mock-api";
+import { listKols, updateKol, type Kol } from "~/lib/mock-api.server";
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
 

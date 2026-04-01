@@ -16,7 +16,7 @@ import {
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, type KolCollabRecord } from "~/lib/mock-api";
+import { getKol, type KolCollabRecord } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");

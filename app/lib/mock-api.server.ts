@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { db } from "./db.server";
 import {
   kols as kolsTable,
   proposals as proposalsTable,

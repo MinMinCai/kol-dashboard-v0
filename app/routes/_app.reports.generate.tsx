@@ -27,7 +27,7 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useNotificationStore } from "~/store/notification";
 import { useState, useEffect, useRef } from "react";
-import { listInsertionOrders } from "~/lib/mock-api";
+import { listInsertionOrders } from "~/lib/mock-api.server";
 import { 
   IconFileTypePpt, 
   IconTrash, 

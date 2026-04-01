@@ -46,7 +46,7 @@ import {
   updateKol,
   updateTagCatalog,
   updateTeamMember,
-} from "~/lib/mock-api";
+} from "~/lib/mock-api.server";
 
 // Helpers
 function normalizeTagList(tags: string[]) {

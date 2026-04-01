@@ -29,7 +29,7 @@ import {
   listTeamMembers,
   getInsertionOrder,
   updateInsertionOrder,
-} from "~/lib/mock-api";
+} from "~/lib/mock-api.server";
 
 type SelectedKolRow = {
   id: string;

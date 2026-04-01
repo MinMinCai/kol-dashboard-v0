@@ -3,7 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData, Form } from "@remix-run/react";
 import { useState } from "react";
-import { listProposals, deleteProposal, updateProposal } from "~/lib/mock-api";
+import { listProposals, deleteProposal, updateProposal } from "~/lib/mock-api.server";
 import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 
 export async function action({ request }: ActionFunctionArgs) {

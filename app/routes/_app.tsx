@@ -2,7 +2,7 @@ import { AppShell, Avatar, Badge, Group, Stack, Text, Title } from "@mantine/cor
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import { GlobalNotification } from "~/components/GlobalNotification";
-import { listTeamMembers } from "~/lib/mock-api";
+import { listTeamMembers } from "~/lib/mock-api.server";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
