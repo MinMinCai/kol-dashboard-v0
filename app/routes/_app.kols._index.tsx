@@ -66,7 +66,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const minRating = Number(sp.get("minRating") ?? "0");
   const maxRating = Number(sp.get("maxRating") ?? "5");
 
-  let kols = await listKols();
+  let kols = await listKols().catch(() => [] as Kol[]);
 
   // --- text search ---
   if (q) {
@@ -127,9 +127,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize);
 
   // derive filter options from ALL kols (before filtering)
-  const allKols = await listKols();
+  const allKols = await listKols().catch(() => [] as Kol[]);
   const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
-  const tagCatalog = await listTagCatalog();
+  const tagCatalog = await listTagCatalog().catch(() => [] as { name: string }[]);
   const catalogTags = tagCatalog.map((t) => t.name);
   const allTags = [...new Set([...allKols.flatMap((k) => getPrimaryTags(k)), ...catalogTags])];
 

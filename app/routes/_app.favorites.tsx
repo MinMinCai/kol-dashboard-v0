@@ -29,7 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const sort = (url.searchParams.get("sort") ?? "rating_desc") as SortMode;
   const folder = url.searchParams.get("folder") ?? "全部";
 
-  const allKols = await listKols();
+  const allKols = await listKols().catch(() => [] as Kol[]);
   const favorites = allKols.filter((k) => k.isFavorite);
 
   // Collect all folder names from existing KOLs

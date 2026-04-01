@@ -1,6 +1,7 @@
-import { AppShell, Avatar, Badge, Group, Stack, Text, Title } from "@mantine/core";
+import { AppShell, Avatar, Badge, Button, Center, Group, Stack, Text, Title } from "@mantine/core";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { isRouteErrorResponse, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import { GlobalNotification } from "~/components/GlobalNotification";
 import { listTeamMembers } from "~/lib/mock-api.server";
 
@@ -296,39 +297,60 @@ export async function loader(_: LoaderFunctionArgs) {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const [countdown, setCountdown] = useState(15);
 
-  let title = "發生錯誤";
-  let message = "未知錯誤";
-  let stack: string | undefined;
+  let status = 500;
+  let title = "系統發生錯誤";
+  let message = "抱歉，系統遇到了一些問題，請稍後再試。";
+  let errorDetail: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    title = `${error.status} ${error.statusText}`;
-    message = typeof error.data === "string" ? error.data : JSON.stringify(error.data);
+    status = error.status;
+    if (status === 404) {
+      title = "找不到頁面";
+      message = "您正在尋找的頁面不存在。它可能已被移除、重新命名或暫時無法使用。";
+    }
+    errorDetail = `${error.status} ${error.statusText}${typeof error.data === "string" ? `: ${error.data}` : ""}`;
   } else if (error instanceof Error) {
-    message = error.message;
-    stack = error.stack;
+    errorDetail = `${error.name}: ${error.message}\n${error.stack ?? ""}`;
   }
 
+  useEffect(() => {
+    if (errorDetail) {
+      console.error(`[ErrorBoundary] ${errorDetail}`);
+    }
+  }, [errorDetail]);
+
+  useEffect(() => {
+    const tick = window.setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(tick);
+          window.location.replace("/dashboard");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(tick);
+  }, []);
+
   return (
-    <div style={{ padding: 32, fontFamily: "monospace" }}>
-      <h2 style={{ color: "crimson" }}>{title}</h2>
-      <p style={{ color: "#333" }}>{message}</p>
-      {stack && (
-        <pre
-          style={{
-            background: "#f5f5f5",
-            padding: 16,
-            borderRadius: 6,
-            overflowX: "auto",
-            fontSize: 12,
-            color: "#555",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {stack}
-        </pre>
-      )}
-    </div>
+    <Center h="100vh">
+      <Stack align="center" gap="md">
+        <Title style={{ fontSize: 120, lineHeight: 1, color: "var(--mantine-color-blue-filled)" }}>{status}</Title>
+        <Title order={2}>{title}</Title>
+        <Text c="dimmed" size="lg" ta="center" maw={500}>
+          {message}
+        </Text>
+        <Text c="blue" size="sm" ta="center" mt="xs">
+          系統將於 {countdown} 秒後自動為您導向至首頁...
+        </Text>
+        <Button component="a" href="/dashboard" mt="xl" size="lg" variant="light">
+          立即返回首頁
+        </Button>
+      </Stack>
+    </Center>
   );
 }
 
