@@ -190,7 +190,7 @@ export default function KolDetailPage() {
                 <input type="hidden" name="intent" value="toggle_favorite" />
                 <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
                 <button type="submit" style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}>
-                  {kol.isFavorite ? "❤️ 取消收藏" : "💗 加入收藏"}
+                  {kol.isFavorite ? "❤️ 取消收藏" : "🤍 加入收藏"}
                 </button>
               </Form>
               <Button

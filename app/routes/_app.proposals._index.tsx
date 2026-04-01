@@ -87,7 +87,7 @@ export default function ProposalListPage() {
                 </Table.Td>
                 <Table.Td>{p.clientName}</Table.Td>
                 <Table.Td>{p.stage}</Table.Td>
-                <Table.Td>${p.budget.toLocaleString()}</Table.Td>
+                <Table.Td>${(p.budget ?? 0).toLocaleString()}</Table.Td>
                 <Table.Td>{p.dueDate}</Table.Td>
                 <Table.Td>
                   <Group gap="xs" justify="flex-end">

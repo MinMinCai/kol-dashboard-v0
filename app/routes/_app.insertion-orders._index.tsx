@@ -26,8 +26,9 @@ import {
   type LoaderFunctionArgs,
   type ActionFunctionArgs,
 } from "@remix-run/node";
-import { 
-  Link, 
+import {
+  Form,
+  Link,
   useLoaderData,
   useFetcher,
 } from "@remix-run/react";
@@ -50,7 +51,7 @@ import {
   IconUpload,
   IconCloudUpload
 } from "@tabler/icons-react";
-import { listInsertionOrders, updateInsertionOrder, type InsertionOrder } from "~/lib/mock-api.server";
+import { listInsertionOrders, updateInsertionOrder, deleteInsertionOrder, type InsertionOrder } from "~/lib/mock-api.server";
 
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
@@ -138,6 +139,12 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  if (intent === "deleteOrder") {
+    const orderId = formData.get("orderId") as string;
+    if (orderId) await deleteInsertionOrder(orderId);
+    return json({ success: true });
+  }
+
   if (intent === "generateReport") {
     const orderId = formData.get("orderId") as string;
     if (orderId) {
@@ -186,6 +193,15 @@ export default function InsertionOrderListPage() {
 
   const fetcher = useFetcher();
   const { showToast, showBanner } = useNotificationStore();
+
+  // ── Delete Confirm State ──
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
+  const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+
+  const handleAskDelete = (order: InsertionOrder) => {
+    setDeleteTarget({ id: order.id, title: order.title ?? order.orderNo });
+    openDeleteModal();
+  };
 
   // ── Report Generation State ──
 
@@ -461,6 +477,15 @@ export default function InsertionOrderListPage() {
                       <Button component={Link} to={`/insertion-orders/${order.id}`}>查看詳情</Button>
                       <Button variant="default" onClick={() => handleOpenGenModal(order)}>📊 產生報告</Button>
                     </Group>
+                    <ActionIcon
+                      variant="light"
+                      color="red"
+                      size="lg"
+                      title="刪除委刊單"
+                      onClick={() => handleAskDelete(order)}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
                   </Group>
                 </Stack>
               </Card>
@@ -826,6 +851,30 @@ export default function InsertionOrderListPage() {
           <Group w="100%" grow mt="sm">
             <Button variant="outline" color="red" onClick={closeProgressModal}>取消生成</Button>
             <Button onClick={closeProgressModal}>在背景繼續</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* ── Delete Confirm Modal ── */}
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => { closeDeleteModal(); setDeleteTarget(null); }}
+        title="確認刪除委刊單"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            確定要刪除「{deleteTarget?.title}」嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => { closeDeleteModal(); setDeleteTarget(null); }}>
+              取消
+            </Button>
+            <Form method="post" onSubmit={() => { closeDeleteModal(); setDeleteTarget(null); }}>
+              <input type="hidden" name="intent" value="deleteOrder" />
+              <input type="hidden" name="orderId" value={deleteTarget?.id ?? ""} />
+              <Button type="submit" color="red">確認刪除</Button>
+            </Form>
           </Group>
         </Stack>
       </Modal>
