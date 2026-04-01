@@ -9,7 +9,8 @@
     "dev": "remix dev",
     "dev:mock": "json-server --watch mock/db.json --port 4000",
     "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
-    "build": "node scripts/migrate.mjs && node scripts/backfill-handles.mjs && remix build",
+    "build": "remix build",
+    "migrate": "node scripts/migrate.mjs && node scripts/backfill-handles.mjs",
     "start": "remix-serve build/index.js",
     "start:mock": "json-server --watch mock/db.json --port 4000 --host 0.0.0.0",
     "seed": "tsx scripts/seed.ts"
