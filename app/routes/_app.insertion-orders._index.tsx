@@ -30,6 +30,7 @@ import {
   Form,
   Link,
   useLoaderData,
+  useNavigate,
   useFetcher,
 } from "@remix-run/react";
 import { useNotificationStore } from "~/store/notification";
@@ -192,6 +193,7 @@ export default function InsertionOrderListPage() {
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const { showToast, showBanner } = useNotificationStore();
 
   // ── Delete Confirm State ──
@@ -453,7 +455,7 @@ export default function InsertionOrderListPage() {
         <Stack gap="md">
           {rows.map((order) => {
             return (
-              <Card key={order.id} withBorder className="io-card">
+              <Card key={order.id} withBorder className="io-card" style={{ cursor: "pointer" }} onClick={() => navigate(`/insertion-orders/${order.id}`)}>
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Text fw={600}>📋 #{order.orderNo} {order.title ?? "未命名專案"}</Text>
@@ -472,7 +474,7 @@ export default function InsertionOrderListPage() {
                     <Text size="sm">總互動: {numberShort(order.totalEngagement)}</Text>
                   </SimpleGrid>
 
-                  <Group justify="space-between">
+                  <Group justify="space-between" onClick={(e) => e.stopPropagation()}>
                     <Group>
                       <Button component={Link} to={`/insertion-orders/${order.id}`}>查看詳情</Button>
                       <Button variant="default" onClick={() => handleOpenGenModal(order)}>📊 產生報告</Button>

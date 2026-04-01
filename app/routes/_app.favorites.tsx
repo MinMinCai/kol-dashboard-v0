@@ -11,7 +11,7 @@ import {
   Title,
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { listKols, updateKol, type Kol } from "~/lib/mock-api.server";
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
@@ -81,6 +81,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function FavoritesPage() {
   const { rows, allFolders, folderCounts, search, sort, folder } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
 
   const inputStyle = {
     padding: "8px 12px",
@@ -114,7 +115,7 @@ export default function FavoritesPage() {
             placeholder="搜尋收藏 KOL"
             style={{ ...inputStyle, flex: 1, minWidth: 200 }}
           />
-          <select name="sort" defaultValue={sort} style={inputStyle}>
+          <select name="sort" defaultValue={sort} style={inputStyle} aria-label="排序方式">
             <option value="rating_desc">評分由高到低</option>
             <option value="followers_desc">粉絲由高到低</option>
             <option value="name_asc">名稱 A-Z</option>
@@ -165,7 +166,7 @@ export default function FavoritesPage() {
       ) : (
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={24}>
           {rows.map((kol) => (
-            <Card key={kol.id} withBorder className="kol-card">
+            <Card key={kol.id} withBorder className="kol-card" style={{ cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
               <Stack align="center" gap={6}>
                 <Avatar src={kol.avatarUrl} size={72} radius={999} />
                 <Text fw={600}>{kol.displayName}</Text>
@@ -207,7 +208,7 @@ export default function FavoritesPage() {
                 </Group>
               </Box>
 
-              <Group justify="space-between" mt="sm">
+              <Group justify="space-between" mt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                 <Group gap="xs">
                   <Link to={`/kols/${kol.id}`} style={{ fontSize: 14 }}>查看詳細</Link>

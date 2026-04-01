@@ -17,7 +17,7 @@ import {
   Title,
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useSubmit, useNavigation } from "@remix-run/react";
+import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
 import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api.server";
 
@@ -223,6 +223,7 @@ export default function KolListPage() {
   } = useLoaderData<typeof loader>();
   const submit = useSubmit();
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
 
@@ -557,8 +558,8 @@ export default function KolListPage() {
             {pageRows.map((kol) => {
               const kolTags = getPrimaryTags(kol);
               return (
-                <Card key={kol.id} withBorder radius="md" p="lg" style={{ position: "relative" }}>
-                  <Form method="post" style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }}>
+                <Card key={kol.id} withBorder radius="md" p="lg" style={{ position: "relative", cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
+                  <Form method="post" style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
                     <input type="hidden" name="intent" value="toggleFavorite" />
                     <input type="hidden" name="kolId" value={kol.id} />
                     <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
@@ -601,7 +602,7 @@ export default function KolListPage() {
                     <Text size="sm">⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                     <Text size="xs" c="dimmed">合作 {kol.collaborations ?? 0} 次</Text>
                   </Group>
-                  <Group mt="sm" gap="xs">
+                  <Group mt="sm" gap="xs" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="light"
                       size="xs"
