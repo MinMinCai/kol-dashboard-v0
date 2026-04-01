@@ -1,4 +1,19 @@
-const MOCK_API_BASE = process.env.MOCK_API_BASE_URL ?? "http://127.0.0.1:4000";
+import { db } from "./db";
+import {
+  kols as kolsTable,
+  proposals as proposalsTable,
+  proposalKols as proposalKolsTable,
+  insertionOrders as ioTable,
+  tagCatalog as tagCatalogTable,
+  brandCatalog as brandCatalogTable,
+  industryCatalog as industryCatalogTable,
+  platformCatalog as platformCatalogTable,
+  teamMembers as teamMembersTable,
+  systemPreferences as systemPreferencesTable,
+} from "../../db/drizzle/schema";
+import { eq } from "drizzle-orm";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type KolCollabMetrics = {
   postViews?: number;
@@ -147,29 +162,14 @@ export type ProposalKol = {
   price: number;
   role: string;
   reason: string;
-  status: string; // 'pending' | 'accepted' | 'rejected'
+  status: string;
   feedbackText: string;
 };
 
-export type TagCatalogItem = {
-  id: string | number;
-  name: string;
-};
-
-export type BrandCatalogItem = {
-  id: string | number;
-  name: string;
-};
-
-export type IndustryCatalogItem = {
-  id: string | number;
-  name: string;
-};
-
-export type PlatformCatalogItem = {
-  id: string | number;
-  name: string;
-};
+export type TagCatalogItem = { id: string | number; name: string };
+export type BrandCatalogItem = { id: string | number; name: string };
+export type IndustryCatalogItem = { id: string | number; name: string };
+export type PlatformCatalogItem = { id: string | number; name: string };
 
 export type TeamMember = {
   id: string;
@@ -228,156 +228,383 @@ export type InsertionOrder = {
   reports?: Report[];
 };
 
+// ─── Row mappers ──────────────────────────────────────────────────────────────
+
+function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
+  return {
+    id: row.id,
+    displayName: row.displayName,
+    industry: row.industry ?? undefined,
+    tags: row.tags ?? [],
+    rating: row.rating != null ? Number(row.rating) : undefined,
+    collaborations: row.collaborationCount ?? undefined,
+    averagePrice: row.averagePrice != null ? Number(row.averagePrice) : undefined,
+    industryDistribution: row.industryDistribution ?? [],
+    isFavorite: row.isFavorite,
+    favoriteFolder: row.favoriteFolder ?? undefined,
+    avatarUrl: row.avatarUrl ?? undefined,
+    social: (row.social as Kol["social"]) ?? undefined,
+    contact: (row.contact as Kol["contact"]) ?? undefined,
+    collaborationHistory: (row.collaborationHistory as KolCollabRecord[]) ?? [],
+    priceTrend: (row.priceTrend as PricePoint[]) ?? [],
+    performanceStats: (row.performanceStats as PerformanceStats) ?? undefined,
+    categories: row.categories ?? [],
+    platform: row.platform ?? "",
+    followers: row.followers ?? 0,
+    engagementRate: row.engagementRate != null ? Number(row.engagementRate) : 0,
+    exposureRate: row.exposureRate != null ? Number(row.exposureRate) : undefined,
+    audienceGender: (row.audienceGender as Kol["audienceGender"]) ?? undefined,
+    audienceAge: row.audienceAge ?? undefined,
+    introduction: row.introduction ?? undefined,
+    city: row.city ?? "",
+    notes: row.notes ?? undefined,
+    paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
+  };
+}
+
+function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
+  return {
+    id: row.id,
+    title: row.title,
+    clientName: row.clientName ?? "",
+    stage: row.stage,
+    budget: row.budget != null ? Number(row.budget) : 0,
+    dueDate: row.dueDate ?? "",
+  };
+}
+
+function rowToProposalKol(row: typeof proposalKolsTable.$inferSelect): ProposalKol {
+  return {
+    id: row.id,
+    proposalId: row.proposalId,
+    kolId: row.kolId ?? "",
+    kolName: row.kolName ?? "",
+    kolAvatarUrl: row.kolAvatarUrl ?? undefined,
+    price: row.proposedFee != null ? Number(row.proposedFee) : 0,
+    role: row.role ?? "",
+    reason: row.reason ?? "",
+    status: row.status,
+    feedbackText: row.feedbackText ?? "",
+  };
+}
+
+function rowToInsertionOrder(row: typeof ioTable.$inferSelect): InsertionOrder {
+  return {
+    id: row.id,
+    orderNo: row.orderNo,
+    title: row.title ?? undefined,
+    projectName: row.projectName ?? undefined,
+    clientName: row.clientName ?? "",
+    mcnName: row.mcnName ?? undefined,
+    brand: row.brand ?? undefined,
+    industry: row.industry ?? undefined,
+    industryPath: row.industryPath ?? undefined,
+    salesOwner: row.salesOwner ?? undefined,
+    kolManager: row.kolManager ?? undefined,
+    kolCount: row.kolCount ?? 0,
+    avgRating: row.avgRating != null ? Number(row.avgRating) : undefined,
+    avgEngagementRate: row.avgEngagementRate != null ? Number(row.avgEngagementRate) : undefined,
+    totalReach: row.totalReach ?? 0,
+    totalEngagement: row.totalEngagement ?? 0,
+    documentUrl: row.documentUrl ?? undefined,
+    collaborations: (row.collaborations as OrderKolCollaboration[]) ?? [],
+    status: row.status,
+    totalBudget: row.totalBudget != null ? Number(row.totalBudget) : 0,
+    tax: row.tax != null ? Number(row.tax) : undefined,
+    totalWithTax: row.totalWithTax != null ? Number(row.totalWithTax) : undefined,
+    startDate: row.startDate ?? "",
+    endDate: row.endDate ?? "",
+    hasDraft: row.hasDraft,
+    hasOfficial: row.hasOfficial,
+    reports: (row.reports as Report[]) ?? [],
+  };
+}
+
+// ─── KOL API ──────────────────────────────────────────────────────────────────
+
 export async function listKols(): Promise<Kol[]> {
-  const res = await fetch(`${MOCK_API_BASE}/kols`);
-  return res.json();
+  const rows = await db.select().from(kolsTable);
+  return rows.map(rowToKol);
 }
 
 export async function getKol(id: string): Promise<Kol | null> {
-  const res = await fetch(`${MOCK_API_BASE}/kols/${id}`);
-  if (res.status === 404) return null;
-  return res.json();
+  const rows = await db.select().from(kolsTable).where(eq(kolsTable.id, id)).limit(1);
+  return rows.length > 0 ? rowToKol(rows[0]) : null;
 }
+
+export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
+  const update: Partial<typeof kolsTable.$inferInsert> = {};
+  if (data.displayName !== undefined) update.displayName = data.displayName;
+  if (data.industry !== undefined) update.industry = data.industry;
+  if (data.tags !== undefined) update.tags = data.tags;
+  if (data.rating !== undefined) update.rating = String(data.rating);
+  if (data.collaborations !== undefined) update.collaborationCount = data.collaborations;
+  if (data.averagePrice !== undefined) update.averagePrice = String(data.averagePrice);
+  if (data.industryDistribution !== undefined) update.industryDistribution = data.industryDistribution;
+  if (data.isFavorite !== undefined) update.isFavorite = data.isFavorite;
+  if (data.favoriteFolder !== undefined) update.favoriteFolder = data.favoriteFolder;
+  if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl;
+  if (data.social !== undefined) update.social = data.social;
+  if (data.contact !== undefined) update.contact = data.contact;
+  if (data.collaborationHistory !== undefined) update.collaborationHistory = data.collaborationHistory;
+  if (data.priceTrend !== undefined) update.priceTrend = data.priceTrend;
+  if (data.performanceStats !== undefined) update.performanceStats = data.performanceStats;
+  if (data.categories !== undefined) update.categories = data.categories;
+  if (data.platform !== undefined) update.platform = data.platform;
+  if (data.followers !== undefined) update.followers = data.followers;
+  if (data.engagementRate !== undefined) update.engagementRate = String(data.engagementRate);
+  if (data.exposureRate !== undefined) update.exposureRate = String(data.exposureRate);
+  if (data.audienceGender !== undefined) update.audienceGender = data.audienceGender;
+  if (data.audienceAge !== undefined) update.audienceAge = data.audienceAge;
+  if (data.introduction !== undefined) update.introduction = data.introduction;
+  if (data.city !== undefined) update.city = data.city;
+  if (data.notes !== undefined) update.notes = data.notes;
+  if (data.paymentMethod !== undefined) update.paymentMethod = data.paymentMethod;
+  update.updatedAt = new Date();
+
+  const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToKol(rows[0]);
+}
+
+export async function deleteKol(id: string): Promise<boolean> {
+  await db.delete(kolsTable).where(eq(kolsTable.id, id));
+  return true;
+}
+
+// ─── Proposal API ─────────────────────────────────────────────────────────────
 
 export async function listProposals(): Promise<Proposal[]> {
-  const res = await fetch(`${MOCK_API_BASE}/proposals`);
-  return res.json();
-}
-
-export async function updateProposal(id: string, data: Partial<Proposal>): Promise<Proposal> {
-  const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
-
-export async function deleteProposal(id: string): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  const rows = await db.select().from(proposalsTable);
+  return rows.map(rowToProposal);
 }
 
 export async function getProposal(id: string): Promise<Proposal | null> {
-  const res = await fetch(`${MOCK_API_BASE}/proposals/${id}`);
-  if (res.status === 404) return null;
-  return res.json();
+  const rows = await db.select().from(proposalsTable).where(eq(proposalsTable.id, id)).limit(1);
+  return rows.length > 0 ? rowToProposal(rows[0]) : null;
 }
+
+export async function updateProposal(id: string, data: Partial<Proposal>): Promise<Proposal> {
+  const update: Partial<typeof proposalsTable.$inferInsert> = {};
+  if (data.title !== undefined) update.title = data.title;
+  if (data.clientName !== undefined) update.clientName = data.clientName;
+  if (data.stage !== undefined) update.stage = data.stage;
+  if (data.budget !== undefined) update.budget = String(data.budget);
+  if (data.dueDate !== undefined) update.dueDate = data.dueDate;
+  update.updatedAt = new Date();
+
+  const rows = await db.update(proposalsTable).set(update).where(eq(proposalsTable.id, id)).returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToProposal(rows[0]);
+}
+
+export async function deleteProposal(id: string): Promise<boolean> {
+  await db.delete(proposalsTable).where(eq(proposalsTable.id, id));
+  return true;
+}
+
+// ─── ProposalKol API ──────────────────────────────────────────────────────────
 
 export async function listProposalKols(proposalId: string): Promise<ProposalKol[]> {
-  const res = await fetch(`${MOCK_API_BASE}/proposalKols?proposalId=${proposalId}`);
-  return res.json();
+  const rows = await db.select().from(proposalKolsTable).where(eq(proposalKolsTable.proposalId, proposalId));
+  return rows.map(rowToProposalKol);
 }
 
-export async function addProposalKol(data: Omit<ProposalKol, "id" | "status" | "feedbackText">): Promise<ProposalKol> {
-  const payload = { ...data, status: "pending", feedbackText: "" };
-  const res = await fetch(`${MOCK_API_BASE}/proposalKols`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return res.json();
+export async function addProposalKol(
+  data: Omit<ProposalKol, "id" | "status" | "feedbackText">,
+): Promise<ProposalKol> {
+  const rows = await db
+    .insert(proposalKolsTable)
+    .values({
+      proposalId: data.proposalId,
+      kolId: data.kolId || null,
+      kolName: data.kolName,
+      kolAvatarUrl: data.kolAvatarUrl,
+      proposedFee: String(data.price),
+      role: data.role,
+      reason: data.reason,
+      status: "pending",
+      feedbackText: "",
+    })
+    .returning();
+  return rowToProposalKol(rows[0]);
 }
 
-export async function updateProposalKolStatus(id: string, status: string, feedbackText: string): Promise<ProposalKol> {
-  const res = await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status, feedbackText }),
-  });
-  return res.json();
+export async function updateProposalKolStatus(
+  id: string,
+  status: string,
+  feedbackText: string,
+): Promise<ProposalKol> {
+  const rows = await db
+    .update(proposalKolsTable)
+    .set({ status, feedbackText })
+    .where(eq(proposalKolsTable.id, id))
+    .returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToProposalKol(rows[0]);
 }
 
 export async function deleteProposalKol(id: string): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/proposalKols/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  await db.delete(proposalKolsTable).where(eq(proposalKolsTable.id, id));
+  return true;
 }
 
+// ─── Insertion Order API ──────────────────────────────────────────────────────
+
 export async function listInsertionOrders(): Promise<InsertionOrder[]> {
-  const res = await fetch(`${MOCK_API_BASE}/insertionOrders`);
-  return res.json();
+  const rows = await db.select().from(ioTable);
+  return rows.map(rowToInsertionOrder);
 }
+
+export async function getInsertionOrder(id: string): Promise<InsertionOrder | null> {
+  const rows = await db.select().from(ioTable).where(eq(ioTable.id, id)).limit(1);
+  return rows.length > 0 ? rowToInsertionOrder(rows[0]) : null;
+}
+
+export async function updateInsertionOrder(
+  id: string,
+  data: Partial<InsertionOrder>,
+): Promise<InsertionOrder> {
+  const update: Partial<typeof ioTable.$inferInsert> = {};
+  if (data.title !== undefined) update.title = data.title;
+  if (data.clientName !== undefined) update.clientName = data.clientName;
+  if (data.status !== undefined) update.status = data.status;
+  if (data.totalBudget !== undefined) update.totalBudget = String(data.totalBudget);
+  if (data.startDate !== undefined) update.startDate = data.startDate;
+  if (data.endDate !== undefined) update.endDate = data.endDate;
+  if (data.industry !== undefined) update.industry = data.industry;
+  if (data.salesOwner !== undefined) update.salesOwner = data.salesOwner;
+  if (data.kolManager !== undefined) update.kolManager = data.kolManager;
+  if (data.kolCount !== undefined) update.kolCount = data.kolCount;
+  if (data.avgRating !== undefined) update.avgRating = String(data.avgRating);
+  if (data.avgEngagementRate !== undefined) update.avgEngagementRate = String(data.avgEngagementRate);
+  if (data.totalReach !== undefined) update.totalReach = data.totalReach;
+  if (data.totalEngagement !== undefined) update.totalEngagement = data.totalEngagement;
+  if (data.documentUrl !== undefined) update.documentUrl = data.documentUrl;
+  if (data.collaborations !== undefined) update.collaborations = data.collaborations;
+  if (data.tax !== undefined) update.tax = String(data.tax);
+  if (data.totalWithTax !== undefined) update.totalWithTax = String(data.totalWithTax);
+  if (data.hasDraft !== undefined) update.hasDraft = data.hasDraft;
+  if (data.hasOfficial !== undefined) update.hasOfficial = data.hasOfficial;
+  if (data.reports !== undefined) update.reports = data.reports;
+  update.updatedAt = new Date();
+
+  const rows = await db.update(ioTable).set(update).where(eq(ioTable.id, id)).returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToInsertionOrder(rows[0]);
+}
+
+export async function deleteInsertionOrder(id: string): Promise<boolean> {
+  await db.delete(ioTable).where(eq(ioTable.id, id));
+  return true;
+}
+
+export async function addIOReview(
+  orderId: string,
+  kolId: string,
+  review: Omit<OrderReview, "id" | "date">,
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const newReview: OrderReview = {
+    ...review,
+    id: `rv_${Date.now()}`,
+    date: new Date().toISOString().split("T")[0],
+  };
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], reviews: [...(updated[idx].reviews ?? []), newReview] };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
+export async function updateIOPerformance(
+  orderId: string,
+  kolId: string,
+  performance: Omit<OrderPerformanceItem, "id">,
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const newItem: OrderPerformanceItem = { ...performance, id: `perf_${Date.now()}` };
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], performanceItems: [...(updated[idx].performanceItems ?? []), newItem] };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
+// ─── Tag Catalog ──────────────────────────────────────────────────────────────
 
 export async function listTagCatalog(): Promise<TagCatalogItem[]> {
   try {
-    const res = await fetch(`${MOCK_API_BASE}/tagCatalog`);
-    if (!res.ok) return [];
-    return res.json();
-  } catch (e) {
+    return await db.select().from(tagCatalogTable);
+  } catch {
     return [];
   }
 }
 
 export async function addTagCatalog(data: Omit<TagCatalogItem, "id">): Promise<TagCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/tagCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db.insert(tagCatalogTable).values({ name: data.name }).returning();
+  return rows[0];
 }
 
-export async function updateTagCatalog(id: string | number, data: Partial<TagCatalogItem>): Promise<TagCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+export async function updateTagCatalog(
+  id: string | number,
+  data: Partial<TagCatalogItem>,
+): Promise<TagCatalogItem> {
+  const rows = await db
+    .update(tagCatalogTable)
+    .set({ name: data.name })
+    .where(eq(tagCatalogTable.id, String(id)))
+    .returning();
+  return rows[0];
 }
 
 export async function deleteTagCatalog(id: string | number): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/tagCatalog/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  await db.delete(tagCatalogTable).where(eq(tagCatalogTable.id, String(id)));
+  return true;
 }
+
+// ─── Brand Catalog ────────────────────────────────────────────────────────────
 
 export async function listBrandCatalog(): Promise<BrandCatalogItem[]> {
   try {
-    const res = await fetch(`${MOCK_API_BASE}/brandCatalog`);
-    if (!res.ok) return [];
-    return res.json();
-  } catch (e) {
+    return await db.select().from(brandCatalogTable);
+  } catch {
     return [];
   }
 }
 
 export async function addBrandCatalog(data: Omit<BrandCatalogItem, "id">): Promise<BrandCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/brandCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db.insert(brandCatalogTable).values({ name: data.name }).returning();
+  return rows[0];
 }
 
-export async function updateBrandCatalog(id: string | number, data: Partial<BrandCatalogItem>): Promise<BrandCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+export async function updateBrandCatalog(
+  id: string | number,
+  data: Partial<BrandCatalogItem>,
+): Promise<BrandCatalogItem> {
+  const rows = await db
+    .update(brandCatalogTable)
+    .set({ name: data.name })
+    .where(eq(brandCatalogTable.id, String(id)))
+    .returning();
+  return rows[0];
 }
 
 export async function deleteBrandCatalog(id: string | number): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/brandCatalog/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  await db.delete(brandCatalogTable).where(eq(brandCatalogTable.id, String(id)));
+  return true;
 }
+
+// ─── Industry Catalog ─────────────────────────────────────────────────────────
 
 export async function listIndustryCatalog(): Promise<IndustryCatalogItem[]> {
   try {
-    const res = await fetch(`${MOCK_API_BASE}/industryCatalog`);
-    if (!res.ok) return [];
-    return res.json();
-  } catch (e) {
+    return await db.select().from(industryCatalogTable);
+  } catch {
     return [];
   }
 }
@@ -385,39 +612,33 @@ export async function listIndustryCatalog(): Promise<IndustryCatalogItem[]> {
 export async function addIndustryCatalog(
   data: Omit<IndustryCatalogItem, "id">,
 ): Promise<IndustryCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/industryCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db.insert(industryCatalogTable).values({ name: data.name }).returning();
+  return rows[0];
 }
 
 export async function updateIndustryCatalog(
   id: string | number,
   data: Partial<IndustryCatalogItem>,
 ): Promise<IndustryCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db
+    .update(industryCatalogTable)
+    .set({ name: data.name })
+    .where(eq(industryCatalogTable.id, String(id)))
+    .returning();
+  return rows[0];
 }
 
 export async function deleteIndustryCatalog(id: string | number): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/industryCatalog/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  await db.delete(industryCatalogTable).where(eq(industryCatalogTable.id, String(id)));
+  return true;
 }
+
+// ─── Platform Catalog ─────────────────────────────────────────────────────────
 
 export async function listPlatformCatalog(): Promise<PlatformCatalogItem[]> {
   try {
-    const res = await fetch(`${MOCK_API_BASE}/platformCatalog`);
-    if (!res.ok) return [];
-    return res.json();
-  } catch (e) {
+    return await db.select().from(platformCatalogTable);
+  } catch {
     return [];
   }
 }
@@ -425,172 +646,111 @@ export async function listPlatformCatalog(): Promise<PlatformCatalogItem[]> {
 export async function addPlatformCatalog(
   data: Omit<PlatformCatalogItem, "id">,
 ): Promise<PlatformCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/platformCatalog`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db.insert(platformCatalogTable).values({ name: data.name }).returning();
+  return rows[0];
 }
 
 export async function updatePlatformCatalog(
   id: string | number,
   data: Partial<PlatformCatalogItem>,
 ): Promise<PlatformCatalogItem> {
-  const res = await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const rows = await db
+    .update(platformCatalogTable)
+    .set({ name: data.name })
+    .where(eq(platformCatalogTable.id, String(id)))
+    .returning();
+  return rows[0];
 }
 
 export async function deletePlatformCatalog(id: string | number): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/platformCatalog/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  await db.delete(platformCatalogTable).where(eq(platformCatalogTable.id, String(id)));
+  return true;
 }
+
+// ─── Team Members ─────────────────────────────────────────────────────────────
 
 export async function listTeamMembers(): Promise<TeamMember[]> {
-  const res = await fetch(`${MOCK_API_BASE}/teamMembers`);
-  return res.json();
+  const rows = await db.select().from(teamMembersTable);
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    role: r.role as TeamMember["role"],
+    group: r.group as TeamMember["group"],
+  }));
 }
 
+export async function addTeamMember(data: Omit<TeamMember, "id">): Promise<TeamMember> {
+  const rows = await db
+    .insert(teamMembersTable)
+    .values({
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      group: data.group,
+    })
+    .returning();
+  const r = rows[0];
+  return { id: r.id, name: r.name, email: r.email, role: r.role as TeamMember["role"], group: r.group as TeamMember["group"] };
+}
+
+export async function updateTeamMember(id: string, data: Partial<TeamMember>): Promise<TeamMember> {
+  const update: Partial<typeof teamMembersTable.$inferInsert> = {};
+  if (data.name !== undefined) update.name = data.name;
+  if (data.email !== undefined) update.email = data.email;
+  if (data.role !== undefined) update.role = data.role;
+  if (data.group !== undefined) update.group = data.group;
+  update.updatedAt = new Date();
+  const rows = await db.update(teamMembersTable).set(update).where(eq(teamMembersTable.id, id)).returning();
+  const r = rows[0];
+  return { id: r.id, name: r.name, email: r.email, role: r.role as TeamMember["role"], group: r.group as TeamMember["group"] };
+}
+
+export async function deleteTeamMember(id: string): Promise<boolean> {
+  await db.delete(teamMembersTable).where(eq(teamMembersTable.id, id));
+  return true;
+}
+
+// ─── System Preferences ───────────────────────────────────────────────────────
+
 export async function getSystemPreferences(): Promise<SystemPreferences> {
-  const res = await fetch(`${MOCK_API_BASE}/systemPreferences`);
-  return res.json();
+  const rows = await db
+    .select()
+    .from(systemPreferencesTable)
+    .where(eq(systemPreferencesTable.id, "default"))
+    .limit(1);
+
+  if (rows.length === 0) {
+    // Insert default row if not exists
+    await db.insert(systemPreferencesTable).values({ id: "default" }).onConflictDoNothing();
+    return { currency: "TWD", defaultTaxRate: 5, defaultReportLang: "zh-TW", notifyEmail: "", aiSuggestions: true };
+  }
+
+  const r = rows[0];
+  return {
+    currency: r.currency,
+    defaultTaxRate: Number(r.defaultTaxRate),
+    defaultReportLang: r.defaultReportLang,
+    notifyEmail: r.notifyEmail,
+    aiSuggestions: r.aiSuggestions,
+  };
 }
 
 export async function updateSystemPreferences(
   data: Partial<SystemPreferences>,
 ): Promise<SystemPreferences> {
-  const res = await fetch(`${MOCK_API_BASE}/systemPreferences`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const update: Partial<typeof systemPreferencesTable.$inferInsert> = {};
+  if (data.currency !== undefined) update.currency = data.currency;
+  if (data.defaultTaxRate !== undefined) update.defaultTaxRate = String(data.defaultTaxRate);
+  if (data.defaultReportLang !== undefined) update.defaultReportLang = data.defaultReportLang;
+  if (data.notifyEmail !== undefined) update.notifyEmail = data.notifyEmail;
+  if (data.aiSuggestions !== undefined) update.aiSuggestions = data.aiSuggestions;
+  update.updatedAt = new Date();
+
+  await db
+    .insert(systemPreferencesTable)
+    .values({ id: "default", ...update })
+    .onConflictDoUpdate({ target: systemPreferencesTable.id, set: update });
+
+  return getSystemPreferences();
 }
-
-export async function addTeamMember(data: Omit<TeamMember, "id">): Promise<TeamMember> {
-  const res = await fetch(`${MOCK_API_BASE}/teamMembers`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
-
-export async function updateTeamMember(id: string, data: Partial<TeamMember>): Promise<TeamMember> {
-  const res = await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
-
-export async function deleteTeamMember(id: string): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/teamMembers/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
-}
-
-export async function getInsertionOrder(id: string): Promise<InsertionOrder | null> {
-  const res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`);
-  if (res.status === 404) return null;
-  return res.json();
-}
-
-export async function deleteKol(id: string): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/kols/${id}`, { method: "DELETE" });
-  return res.ok;
-}
-export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
-  const res = await fetch(`${MOCK_API_BASE}/kols/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Update failed");
-  return res.json();
-}
-
-export async function updateInsertionOrder(id: string, data: Partial<InsertionOrder>): Promise<InsertionOrder> {
-  const res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Update failed");
-  return res.json();
-}
-
-export async function addIOReview(
-  orderId: string,
-  kolId: string,
-  review: Omit<OrderReview, "id" | "date">
-): Promise<InsertionOrder> {
-  const io = await getInsertionOrder(orderId);
-  if (!io) throw new Error("Order not found");
-
-  const collabs = io.collaborations ?? [];
-  const collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
-  if (collabIndex === -1) throw new Error("Collaboration not found");
-
-  const newReview: OrderReview = {
-    ...review,
-    id: `rv_${Date.now()}`,
-    date: new Date().toISOString().split("T")[0],
-  };
-
-  const updatedCollabs = [...collabs];
-  updatedCollabs[collabIndex] = {
-    ...updatedCollabs[collabIndex],
-    reviews: [...(updatedCollabs[collabIndex].reviews ?? []), newReview],
-  };
-
-  return updateInsertionOrder(orderId, { collaborations: updatedCollabs });
-}
-
-export async function updateIOPerformance(
-  orderId: string,
-  kolId: string,
-  performance: Omit<OrderPerformanceItem, "id">
-): Promise<InsertionOrder> {
-  const io = await getInsertionOrder(orderId);
-  if (!io) throw new Error("Order not found");
-
-  const collabs = io.collaborations ?? [];
-  const collabIndex = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
-  if (collabIndex === -1) throw new Error("Collaboration not found");
-
-  const newItem: OrderPerformanceItem = {
-    ...performance,
-    id: `perf_${Date.now()}`,
-  };
-
-  const updatedCollabs = [...collabs];
-  updatedCollabs[collabIndex] = {
-    ...updatedCollabs[collabIndex],
-    performanceItems: [...(updatedCollabs[collabIndex].performanceItems ?? []), newItem],
-  };
-
-  return updateInsertionOrder(orderId, { collaborations: updatedCollabs });
-}
-
-export async function deleteInsertionOrder(id: string): Promise<boolean> {
-  const res = await fetch(`${MOCK_API_BASE}/insertionOrders/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
-}
-
-export { MOCK_API_BASE };
-
-
-
-
-

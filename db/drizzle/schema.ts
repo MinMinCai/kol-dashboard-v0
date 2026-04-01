@@ -15,14 +15,7 @@ import {
 
 const now = timestamp("created_at", { withTimezone: true }).defaultNow().notNull();
 
-export const clients = pgTable("clients", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: varchar("name", { length: 200 }).notNull(),
-  industry: varchar("industry", { length: 100 }),
-  preferences: jsonb("preferences").$type<Record<string, unknown>>().default({}),
-  createdAt: now,
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+// ─── KOLs ────────────────────────────────────────────────────────────────────
 
 export const kols = pgTable(
   "kols",
@@ -40,6 +33,29 @@ export const kols = pgTable(
     basePriceMax: numeric("base_price_max", { precision: 12, scale: 2 }),
     status: varchar("status", { length: 20 }).default("active").notNull(),
     notes: text("notes"),
+    // Extended fields
+    industry: varchar("industry", { length: 100 }),
+    tags: text("tags").array().default([]).notNull(),
+    rating: numeric("rating", { precision: 4, scale: 2 }),
+    collaborationCount: integer("collaboration_count").default(0),
+    averagePrice: numeric("average_price", { precision: 12, scale: 2 }),
+    industryDistribution: text("industry_distribution").array().default([]).notNull(),
+    isFavorite: boolean("is_favorite").default(false).notNull(),
+    favoriteFolder: varchar("favorite_folder", { length: 100 }),
+    avatarUrl: text("avatar_url"),
+    platform: varchar("platform", { length: 30 }),
+    followers: integer("followers").default(0),
+    engagementRate: numeric("engagement_rate", { precision: 5, scale: 2 }),
+    exposureRate: numeric("exposure_rate", { precision: 5, scale: 2 }),
+    audienceGender: jsonb("audience_gender").$type<{ male: number; female: number }>(),
+    audienceAge: varchar("audience_age", { length: 50 }),
+    introduction: text("introduction"),
+    paymentMethod: varchar("payment_method", { length: 10 }),
+    social: jsonb("social").$type<{ instagram?: number; youtube?: number; tiktok?: number; facebook?: number }>().default({}),
+    contact: jsonb("contact").$type<{ phone?: string; email?: string; manager?: string }>().default({}),
+    collaborationHistory: jsonb("collaboration_history").$type<any[]>().default([]),
+    priceTrend: jsonb("price_trend").$type<any[]>().default([]),
+    performanceStats: jsonb("performance_stats").$type<any>(),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -71,11 +87,25 @@ export const kolSocialAccounts = pgTable(
   }),
 );
 
+// ─── Clients ─────────────────────────────────────────────────────────────────
+
+export const clients = pgTable("clients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 200 }).notNull(),
+  industry: varchar("industry", { length: 100 }),
+  preferences: jsonb("preferences").$type<Record<string, unknown>>().default({}),
+  createdAt: now,
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ─── Proposals ───────────────────────────────────────────────────────────────
+
 export const proposals = pgTable(
   "proposals",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    clientId: uuid("client_id").references(() => clients.id).notNull(),
+    clientId: uuid("client_id").references(() => clients.id),
+    clientName: varchar("client_name", { length: 200 }),
     title: varchar("title", { length: 255 }).notNull(),
     objective: text("objective"),
     budget: numeric("budget", { precision: 12, scale: 2 }),
@@ -95,10 +125,14 @@ export const proposalKols = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     proposalId: uuid("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
-    kolId: uuid("kol_id").references(() => kols.id).notNull(),
+    kolId: uuid("kol_id").references(() => kols.id),
+    kolName: varchar("kol_name", { length: 150 }),
+    kolAvatarUrl: text("kol_avatar_url"),
     proposedFee: numeric("proposed_fee", { precision: 12, scale: 2 }),
     role: varchar("role", { length: 100 }),
     reason: text("reason"),
+    status: varchar("status", { length: 20 }).default("pending").notNull(),
+    feedbackText: text("feedback_text").default(""),
     createdAt: now,
   },
   (table) => ({
@@ -116,19 +150,43 @@ export const proposalFeedback = pgTable("proposal_feedback", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// ─── Insertion Orders ─────────────────────────────────────────────────────────
+
 export const insertionOrders = pgTable(
   "insertion_orders",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     orderNo: varchar("order_no", { length: 50 }).notNull(),
     proposalId: uuid("proposal_id").references(() => proposals.id),
-    clientId: uuid("client_id").references(() => clients.id).notNull(),
+    clientId: uuid("client_id").references(() => clients.id),
     status: varchar("status", { length: 30 }).default("created").notNull(),
     totalBudget: numeric("total_budget", { precision: 12, scale: 2 }),
     startDate: date("start_date"),
     endDate: date("end_date"),
     contractStatus: varchar("contract_status", { length: 30 }).default("pending").notNull(),
     invoiceStatus: varchar("invoice_status", { length: 30 }).default("pending").notNull(),
+    // Extended fields
+    title: varchar("title", { length: 255 }),
+    clientName: varchar("client_name", { length: 200 }),
+    projectName: varchar("project_name", { length: 255 }),
+    brand: varchar("brand", { length: 100 }),
+    mcnName: varchar("mcn_name", { length: 100 }),
+    industry: varchar("industry", { length: 100 }),
+    industryPath: varchar("industry_path", { length: 200 }),
+    salesOwner: varchar("sales_owner", { length: 100 }),
+    kolManager: varchar("kol_manager", { length: 100 }),
+    kolCount: integer("kol_count").default(0),
+    avgRating: numeric("avg_rating", { precision: 4, scale: 2 }),
+    avgEngagementRate: numeric("avg_engagement_rate", { precision: 5, scale: 2 }),
+    totalReach: integer("total_reach").default(0),
+    totalEngagement: integer("total_engagement").default(0),
+    documentUrl: text("document_url"),
+    tax: numeric("tax", { precision: 12, scale: 2 }),
+    totalWithTax: numeric("total_with_tax", { precision: 12, scale: 2 }),
+    hasDraft: boolean("has_draft").default(false).notNull(),
+    hasOfficial: boolean("has_official").default(false).notNull(),
+    collaborations: jsonb("collaborations").$type<any[]>().default([]),
+    reports: jsonb("reports").$type<any[]>().default([]),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -202,7 +260,57 @@ export const aiReports = pgTable("ai_reports", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// --- BetterAuth Tables ---
+// ─── Catalogs ─────────────────────────────────────────────────────────────────
+
+export const tagCatalog = pgTable("tag_catalog", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  createdAt: now,
+});
+
+export const brandCatalog = pgTable("brand_catalog", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 200 }).notNull().unique(),
+  createdAt: now,
+});
+
+export const industryCatalog = pgTable("industry_catalog", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  createdAt: now,
+});
+
+export const platformCatalog = pgTable("platform_catalog", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  createdAt: now,
+});
+
+// ─── Team Members ─────────────────────────────────────────────────────────────
+
+export const teamMembers = pgTable("team_members", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 200 }).notNull().unique(),
+  role: varchar("role", { length: 20 }).default("member").notNull(),
+  group: varchar("group", { length: 20 }).default("其他").notNull(),
+  createdAt: now,
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ─── System Preferences ───────────────────────────────────────────────────────
+
+export const systemPreferences = pgTable("system_preferences", {
+  id: varchar("id", { length: 20 }).primaryKey().default("default"),
+  currency: varchar("currency", { length: 10 }).default("TWD").notNull(),
+  defaultTaxRate: numeric("default_tax_rate", { precision: 5, scale: 2 }).default("5").notNull(),
+  defaultReportLang: varchar("default_report_lang", { length: 20 }).default("zh-TW").notNull(),
+  notifyEmail: varchar("notify_email", { length: 200 }).default("").notNull(),
+  aiSuggestions: boolean("ai_suggestions").default(true).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ─── BetterAuth Tables ────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -210,7 +318,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
   image: text("image"),
-  role: varchar("role", { length: 20 }).default("member").notNull(), // admin, manager, member
+  role: varchar("role", { length: 20 }).default("member").notNull(),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
@@ -223,18 +331,14 @@ export const sessions = pgTable("sessions", {
   updatedAt: timestamp("updated_at").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
+  userId: text("user_id").notNull().references(() => users.id),
 });
 
 export const accounts = pgTable("accounts", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
+  userId: text("user_id").notNull().references(() => users.id),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
