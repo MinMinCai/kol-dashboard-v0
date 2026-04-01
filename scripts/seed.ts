@@ -153,7 +153,7 @@ async function seed() {
     for (const t of dbJson.tagCatalog) {
       await db
         .insert(schema.tagCatalog)
-        .values({ name: t.name })
+        .values({ id: String(t.id), name: t.name })
         .onConflictDoNothing();
     }
     console.log("  ✓ Tags done");
@@ -165,7 +165,7 @@ async function seed() {
     for (const b of dbJson.brandCatalog) {
       await db
         .insert(schema.brandCatalog)
-        .values({ name: b.name })
+        .values({ id: String(b.id), name: b.name })
         .onConflictDoNothing();
     }
     console.log("  ✓ Brands done");
@@ -177,7 +177,7 @@ async function seed() {
     for (const i of dbJson.industryCatalog) {
       await db
         .insert(schema.industryCatalog)
-        .values({ name: i.name })
+        .values({ id: String(i.id), name: i.name })
         .onConflictDoNothing();
     }
     console.log("  ✓ Industries done");
@@ -189,7 +189,7 @@ async function seed() {
     for (const p of dbJson.platformCatalog) {
       await db
         .insert(schema.platformCatalog)
-        .values({ name: p.name })
+        .values({ id: String(p.id), name: p.name })
         .onConflictDoNothing();
     }
     console.log("  ✓ Platforms done");

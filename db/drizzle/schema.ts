@@ -9,7 +9,6 @@ import {
   text,
   timestamp,
   uniqueIndex,
-  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -20,7 +19,7 @@ const now = timestamp("created_at", { withTimezone: true }).defaultNow().notNull
 export const kols = pgTable(
   "kols",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: text("id").primaryKey(),
     displayName: varchar("display_name", { length: 150 }).notNull(),
     legalName: varchar("legal_name", { length: 150 }),
     country: varchar("country", { length: 80 }),
@@ -68,8 +67,8 @@ export const kols = pgTable(
 export const kolSocialAccounts = pgTable(
   "kol_social_accounts",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    kolId: uuid("kol_id").references(() => kols.id, { onDelete: "cascade" }).notNull(),
+    id: text("id").primaryKey(),
+    kolId: text("kol_id").references(() => kols.id, { onDelete: "cascade" }).notNull(),
     platform: varchar("platform", { length: 30 }).notNull(),
     handle: varchar("handle", { length: 120 }).notNull(),
     profileUrl: text("profile_url"),
@@ -90,7 +89,7 @@ export const kolSocialAccounts = pgTable(
 // ─── Clients ─────────────────────────────────────────────────────────────────
 
 export const clients = pgTable("clients", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull(),
   industry: varchar("industry", { length: 100 }),
   preferences: jsonb("preferences").$type<Record<string, unknown>>().default({}),
@@ -103,8 +102,8 @@ export const clients = pgTable("clients", {
 export const proposals = pgTable(
   "proposals",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    clientId: uuid("client_id").references(() => clients.id),
+    id: text("id").primaryKey(),
+    clientId: text("client_id").references(() => clients.id),
     clientName: varchar("client_name", { length: 200 }),
     title: varchar("title", { length: 255 }).notNull(),
     objective: text("objective"),
@@ -123,9 +122,9 @@ export const proposals = pgTable(
 export const proposalKols = pgTable(
   "proposal_kols",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    proposalId: uuid("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
-    kolId: uuid("kol_id").references(() => kols.id),
+    id: text("id").primaryKey(),
+    proposalId: text("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
+    kolId: text("kol_id").references(() => kols.id),
     kolName: varchar("kol_name", { length: 150 }),
     kolAvatarUrl: text("kol_avatar_url"),
     proposedFee: numeric("proposed_fee", { precision: 12, scale: 2 }),
@@ -141,8 +140,8 @@ export const proposalKols = pgTable(
 );
 
 export const proposalFeedback = pgTable("proposal_feedback", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  proposalId: uuid("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
+  id: text("id").primaryKey(),
+  proposalId: text("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
   source: varchar("source", { length: 20 }).notNull(),
   feedbackText: text("feedback_text").notNull(),
   decision: varchar("decision", { length: 20 }),
@@ -155,10 +154,10 @@ export const proposalFeedback = pgTable("proposal_feedback", {
 export const insertionOrders = pgTable(
   "insertion_orders",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: text("id").primaryKey(),
     orderNo: varchar("order_no", { length: 50 }).notNull(),
-    proposalId: uuid("proposal_id").references(() => proposals.id),
-    clientId: uuid("client_id").references(() => clients.id),
+    proposalId: text("proposal_id").references(() => proposals.id),
+    clientId: text("client_id").references(() => clients.id),
     status: varchar("status", { length: 30 }).default("created").notNull(),
     totalBudget: numeric("total_budget", { precision: 12, scale: 2 }),
     startDate: date("start_date"),
@@ -197,11 +196,11 @@ export const insertionOrders = pgTable(
 );
 
 export const ioTasks = pgTable("io_tasks", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  insertionOrderId: uuid("insertion_order_id")
+  id: text("id").primaryKey(),
+  insertionOrderId: text("insertion_order_id")
     .references(() => insertionOrders.id, { onDelete: "cascade" })
     .notNull(),
-  kolId: uuid("kol_id").references(() => kols.id),
+  kolId: text("kol_id").references(() => kols.id),
   taskType: varchar("task_type", { length: 40 }).notNull(),
   taskStatus: varchar("task_status", { length: 20 }).default("todo").notNull(),
   dueAt: timestamp("due_at", { withTimezone: true }),
@@ -215,11 +214,11 @@ export const ioTasks = pgTable("io_tasks", {
 export const campaignPerformance = pgTable(
   "campaign_performance",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    insertionOrderId: uuid("insertion_order_id")
+    id: text("id").primaryKey(),
+    insertionOrderId: text("insertion_order_id")
       .references(() => insertionOrders.id, { onDelete: "cascade" })
       .notNull(),
-    kolId: uuid("kol_id").references(() => kols.id),
+    kolId: text("kol_id").references(() => kols.id),
     platform: varchar("platform", { length: 30 }).notNull(),
     waveNo: integer("wave_no").default(1).notNull(),
     contentUrl: text("content_url"),
@@ -250,10 +249,10 @@ export const campaignPerformance = pgTable(
 );
 
 export const aiReports = pgTable("ai_reports", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   reportType: varchar("report_type", { length: 30 }).notNull(),
   refTable: varchar("ref_table", { length: 50 }).notNull(),
-  refId: uuid("ref_id").notNull(),
+  refId: text("ref_id").notNull(),
   promptVersion: varchar("prompt_version", { length: 50 }),
   contentMd: text("content_md").notNull(),
   createdBy: varchar("created_by", { length: 100 }),
@@ -263,25 +262,25 @@ export const aiReports = pgTable("ai_reports", {
 // ─── Catalogs ─────────────────────────────────────────────────────────────────
 
 export const tagCatalog = pgTable("tag_catalog", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   createdAt: now,
 });
 
 export const brandCatalog = pgTable("brand_catalog", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull().unique(),
   createdAt: now,
 });
 
 export const industryCatalog = pgTable("industry_catalog", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   createdAt: now,
 });
 
 export const platformCatalog = pgTable("platform_catalog", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   createdAt: now,
 });
@@ -289,7 +288,7 @@ export const platformCatalog = pgTable("platform_catalog", {
 // ─── Team Members ─────────────────────────────────────────────────────────────
 
 export const teamMembers = pgTable("team_members", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
   email: varchar("email", { length: 200 }).notNull().unique(),
   role: varchar("role", { length: 20 }).default("member").notNull(),

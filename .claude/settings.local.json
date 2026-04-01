@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(sed -i 's/uuid\\(\"\"id\"\"\\)\\\\.defaultRandom\\(\\)\\\\.primaryKey\\(\\)/text\\(\"\"id\"\"\\).primaryKey\\(\\)/g' db/drizzle/schema.ts)",
+      "Bash(sed -i 's/uuid\\(\"\"kol_id\"\"\\)/text\\(\"\"kol_id\"\"\\)/g' db/drizzle/schema.ts)",
+      "Bash(sed -i 's/uuid\\(\"\"proposal_id\"\"\\)/text\\(\"\"proposal_id\"\"\\)/g' db/drizzle/schema.ts)",
+      "Bash(sed -i 's/uuid\\(\"\"client_id\"\"\\)/text\\(\"\"client_id\"\"\\)/g' db/drizzle/schema.ts)",
+      "Bash(sed -i 's/uuid\\(\"\"insertion_order_id\"\"\\)/text\\(\"\"insertion_order_id\"\"\\)/g' db/drizzle/schema.ts)"
     ]
   }
 }
