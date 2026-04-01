@@ -9,8 +9,8 @@
     "dev": "remix dev",
     "dev:mock": "json-server --watch mock/db.json --port 4000",
     "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
-    "build": "remix build",
-    "start": "node scripts/migrate.mjs && node scripts/backfill-handles.mjs && remix-serve build/index.js",
+    "build": "node scripts/migrate.mjs && node scripts/backfill-handles.mjs && remix build",
+    "start": "remix-serve build/index.js",
     "start:mock": "json-server --watch mock/db.json --port 4000 --host 0.0.0.0",
     "seed": "tsx scripts/seed.ts"
   },
@@ -23,6 +23,7 @@
     "@remix-run/react": "^2.16.1",
     "@remix-run/serve": "^2.16.1",
     "@tabler/icons-react": "^3.40.0",
+    "@vercel/remix": "^2.16.7",
     "better-auth": "^1.5.5",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",

@@ -3,4 +3,5 @@ export default {
   appDirectory: "app",
   ignoredRouteFiles: ["**/.*"],
   serverModuleFormat: "esm",
+  serverBuildPath: "api/index.js",
 };
