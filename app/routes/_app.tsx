@@ -289,8 +289,8 @@ export async function loader(_: LoaderFunctionArgs) {
       currentUserRole: currentUser?.role ?? "member",
     });
   } catch (err) {
-    console.error("[_app loader]", err);
-    throw err;
+    console.error("[_app loader] listTeamMembers failed — DB schema may be out of sync:", err);
+    return json({ currentUserName: "未登入", currentUserRole: "member" });
   }
 }
 
