@@ -1,7 +1,7 @@
 import { Button, Card, Group, Stack, TextInput, Title } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
-import { MOCK_API_BASE } from "~/lib/mock-api";
+import { createProposal } from "~/lib/mock-api";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -22,13 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
     stage: "draft",
   };
 
-  const res = await fetch(`${MOCK_API_BASE}/proposals`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) return json({ error: "建立失敗" }, { status: 500 });
+  await createProposal(payload);
   return redirect("/proposals");
 }
 

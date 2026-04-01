@@ -390,6 +390,7 @@ export default function ReportManagementPage() {
               <input type="hidden" name="status" value={statusFilter} />
               <input type="hidden" name="page" value="1" />
               <select
+                aria-label="每頁筆數"
                 name="pageSize"
                 defaultValue={pageSize}
                 onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}

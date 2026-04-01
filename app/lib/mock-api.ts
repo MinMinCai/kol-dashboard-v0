@@ -367,6 +367,43 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   return rowToKol(rows[0]);
 }
 
+export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
+  const rows = await db
+    .insert(kolsTable)
+    .values({
+      displayName: data.displayName,
+      city: data.city ?? "",
+      industry: data.industry ?? null,
+      tags: data.tags ?? [],
+      categories: data.categories ?? [],
+      rating: data.rating != null ? String(data.rating) : null,
+      collaborationCount: data.collaborations ?? 0,
+      averagePrice: data.averagePrice != null ? String(data.averagePrice) : null,
+      isFavorite: data.isFavorite ?? false,
+      favoriteFolder: data.favoriteFolder ?? null,
+      avatarUrl: data.avatarUrl ?? null,
+      platform: data.platform ?? null,
+      followers: data.followers ?? 0,
+      engagementRate: data.engagementRate != null ? String(data.engagementRate) : null,
+      exposureRate: data.exposureRate != null ? String(data.exposureRate) : null,
+      audienceGender: data.audienceGender ?? null,
+      audienceAge: data.audienceAge ?? null,
+      introduction: data.introduction ?? null,
+      notes: data.notes ?? null,
+      paymentMethod: data.paymentMethod ?? null,
+      social: data.social ?? {},
+      contact: data.contact ?? {},
+      collaborationHistory: data.collaborationHistory ?? [],
+      priceTrend: data.priceTrend ?? [],
+      performanceStats: data.performanceStats ?? null,
+      contactEmail: data.contact?.email ?? null,
+      contactPhone: data.contact?.phone ?? null,
+      status: "active",
+    })
+    .returning();
+  return rowToKol(rows[0]);
+}
+
 export async function deleteKol(id: string): Promise<boolean> {
   await db.delete(kolsTable).where(eq(kolsTable.id, id));
   return true;
@@ -395,6 +432,20 @@ export async function updateProposal(id: string, data: Partial<Proposal>): Promi
 
   const rows = await db.update(proposalsTable).set(update).where(eq(proposalsTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
+  return rowToProposal(rows[0]);
+}
+
+export async function createProposal(data: Omit<Proposal, "id">): Promise<Proposal> {
+  const rows = await db
+    .insert(proposalsTable)
+    .values({
+      title: data.title,
+      clientName: data.clientName ?? null,
+      stage: data.stage ?? "draft",
+      budget: data.budget != null ? String(data.budget) : null,
+      dueDate: data.dueDate || null,
+    })
+    .returning();
   return rowToProposal(rows[0]);
 }
 
@@ -491,6 +542,43 @@ export async function updateInsertionOrder(
 
   const rows = await db.update(ioTable).set(update).where(eq(ioTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
+  return rowToInsertionOrder(rows[0]);
+}
+
+export async function createInsertionOrder(data: Omit<InsertionOrder, "id">): Promise<InsertionOrder> {
+  const rows = await db
+    .insert(ioTable)
+    .values({
+      orderNo: data.orderNo,
+      title: data.title ?? null,
+      projectName: data.projectName ?? null,
+      clientName: data.clientName ?? null,
+      brand: data.brand ?? null,
+      mcnName: data.mcnName ?? null,
+      industry: data.industry ?? null,
+      industryPath: data.industryPath ?? null,
+      salesOwner: data.salesOwner ?? null,
+      kolManager: data.kolManager ?? null,
+      kolCount: data.kolCount ?? 0,
+      status: data.status ?? "created",
+      totalBudget: data.totalBudget != null ? String(data.totalBudget) : null,
+      startDate: data.startDate || null,
+      endDate: data.endDate || null,
+      avgRating: data.avgRating != null ? String(data.avgRating) : null,
+      avgEngagementRate: data.avgEngagementRate != null ? String(data.avgEngagementRate) : null,
+      totalReach: data.totalReach ?? 0,
+      totalEngagement: data.totalEngagement ?? 0,
+      documentUrl: data.documentUrl ?? null,
+      tax: data.tax != null ? String(data.tax) : null,
+      totalWithTax: data.totalWithTax != null ? String(data.totalWithTax) : null,
+      hasDraft: data.hasDraft ?? false,
+      hasOfficial: data.hasOfficial ?? false,
+      collaborations: data.collaborations ?? [],
+      reports: data.reports ?? [],
+      contractStatus: "pending",
+      invoiceStatus: "pending",
+    })
+    .returning();
   return rowToInsertionOrder(rows[0]);
 }
 

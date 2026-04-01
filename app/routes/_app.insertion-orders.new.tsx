@@ -27,7 +27,7 @@ import {
   listInsertionOrders,
   listKols,
   listTeamMembers,
-  MOCK_API_BASE,
+  createInsertionOrder,
   getProposal,
   listProposalKols,
 } from "~/lib/mock-api";
@@ -189,14 +189,7 @@ export async function action({ request }: ActionFunctionArgs) {
     notes: [description, internalNotes && `internal:${internalNotes}`].filter(Boolean).join("\n"),
   };
 
-  const res = await fetch(`${MOCK_API_BASE}/insertionOrders`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) return json({ error: "建立失敗，請稍後再試" }, { status: 500 });
-  const created = await res.json();
+  const created = await createInsertionOrder(payload);
   return redirect(`/insertion-orders/${created.id}`);
 }
 
@@ -321,12 +314,12 @@ export default function InsertionOrderCreatePage() {
           +'<span style="font-weight:600;font-size:14px;">'+row.name+'</span>'
           +'<div style="display:flex;align-items:center;gap:6px;">'
           +'<span style="font-size:13px;color:var(--mantine-color-dimmed);white-space:nowrap;">NT$</span>'
-          +'<input type="number" min="0" step="1000" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
+          +'<input type="number" min="0" step="1000" aria-label="報價金額" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
           +'</div>'
           +'</div>'
           +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
           +'<label style="font-size:12px;color:var(--mantine-color-dimmed);">執行日期</label>'
-          +'<input type="date" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="font-size:12px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);"/>'
+          +'<input type="date" aria-label="執行日期" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="font-size:12px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);"/>'
           +'</div>'
           +'</div>'
           +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:4px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;flex-shrink:0;">移除</button>'
@@ -468,6 +461,7 @@ export default function InsertionOrderCreatePage() {
                   id="excel-upload-input"
                   type="file"
                   accept=".xlsx,.xls,.csv"
+                  aria-label="上傳 Excel 檔案"
                   style={{ display: "none" }}
                   onChange={(e) => { const f = e.target.files?.[0]; if (f) handleExcelUpload(f); }}
                 />
@@ -641,6 +635,7 @@ export default function InsertionOrderCreatePage() {
               <textarea
                 id="kol-selected-json"
                 name="selectedKolsJson"
+                aria-hidden="true"
                 style={{ display: "none" }}
                 defaultValue="[]"
                 readOnly
@@ -653,7 +648,7 @@ export default function InsertionOrderCreatePage() {
             <Box>
               <Title order={4} mb="sm">委刊單檔案 (合約)</Title>
               <Text size="sm" c="dimmed" mb="xs">上傳經雙方確認的委刊單 PDF/Word 檔案 (選填)</Text>
-              <input type="file" name="documentUrl" accept=".pdf,.doc,.docx" />
+              <input type="file" name="documentUrl" accept=".pdf,.doc,.docx" aria-label="上傳委刊單檔案" />
             </Box>
 
             <Divider />
@@ -707,6 +702,7 @@ export default function InsertionOrderCreatePage() {
         <input
           id="kol-dialog-search"
           type="text"
+          aria-label="搜尋 KOL"
           placeholder="搜尋 KOL 名稱、帳號或產業"
           onChange={(e) => {
             // @ts-ignore

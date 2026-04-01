@@ -18,7 +18,7 @@ import {
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { useState, useCallback } from "react";
-import { MOCK_API_BASE } from "~/lib/mock-api";
+import { createKol } from "~/lib/mock-api";
 
 function parseHandle(url: string): string {
   const raw = url.trim();
@@ -101,14 +101,7 @@ export async function action({ request }: ActionFunctionArgs) {
     paymentMethod: paymentMethod || undefined,
   };
 
-  const res = await fetch(`${MOCK_API_BASE}/kols`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) return json({ error: "建立失敗，請稍後再試" }, { status: 500 });
-  const created = await res.json();
+  const created = await createKol(payload);
   return redirect(`/kols/${created.id}`);
 }
 
@@ -188,6 +181,7 @@ export default function KolCreatePage() {
                   id="avatar-file-input"
                   type="file"
                   accept="image/*"
+                  aria-label="上傳頭像圖片"
                   style={{ display: "none" }}
                   onChange={handleAvatarChange}
                 />
