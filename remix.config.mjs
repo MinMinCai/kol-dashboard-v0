@@ -4,4 +4,5 @@ export default {
   ignoredRouteFiles: ["**/.*"],
   serverModuleFormat: "esm",
   serverBuildPath: "api/index.js",
+  server: "node_modules/@vercel/remix/server.js",
 };
