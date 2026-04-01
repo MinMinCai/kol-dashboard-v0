@@ -47,6 +47,7 @@ async function seed() {
           audienceGender: kol.audienceGender ?? null,
           audienceAge: kol.audienceAge ?? null,
           introduction: kol.introduction ?? null,
+          instagramHandle: kol.instagramHandle ?? null,
           notes: kol.notes ?? null,
           paymentMethod: kol.paymentMethod ?? null,
           social: kol.social ?? {},
