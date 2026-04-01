@@ -595,6 +595,11 @@ export default function InsertionOrderDetailPage() {
                   負責業務: {insertionOrder.salesOwner ?? "-"} | KOL 窗口:{" "}
                   {insertionOrder.kolManager ?? "-"}
                 </Text>
+                {(insertionOrder.startDate || insertionOrder.endDate) && (
+                  <Text size="sm">
+                    執行日期: {insertionOrder.startDate ?? "-"} ~ {insertionOrder.endDate ?? "-"}
+                  </Text>
+                )}
                 {insertionOrder.documentUrl && (
                   <Button
                     component="a"

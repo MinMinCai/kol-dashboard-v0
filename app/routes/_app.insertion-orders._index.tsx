@@ -423,7 +423,7 @@ export default function InsertionOrderListPage() {
         </Stack>
       </form>
 
-      {/* ── Stats ── */}
+      {/* ── Stats ── (暫不開發)
       <SimpleGrid cols={{ base: 2, md: 4 }} spacing="sm">
         <Card withBorder>
           <Text c="dimmed" size="sm">委刊單數</Text>
@@ -442,6 +442,7 @@ export default function InsertionOrderListPage() {
           <Title order={3}>{numberShort(stats.engagement)}</Title>
         </Card>
       </SimpleGrid>
+      */}
 
       {/* ── List ── */}
       {rows.length === 0 ? (
@@ -466,12 +467,10 @@ export default function InsertionOrderListPage() {
                     <Text size="sm">負責業務: {order.salesOwner ?? "-"} | KOL窗口: {order.kolManager ?? "-"}</Text>
                   </SimpleGrid>
 
-                  <SimpleGrid cols={{ base: 2, md: 5 }}>
+                  <SimpleGrid cols={{ base: 2, md: 3 }}>
                     <Text size="sm">合作 KOL: {order.kolCount ?? 0} 位</Text>
                     <Text size="sm">總預算: NT$ {(order.totalBudget ?? 0).toLocaleString()}</Text>
-                    <Text size="sm">平均評價: ⭐ {(order.avgRating ?? 0).toFixed(1)}</Text>
-                    <Text size="sm">總觸及: {numberShort(order.totalReach)}</Text>
-                    <Text size="sm">總互動: {numberShort(order.totalEngagement)}</Text>
+                    <Text size="sm">執行日期: {order.startDate ? `${order.startDate} ~ ${order.endDate}` : "-"}</Text>
                   </SimpleGrid>
 
                   <Group justify="space-between" onClick={(e) => e.stopPropagation()}>
