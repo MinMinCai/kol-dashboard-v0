@@ -21,6 +21,7 @@ ALTER TABLE kols
   ADD COLUMN IF NOT EXISTS audience_gender jsonb,
   ADD COLUMN IF NOT EXISTS audience_age varchar(50),
   ADD COLUMN IF NOT EXISTS introduction text,
+  ADD COLUMN IF NOT EXISTS instagram_handle varchar(120),
   ADD COLUMN IF NOT EXISTS payment_method varchar(10),
   ADD COLUMN IF NOT EXISTS social jsonb DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS contact jsonb DEFAULT '{}',

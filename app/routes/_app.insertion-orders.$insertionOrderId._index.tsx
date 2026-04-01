@@ -25,7 +25,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { BarChart } from "@mantine/charts";
+// import { BarChart } from "@mantine/charts"; // 暫不開發
 import {
   json,
   redirect,
@@ -479,6 +479,8 @@ export default function InsertionOrderDetailPage() {
   }, [progressPercentage]);
 
   // Modal states
+  const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+
   const [reviewOpened, { open: openReview, close: closeReview }] =
     useDisclosure(false);
   const [perfModalOpened, { open: openPerfModal, close: closePerfModal }] =
@@ -549,24 +551,15 @@ export default function InsertionOrderDetailPage() {
               >
                 編輯
               </Button>
-              <fetcher.Form
-                method="post"
-                style={{ display: "inline" }}
-                onSubmit={(e) => {
-                  if (!confirm("確定要刪除此委刊單嗎？")) e.preventDefault();
-                }}
+              <Button
+                type="button"
+                variant="light"
+                color="red"
+                leftSection={<IconTrash size={16} />}
+                onClick={openDeleteModal}
               >
-                <input type="hidden" name="intent" value="deleteOrder" />
-                <Button
-                  type="submit"
-                  variant="light"
-                  color="red"
-                  leftSection={<IconTrash size={16} />}
-                  loading={isSubmitting}
-                >
-                  刪除
-                </Button>
-              </fetcher.Form>
+                刪除
+              </Button>
             </Group>
           <Button onClick={() => handleOpenGenModal(insertionOrder)}>
             📊 產生報告
@@ -698,7 +691,7 @@ export default function InsertionOrderDetailPage() {
           </Grid>
       </Card>
 
-      {/* ── Performance Chart Dashboard ── */}
+      {/* ── Performance Chart Dashboard ── (暫不開發)
       <Card withBorder radius="md">
         <Title order={3} mb="lg">
           📈 成效數據對比
@@ -738,6 +731,7 @@ export default function InsertionOrderDetailPage() {
           )}
         </ClientOnly>
       </Card>
+      */}
 
       {/* ── KOL List ── */}
       <Card withBorder radius="md">
@@ -1076,6 +1070,27 @@ export default function InsertionOrderDetailPage() {
           <Group w="100%" grow mt="sm">
             <Button variant="outline" color="red" onClick={closeProgressModal}>取消生成</Button>
             <Button onClick={closeProgressModal}>在背景繼續</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* ── Delete Confirm Modal ── */}
+      <Modal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        title="確認刪除委刊單"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            確定要刪除「{insertionOrder.title ?? insertionOrder.orderNo}」嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={closeDeleteModal}>取消</Button>
+            <fetcher.Form method="post" onSubmit={closeDeleteModal}>
+              <input type="hidden" name="intent" value="deleteOrder" />
+              <Button type="submit" color="red" loading={isSubmitting}>確認刪除</Button>
+            </fetcher.Form>
           </Group>
         </Stack>
       </Modal>

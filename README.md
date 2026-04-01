@@ -33,14 +33,14 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 | **UI 元件庫** | Mantine | 7.17.8 | 專業級元件，適合管理後台 |
 | **狀態管理** | Zustand | 5.0.8 | 輕量級、TypeScript 友善 |
 | **執行時環境** | Node.js | ≥20 | 穩定、高效能 |
-| **資料庫** | PostgreSQL | 18 | 關聯式、強大查詢功能 |
+| **資料庫** | PostgreSQL (Supabase) | - | 關聯式、強大查詢功能，雲端託管 |
 | **ORM 框架** | Drizzle ORM | - | 型別安全、schema 即代碼 |
 | **認證系統** | BetterAuth | - | Google OAuth + RBAC 集成 |
-| **部署平台** | GCP Cloud Run | - | 容器化、無伺服器、成本最佳化 |
+| **部署平台** | Render | - | 自動部署、與 GitHub 整合 |
 | **語言** | TypeScript | 5.9.2 | 型別安全、開發效率提升 |
 
 - **Server**: Remix server-side (Loader/Action Data Flow)  
-- **Mock API**: `json-server`（前期以 Mock 資料加速 UI/互動開發）  
+- **Database**: Supabase（PostgreSQL 雲端託管，透過 Drizzle ORM 操作）  
 - **整體架構模式**: Server-Driven UI，強調原生 `<form>`、`<dialog>` 等 HTML 元素，確保就算 Hydration 失敗仍保有基本操作能力。
 
 ### 三層架構設計
@@ -63,7 +63,7 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
            │ SQL Queries
 ┌──────────▼──────────────────────────────────────┐
 │         資料層 (Data Layer)                       │
-│  PostgreSQL 18 + Drizzle ORM                    │
+│  Supabase (PostgreSQL) + Drizzle ORM            │
 │  - KOL (含 Favorites, Tags, Social Metrics)      │
 │  - 提案專案 (Proposals)                           │
 │  - 委刊單 (Insertion Orders) 與執行細節           │
@@ -76,15 +76,18 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 ## 專案結構
 
 ```text
-codex-koldb-test/
+kol-db-demo/
 ├── app/                              # Remix 應用程式核心
 │   ├── entry.client.tsx              # 客戶端入口
 │   ├── entry.server.tsx              # 伺服端入口
-│   ├── root.tsx                      # 根元件 (布局)
+│   ├── root.tsx                      # 根元件 (布局 + 全域 ErrorBoundary)
 │   ├── styles.css                    # 全局樣式
 │   ├── components/                   # 可複用 UI 元件
+│   ├── store/
+│   │   └── notification.ts          # Zustand 全域通知狀態
 │   ├── lib/
-│   │   └── mock-api.ts              # Mock API (開發用)
+│   │   ├── db.server.ts             # Drizzle + postgres.js 連線（singleton）
+│   │   └── mock-api.server.ts       # 資料存取層（Drizzle ORM 操作）
 │   └── routes/                       # 路由模組
 │       ├── $.tsx                     # 404 全域捕捉路由 (Splat Route)
 │       ├── _index.tsx                # 首頁/登入頁
@@ -107,35 +110,24 @@ codex-koldb-test/
 │       └── api.ai-parse-order.ts     # API 端點 (AI 訂單解析)
 │
 ├── db/                               # 資料庫設定
-│   ├── schema.sql                    # PostgreSQL 原生 SQL schema
 │   └── drizzle/
 │       ├── schema.ts                 # Drizzle ORM schema (TypeScript)
-│       └── relations.ts              # 資料表關聯定義
+│       ├── migrations/               # SQL migration 檔案
+│       └── meta/                     # Drizzle migration metadata
 │
-├── docs/                             # 文檔
-│   ├── architecture.md               # 系統架構設計詳解
-│   ├── implementation-remix-node.md  # 技術實作細節
-│   └── mvp-roadmap.md               # 12 週 MVP 路線圖
+├── scripts/
+│   └── seed.ts                       # 初始資料 seed 腳本
 │
-├── mock/                             # Mock 資料
-│   └── db.json                       # json-server 模擬資料庫
-│
-├── public/                           # 靜態資源（自動構建）
-│   └── build/                        # Remix 編譯輸出
+├── public/                           # 靜態資源
 │
 ├── build/                            # 生產構建輸出
-│   ├── index.js                      # 伺服端程式入口
-│   └── metafile.*.json               # 構建元資料
 │
 ├── drizzle.config.ts                 # Drizzle ORM 設定檔
 ├── remix.config.mjs                  # Remix 配置
-├── remix.env.d.ts                    # Remix 環境型別定義
 ├── tsconfig.json                     # TypeScript 編譯配置
 ├── package.json                      # 相依套件與腳本
 └── README.md                         # 專案說明（本文件）
 ```
-
-> 延伸說明請參考：`docs/architecture.md`、`docs/implementation-remix-node.md`、`docs/mvp-roadmap.md`
 
 ---
 
@@ -237,7 +229,7 @@ codex-koldb-test/
    - `1-to-N` → **OrderKolCollaboration (委刊單-KOL 執行明細)**：授權項目、報價、稅率、檔期等。  
    - 關聯到對應的 **Metrics (成效數據)** 與 **Reviews (評價)**。  
 
-> 具體 Schema 實作請參考：`db/schema.sql`、`db/drizzle/schema.ts`、`db/drizzle/relations.ts`
+> 具體 Schema 實作請參考：`db/drizzle/schema.ts`
 
 ---
 
@@ -253,30 +245,37 @@ node --version
 npm install
 ```
 
+### 環境變數
+
+在專案根目錄建立 `.env`：
+
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
+```
+
+> 從 Supabase Dashboard → Project Settings → Database → Connection String 取得。
+
 ### 常用開發指令
 
-**1. 開發伺服器（前端 + 後端 Mock）**
+**1. 開發伺服器**
 
 ```bash
 npm run dev
 ```
 
-**2. Mock 資料服務**
+前端應用：`http://localhost:3000`
+
+**2. 資料庫 Schema 同步（初次或 schema 有異動時）**
 
 ```bash
-npm run dev:mock
+npx drizzle-kit push
 ```
 
-**3. 同時啟動全部開發服務**
+**3. 載入初始 Seed 資料**
 
 ```bash
-npm run dev:all
+npx tsx scripts/seed.ts
 ```
-
-預期：
-
-- 前端應用：`http://localhost:3000`  
-- Mock API：`http://localhost:4000`  
 
 **4. 構建與生產伺服器**
 
@@ -291,26 +290,38 @@ npm start
 # 步驟 1：初始化
 npm install
 
-# 步驟 2：啟動所有開發服務
-npm run dev:all
+# 步驟 2：設定 .env（填入 Supabase DATABASE_URL）
 
-# 步驟 3：打開瀏覽器
+# 步驟 3：同步 DB schema
+npx drizzle-kit push
+
+# 步驟 4：（選用）載入 seed 資料
+npx tsx scripts/seed.ts
+
+# 步驟 5：啟動開發伺服器
+npm run dev
 # 前端：http://localhost:3000
-# Mock API：http://localhost:4000
 
-# 步驟 4：開發 / 調整
+# 步驟 6：開發 / 調整
 # - 編輯 app/ 內路由與元件
-# - 更新 mock/db.json 測試資料
+# - 修改 db/drizzle/schema.ts 後重跑 drizzle-kit push
 
-# 步驟 5：驗證主要業務流程
-# - 登入（BetterAuth Google OAuth）
-# - CRUD KOL、提案、委刊單
-# - 驗證狀態流轉與按鈕/Modal 互動
-
-# 步驟 6：構建與 Smoke Test
+# 步驟 7：構建與 Smoke Test
 npm run build
 npm start
 ```
+
+### 部署（Render）
+
+專案部署在 [Render](https://render.com)，設定如下：
+
+| 項目 | 值 |
+|------|---|
+| **Build Command** | `npm install && npm run build` |
+| **Start Command** | `npm start` |
+| **環境變數** | `DATABASE_URL`（填入 Supabase connection string）|
+
+推送到 `main` branch 後 Render 會自動觸發重新部署。
 
 ---
 
@@ -435,4 +446,4 @@ npm start
    - 在 `root.tsx` 的 `<head>` 中注入 `window.process.env.NODE_ENV` polyfill，避免第三方套件在瀏覽器端引用 Node globals 導致初始化崩潰。
 
 ---
-**更新時間**：2026 年 3 月 31 日  
+**更新時間**：2026 年 4 月 1 日  

@@ -258,6 +258,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     introduction: row.introduction ?? undefined,
     city: row.city ?? "",
     notes: row.notes ?? undefined,
+    instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
   };
 }
@@ -366,6 +367,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.introduction !== undefined) update.introduction = data.introduction;
   if (data.city !== undefined) update.city = data.city;
   if (data.notes !== undefined) update.notes = data.notes;
+  if (data.instagramHandle !== undefined) update.instagramHandle = data.instagramHandle;
   if (data.paymentMethod !== undefined) update.paymentMethod = data.paymentMethod;
   update.updatedAt = new Date();
 
@@ -397,6 +399,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       audienceGender: data.audienceGender ?? null,
       audienceAge: data.audienceAge ?? null,
       introduction: data.introduction ?? null,
+      instagramHandle: data.instagramHandle ?? null,
       notes: data.notes ?? null,
       paymentMethod: data.paymentMethod ?? null,
       social: data.social ?? {},

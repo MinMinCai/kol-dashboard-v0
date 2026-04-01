@@ -49,6 +49,7 @@ export const kols = pgTable(
     audienceGender: jsonb("audience_gender").$type<{ male: number; female: number }>(),
     audienceAge: varchar("audience_age", { length: 50 }),
     introduction: text("introduction"),
+    instagramHandle: varchar("instagram_handle", { length: 120 }),
     paymentMethod: varchar("payment_method", { length: 10 }),
     social: jsonb("social").$type<{ instagram?: number; youtube?: number; tiktok?: number; facebook?: number }>().default({}),
     contact: jsonb("contact").$type<{ phone?: string; email?: string; manager?: string }>().default({}),
