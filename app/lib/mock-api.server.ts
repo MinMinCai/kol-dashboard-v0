@@ -263,13 +263,20 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
 }
 
 function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
+  const budget = row.budget != null ? Number(row.budget) : 0;
+  const rawDate = row.dueDate as unknown;
+  const dueDate = rawDate instanceof Date
+    ? rawDate.toISOString().slice(0, 10)
+    : typeof rawDate === "string"
+      ? rawDate.slice(0, 10)
+      : "";
   return {
     id: row.id,
     title: row.title,
     clientName: row.clientName ?? "",
     stage: row.stage,
-    budget: row.budget != null ? Number(row.budget) : 0,
-    dueDate: row.dueDate ?? "",
+    budget: isNaN(budget) ? 0 : budget,
+    dueDate,
   };
 }
 

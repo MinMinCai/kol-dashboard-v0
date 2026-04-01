@@ -91,8 +91,8 @@ export function GlobalNotification() {
                     <Box style={{ fontSize: 32, lineHeight: 1 }}>🎉</Box>
                     <Box>
                       <Title order={5} mb={4}>{toast?.title}</Title>
-                      <Text size="sm" c="dimmed" mb={2}>案件: {toast?.message.split('|')[0]}</Text>
-                      <Text size="sm" c="dimmed">檔案: {toast?.message.split('|')[1] || "結案報告_v1.pptx"}</Text>
+                      <Text size="sm" c="dimmed" mb={2}>案件: {toast?.message?.split('|')[0]}</Text>
+                      <Text size="sm" c="dimmed">檔案: {toast?.message?.split('|')[1] || "結案報告_v1.pptx"}</Text>
                       
                       <Group mt="md" gap="sm">
                         <Button 
