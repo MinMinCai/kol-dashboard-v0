@@ -13,10 +13,10 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, type KolCollabRecord } from "~/lib/mock-api.server";
+import { getKol, updateKol, type KolCollabRecord } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -61,6 +61,16 @@ function SparkLine({ points }: { points: { date: string; price: number }[] }) {
       </Group>
     </Box>
   );
+}
+
+export async function action({ params, request }: ActionFunctionArgs) {
+  const kolId = params.kolId ?? "";
+  const formData = await request.formData();
+  if (formData.get("intent") === "toggle_favorite") {
+    const isFavorite = formData.get("isFavorite") === "true";
+    await updateKol(kolId, { isFavorite: !isFavorite });
+  }
+  return json({ success: true });
 }
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -176,9 +186,13 @@ export default function KolDetailPage() {
               </Stack>
             </Group>
             <Group mt="md">
-              <Link to={kol.isFavorite ? "/favorites" : `/kols/${kol.id}`} style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", textDecoration: "none", fontSize: 14 }}>
-                {kol.isFavorite ? "❤️ 已收藏" : "💗 加入收藏"}
-              </Link>
+              <Form method="post">
+                <input type="hidden" name="intent" value="toggle_favorite" />
+                <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
+                <button type="submit" style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}>
+                  {kol.isFavorite ? "❤️ 取消收藏" : "💗 加入收藏"}
+                </button>
+              </Form>
               <Button
                 type="button"
                 variant="default"

@@ -32,8 +32,13 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader(_: LoaderFunctionArgs) {
-  const proposals = await listProposals();
-  return json({ proposals });
+  try {
+    const proposals = await listProposals();
+    return json({ proposals });
+  } catch (err) {
+    console.error("[proposals loader]", err);
+    throw new Response(err instanceof Error ? err.message : String(err), { status: 500 });
+  }
 }
 
 export default function ProposalListPage() {
