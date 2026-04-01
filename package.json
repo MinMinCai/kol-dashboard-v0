@@ -10,7 +10,7 @@
     "dev:mock": "json-server --watch mock/db.json --port 4000",
     "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
     "build": "remix build",
-    "start": "remix-serve build/index.js",
+    "start": "node scripts/migrate.mjs && remix-serve build/index.js",
     "start:mock": "json-server --watch mock/db.json --port 4000 --host 0.0.0.0",
     "seed": "tsx scripts/seed.ts"
   },

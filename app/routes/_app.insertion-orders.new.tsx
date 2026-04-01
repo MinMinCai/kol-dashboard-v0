@@ -30,6 +30,7 @@ import {
   createInsertionOrder,
   getProposal,
   listProposalKols,
+  type Kol,
 } from "~/lib/mock-api.server";
 
 type SelectedKolRow = {
@@ -49,7 +50,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const fromProposalId = url.searchParams.get("fromProposalId");
 
   const [kols, orders, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
-    listKols(),
+    listKols().catch((): Kol[] => []),
     listInsertionOrders(),
     listBrandCatalog(),
     listIndustryCatalog(),

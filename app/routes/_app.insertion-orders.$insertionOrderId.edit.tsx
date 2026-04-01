@@ -29,6 +29,7 @@ import {
   listTeamMembers,
   getInsertionOrder,
   updateInsertionOrder,
+  type Kol,
 } from "~/lib/mock-api.server";
 
 type SelectedKolRow = {
@@ -53,7 +54,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!insertionOrderId) throw new Response("Not Found", { status: 404 });
 
   const [kols, orders, brandCatalog, industryCatalog, teamMembers, insertionOrder] = await Promise.all([
-    listKols(),
+    listKols().catch((): Kol[] => []),
     listInsertionOrders(),
     listBrandCatalog(),
     listIndustryCatalog(),

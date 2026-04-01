@@ -76,7 +76,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const q = url.searchParams.get("q") ?? "";
 
   const [kols, tagCatalog, brandCatalog, industryCatalog, platformCatalog, teamMembers] = await Promise.all([
-    listKols(),
+    listKols().catch(() => []),
     listTagCatalog(),
     listBrandCatalog(),
     listIndustryCatalog(),
@@ -198,7 +198,7 @@ export async function action({ request }: ActionFunctionArgs) {
       const newName = String(formData.get("newName") ?? "").trim();
       if (!oldName || !newName) return redirect(url.pathname + "?tab=tags");
 
-      const allKols = await listKols();
+      const allKols = await listKols().catch(() => []);
       await Promise.all(
         allKols.map(async (kol) => {
           if (groupId === "tags") {
@@ -234,7 +234,7 @@ export async function action({ request }: ActionFunctionArgs) {
       const name = String(formData.get("name") ?? "").trim();
       if (!name) return redirect(url.pathname + "?tab=tags");
 
-      const allKols = await listKols();
+      const allKols = await listKols().catch(() => []);
       await Promise.all(
         allKols.map(async (kol) => {
           if (groupId === "tags") {
@@ -701,6 +701,7 @@ export default function SettingsRoute() {
                 <Group gap="xs">
                   <Text size="sm" fw={600}>組別篩選</Text>
                   <select
+                    aria-label="組別篩選"
                     value={groupFilter}
                     onChange={(e) => setGroupFilter(e.target.value)}
                     style={{
@@ -778,6 +779,7 @@ export default function SettingsRoute() {
                       <Text size="sm" fw={500}>組別</Text>
                       <select
                         name="group"
+                        aria-label="組別"
                         defaultValue={activeMember?.group || "AE"}
                         style={{ padding: "8px", borderRadius: 4, border: "1px solid #ccc" }}
                       >
@@ -788,6 +790,7 @@ export default function SettingsRoute() {
                       <Text size="sm" fw={500}>角色</Text>
                       <select
                         name="role"
+                        aria-label="角色"
                         defaultValue={activeMember?.role || "member"}
                         style={{ padding: "8px", borderRadius: 4, border: "1px solid #ccc" }}
                       >

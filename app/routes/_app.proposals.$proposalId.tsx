@@ -39,7 +39,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const [proposal, candidates, allKols] = await Promise.all([
     getProposal(proposalId),
     listProposalKols(proposalId),
-    listKols(),
+    listKols().catch(() => []),
   ]);
 
   if (!proposal) throw new Response("Not Found", { status: 404 });
