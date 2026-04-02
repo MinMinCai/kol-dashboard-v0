@@ -56,6 +56,7 @@ import { listInsertionOrders, updateInsertionOrder, deleteInsertionOrder, type I
 
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
+type SortOption = "date_desc" | "date_asc" | "title_az" | "title_za" | "budget_desc" | "budget_asc";
 
 function numberShort(value: number | undefined): string {
   const n = value ?? 0;
@@ -82,6 +83,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const clientFilter = url.searchParams.get("client") ?? "";
     const industryFilter = url.searchParams.get("industry") ?? "";
     const timeFilter = (url.searchParams.get("time") ?? "all") as TimeFilter;
+    const sort = (url.searchParams.get("sort") ?? "date_desc") as SortOption;
     const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
     const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
 
@@ -104,6 +106,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
       if (industryFilter && order.industry !== industryFilter) return false;
       if (!matchesTime(order, timeFilter)) return false;
       return true;
+    });
+
+    filtered.sort((a, b) => {
+      switch (sort) {
+        case "title_az": return (a.title ?? a.orderNo).localeCompare(b.title ?? b.orderNo, "zh-Hant");
+        case "title_za": return (b.title ?? b.orderNo).localeCompare(a.title ?? a.orderNo, "zh-Hant");
+        case "budget_desc": return (b.totalBudget ?? 0) - (a.totalBudget ?? 0);
+        case "budget_asc": return (a.totalBudget ?? 0) - (b.totalBudget ?? 0);
+        case "date_asc": return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        case "date_desc":
+        default: return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+      }
     });
 
     const stats = {
@@ -129,6 +143,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       clientFilter,
       industryFilter,
       timeFilter,
+      sort,
     });
   } catch (error: any) {
     console.error("Loader error in IO list:", error);
@@ -190,6 +205,7 @@ export default function InsertionOrderListPage() {
     clientFilter,
     industryFilter,
     timeFilter,
+    sort,
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
@@ -287,7 +303,7 @@ export default function InsertionOrderListPage() {
       </Group>
 
       {/* ── Server-driven filter form ── */}
-      <form method="get" style={{ display: "contents" }}>
+      <form key={`${search}|${clientFilter}|${industryFilter}|${timeFilter}|${sort}`} method="get" style={{ display: "contents" }}>
         <Stack gap="sm">
           <Group align="end" wrap="wrap">
             {/* Search */}
@@ -381,6 +397,32 @@ export default function InsertionOrderListPage() {
                 <option value="last30">近 30 天</option>
                 <option value="last90">近 90 天</option>
                 <option value="thisYear">2026 年</option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div>
+              <label htmlFor="filter-sort" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>排序</label>
+              <select
+                id="filter-sort"
+                name="sort"
+                defaultValue={sort}
+                style={{
+                  padding: "8px 12px",
+                  border: "1px solid var(--mantine-color-default-border)",
+                  borderRadius: 4,
+                  fontSize: 14,
+                  background: "var(--mantine-color-body)",
+                  color: "var(--mantine-color-text)",
+                  minWidth: 160,
+                }}
+              >
+                <option value="date_desc">日期（新→舊）</option>
+                <option value="date_asc">日期（舊→新）</option>
+                <option value="title_az">名稱（A→Z）</option>
+                <option value="title_za">名稱（Z→A）</option>
+                <option value="budget_desc">預算（高→低）</option>
+                <option value="budget_asc">預算（低→高）</option>
               </select>
             </div>
 
@@ -530,7 +572,7 @@ export default function InsertionOrderListPage() {
           <Group gap={4}>
             {currentPage > 1 && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${currentPage - 1}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage - 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",
@@ -547,7 +589,7 @@ export default function InsertionOrderListPage() {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <a
                 key={p}
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${p}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${p}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 10px",
                   border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
@@ -565,7 +607,7 @@ export default function InsertionOrderListPage() {
 
             {currentPage < totalPages && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&page=${currentPage + 1}&pageSize=${pageSize}`}
+                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage + 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",

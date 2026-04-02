@@ -88,8 +88,11 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
 }) {
   const [groupBy, setGroupBy] = useState<"kol" | "placement">("kol");
   const [activePlatform, setActivePlatform] = useState<PlatformKey>("IG 貼文");
+  const [activeKol, setActiveKol] = useState<string | null>(null);
 
   const collabs: OrderKolCollaboration[] = order?.collaborations ?? [];
+  const kolNames = collabs.map(k => k.name).filter(Boolean);
+  const filteredCollabs = activeKol ? collabs.filter(k => k.name === activeKol) : collabs;
 
   const handleDownloadCSV = () => {
     const rows: string[][] = [];
@@ -162,12 +165,24 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
     >
       <Stack gap={0} p="md">
         {/* Controls row */}
-        <Group justify="space-between" mb="md">
+        <Group justify="space-between" mb="md" wrap="wrap" gap="xs">
           <Group gap={8}>
             <button style={tabBtnStyle(groupBy === "kol")} onClick={() => setGroupBy("kol")}>依 KOL 分組</button>
             <button style={tabBtnStyle(groupBy === "placement")} onClick={() => setGroupBy("placement")}>依版位分組</button>
           </Group>
-          <Group gap={8}>
+          <Group gap={8} wrap="wrap">
+            {groupBy === "kol" && kolNames.length > 1 && (
+              <>
+                <button style={btnStyle(activeKol === null)} onClick={() => setActiveKol(null)}>
+                  全部{activeKol === null ? " ✓" : ""}
+                </button>
+                {kolNames.map(name => (
+                  <button key={name} style={btnStyle(activeKol === name)} onClick={() => setActiveKol(name)}>
+                    {name}{activeKol === name ? " ✓" : ""}
+                  </button>
+                ))}
+              </>
+            )}
             {groupBy === "placement" && PLATFORMS.map(p => (
               <button key={p} style={btnStyle(activePlatform === p)} onClick={() => setActivePlatform(p)}>
                 {p}{activePlatform === p ? " ✓" : ""}
@@ -197,7 +212,7 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {collabs.flatMap((kol) => {
+                {filteredCollabs.flatMap((kol) => {
                   const items: OrderPerformanceItem[] = kol.performanceItems ?? [];
                   if (items.length === 0) {
                     return (
@@ -235,7 +250,7 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
         {order && groupBy === "placement" && (
           <Stack gap="lg">
             {PLATFORMS.map(platform => {
-              const rows = collabs.flatMap(kol =>
+              const rows = filteredCollabs.flatMap(kol =>
                 (kol.performanceItems ?? [])
                   .filter(item => normalizePlatform(item.title) === platform)
                   .map(item => ({ kol, item }))
