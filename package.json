@@ -11,7 +11,7 @@
     "dev:all": "concurrently \"npm run dev:mock\" \"npm run dev\"",
     "build": "remix build",
     "migrate": "node scripts/migrate.mjs && node scripts/backfill-handles.mjs",
-    "start": "remix-serve build/index.js",
+    "start": "remix-serve build/server/index.js",
     "start:mock": "json-server --watch mock/db.json --port 4000 --host 0.0.0.0",
     "seed": "tsx scripts/seed.ts"
   },

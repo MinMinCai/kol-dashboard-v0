@@ -3,7 +3,8 @@
     "allow": [
       "Read(//c/Users/**)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node -e \"import\\('react/jsx-dev-runtime'\\).then\\(m => console.log\\(typeof m.jsxDEV, Object.keys\\(m\\)\\)\\)\")"
     ]
   }
 }
