@@ -8,15 +8,17 @@ import {
   Group,
   Modal,
   Progress,
+  ScrollArea,
   Stack,
+  Table,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, updateKol, type KolCollabRecord } from "~/lib/mock-api.server";
+import { getKol, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -63,6 +65,232 @@ function SparkLine({ points }: { points: { date: string; price: number }[] }) {
   );
 }
 
+// ─── Platform types ────────────────────────────────────────────────────────────
+const PLATFORMS = ["IG 貼文", "IG 限動", "IG Reels", "YouTube"] as const;
+type PlatformKey = typeof PLATFORMS[number];
+
+function normalizePlatform(title: string): PlatformKey | null {
+  if (/reels/i.test(title)) return "IG Reels";
+  if (/限動|stories?/i.test(title)) return "IG 限動";
+  if (/yt|youtube|影片/i.test(title)) return "YouTube";
+  if (/ig|貼文|圖文/i.test(title)) return "IG 貼文";
+  return null;
+}
+
+function fmt(v: number | undefined) {
+  return v != null ? v.toLocaleString("zh-TW") : "-";
+}
+
+function PerformanceOverviewModal({ opened, onClose, order }: {
+  opened: boolean;
+  onClose: () => void;
+  order: InsertionOrder | null;
+}) {
+  const [groupBy, setGroupBy] = useState<"kol" | "placement">("kol");
+  const [activePlatform, setActivePlatform] = useState<PlatformKey>("IG 貼文");
+
+  const collabs: OrderKolCollaboration[] = order?.collaborations ?? [];
+
+  const handleDownloadCSV = () => {
+    const rows: string[][] = [];
+    if (groupBy === "kol") {
+      rows.push(["KOL", "版位", "上線日期", "觸及人數", "觀看數", "按讚數", "留言數", "分享數", "收藏數", "互動率"]);
+      for (const kol of collabs) {
+        for (const item of (kol.performanceItems ?? [])) {
+          const m = item.metrics;
+          rows.push([kol.name, item.title, kol.executionDate ?? "", fmt(m?.reach), fmt(m?.impressions), fmt(m?.likes), fmt(m?.comments), fmt(m?.shares), fmt(m?.saves), m?.engagementRate != null ? `${m.engagementRate}%` : "-"]);
+        }
+      }
+    } else {
+      rows.push(["版位", "KOL", "上線日期", "觸及人數", "觀看數", "按讚數", "留言數", "分享數", "收藏數", "互動率"]);
+      for (const platform of PLATFORMS) {
+        for (const kol of collabs) {
+          for (const item of (kol.performanceItems ?? [])) {
+            if (normalizePlatform(item.title) !== platform) continue;
+            const m = item.metrics;
+            rows.push([platform, kol.name, kol.executionDate ?? "", fmt(m?.reach), fmt(m?.impressions), fmt(m?.likes), fmt(m?.comments), fmt(m?.shares), fmt(m?.saves), m?.engagementRate != null ? `${m.engagementRate}%` : "-"]);
+          }
+        }
+      }
+    }
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `performance-${order?.id ?? "export"}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    padding: "6px 14px",
+    borderRadius: 6,
+    border: "1px solid var(--mantine-color-default-border)",
+    background: active ? "var(--mantine-color-blue-filled)" : "transparent",
+    color: active ? "#fff" : "var(--mantine-color-text)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: active ? 600 : 400,
+  });
+
+  const tabBtnStyle = (active: boolean): React.CSSProperties => ({
+    padding: "6px 16px",
+    borderRadius: 6,
+    border: "1px solid var(--mantine-color-default-border)",
+    background: active ? "var(--mantine-color-default-hover)" : "transparent",
+    color: "var(--mantine-color-text)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: active ? 600 : 400,
+  });
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={
+        <Stack gap={2}>
+          <Text fw={700} size="lg">成效數據總覽</Text>
+          <Text size="sm" c="dimmed">{order?.title ?? order?.projectName ?? order?.orderNo ?? ""}</Text>
+        </Stack>
+      }
+      size="90%"
+      styles={{ body: { padding: 0 } }}
+    >
+      <Stack gap={0} p="md">
+        {/* Controls row */}
+        <Group justify="space-between" mb="md">
+          <Group gap={8}>
+            <button style={tabBtnStyle(groupBy === "kol")} onClick={() => setGroupBy("kol")}>依 KOL 分組</button>
+            <button style={tabBtnStyle(groupBy === "placement")} onClick={() => setGroupBy("placement")}>依版位分組</button>
+          </Group>
+          <Group gap={8}>
+            {groupBy === "placement" && PLATFORMS.map(p => (
+              <button key={p} style={btnStyle(activePlatform === p)} onClick={() => setActivePlatform(p)}>
+                {p}{activePlatform === p ? " ✓" : ""}
+              </button>
+            ))}
+            <Button size="xs" variant="filled" onClick={handleDownloadCSV}>⬇ 下載 CSV</Button>
+          </Group>
+        </Group>
+
+        {!order && <Text c="dimmed" ta="center" py="xl">載入中...</Text>}
+
+        {order && groupBy === "kol" && (
+          <ScrollArea>
+            <Table withColumnBorders withRowBorders>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>KOL</Table.Th>
+                  <Table.Th>版位</Table.Th>
+                  <Table.Th>上線日期</Table.Th>
+                  <Table.Th>觸及人數</Table.Th>
+                  <Table.Th>觀看數</Table.Th>
+                  <Table.Th>按讚數</Table.Th>
+                  <Table.Th>留言數</Table.Th>
+                  <Table.Th>分享數</Table.Th>
+                  <Table.Th>收藏數</Table.Th>
+                  <Table.Th>互動率</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {collabs.flatMap((kol) => {
+                  const items: OrderPerformanceItem[] = kol.performanceItems ?? [];
+                  if (items.length === 0) {
+                    return (
+                      <Table.Tr key={kol.id}>
+                        <Table.Td rowSpan={1} style={{ verticalAlign: "middle", fontWeight: 600, background: "var(--mantine-color-violet-light)" }}>{kol.name}</Table.Td>
+                        <Table.Td colSpan={9}><Text size="sm" c="dimmed">尚無成效資料</Text></Table.Td>
+                      </Table.Tr>
+                    );
+                  }
+                  return items.map((item, idx) => {
+                    const m = item.metrics;
+                    return (
+                      <Table.Tr key={`${kol.id}-${item.id}`}>
+                        {idx === 0 && (
+                          <Table.Td rowSpan={items.length} style={{ verticalAlign: "middle", fontWeight: 600, background: "var(--mantine-color-violet-light)" }}>{kol.name}</Table.Td>
+                        )}
+                        <Table.Td>{item.title}</Table.Td>
+                        <Table.Td>{kol.executionDate ?? kol.uploadDate ?? "-"}</Table.Td>
+                        <Table.Td>{fmt(m?.reach)}</Table.Td>
+                        <Table.Td>{fmt(m?.impressions)}</Table.Td>
+                        <Table.Td>{fmt(m?.likes)}</Table.Td>
+                        <Table.Td>{fmt(m?.comments)}</Table.Td>
+                        <Table.Td>{fmt(m?.shares)}</Table.Td>
+                        <Table.Td>{fmt(m?.saves)}</Table.Td>
+                        <Table.Td>{m?.engagementRate != null ? `${m.engagementRate}%` : "-"}</Table.Td>
+                      </Table.Tr>
+                    );
+                  });
+                })}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
+        )}
+
+        {order && groupBy === "placement" && (
+          <Stack gap="lg">
+            {PLATFORMS.map(platform => {
+              const rows = collabs.flatMap(kol =>
+                (kol.performanceItems ?? [])
+                  .filter(item => normalizePlatform(item.title) === platform)
+                  .map(item => ({ kol, item }))
+              );
+              if (rows.length === 0) return null;
+              return (
+                <Box key={platform}>
+                  <Text fw={700} mb="xs">{platform}</Text>
+                  <ScrollArea>
+                    <Table withColumnBorders withRowBorders>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>KOL</Table.Th>
+                          <Table.Th>平台</Table.Th>
+                          <Table.Th>上線日期</Table.Th>
+                          <Table.Th>觸及人數</Table.Th>
+                          <Table.Th>觀看數</Table.Th>
+                          <Table.Th>按讚數</Table.Th>
+                          <Table.Th>留言數</Table.Th>
+                          <Table.Th>分享數</Table.Th>
+                          <Table.Th>收藏數</Table.Th>
+                          <Table.Th>互動率</Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        {rows.map(({ kol, item }) => {
+                          const m = item.metrics;
+                          return (
+                            <Table.Tr key={`${kol.id}-${item.id}`}>
+                              <Table.Td fw={600}>{kol.name}</Table.Td>
+                              <Table.Td>{item.title}</Table.Td>
+                              <Table.Td>{kol.executionDate ?? kol.uploadDate ?? "-"}</Table.Td>
+                              <Table.Td>{fmt(m?.reach)}</Table.Td>
+                              <Table.Td>{fmt(m?.impressions)}</Table.Td>
+                              <Table.Td>{fmt(m?.likes)}</Table.Td>
+                              <Table.Td>{fmt(m?.comments)}</Table.Td>
+                              <Table.Td>{fmt(m?.shares)}</Table.Td>
+                              <Table.Td>{fmt(m?.saves)}</Table.Td>
+                              <Table.Td>{m?.engagementRate != null ? `${m.engagementRate}%` : "-"}</Table.Td>
+                            </Table.Tr>
+                          );
+                        })}
+                      </Table.Tbody>
+                    </Table>
+                  </ScrollArea>
+                </Box>
+              );
+            })}
+          </Stack>
+        )}
+      </Stack>
+    </Modal>
+  );
+}
+
 export async function action({ params, request }: ActionFunctionArgs) {
   const kolId = params.kolId ?? "";
   const formData = await request.formData();
@@ -87,6 +315,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 export default function KolDetailPage() {
   const { kol, tab, limit } = useLoaderData<typeof loader>();
   const [contactOpened, setContactOpened] = useState(false);
+  const [perfModalOpened, setPerfModalOpened] = useState(false);
+  const ioFetcher = useFetcher<InsertionOrder | null>();
+
+  const openPerfModal = (orderId: string) => {
+    setPerfModalOpened(true);
+    ioFetcher.load(`/api/insertion-orders/${orderId}`);
+  };
 
   const history = kol.collaborationHistory ?? [];
   const visibleHistory = history.slice(0, limit);
@@ -220,6 +455,12 @@ export default function KolDetailPage() {
             </Card>
           )}
 
+          <PerformanceOverviewModal
+            opened={perfModalOpened}
+            onClose={() => setPerfModalOpened(false)}
+            order={ioFetcher.data ?? null}
+          />
+
           <Modal
             opened={contactOpened}
             onClose={() => setContactOpened(false)}
@@ -285,7 +526,17 @@ export default function KolDetailPage() {
                           <Text size="sm">IG 限動: 👁️ {formatNumber(item.metrics?.storyViews)} | 💗 {formatNumber(item.metrics?.storyLikes)}</Text>
                         </Group>
                         <Group justify="flex-end">
-                          <Link to={item.orderId ? `/insertion-orders/${item.orderId}` : "#"}>查看詳細成效 →</Link>
+                          {item.orderId ? (
+                            <button
+                              type="button"
+                              onClick={() => openPerfModal(item.orderId!)}
+                              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--mantine-color-blue-filled)", fontSize: 14, padding: 0 }}
+                            >
+                              查看詳細成效 →
+                            </button>
+                          ) : (
+                            <Text size="sm" c="dimmed">查看詳細成效 →</Text>
+                          )}
                         </Group>
                       </Stack>
                     </Card>
