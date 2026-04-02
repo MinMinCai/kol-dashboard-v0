@@ -5,7 +5,16 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(node -e \"import\\('react/jsx-dev-runtime'\\).then\\(m => console.log\\(typeof m.jsxDEV, Object.keys\\(m\\)\\)\\)\")",
-      "Bash(node -e \"const p=require\\('./node_modules/@remix-run/serve/package.json'\\); console.log\\(JSON.stringify\\(p.bin\\)\\)\")"
+      "Bash(node -e \"const p=require\\('./node_modules/@remix-run/serve/package.json'\\); console.log\\(JSON.stringify\\(p.bin\\)\\)\")",
+      "WebFetch(domain:docs.context7.io)",
+      "WebSearch",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(node --env-file=.env -e ':*)",
+      "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(typeof m.createRequestHandler\\)\")",
+      "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.toLowerCase\\(\\).includes\\('request'\\) || k.toLowerCase\\(\\).includes\\('handler'\\) || k.toLowerCase\\(\\).includes\\('response'\\) || k.toLowerCase\\(\\).includes\\('writable'\\)\\)\\)\")"
     ]
   }
 }
