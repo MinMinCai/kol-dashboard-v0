@@ -84,31 +84,37 @@ kol-db-demo/
 │   ├── root.tsx                      # 根元件 (布局 + 全域 ErrorBoundary)
 │   ├── styles.css                    # 全局樣式
 │   ├── components/                   # 可複用 UI 元件
+│   │   ├── ClientOnly.tsx            # 僅客戶端渲染包裝（避免 SSR 不相容）
+│   │   └── GlobalNotification.tsx    # 全域通知／Toast 容器
 │   ├── store/
 │   │   └── notification.ts          # Zustand 全域通知狀態
 │   ├── lib/
+│   │   ├── auth.server.ts           # Better Auth 設定（含 Google OAuth）
 │   │   ├── db.server.ts             # Drizzle + postgres.js 連線（singleton）
-│   │   └── mock-api.server.ts       # 資料存取層（Drizzle ORM 操作）
+│   │   └── mock-api.server.ts       # 資料存取層（業務 API / Drizzle）
 │   └── routes/                       # 路由模組
 │       ├── $.tsx                     # 404 全域捕捉路由 (Splat Route)
-│       ├── _index.tsx                # 首頁/登入頁
-│       ├── login.tsx                 # 登入路由
-│       ├── _app.tsx                  # 主應用佈局 (受保護，含全域樣式與側邊欄切換)
+│       ├── _index.tsx                # 根路徑 `/` → redirect `/login`
+│       ├── login.tsx                 # 登入頁
+│       ├── _app.tsx                  # 主應用佈局 (側邊欄、導覽)
 │       ├── _app.dashboard.tsx        # 儀表板
-│       ├── _app.settings.tsx         # 系統設定 (URL-driven Tabs 切換)
-│       ├── _app.kols._index.tsx      # KOL 列表 (含批量匯入、我的收藏切換)
+│       ├── _app.settings.tsx         # 系統設定 (URL-driven Tabs)
+│       ├── _app.kols._index.tsx      # KOL 列表 (含批量匯入等)
 │       ├── _app.kols.new.tsx         # 新增 KOL
-│       ├── _app.kols.$kolId.tsx      # KOL 詳情
-│       ├── _app.proposals._index.tsx # 提案列表
-│       ├── _app.proposals.new.tsx    # 新提案
-│       ├── _app.proposals.$proposalId.tsx  # 提案詳情
-│       ├── _app.insertion-orders._index.tsx # 委刊單列表 (含批量匯入)
-│       ├── _app.insertion-orders.new.tsx   # 新增委刊單 (含 Excel 智慧帶入功能)
-│       ├── _app.insertion-orders.$insertionOrderId.tsx  # 委刊單詳情
-│       ├── _app.favorites.tsx        # 我的收藏 (資料夾分類管理)
-│       ├── _app.reports.generate.tsx # 報告生成
-│       ├── api.social-followers.ts   # API 端點 (社群粉絲數)
-│       └── api.ai-parse-order.ts     # API 端點 (AI 訂單解析)
+│       ├── _app.kols.$kolId._index.tsx    # KOL 詳情
+│       ├── _app.kols.$kolId.edit.tsx      # KOL 編輯
+│       ├── _app.proposals._index.tsx      # 提案列表
+│       ├── _app.proposals.new.tsx         # 新提案
+│       ├── _app.proposals.$proposalId.tsx # 提案詳情
+│       ├── _app.insertion-orders._index.tsx              # 委刊單列表
+│       ├── _app.insertion-orders.new.tsx                 # 新增委刊單 (含 Excel 智慧帶入)
+│       ├── _app.insertion-orders.$insertionOrderId._index.tsx  # 委刊單詳情
+│       ├── _app.insertion-orders.$insertionOrderId.edit.tsx    # 委刊單編輯
+│       ├── _app.favorites.tsx        # 我的收藏
+│       ├── _app.reports.generate.tsx # 結案報告管理／生成
+│       ├── api.social-followers.ts   # API：社群粉絲數
+│       ├── api.ai-parse-order.ts     # API：AI 訂單解析
+│       └── api.insertion-orders.$id.ts   # API：單筆委刊單 JSON（供外部或除錯）
 │
 ├── db/                               # 資料庫設定
 │   └── drizzle/
@@ -117,16 +123,22 @@ kol-db-demo/
 │       └── meta/                     # Drizzle migration metadata
 │
 ├── scripts/
-│   └── seed.ts                       # 初始資料 seed 腳本
+│   ├── seed.ts                       # 初始資料 seed
+│   ├── migrate.mjs                   # migration 輔助腳本（見 package.json）
+│   ├── backfill-handles.mjs          # 資料回填
+│   └── ui-smoke-io_001.mjs           # smoke 腳本（選用）
+│
+├── mock/                             # 本地 json-server 用假資料（`npm run dev:mock`）
+│   └── db.json
 │
 ├── public/                           # 靜態資源
 │
-├── build/                            # 生產構建輸出
+├── build/                            # `npm run build` 產出
 │
 ├── drizzle.config.ts                 # Drizzle ORM 設定檔
 ├── remix.config.mjs                  # Remix 配置
-├── vercel.json                       # Vercel：建置指令、install、路由 rewrite → serverless
-├── api/                              # Vercel Remix 產出（`@vercel/remix` 建置後之入口，勿手動編輯）
+├── vercel.json                       # Vercel：建置、install、rewrite → serverless
+├── api/                              # Vercel Remix 建置產出（`@vercel/remix`，勿手動編輯）
 ├── tsconfig.json                     # TypeScript 編譯配置
 ├── package.json                      # 相依套件與腳本
 └── README.md                         # 專案說明（本文件）

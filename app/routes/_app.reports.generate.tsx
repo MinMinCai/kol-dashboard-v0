@@ -24,9 +24,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useNotificationStore } from "~/store/notification";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { listInsertionOrders } from "~/lib/mock-api.server";
 import { 
   IconFileTypePpt, 
@@ -50,11 +50,36 @@ function formatShortDate(date: string): string {
   return date.slice(0, 7);
 }
 
+type SortOption =
+  | "order_no_asc"
+  | "order_no_desc"
+  | "date_desc"
+  | "date_asc"
+  | "title_az"
+  | "title_za"
+  | "budget_desc"
+  | "budget_asc";
+
+/** 依委刊單編號（IO-2026-001）數字排序；無法解析時退回字串比較 */
+function compareOrderNo(a: string, b: string): number {
+  const re = /^IO-(\d+)-(\d+)$/i;
+  const ma = a.match(re);
+  const mb = b.match(re);
+  if (ma && mb) {
+    const ya = Number(ma[1]);
+    const yb = Number(mb[1]);
+    if (ya !== yb) return ya - yb;
+    return Number(ma[2]) - Number(mb[2]);
+  }
+  return a.localeCompare(b, "en");
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const clientFilter = url.searchParams.get("client") ?? "";
   const timeFilter = url.searchParams.get("time") ?? "all";
   const statusFilter = url.searchParams.get("status") ?? "all";
+  const sort = (url.searchParams.get("sort") ?? "order_no_asc") as SortOption;
   
   const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
   const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
@@ -80,6 +105,34 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return true;
   });
 
+  filtered.sort((a: any, b: any) => {
+    switch (sort) {
+      case "order_no_asc":
+        return compareOrderNo(a.orderNo, b.orderNo);
+      case "order_no_desc":
+        return compareOrderNo(b.orderNo, a.orderNo);
+      case "title_az":
+        return (a.title ?? a.projectName ?? a.orderNo).localeCompare(
+          b.title ?? b.projectName ?? b.orderNo,
+          "zh-Hant",
+        );
+      case "title_za":
+        return (b.title ?? b.projectName ?? b.orderNo).localeCompare(
+          a.title ?? a.projectName ?? a.orderNo,
+          "zh-Hant",
+        );
+      case "budget_desc":
+        return (b.totalBudget ?? 0) - (a.totalBudget ?? 0);
+      case "budget_asc":
+        return (a.totalBudget ?? 0) - (b.totalBudget ?? 0);
+      case "date_asc":
+        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+      case "date_desc":
+      default:
+        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+    }
+  });
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const paginatedOrders = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -91,6 +144,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     clientFilter,
     timeFilter,
     statusFilter,
+    sort,
     totalPages,
     currentPage,
     pageSize,
@@ -99,7 +153,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function ReportManagementPage() {
-  const { orders, allOrders, allClients, clientFilter, timeFilter, statusFilter, totalPages, currentPage, pageSize, totalCount } = useLoaderData<typeof loader>();
+  const {
+    orders,
+    allOrders,
+    allClients,
+    clientFilter,
+    timeFilter,
+    statusFilter,
+    sort,
+    totalPages,
+    currentPage,
+    pageSize,
+    totalCount,
+  } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const { showToast, showBanner } = useNotificationStore();
 
@@ -269,6 +336,37 @@ export default function ReportManagementPage() {
               allowDeselect={false}
               style={{ width: 140 }}
             />
+            <Select
+              label="排序"
+              name="sort"
+              defaultValue={sort}
+              onChange={(value) => {
+                if (!value) return;
+                const nextSort = value as SortOption;
+
+                const sp = new URLSearchParams();
+                if (clientFilter) sp.set("client", clientFilter);
+                sp.set("time", timeFilter);
+                sp.set("status", statusFilter);
+                sp.set("sort", nextSort);
+                sp.set("page", "1");
+                sp.set("pageSize", String(pageSize));
+
+                navigate(`/reports/generate?${sp.toString()}`);
+              }}
+              data={[
+                { value: "order_no_asc", label: "委刊單編號（小→大）" },
+                { value: "order_no_desc", label: "委刊單編號（大→小）" },
+                { value: "date_desc", label: "執行日期（新→舊）" },
+                { value: "date_asc", label: "執行日期（舊→新）" },
+                { value: "title_az", label: "案件名稱（A→Z）" },
+                { value: "title_za", label: "案件名稱（Z→A）" },
+                { value: "budget_desc", label: "總預算（高→低）" },
+                { value: "budget_asc", label: "總預算（低→高）" },
+              ]}
+              allowDeselect={false}
+              style={{ width: 200 }}
+            />
             <Button type="submit" variant="light">套用篩選</Button>
             {(clientFilter || timeFilter !== "all") && (
               <Button variant="subtle" color="gray" component="a" href="/reports/generate">清除</Button>
@@ -396,6 +494,7 @@ export default function ReportManagementPage() {
               <input type="hidden" name="client" value={clientFilter} />
               <input type="hidden" name="time" value={timeFilter} />
               <input type="hidden" name="status" value={statusFilter} />
+              <input type="hidden" name="sort" value={sort} />
               <input type="hidden" name="page" value="1" />
               <select
                 aria-label="每頁筆數"
@@ -422,7 +521,7 @@ export default function ReportManagementPage() {
           <Group gap={4}>
             {currentPage > 1 && (
               <Link
-                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${currentPage - 1}&pageSize=${pageSize}`}
+                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${currentPage - 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",
@@ -439,7 +538,7 @@ export default function ReportManagementPage() {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <Link
                 key={p}
-                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${p}&pageSize=${pageSize}`}
+                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${p}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 10px",
                   border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
@@ -457,7 +556,7 @@ export default function ReportManagementPage() {
 
             {currentPage < totalPages && (
               <Link
-                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&page=${currentPage + 1}&pageSize=${pageSize}`}
+                to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${currentPage + 1}&pageSize=${pageSize}`}
                 style={{
                   padding: "6px 12px",
                   border: "1px solid var(--mantine-color-default-border)",

@@ -56,7 +56,29 @@ import { listInsertionOrders, updateInsertionOrder, deleteInsertionOrder, type I
 
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
-type SortOption = "date_desc" | "date_asc" | "title_az" | "title_za" | "budget_desc" | "budget_asc";
+type SortOption =
+  | "order_no_asc"
+  | "order_no_desc"
+  | "date_desc"
+  | "date_asc"
+  | "title_az"
+  | "title_za"
+  | "budget_desc"
+  | "budget_asc";
+
+/** 依委刊單編號（如 IO-2026-001）數字排序；無法解析時退回字串比較 */
+function compareOrderNo(a: string, b: string): number {
+  const re = /^IO-(\d+)-(\d+)$/i;
+  const ma = a.match(re);
+  const mb = b.match(re);
+  if (ma && mb) {
+    const ya = Number(ma[1]);
+    const yb = Number(mb[1]);
+    if (ya !== yb) return ya - yb;
+    return Number(ma[2]) - Number(mb[2]);
+  }
+  return a.localeCompare(b, "en");
+}
 
 function numberShort(value: number | undefined): string {
   const n = value ?? 0;
@@ -83,7 +105,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const clientFilter = url.searchParams.get("client") ?? "";
     const industryFilter = url.searchParams.get("industry") ?? "";
     const timeFilter = (url.searchParams.get("time") ?? "all") as TimeFilter;
-    const sort = (url.searchParams.get("sort") ?? "date_desc") as SortOption;
+    const sort = (url.searchParams.get("sort") ?? "order_no_asc") as SortOption;
     const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
     const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
 
@@ -110,13 +132,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     filtered.sort((a, b) => {
       switch (sort) {
-        case "title_az": return (a.title ?? a.orderNo).localeCompare(b.title ?? b.orderNo, "zh-Hant");
-        case "title_za": return (b.title ?? b.orderNo).localeCompare(a.title ?? a.orderNo, "zh-Hant");
-        case "budget_desc": return (b.totalBudget ?? 0) - (a.totalBudget ?? 0);
-        case "budget_asc": return (a.totalBudget ?? 0) - (b.totalBudget ?? 0);
-        case "date_asc": return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        case "order_no_asc":
+          return compareOrderNo(a.orderNo, b.orderNo);
+        case "order_no_desc":
+          return compareOrderNo(b.orderNo, a.orderNo);
+        case "title_az":
+          return (a.title ?? a.orderNo).localeCompare(b.title ?? b.orderNo, "zh-Hant");
+        case "title_za":
+          return (b.title ?? b.orderNo).localeCompare(a.title ?? a.orderNo, "zh-Hant");
+        case "budget_desc":
+          return (b.totalBudget ?? 0) - (a.totalBudget ?? 0);
+        case "budget_asc":
+          return (a.totalBudget ?? 0) - (b.totalBudget ?? 0);
+        case "date_asc":
+          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
         case "date_desc":
-        default: return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        default:
+          return compareOrderNo(a.orderNo, b.orderNo);
       }
     });
 
@@ -407,6 +440,9 @@ export default function InsertionOrderListPage() {
                 id="filter-sort"
                 name="sort"
                 defaultValue={sort}
+                onChange={(e) => {
+                  e.currentTarget.form?.requestSubmit();
+                }}
                 style={{
                   padding: "8px 12px",
                   border: "1px solid var(--mantine-color-default-border)",
@@ -417,8 +453,10 @@ export default function InsertionOrderListPage() {
                   minWidth: 160,
                 }}
               >
-                <option value="date_desc">日期（新→舊）</option>
-                <option value="date_asc">日期（舊→新）</option>
+                <option value="order_no_asc">委刊單編號（小→大）</option>
+                <option value="order_no_desc">委刊單編號（大→小）</option>
+                <option value="date_desc">執行日期（新→舊）</option>
+                <option value="date_asc">執行日期（舊→新）</option>
                 <option value="title_az">名稱（A→Z）</option>
                 <option value="title_za">名稱（Z→A）</option>
                 <option value="budget_desc">預算（高→低）</option>
@@ -547,6 +585,7 @@ export default function InsertionOrderListPage() {
               <input type="hidden" name="client" value={clientFilter} />
               <input type="hidden" name="industry" value={industryFilter} />
               <input type="hidden" name="time" value={timeFilter} />
+              <input type="hidden" name="sort" value={sort} />
               <input type="hidden" name="page" value="1" />
               <select
                 aria-label="每頁筆數"
