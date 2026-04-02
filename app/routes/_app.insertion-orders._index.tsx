@@ -456,7 +456,7 @@ export default function InsertionOrderListPage() {
         <Stack gap="md">
           {rows.map((order) => {
             return (
-              <Card key={order.id} withBorder className="io-card" style={{ cursor: "pointer" }} onClick={() => navigate(`/insertion-orders/${order.id}`)}>
+              <Card key={order.id} withBorder className="io-card" style={{ cursor: "pointer" }} onClick={() => { window.location.href = `/insertion-orders/${order.id}`; }}>
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Text fw={600}>📋 #{order.orderNo} {order.title ?? "未命名專案"}</Text>
@@ -475,7 +475,7 @@ export default function InsertionOrderListPage() {
 
                   <Group justify="space-between" onClick={(e) => e.stopPropagation()}>
                     <Group>
-                      <Button component={Link} to={`/insertion-orders/${order.id}`}>查看詳情</Button>
+                      <Button component="a" href={`/insertion-orders/${order.id}`}>查看詳情</Button>
                       <Button variant="default" onClick={() => handleOpenGenModal(order)}>📊 產生報告</Button>
                     </Group>
                     <ActionIcon

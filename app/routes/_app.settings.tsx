@@ -77,11 +77,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const [kols, tagCatalog, brandCatalog, industryCatalog, platformCatalog, teamMembers] = await Promise.all([
     listKols().catch(() => []),
-    listTagCatalog(),
-    listBrandCatalog(),
-    listIndustryCatalog(),
-    listPlatformCatalog(),
-    listTeamMembers(),
+    listTagCatalog().catch(() => []),
+    listBrandCatalog().catch(() => []),
+    listIndustryCatalog().catch(() => []),
+    listPlatformCatalog().catch(() => []),
+    listTeamMembers().catch(() => []),
   ]);
 
   const brands = Array.from(new Set([

@@ -83,7 +83,7 @@ export default function ProposalListPage() {
             {proposals.map((p) => (
               <Table.Tr key={p.id}>
                 <Table.Td>
-                  <Link to={`/proposals/${p.id}`}>{p.title}</Link>
+                  <a href={`/proposals/${p.id}`}>{p.title}</a>
                 </Table.Td>
                 <Table.Td>{p.clientName}</Table.Td>
                 <Table.Td>{p.stage}</Table.Td>
@@ -94,8 +94,8 @@ export default function ProposalListPage() {
                     <ActionIcon
                       variant="light"
                       color="blue"
-                      component={Link}
-                      to={`/proposals/${p.id}`}
+                      component="a"
+                      href={`/proposals/${p.id}`}
                       title="查看詳細"
                     >
                       <IconEye size={16} />

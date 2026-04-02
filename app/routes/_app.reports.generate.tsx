@@ -291,9 +291,7 @@ export default function ReportManagementPage() {
                     </Box>
                     {/* ALL action buttons in top-right */}
                     <Group gap="xs" wrap="nowrap">
-                      <Link to={`/insertion-orders/${order.id}`} style={{ textDecoration: 'none' }}>
-                        <Button variant="subtle" size="sm">查看案件詳情</Button>
-                      </Link>
+                      <Button component="a" href={`/insertion-orders/${order.id}`} variant="subtle" size="sm">查看案件詳情</Button>
                       <Button size="sm" variant="outline" onClick={() => handleOpenUploadModal(order)}>
                         {hasOfficial ? "更新正式版" : "+ 上傳正式版"}
                       </Button>
@@ -643,7 +641,15 @@ export default function ReportManagementPage() {
                             </Group>
                             <Text size="xs" c="red.7" mt={2}><IconX size={12} style={{display:'inline'}}/> 尚未上傳成效資料</Text>
                           </Box>
-                          <Button variant="subtle" size="xs" color="blue" rightSection="→">前往上傳成效</Button>
+                          <Button
+                            component="a"
+                            href={`/insertion-orders/${activeOrder?.id}`}
+                            variant="subtle"
+                            size="xs"
+                            color="blue"
+                            rightSection="→"
+                            onClick={(e) => e.stopPropagation()}
+                          >前往上傳成效</Button>
                         </Group>
                       </Card>
                     ))}
