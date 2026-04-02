@@ -31,6 +31,7 @@ import {
   updateProposalKolStatus,
   deleteProposalKol,
   updateProposal,
+  type Kol,
 } from "~/lib/mock-api.server";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft } from "@tabler/icons-react";
 
@@ -110,6 +111,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function ProposalDetailPage() {
   const { proposal, candidates, allKols } = useLoaderData<typeof loader>();
+  /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成 Kol[] 供後續安全存取 */
+  const kols = useMemo(
+    () => (allKols ?? []).filter((item): item is Kol => item != null),
+    [allKols],
+  );
   const navigation = useNavigation();
   const submit = useSubmit();
   const { colorScheme } = useMantineColorScheme();
@@ -173,8 +179,8 @@ export default function ProposalDetailPage() {
   const aiReasonBg = isDark ? "rgba(51, 154, 240, 0.18)" : "rgba(51, 154, 240, 0.1)";
 
   const allKolOptions = useMemo(
-    () => allKols.map((k) => ({ value: k.id, label: k.displayName })),
-    [allKols],
+    () => kols.map((k) => ({ value: k.id, label: k.displayName })),
+    [kols],
   );
 
   const handleAiSearch = () => {
@@ -185,7 +191,7 @@ export default function ProposalDetailPage() {
     // Simulate AI delay (mock). Keep deterministic output to avoid hydration issues.
     window.setTimeout(() => {
       const q = aiQuery.trim().toLowerCase();
-      const matches = allKols
+      const matches = kols
         .filter((k) => {
           const nameOk = k.displayName.toLowerCase().includes(q);
           const catOk = (k.categories ?? []).some((c: string) => c.toLowerCase().includes(q));
@@ -645,7 +651,7 @@ export default function ProposalDetailPage() {
             <input
               type="hidden"
               name="kolName"
-              value={allKols.find((k) => k.id === manualKolId)?.displayName ?? ""}
+              value={kols.find((k) => k.id === manualKolId)?.displayName ?? ""}
             />
             <TextInput
               name="role"
@@ -659,7 +665,7 @@ export default function ProposalDetailPage() {
               required
               min={0}
               thousandSeparator=","
-              defaultValue={allKols.find((k) => k.id === manualKolId)?.averagePrice ?? 0}
+              defaultValue={kols.find((k) => k.id === manualKolId)?.averagePrice ?? 0}
             />
             <Textarea
               name="reason"

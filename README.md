@@ -16,6 +16,7 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 3. [核心功能模組](#核心功能模組)  
 4. [資料模型與關聯](#資料模型與關聯)  
 5. [開發環境與指令](#開發環境與指令)  
+   - [部署（Vercel）](#部署vercel)  
 6. [開發流程與優先級](#開發流程與優先級)  
 7. [測試與驗收標準](#測試與驗收標準)  
 8. [Hydration 與 UI 穩定性備忘](#hydration-與-ui-穩定性備忘)  
@@ -36,7 +37,7 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 | **資料庫** | PostgreSQL (Supabase) | - | 關聯式、強大查詢功能，雲端託管 |
 | **ORM 框架** | Drizzle ORM | - | 型別安全、schema 即代碼 |
 | **認證系統** | BetterAuth | - | Google OAuth + RBAC 集成 |
-| **部署平台** | Render | - | 自動部署、與 GitHub 整合 |
+| **部署平台** | [Vercel](https://vercel.com) | - | Remix（`@vercel/remix`）、與 Git 整合自動部署 |
 | **語言** | TypeScript | 5.9.2 | 型別安全、開發效率提升 |
 
 - **Server**: Remix server-side (Loader/Action Data Flow)  
@@ -124,6 +125,8 @@ kol-db-demo/
 │
 ├── drizzle.config.ts                 # Drizzle ORM 設定檔
 ├── remix.config.mjs                  # Remix 配置
+├── vercel.json                       # Vercel：建置指令、install、路由 rewrite → serverless
+├── api/                              # Vercel Remix 產出（`@vercel/remix` 建置後之入口，勿手動編輯）
 ├── tsconfig.json                     # TypeScript 編譯配置
 ├── package.json                      # 相依套件與腳本
 └── README.md                         # 專案說明（本文件）
@@ -247,13 +250,18 @@ npm install
 
 ### 環境變數
 
-在專案根目錄建立 `.env`：
+在專案根目錄建立 `.env`（**部署到 Vercel 時，請在專案 Settings → Environment Variables 同步設定**）：
 
 ```env
+# 必填：PostgreSQL（例如 Supabase）
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
+
+# Google OAuth（登入／Better Auth 使用時）
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
 
-> 從 Supabase Dashboard → Project Settings → Database → Connection String 取得。
+> `DATABASE_URL` 可從 Supabase Dashboard → Project Settings → Database → Connection String 取得。
 
 ### 常用開發指令
 
@@ -311,17 +319,29 @@ npm run build
 npm start
 ```
 
-### 部署（Render）
+### 部署（Vercel）
 
-專案部署在 [Render](https://render.com)，設定如下：
+測試／正式環境可部署至 [Vercel](https://vercel.com)。本專案使用 **`@vercel/remix`**，與根目錄 **`vercel.json`**（建置指令、`installCommand`、`rewrites` → `api/index.js`）搭配。
 
-| 項目 | 值 |
-|------|---|
-| **Build Command** | `npm install && npm run build` |
-| **Start Command** | `npm start` |
-| **環境變數** | `DATABASE_URL`（填入 Supabase connection string）|
+| 項目 | 說明 |
+|------|------|
+| **Framework** | 連線 Git 後由 Vercel 偵測 Remix；若需手動指定，選 Remix 相關預設即可 |
+| **Node.js** | `package.json` 的 `engines.node` 為 `>=20`，與 Vercel 預設相容 |
+| **Install Command** | `vercel.json` 設為 `npm install --legacy-peer-deps`（依 lockfile 解析相依） |
+| **Build Command** | `npm run build`（與 `vercel.json` 的 `buildCommand` 一致） |
+| **環境變數** | 至少設定 **`DATABASE_URL`**；若使用 Google 登入，一併設定 **`GOOGLE_CLIENT_ID`**、**`GOOGLE_CLIENT_SECRET`** |
+| **本機對照** | 本機生產模式使用 `npm start`（`package.json` 內含 `--env-file=.env`）；Vercel 不依賴檔案，需改在控制台設定變數 |
 
-推送到 `main` branch 後 Render 會自動觸發重新部署。
+**建議流程**
+
+1. 將儲存庫匯入 Vercel，選擇要部署的分支（例如 `main`）。  
+2. 於 **Settings → Environment Variables** 填入上表變數（Production / Preview 視需求分開）。  
+3. 觸發 Deploy；首次部署前請確認資料庫已 **`drizzle-kit push`** 或已套用 migration，且 **`DATABASE_URL`** 指向可從 Vercel 連線的位址（Supabase 通常需開啟連線並使用 `sslmode=require`）。  
+4. 若 OAuth 回呼網址有變，請到 Google Cloud Console 更新 **Authorized redirect URIs**（Better Auth／Vercel 網域）。
+
+**其他 Node 託管**
+
+若改為一般 VPS／[Render](https://render.com) 等長跑 Node 程序，可使用 **`npm run build`** + **`npm start`**（並在執行環境注入 `DATABASE_URL` 等），無需 `vercel.json` 的 serverless 路由。
 
 ---
 
@@ -446,4 +466,4 @@ npm start
    - 在 `root.tsx` 的 `<head>` 中注入 `window.process.env.NODE_ENV` polyfill，避免第三方套件在瀏覽器端引用 Node globals 導致初始化崩潰。
 
 ---
-**更新時間**：2026 年 4 月 1 日  
+**更新時間**：2026 年 4 月 2 日  

@@ -112,6 +112,8 @@ export default function ReportManagementPage() {
   const [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure(false);
   const [uploadModalOpen, { open: openUploadModal, close: closeUploadModal }] = useDisclosure(false);
   const [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure(false);
+  const [deleteReportModalOpen, { open: openDeleteReportModal, close: closeDeleteReportModal }] = useDisclosure(false);
+  const [reportDeleteTarget, setReportDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
   
@@ -120,10 +122,18 @@ export default function ReportManagementPage() {
   const [orderSearch, setOrderSearch] = useState("");
 
   const handleDownload = () => alert("報告下載中...");
-  const handleDelete = () => {
-    if (confirm("確定要刪除此版本的報告嗎？")) {
-      alert("報告已刪除 (模擬)");
-    }
+
+  const handleAskDeleteReport = (report: { id: string; name: string }) => {
+    setReportDeleteTarget(report);
+    openDeleteReportModal();
+  };
+
+  const handleConfirmDeleteReport = () => {
+    if (!reportDeleteTarget) return;
+    const name = reportDeleteTarget.name;
+    closeDeleteReportModal();
+    setReportDeleteTarget(null);
+    showToast("報告已刪除", `「${name}」已移除（模擬）`, "/reports/generate");
   };
   const handleOpenUploadModal = (order: any) => {
     setActiveOrder(order);
@@ -335,7 +345,7 @@ export default function ReportManagementPage() {
                                 <Group gap="xs">
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
-                                  <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
                             ))}
@@ -363,7 +373,7 @@ export default function ReportManagementPage() {
                                 </Group>
                                 <Group gap="xs">
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
-                                  <ActionIcon variant="light" color="red" onClick={handleDelete}><IconTrash size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
                             ))}
@@ -519,6 +529,43 @@ export default function ReportManagementPage() {
           </Box>
           <Group justify="flex-end" mt="md">
             <Button variant="default" onClick={() => { closeSelectOrderModal(); setOrderSearch(""); }}>取消</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* ── Delete report file confirm ── */}
+      <Modal
+        opened={deleteReportModalOpen}
+        onClose={() => {
+          closeDeleteReportModal();
+          setReportDeleteTarget(null);
+        }}
+        title={<Text fw={700} size="lg">確認刪除結案報告</Text>}
+        centered
+        radius="md"
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+        closeButtonProps={{
+          variant: "default",
+          styles: { root: { border: "1px solid var(--mantine-color-blue-filled)" } },
+        }}
+      >
+        <Stack gap="lg">
+          <Text size="sm" style={{ lineHeight: 1.6 }}>
+            確定要刪除「{reportDeleteTarget?.name ?? ""}」嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end" gap="sm">
+            <Button
+              variant="default"
+              onClick={() => {
+                closeDeleteReportModal();
+                setReportDeleteTarget(null);
+              }}
+            >
+              取消
+            </Button>
+            <Button color="red" onClick={handleConfirmDeleteReport}>
+              確認刪除
+            </Button>
           </Group>
         </Stack>
       </Modal>
