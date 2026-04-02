@@ -307,6 +307,7 @@ export default function InsertionOrderEditPage() {
         return;
       }
       container.innerHTML = selected.map(function(row){
+        var servicesVal = Array.isArray(row.services) ? row.services.join(' + ') : (row.services || '');
         return '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
           +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;"/>'
           +'<div style="flex:1;">'
@@ -315,6 +316,16 @@ export default function InsertionOrderEditPage() {
           +'<div style="display:flex;align-items:center;gap:6px;">'
           +'<span style="font-size:13px;color:var(--mantine-color-dimmed);white-space:nowrap;">NT$</span>'
           +'<input type="number" min="0" step="1000" aria-label="報價金額" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
+          +'</div>'
+          +'</div>'
+          +'<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+          +'<div>'
+          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">合作內容</label>'
+          +'<input type="text" aria-label="合作內容" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" value="'+servicesVal+'" oninput="kolUpdateServices(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
+          +'</div>'
+          +'<div>'
+          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">授權項目</label>'
+          +'<input type="text" aria-label="授權項目" placeholder="例如：數位廣告投放一年" value="'+(row.authorization||'')+'" oninput="kolUpdateAuthorization(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
           +'</div>'
           +'</div>'
           +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
@@ -340,6 +351,22 @@ export default function InsertionOrderEditPage() {
       try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
       var idx = selected.findIndex(function(x){ return x.id === rowId; });
       if (idx !== -1) selected[idx].price = Number(val) || 0;
+      if (ta) ta.value = JSON.stringify(selected);
+    }
+    window.kolUpdateServices = function(rowId, val) {
+      var ta = document.getElementById('kol-selected-json');
+      var selected = [];
+      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
+      var idx = selected.findIndex(function(x){ return x.id === rowId; });
+      if (idx !== -1) selected[idx].services = val;
+      if (ta) ta.value = JSON.stringify(selected);
+    }
+    window.kolUpdateAuthorization = function(rowId, val) {
+      var ta = document.getElementById('kol-selected-json');
+      var selected = [];
+      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
+      var idx = selected.findIndex(function(x){ return x.id === rowId; });
+      if (idx !== -1) selected[idx].authorization = val;
       if (ta) ta.value = JSON.stringify(selected);
     }
   `;
@@ -532,17 +559,6 @@ export default function InsertionOrderEditPage() {
                   value={`NT$ ${totalWithTax.toLocaleString()}`}
                   styles={{ input: { color: "var(--mantine-color-blue-6)", fontWeight: 600 } }}
                 />
-              </SimpleGrid>
-            </Box>
-
-            <Divider />
-
-            {/* ── Collab content ── */}
-            <Box>
-              <Title order={4} mb="sm">合作內容</Title>
-              <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
-                <TextInput name="services" label="合作內容" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" />
-                <TextInput name="authorization" label="授權項目" placeholder="例如：數位廣告投放一年" />
               </SimpleGrid>
             </Box>
 

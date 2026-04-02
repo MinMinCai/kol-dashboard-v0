@@ -464,7 +464,7 @@ export default function ProposalDetailPage() {
                   </Table.Th>
                 )}
                 <Table.Th>KOL 名稱</Table.Th>
-                <Table.Th>角色/版位</Table.Th>
+                <Table.Th>合作項目</Table.Th>
                 <Table.Th>預估報價</Table.Th>
                 <Table.Th>推薦理由</Table.Th>
                 <Table.Th>狀態</Table.Th>

@@ -1,6 +1,5 @@
 import {
   boolean,
-  date,
   index,
   integer,
   jsonb,
@@ -111,7 +110,7 @@ export const proposals = pgTable(
     budget: numeric("budget", { precision: 12, scale: 2 }),
     stage: varchar("stage", { length: 30 }).default("draft").notNull(),
     owner: varchar("owner", { length: 100 }),
-    dueDate: date("due_date"),
+    dueDate: varchar("due_date", { length: 20 }),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -161,8 +160,8 @@ export const insertionOrders = pgTable(
     clientId: text("client_id").references(() => clients.id),
     status: varchar("status", { length: 30 }).default("created").notNull(),
     totalBudget: numeric("total_budget", { precision: 12, scale: 2 }),
-    startDate: date("start_date"),
-    endDate: date("end_date"),
+    startDate: varchar("start_date", { length: 20 }),
+    endDate: varchar("end_date", { length: 20 }),
     contractStatus: varchar("contract_status", { length: 30 }).default("pending").notNull(),
     invoiceStatus: varchar("invoice_status", { length: 30 }).default("pending").notNull(),
     // Extended fields

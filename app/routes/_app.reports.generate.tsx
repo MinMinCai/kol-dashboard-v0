@@ -157,6 +157,26 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  if (intent === "deleteReport") {
+    const orderId = String(formData.get("orderId"));
+    const reportId = String(formData.get("reportId"));
+
+    const io = await getInsertionOrder(orderId);
+    if (!io) return json({ ok: false }, { status: 404 });
+
+    const updatedReports = (io.reports ?? []).filter((r) => r.id !== reportId);
+    const stillHasDraft = updatedReports.some((r) => r.type === "draft");
+    const stillHasOfficial = updatedReports.some((r) => r.type === "official");
+
+    await updateInsertionOrder(orderId, {
+      reports: updatedReports,
+      hasDraft: stillHasDraft,
+      hasOfficial: stillHasOfficial,
+    });
+
+    return json({ ok: true });
+  }
+
   if (intent === "uploadReport") {
     const orderId = String(formData.get("orderId"));
     const fileName = String(formData.get("fileName"));
@@ -205,6 +225,7 @@ export default function ReportManagementPage() {
   const { showToast, showBanner } = useNotificationStore();
 
   const uploadFetcher = useFetcher<typeof action>();
+  const deleteFetcher = useFetcher<typeof action>();
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -217,7 +238,7 @@ export default function ReportManagementPage() {
   const [uploadModalOpen, { open: openUploadModal, close: closeUploadModal }] = useDisclosure(false);
   const [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure(false);
   const [deleteReportModalOpen, { open: openDeleteReportModal, close: closeDeleteReportModal }] = useDisclosure(false);
-  const [reportDeleteTarget, setReportDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [reportDeleteTarget, setReportDeleteTarget] = useState<{ id: string; name: string; orderId: string } | null>(null);
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
   
@@ -225,19 +246,28 @@ export default function ReportManagementPage() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [orderSearch, setOrderSearch] = useState("");
 
+  useEffect(() => {
+    if (deleteFetcher.state === "idle" && deleteFetcher.data?.ok) {
+      navigate(".", { replace: true });
+    }
+  }, [deleteFetcher.state, deleteFetcher.data]);
+
   const handleDownload = () => alert("報告下載中...");
 
-  const handleAskDeleteReport = (report: { id: string; name: string }) => {
+  const handleAskDeleteReport = (report: { id: string; name: string; orderId: string }) => {
     setReportDeleteTarget(report);
     openDeleteReportModal();
   };
 
   const handleConfirmDeleteReport = () => {
     if (!reportDeleteTarget) return;
-    const name = reportDeleteTarget.name;
+    const fd = new FormData();
+    fd.append("intent", "deleteReport");
+    fd.append("orderId", reportDeleteTarget.orderId);
+    fd.append("reportId", reportDeleteTarget.id);
+    deleteFetcher.submit(fd, { method: "post" });
     closeDeleteReportModal();
     setReportDeleteTarget(null);
-    showToast("報告已刪除", `「${name}」已移除（模擬）`, "/reports/generate");
   };
   const handleOpenUploadModal = (order: any) => {
     setActiveOrder(order);
@@ -491,7 +521,7 @@ export default function ReportManagementPage() {
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
-                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
                             ))}
@@ -519,7 +549,7 @@ export default function ReportManagementPage() {
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
-                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
                             ))}
