@@ -23,10 +23,11 @@ import {
   FileButton
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { Link, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
+import { updateInsertionOrder, getInsertionOrder } from "~/lib/mock-api.server";
 import { useNotificationStore } from "~/store/notification";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { listInsertionOrders } from "~/lib/mock-api.server";
 import { 
   IconFileTypePpt, 
@@ -152,6 +153,39 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "uploadReport") {
+    const orderId = String(formData.get("orderId"));
+    const fileName = String(formData.get("fileName"));
+    const note = formData.get("note") ? String(formData.get("note")) : undefined;
+    const isOfficial = formData.get("isOfficial") === "true";
+
+    const io = await getInsertionOrder(orderId);
+    if (!io) return json({ ok: false }, { status: 404 });
+    const newReport = {
+      id: `rep_${Date.now()}`,
+      name: fileName,
+      type: (isOfficial ? "official" : "draft") as "official" | "draft",
+      createdAt: new Date().toISOString().slice(0, 10),
+      createdBy: "手動上傳",
+      note,
+    };
+
+    await updateInsertionOrder(orderId, {
+      hasOfficial: isOfficial ? true : io.hasOfficial,
+      hasDraft: !isOfficial ? true : io.hasDraft,
+      reports: [...(io.reports ?? []), newReport],
+    });
+
+    return json({ ok: true });
+  }
+
+  return json({ ok: false }, { status: 400 });
+}
+
 export default function ReportManagementPage() {
   const {
     orders,
@@ -170,10 +204,13 @@ export default function ReportManagementPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const { showToast, showBanner } = useNotificationStore();
 
+  const uploadFetcher = useFetcher<typeof action>();
+
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isOfficial, setIsOfficial] = useState(true);
+  const [versionNote, setVersionNote] = useState("");
 
   const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
   const [progressModalOpen, { open: openProgressModal, close: closeProgressModal }] = useDisclosure(false);
@@ -208,10 +245,12 @@ export default function ReportManagementPage() {
     setUploadProgress(null);
     setUploadSuccess(false);
     setIsOfficial(true);
+    setVersionNote("");
     openUploadModal();
   };
 
   const startOfficialUpload = () => {
+    if (!uploadFile || !activeOrder) return;
     setUploadProgress(0);
     let p = 0;
     const interval = setInterval(() => {
@@ -219,10 +258,19 @@ export default function ReportManagementPage() {
       if (p >= 100) {
         clearInterval(interval);
         setUploadProgress(100);
+        // Submit to backend
+        const fd = new FormData();
+        fd.append("intent", "uploadReport");
+        fd.append("orderId", activeOrder.id);
+        fd.append("fileName", uploadFile.name);
+        fd.append("isOfficial", String(isOfficial));
+        if (versionNote) fd.append("note", versionNote);
+        uploadFetcher.submit(fd, { method: "post" });
         setTimeout(() => {
           setUploadSuccess(true);
           setTimeout(() => {
             closeUploadModal();
+            navigate(".", { replace: true });
           }, 2000);
         }, 500);
       } else {
@@ -430,17 +478,17 @@ export default function ReportManagementPage() {
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
                               <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-default-border)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
-                                <Group>
-                                  <ThemeIcon size="lg" variant="light" color="gray"><IconFileTypePpt size={20} /></ThemeIcon>
-                                  <Box>
-                                    <Group gap="xs">
-                                      <Text fw={500}>{report.name}</Text>
-                                      <Badge color="gray" variant="filled" size="xs">草稿</Badge>
+                                <Group wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                                  <ThemeIcon size="lg" variant="light" color="gray" style={{ flexShrink: 0 }}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box style={{ minWidth: 0 }}>
+                                    <Group gap="xs" wrap="nowrap">
+                                      <Text fw={500} truncate="end" style={{ minWidth: 0 }}>{report.name}</Text>
+                                      <Badge color="gray" variant="filled" size="xs" style={{ flexShrink: 0 }}>草稿</Badge>
                                     </Group>
                                     <Text size="xs" c="dimmed">生成時間: {report.createdAt} | 生成者: {report.createdBy}</Text>
                                   </Box>
                                 </Group>
-                                <Group gap="xs">
+                                <Group gap="xs" style={{ flexShrink: 0 }}>
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
@@ -458,18 +506,18 @@ export default function ReportManagementPage() {
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "official").map((report: any) => (
                               <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-green-outline)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
-                                <Group>
-                                  <ThemeIcon size="lg" variant="light" color="green"><IconFileTypePpt size={20} /></ThemeIcon>
-                                  <Box>
-                                    <Group gap="xs">
-                                      <Text fw={500}>{report.name}</Text>
-                                      <Badge color="green" variant="filled" size="xs">⭐ 正式版</Badge>
+                                <Group wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                                  <ThemeIcon size="lg" variant="light" color="green" style={{ flexShrink: 0 }}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box style={{ minWidth: 0 }}>
+                                    <Group gap="xs" wrap="nowrap">
+                                      <Text fw={500} truncate="end" style={{ minWidth: 0 }}>{report.name}</Text>
+                                      <Badge color="green" variant="filled" size="xs" style={{ flexShrink: 0 }}>⭐ 正式版</Badge>
                                     </Group>
                                     <Text size="xs" c="dimmed">上傳時間: {report.createdAt} | 上傳者: {report.createdBy}</Text>
                                     {report.note && <Text size="xs" c="dimmed" mt={2}>說明: {report.note}</Text>}
                                   </Box>
                                 </Group>
-                                <Group gap="xs">
+                                <Group gap="xs" style={{ flexShrink: 0 }}>
                                   <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
@@ -644,8 +692,7 @@ export default function ReportManagementPage() {
         radius="md"
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
         closeButtonProps={{
-          variant: "default",
-          styles: { root: { border: "1px solid var(--mantine-color-blue-filled)" } },
+          style: { border: "1px solid var(--mantine-color-blue-filled)" },
         }}
       >
         <Stack gap="lg">
@@ -1053,6 +1100,8 @@ export default function ReportManagementPage() {
               placeholder="例如: 已根據客戶回饋修正數據呈現方式、更新品牌視覺..."
               description="說明此版本與草稿的差異或修改內容"
               minRows={3}
+              value={versionNote}
+              onChange={(e) => setVersionNote(e.currentTarget.value)}
             />
 
             {/* Section 3 - Status Setting */}

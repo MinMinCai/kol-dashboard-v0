@@ -6,8 +6,11 @@ import {
   Card,
   Divider,
   Group,
+  Loader,
   Modal,
   NumberInput,
+  Progress,
+  RingProgress,
   Select,
   SimpleGrid,
   Stack,
@@ -15,6 +18,7 @@ import {
   Text,
   TextInput,
   Textarea,
+  ThemeIcon,
   Title,
   Checkbox,
 } from "@mantine/core";
@@ -134,6 +138,8 @@ export default function ProposalDetailPage() {
   const [aiSearching, setAiSearching] = useState(false);
   const [aiResults, setAiResults] = useState<any[]>([]);
   const [aiQuery, setAiQuery] = useState("");
+  const [aiAnalysisStep, setAiAnalysisStep] = useState(0);
+  const [aiSearchDone, setAiSearchDone] = useState(false);
   const [feedbackCandidate, setFeedbackCandidate] = useState<{ id: string; name: string } | null>(null);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
@@ -178,6 +184,14 @@ export default function ProposalDetailPage() {
   const aiAvatarBg = isDark ? "rgba(148, 163, 184, 0.18)" : "#eee";
   const aiReasonBg = isDark ? "rgba(51, 154, 240, 0.18)" : "rgba(51, 154, 240, 0.1)";
 
+  const AI_ANALYSIS_STEPS = [
+    { label: "解析需求關鍵字", icon: "🔍" },
+    { label: "掃描 KOL 資料庫", icon: "🗄️" },
+    { label: "比對受眾特徵與標籤", icon: "🏷️" },
+    { label: "計算匹配分數", icon: "📊" },
+    { label: "生成 AI 推薦理由", icon: "✨" },
+  ];
+
   const allKolOptions = useMemo(
     () => kols.map((k) => ({ value: k.id, label: k.displayName })),
     [kols],
@@ -186,31 +200,38 @@ export default function ProposalDetailPage() {
   const handleAiSearch = () => {
     if (!aiQuery.trim()) return;
     setAiSearching(true);
+    setAiAnalysisStep(0);
+    setAiResults([]);
+    setAiSearchDone(false);
     openAiSearch();
 
-    // Simulate AI delay (mock). Keep deterministic output to avoid hydration issues.
-    window.setTimeout(() => {
-      const q = aiQuery.trim().toLowerCase();
-      const matches = kols
-        .filter((k) => {
-          const nameOk = k.displayName.toLowerCase().includes(q);
-          const catOk = (k.categories ?? []).some((c: string) => c.toLowerCase().includes(q));
-          const industryOk = (k.industry ?? "").toLowerCase().includes(q);
-          return nameOk || catOk || industryOk;
-        })
-        .slice(0, 5)
-        .map((k) => {
-          const reason =
-            `根據您的需求「${aiQuery}」，該 KOL 的領域與標籤高度相關，且過往在類似專案中表現穩定。`;
-          return {
+    // Cycle through analysis steps, one per 160ms, then produce results
+    let step = 0;
+    const stepInterval = setInterval(() => {
+      step += 1;
+      setAiAnalysisStep(step);
+      if (step >= AI_ANALYSIS_STEPS.length) {
+        clearInterval(stepInterval);
+        const q = aiQuery.trim().toLowerCase();
+        const scores = [95, 88, 82, 76, 71];
+        const matches = kols
+          .filter((k) => {
+            const nameOk = k.displayName.toLowerCase().includes(q);
+            const catOk = (k.categories ?? []).some((c: string) => c.toLowerCase().includes(q));
+            const industryOk = (k.industry ?? "").toLowerCase().includes(q);
+            return nameOk || catOk || industryOk;
+          })
+          .slice(0, 5)
+          .map((k, i) => ({
             ...k,
-            matchScore: 88,
-            aiReason: reason,
-          };
-        });
-      setAiResults(matches);
-      setAiSearching(false);
-    }, 900);
+            matchScore: scores[i] ?? 70,
+            aiReason: `根據您的需求「${aiQuery}」，該 KOL 的領域與標籤高度相關，且過往在類似專案中表現穩定。`,
+          }));
+        setAiResults(matches);
+        setAiSearching(false);
+        setAiSearchDone(true);
+      }
+    }, 160);
   };
 
   const requestDeleteSingle = (candidateId: string, name: string) => {
@@ -537,16 +558,79 @@ export default function ProposalDetailPage() {
         opened={aiSearchOpened}
         onClose={() => {
           setAiSearching(false);
+          setAiSearchDone(false);
           closeAiSearch();
         }}
-        title="🤖 AI 搜尋結果"
+        title={<Group gap="xs"><Text fw={700} size="lg">🤖 AI KOL 智能搜尋</Text><Badge variant="dot" color="blue" size="sm">Beta</Badge></Group>}
         size="lg"
       >
         <Stack gap="md">
-          {aiSearching && <Text c="dimmed">正在分析資料庫並匹配最佳人選...</Text>}
-          {!aiSearching && aiResults.length === 0 && (
-            <Text c="dimmed">找不到符合「{aiQuery}」的候選人（Mock）。</Text>
+          {/* ── Analysis / Recognition Screen ── */}
+          {aiSearching && (
+            <Stack align="center" py="xl" gap="lg">
+              <Box style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <RingProgress
+                  size={100}
+                  thickness={6}
+                  roundCaps
+                  sections={[{ value: (aiAnalysisStep / AI_ANALYSIS_STEPS.length) * 100, color: "blue" }]}
+                />
+                <Box style={{ position: "absolute", fontSize: 30 }}>🤖</Box>
+              </Box>
+              <Stack gap={0} ta="center">
+                <Text fw={700} size="md">AI 正在分析中...</Text>
+                <Text size="xs" c="dimmed">搜尋指令：「{aiQuery}」</Text>
+              </Stack>
+              <Stack gap="xs" w="100%" px="md">
+                {AI_ANALYSIS_STEPS.map((s, i) => {
+                  const done = i < aiAnalysisStep;
+                  const active = i === aiAnalysisStep;
+                  return (
+                    <Group key={i} gap="sm" wrap="nowrap">
+                      <Box w={24} style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {done ? (
+                          <ThemeIcon size={20} radius="xl" color="green" variant="filled"><IconCheck size={12} /></ThemeIcon>
+                        ) : active ? (
+                          <Loader size={18} color="blue" type="oval" />
+                        ) : (
+                          <Box w={20} h={20} style={{ borderRadius: "50%", border: "2px solid var(--mantine-color-default-border)" }} />
+                        )}
+                      </Box>
+                      <Text size="sm" c={done ? "green" : active ? "blue" : "dimmed"} fw={active ? 600 : 400}>
+                        {s.icon} {s.label}
+                      </Text>
+                    </Group>
+                  );
+                })}
+              </Stack>
+              <Progress
+                value={(aiAnalysisStep / AI_ANALYSIS_STEPS.length) * 100}
+                size="sm"
+                radius="xl"
+                striped
+                animated
+                w="100%"
+                color="blue"
+              />
+            </Stack>
           )}
+
+          {/* ── No results ── */}
+          {!aiSearching && aiSearchDone && aiResults.length === 0 && (
+            <Stack align="center" py="lg" gap="xs">
+              <Text size="xl">🔍</Text>
+              <Text c="dimmed">找不到符合「{aiQuery}」的候選人（Mock）。</Text>
+            </Stack>
+          )}
+
+          {/* ── Results header ── */}
+          {!aiSearching && aiResults.length > 0 && (
+            <Group gap="xs">
+              <ThemeIcon size={22} radius="xl" color="green" variant="filled"><IconCheck size={14} /></ThemeIcon>
+              <Text size="sm" fw={600} c="green">找到 {aiResults.length} 位推薦人選，可直接加入候選名單</Text>
+            </Group>
+          )}
+
           {!aiSearching &&
             aiResults.map((res) => (
               <Card key={res.id} withBorder shadow="xs">
