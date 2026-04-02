@@ -69,7 +69,8 @@ export default function AppLayoutRoute() {
           [data-mantine-appshell-navbar],
           .mantine-AppShell-navbar {
             white-space: nowrap;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
           }
           body.sidebar-collapsed [data-app-shell-main],
           body.sidebar-collapsed [data-mantine-appshell-main],

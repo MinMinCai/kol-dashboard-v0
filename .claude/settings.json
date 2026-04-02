@@ -15,7 +15,8 @@
       "Bash(node --env-file=.env -e ':*)",
       "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(typeof m.createRequestHandler\\)\")",
       "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.toLowerCase\\(\\).includes\\('request'\\) || k.toLowerCase\\(\\).includes\\('handler'\\) || k.toLowerCase\\(\\).includes\\('response'\\) || k.toLowerCase\\(\\).includes\\('writable'\\)\\)\\)\")",
-      "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)"
+      "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)",
+      "Bash(node --env-file=.env --input-type=module)"
     ]
   }
 }

@@ -375,15 +375,15 @@ export default function SettingsRoute() {
             padding: "0 16px",
           }}
         >
-          <Link to="/settings?tab=clients" style={tabStyle("clients")}>
+          <a href="/settings?tab=clients" style={tabStyle("clients")}>
             品牌管理
-          </Link>
-          <Link to="/settings?tab=tags" style={tabStyle("tags")}>
+          </a>
+          <a href="/settings?tab=tags" style={tabStyle("tags")}>
             標籤管理
-          </Link>
-          <Link to="/settings?tab=roles" style={tabStyle("roles")}>
+          </a>
+          <a href="/settings?tab=roles" style={tabStyle("roles")}>
             權限管理
-          </Link>
+          </a>
         </div>
 
         <Box p="lg">
