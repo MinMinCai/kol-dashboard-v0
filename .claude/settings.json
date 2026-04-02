@@ -4,7 +4,8 @@
       "Read(//c/Users/**)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(node -e \"import\\('react/jsx-dev-runtime'\\).then\\(m => console.log\\(typeof m.jsxDEV, Object.keys\\(m\\)\\)\\)\")"
+      "Bash(node -e \"import\\('react/jsx-dev-runtime'\\).then\\(m => console.log\\(typeof m.jsxDEV, Object.keys\\(m\\)\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/@remix-run/serve/package.json'\\); console.log\\(JSON.stringify\\(p.bin\\)\\)\")"
     ]
   }
 }
