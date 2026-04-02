@@ -75,18 +75,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const tab = url.searchParams.get("tab") ?? "clients";
   const q = url.searchParams.get("q") ?? "";
 
-  const [kols, tagCatalog, brandCatalog, industryCatalog, platformCatalog, teamMembers] = await Promise.all([
-    listKols().catch(() => []),
-    listTagCatalog().catch(() => []),
-    listBrandCatalog().catch(() => []),
-    listIndustryCatalog().catch(() => []),
-    listPlatformCatalog().catch(() => []),
-    listTeamMembers().catch(() => []),
-  ]);
+  const kols = await listKols().catch(() => [] as any[]);
+  const tagCatalog = await listTagCatalog().catch(() => [] as any[]);
+  const brandCatalog = await listBrandCatalog().catch(() => [] as any[]);
+  const industryCatalog = await listIndustryCatalog().catch(() => [] as any[]);
+  const platformCatalog = await listPlatformCatalog().catch(() => [] as any[]);
+  const teamMembers = await listTeamMembers().catch(() => [] as any[]);
 
   const brands = Array.from(new Set([
-    ...brandCatalog.map(b => b.name),
-    ...kols.map(k => k.tags?.find(t => brandCatalog.some(bc => bc.name === t)) || '').filter(Boolean)
+    ...brandCatalog.map((b: any) => b.name),
+    ...kols.map((k: any) => k.tags?.find((t: string) => brandCatalog.some((bc: any) => bc.name === t)) || '').filter(Boolean)
   ])).map(name => {
     const catalogItem = brandCatalog.find(bc => bc.name === name);
     return {
@@ -103,7 +101,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const catalogTags = tagCatalog.map((t) => t.name);
   const kolTags = kols.flatMap((k) => getPrimaryTags(k));
   const tagsAll = normalizeTagList([...catalogTags, ...kolTags]);
-  
+
   const catalogIndustries = industryCatalog.map((i) => i.name);
   const industries = normalizeTagList([
     ...catalogIndustries,
@@ -608,7 +606,7 @@ export default function SettingsRoute() {
                             }}
                             style={{ flex: 1 }}
                           />
-                          <Button 
+                          <Button
                             onClick={() => {
                               if (newTagValue.trim()) {
                                 const formData = new FormData();
