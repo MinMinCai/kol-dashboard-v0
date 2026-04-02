@@ -87,13 +87,13 @@ function KolCollabCard({
                   onClick={toggle}
                   aria-label={expanded ? "收起明細" : "展開明細"}
                 >
-                  <IconChevronDown 
-                    size={18} 
-                    style={{ 
-                      transform: expanded ? 'rotate(180deg)' : 'none', 
+                  <IconChevronDown
+                    size={18}
+                    style={{
+                      transform: expanded ? 'rotate(180deg)' : 'none',
                       transition: 'transform 0.2s',
                       display: 'block'
-                    }} 
+                    }}
                   />
                 </Button>
               </Group>
@@ -154,7 +154,7 @@ function KolCollabCard({
         </Group>
 
         {expanded && <Divider />}
-        
+
         <Collapse in={expanded}>
           <Stack gap="xl">
 
@@ -323,7 +323,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
         createdBy: "系統 AI",
       };
-      await updateInsertionOrder(orderId, { 
+      await updateInsertionOrder(orderId, {
         hasDraft: true,
         reports: [...(io.reports || []), newReport]
       });
@@ -543,24 +543,24 @@ export default function InsertionOrderDetailPage() {
         </Group>
         <Group>
           <Group gap="xs">
-              <Button
-                component={Link}
-                to={`/insertion-orders/${insertionOrder.id}/edit`}
-                variant="light"
-                leftSection={<IconPencil size={16} />}
-              >
-                編輯
-              </Button>
-              <Button
-                type="button"
-                variant="light"
-                color="red"
-                leftSection={<IconTrash size={16} />}
-                onClick={openDeleteModal}
-              >
-                刪除
-              </Button>
-            </Group>
+            <Button
+              component={Link}
+              to={`/insertion-orders/${insertionOrder.id}/edit`}
+              variant="light"
+              leftSection={<IconPencil size={16} />}
+            >
+              編輯
+            </Button>
+            <Button
+              type="button"
+              variant="light"
+              color="red"
+              leftSection={<IconTrash size={16} />}
+              onClick={openDeleteModal}
+            >
+              刪除
+            </Button>
+          </Group>
           <Button onClick={() => handleOpenGenModal(insertionOrder)}>
             📊 產生報告
           </Button>
@@ -571,129 +571,129 @@ export default function InsertionOrderDetailPage() {
       {/* ── Overview Card ── */}
       <Card withBorder radius="md" p="xl" shadow="sm">
         <Grid gutter="xl">
-            <Grid.Col span={{ base: 12, md: 7 }}>
-              <Stack gap="sm">
-                {insertionOrder.orderTitle && (
-                  <Text size="sm" fw={500} c="dimmed">{insertionOrder.orderTitle}</Text>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Stack gap="sm">
+              {insertionOrder.orderTitle && (
+                <Text size="sm" fw={500} c="dimmed">{insertionOrder.orderTitle}</Text>
+              )}
+              <Title order={3} c="blue">
+                {insertionOrder.projectName ?? insertionOrder.title ?? "未命名專案"}
+              </Title>
+              <Group gap="xs">
+                <Badge variant="light">客戶: {insertionOrder.clientName}</Badge>
+                <Badge variant="light" color="cyan">
+                  品牌: {insertionOrder.brand ?? insertionOrder.clientName}
+                </Badge>
+                {insertionOrder.mcnName && (
+                  <Badge variant="light" color="violet">網紅公司: {insertionOrder.mcnName}</Badge>
                 )}
-                <Title order={3} c="blue">
-                  {insertionOrder.projectName ?? insertionOrder.title ?? "未命名專案"}
+              </Group>
+              <Text size="sm">
+                產業: {insertionOrder.industryPath ?? insertionOrder.industry ?? "-"}
+              </Text>
+              <Text size="sm">
+                負責業務: {insertionOrder.salesOwner ?? "-"} | KOL 窗口:{" "}
+                {insertionOrder.kolManager ?? "-"}
+              </Text>
+              {(insertionOrder.startDate || insertionOrder.endDate) && (
+                <Text size="sm">
+                  執行日期: {insertionOrder.startDate ?? "-"} ~ {insertionOrder.endDate ?? "-"}
+                </Text>
+              )}
+              {insertionOrder.documentUrl && (
+                <Button
+                  component="a"
+                  href={insertionOrder.documentUrl}
+                  target="_blank"
+                  variant="subtle"
+                  leftSection="📄"
+                  size="compact-sm"
+                  p={0}
+                >
+                  下載委刊單合約
+                </Button>
+              )}
+              {description && (
+                <Box mt="xs">
+                  <Text size="xs" fw={700} c="dimmed" mb={4}>專案說明</Text>
+                  <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>{description}</Text>
+                </Box>
+              )}
+              {internalNotes && (
+                <Box
+                  mt="xs"
+                  p="sm"
+                  style={{
+                    background: "var(--mantine-color-gray-0)",
+                    border: "1px solid var(--mantine-color-gray-3)",
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text size="xs" fw={700} c="dimmed" mb={4}>🔒 內部備註</Text>
+                  <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap" }}>{internalNotes}</Text>
+                </Box>
+              )}
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 5 }}>
+            <SimpleGrid cols={2} spacing="md">
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  合作 KOL
+                </Text>
+                <Title order={4}>
+                  {insertionOrder.kolCount ?? collaborations.length} 位
                 </Title>
-                <Group gap="xs">
-                  <Badge variant="light">客戶: {insertionOrder.clientName}</Badge>
-                  <Badge variant="light" color="cyan">
-                    品牌: {insertionOrder.brand ?? insertionOrder.clientName}
-                  </Badge>
-                  {insertionOrder.mcnName && (
-                    <Badge variant="light" color="violet">網紅公司: {insertionOrder.mcnName}</Badge>
-                  )}
-                </Group>
-                <Text size="sm">
-                  產業: {insertionOrder.industryPath ?? insertionOrder.industry ?? "-"}
+              </Card>
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  專案報價(未稅)
                 </Text>
-                <Text size="sm">
-                  負責業務: {insertionOrder.salesOwner ?? "-"} | KOL 窗口:{" "}
-                  {insertionOrder.kolManager ?? "-"}
+                <Title order={4}>{currency(insertionOrder.totalBudget)}</Title>
+              </Card>
+              {insertionOrder.tax != null && (
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    稅金
+                  </Text>
+                  <Title order={4}>{currency(insertionOrder.tax)}</Title>
+                </Card>
+              )}
+              {insertionOrder.totalWithTax != null && (
+                <Card withBorder radius="md">
+                  <Text size="xs" c="dimmed" fw={700}>
+                    含稅總額
+                  </Text>
+                  <Title order={4}>{currency(insertionOrder.totalWithTax)}</Title>
+                </Card>
+              )}
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  總觸及
                 </Text>
-                {(insertionOrder.startDate || insertionOrder.endDate) && (
-                  <Text size="sm">
-                    執行日期: {insertionOrder.startDate ?? "-"} ~ {insertionOrder.endDate ?? "-"}
-                  </Text>
-                )}
-                {insertionOrder.documentUrl && (
-                  <Button
-                    component="a"
-                    href={insertionOrder.documentUrl}
-                    target="_blank"
-                    variant="subtle"
-                    leftSection="📄"
-                    size="compact-sm"
-                    p={0}
-                  >
-                    下載委刊單合約
-                  </Button>
-                )}
-                {description && (
-                  <Box mt="xs">
-                    <Text size="xs" fw={700} c="dimmed" mb={4}>專案說明</Text>
-                    <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>{description}</Text>
-                  </Box>
-                )}
-                {internalNotes && (
-                  <Box
-                    mt="xs"
-                    p="sm"
-                    style={{
-                      background: "var(--mantine-color-gray-0)",
-                      border: "1px solid var(--mantine-color-gray-3)",
-                      borderRadius: 6,
-                    }}
-                  >
-                    <Text size="xs" fw={700} c="dimmed" mb={4}>🔒 內部備註</Text>
-                    <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap" }}>{internalNotes}</Text>
-                  </Box>
-                )}
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, md: 5 }}>
-              <SimpleGrid cols={2} spacing="md">
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    合作 KOL
-                  </Text>
-                  <Title order={4}>
-                    {insertionOrder.kolCount ?? collaborations.length} 位
-                  </Title>
-                </Card>
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    專案報價(未稅)
-                  </Text>
-                  <Title order={4}>{currency(insertionOrder.totalBudget)}</Title>
-                </Card>
-                {insertionOrder.tax != null && (
-                  <Card withBorder radius="md">
-                    <Text size="xs" c="dimmed" fw={700}>
-                      稅金
-                    </Text>
-                    <Title order={4}>{currency(insertionOrder.tax)}</Title>
-                  </Card>
-                )}
-                {insertionOrder.totalWithTax != null && (
-                  <Card withBorder radius="md">
-                    <Text size="xs" c="dimmed" fw={700}>
-                      含稅總額
-                    </Text>
-                    <Title order={4}>{currency(insertionOrder.totalWithTax)}</Title>
-                  </Card>
-                )}
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    總觸及
-                  </Text>
-                  <Title order={4}>{n(totalReach)}</Title>
-                </Card>
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    總互動
-                  </Text>
-                  <Title order={4}>{n(totalEngagement)}</Title>
-                </Card>
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    平均互動率
-                  </Text>
-                  <Title order={4}>{avgEngagementRate.toFixed(1)}%</Title>
-                </Card>
-                <Card withBorder radius="md">
-                  <Text size="xs" c="dimmed" fw={700}>
-                    平均評價
-                  </Text>
-                  <Title order={4}>⭐ {avgRating.toFixed(1)}</Title>
-                </Card>
-              </SimpleGrid>
-            </Grid.Col>
-          </Grid>
+                <Title order={4}>{n(totalReach)}</Title>
+              </Card>
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  總互動
+                </Text>
+                <Title order={4}>{n(totalEngagement)}</Title>
+              </Card>
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  平均互動率
+                </Text>
+                <Title order={4}>{avgEngagementRate.toFixed(1)}%</Title>
+              </Card>
+              <Card withBorder radius="md">
+                <Text size="xs" c="dimmed" fw={700}>
+                  平均評價
+                </Text>
+                <Title order={4}>⭐ {avgRating.toFixed(1)}</Title>
+              </Card>
+            </SimpleGrid>
+          </Grid.Col>
+        </Grid>
       </Card>
 
       {/* ── Performance Chart Dashboard ── (暫不開發)
@@ -756,12 +756,12 @@ export default function InsertionOrderDetailPage() {
       </Card>
 
       {/* ── Modals ── */}
-      <PerformanceModal 
-        opened={perfModalOpened} 
-        onClose={closePerfModal} 
-        insertionOrder={insertionOrder} 
-        selectedKol={selectedKol} 
-        fetcher={fetcher} 
+      <PerformanceModal
+        opened={perfModalOpened}
+        onClose={closePerfModal}
+        insertionOrder={insertionOrder}
+        selectedKol={selectedKol}
+        fetcher={fetcher}
       />
 
       <Modal
@@ -814,7 +814,7 @@ export default function InsertionOrderDetailPage() {
         {activeOrder && (
           <Stack gap="xl" mt="sm">
             {/* Section 1 - Campaign Info */}
-            <Card withBorder bg="gray.0" p="sm" radius="md">
+            <Card withBorder bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))" p="sm" radius="md">
               <Group gap="xl">
                 <Box>
                   <Text size="xs" c="dimmed">案件編號</Text>
@@ -903,7 +903,7 @@ export default function InsertionOrderDetailPage() {
                         withBorder
                         p="sm"
                         radius="md"
-                        bg="orange.0"
+                        bg="light-dark(var(--mantine-color-orange-0), rgba(253, 126, 20, 0.15))"
                         style={{ opacity: 0.8, cursor: 'pointer' }}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
@@ -928,7 +928,7 @@ export default function InsertionOrderDetailPage() {
                 </Box>
 
                 {/* Info box */}
-                <Card bg="blue.0" p="sm" radius="md" mt="xs">
+                <Card bg="light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.15))" p="sm" radius="md" mt="xs">
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
                     <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
@@ -976,7 +976,7 @@ export default function InsertionOrderDetailPage() {
                   </Group>
                 </Box>
 
-                <Card bg="gray.0" p="sm" radius="md">
+                <Card bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))" p="sm" radius="md">
                   <Group wrap="nowrap">
                     <ThemeIcon color="gray" variant="light"><IconFileDescription size={16} /></ThemeIcon>
                     <Box>
@@ -1049,11 +1049,11 @@ export default function InsertionOrderDetailPage() {
               return (
                 <Group key={idx} wrap="nowrap" gap="sm">
                   {isCompleted ? (
-                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14}/></ThemeIcon>
+                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14} /></ThemeIcon>
                   ) : isCurrent ? (
-                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14}/></ThemeIcon>
+                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14} /></ThemeIcon>
                   ) : (
-                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14}/></ThemeIcon>
+                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14} /></ThemeIcon>
                   )}
                   <Text size="sm" fw={isCurrent ? 600 : 400} c={isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5"}>
                     {stepDesc}
@@ -1116,13 +1116,13 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
   const isDark = colorScheme === "dark";
 
   const [activeTab, setActiveTab] = useState<"post" | "performance">("performance");
-  
+
   const [postUploadState, setPostUploadState] = useState<"idle" | "uploading" | "success">("idle");
   const [postImages, setPostImages] = useState<string[]>([]);
 
   const [perfUploadState, setPerfUploadState] = useState<"idle" | "uploading" | "recognizing" | "success">("idle");
   const [perfImages, setPerfImages] = useState<string[]>([]);
-  
+
   // Simulated form state
   const [metrics, setMetrics] = useState({
     impressions: 0,
@@ -1137,11 +1137,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
   const handlePostFileChange = (files: File[]) => {
     if (files.length === 0) return;
     setPostUploadState("uploading");
-    
+
     // Simulate converting files to object URLs for preview
     const urls = files.map(f => URL.createObjectURL(f));
     setPostImages(urls);
-    
+
     setTimeout(() => {
       setPostUploadState("success");
     }, 1500);
@@ -1150,7 +1150,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
   const handlePerfFileChange = (files: File[]) => {
     if (files.length === 0) return;
     setPerfUploadState("uploading");
-    
+
     const urls = files.map(f => URL.createObjectURL(f));
     setPerfImages(urls);
 
@@ -1171,8 +1171,8 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
     }, 1000);
   };
 
-  const engagementRate = metrics.impressions > 0 
-    ? ((metrics.likes + metrics.comments + metrics.shares + metrics.saves) / metrics.impressions * 100).toFixed(2) 
+  const engagementRate = metrics.impressions > 0
+    ? ((metrics.likes + metrics.comments + metrics.shares + metrics.saves) / metrics.impressions * 100).toFixed(2)
     : "0.00";
 
   const closeAndReset = () => {
@@ -1205,27 +1205,27 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
       <fetcher.Form method="post" onSubmit={closeAndReset}>
         <input type="hidden" name="intent" value="performance" />
         <input type="hidden" name="kolId" value={selectedKol?.id} />
-        
+
         <Stack gap="xl">
           {/* Section 1: Context */}
-          <Card withBorder p="md" radius="md" bg="gray.0">
-             <SimpleGrid cols={3}>
-                <Stack gap={0}>
-                  <Text size="xs" c="dimmed">案件</Text>
-                  <Text size="sm" fw={600}>#{insertionOrder.orderNo} {insertionOrder.projectName}</Text>
-                </Stack>
-                <Stack gap={0}>
-                  <Text size="xs" c="dimmed">KOL</Text>
-                  <Text size="sm" fw={600}>{selectedKol?.name}</Text>
-                </Stack>
-                <Select
-                  label="曝光點"
-                  name="title"
-                  defaultValue="IG貼文"
-                  data={["IG貼文", "IG限動", "IG Reels", "FB貼文", "YouTube影片"]}
-                  size="xs"
-                />
-             </SimpleGrid>
+          <Card withBorder p="md" radius="md" bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))">
+            <SimpleGrid cols={3}>
+              <Stack gap={0}>
+                <Text size="xs" c="dimmed">案件</Text>
+                <Text size="sm" fw={600}>#{insertionOrder.orderNo} {insertionOrder.projectName}</Text>
+              </Stack>
+              <Stack gap={0}>
+                <Text size="xs" c="dimmed">KOL</Text>
+                <Text size="sm" fw={600}>{selectedKol?.name}</Text>
+              </Stack>
+              <Select
+                label="曝光點"
+                name="title"
+                defaultValue="IG貼文"
+                data={["IG貼文", "IG限動", "IG Reels", "FB貼文", "YouTube影片"]}
+                size="xs"
+              />
+            </SimpleGrid>
           </Card>
 
           {/* Sections: Tabs */}
@@ -1275,12 +1275,12 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
             {activeTab === "post" && (
               <Stack gap="md">
                 {postUploadState === "idle" && (
-                  <Box 
+                  <Box
                     style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
                   >
-                    <FileInput 
-                      multiple 
-                      accept="image/*" 
+                    <FileInput
+                      multiple
+                      accept="image/*"
                       style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
                       onChange={handlePostFileChange}
                     />
@@ -1293,9 +1293,9 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
 
                 {postUploadState === "uploading" && (
                   <Card withBorder p="xl" ta="center">
-                     <Loader size="sm" mb="sm" mx="auto" />
-                     <Text size="sm">圖片上傳中...</Text>
-                     <Progress value={75} mt="md" animated />
+                    <Loader size="sm" mb="sm" mx="auto" />
+                    <Text size="sm">圖片上傳中...</Text>
+                    <Progress value={75} mt="md" animated />
                   </Card>
                 )}
 
@@ -1305,13 +1305,13 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                       <Image key={i} src={src} w={100} h={100} radius="md" style={{ objectFit: 'cover' }} />
                     ))}
                     <Box style={{ width: 100, height: 100, border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
-                       <FileInput 
-                          multiple 
-                          accept="image/*" 
-                          style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
-                          onChange={handlePostFileChange}
-                        />
-                       <Text size="xl" c="dimmed">+</Text>
+                      <FileInput
+                        multiple
+                        accept="image/*"
+                        style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                        onChange={handlePostFileChange}
+                      />
+                      <Text size="xl" c="dimmed">+</Text>
                     </Box>
                   </Group>
                 )}
@@ -1322,12 +1322,12 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
             {activeTab === "performance" && (
               <Stack gap="md">
                 {perfUploadState === "idle" && (
-                  <Box 
+                  <Box
                     style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
                   >
-                    <FileInput 
-                      multiple 
-                      accept="image/*" 
+                    <FileInput
+                      multiple
+                      accept="image/*"
                       style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
                       onChange={handlePerfFileChange}
                     />
@@ -1340,9 +1340,9 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
 
                 {perfUploadState === "uploading" && (
                   <Card withBorder p="xl" ta="center">
-                     <Loader size="sm" mb="sm" mx="auto" />
-                     <Text size="sm">圖片上傳中...</Text>
-                     <Progress value={75} mt="md" animated />
+                    <Loader size="sm" mb="sm" mx="auto" />
+                    <Text size="sm">圖片上傳中...</Text>
+                    <Progress value={75} mt="md" animated />
                   </Card>
                 )}
 
@@ -1363,12 +1363,12 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                       border: isDark ? "1px solid rgba(51, 154, 240, 0.35)" : undefined,
                     }}
                   >
-                     <Group gap="sm">
-                       <Loader color="blue" size="sm" />
-                       <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
-                         ✨ 🤖 AI 正在辨識中...
-                       </Text>
-                     </Group>
+                    <Group gap="sm">
+                      <Loader color="blue" size="sm" />
+                      <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                        ✨ 🤖 AI 正在辨識中...
+                      </Text>
+                    </Group>
                   </Card>
                 )}
 
@@ -1382,12 +1382,12 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                       opacity: 0.8,
                     }}
                   >
-                     <Group gap="sm">
-                       <IconCheck size={20} color="var(--mantine-color-blue-filled)" />
-                       <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
-                         ✨ 🤖 AI 辨識完成，請確認以下數據
-                       </Text>
-                     </Group>
+                    <Group gap="sm">
+                      <IconCheck size={20} color="var(--mantine-color-blue-filled)" />
+                      <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                        ✨ 🤖 AI 辨識完成，請確認以下數據
+                      </Text>
+                    </Group>
                   </Card>
                 )}
 
@@ -1395,48 +1395,48 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 <Stack gap="xs" mt="sm">
                   <SimpleGrid cols={2} spacing="md">
                     <NumberInput label="上線日期 (選填)" placeholder="YYYY / MM / DD" disabled={perfUploadState === 'recognizing'} />
-                    <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({...m, reach: Number(v)}))}
+                    <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({ ...m, reach: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({...m, impressions: Number(v)}))} 
+                    <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({ ...m, impressions: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({...m, likes: Number(v)}))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                     />
-                    <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({...m, comments: Number(v)}))} 
+                    <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({ ...m, likes: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({...m, shares: Number(v)}))} 
+                    <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({ ...m, comments: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({...m, saves: Number(v)}))} 
+                    <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({ ...m, shares: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({...m, views: Number(v)}))} 
+                    <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({ ...m, saves: Number(v) }))}
                       disabled={perfUploadState === 'recognizing'}
                       rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
                       styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
                     />
-                    
-                    <TextInput 
-                      label="互動率 (系統運算)" 
-                      value={`${engagementRate}%`} 
-                      readOnly 
-                      variant="filled" 
-                      styles={{ input: { backgroundColor: 'var(--mantine-color-gray-1)', fontWeight: 600 } }}
+                    <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({ ...m, views: Number(v) }))}
+                      disabled={perfUploadState === 'recognizing'}
+                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
+                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
+                    />
+
+                    <TextInput
+                      label="互動率 (系統運算)"
+                      value={`${engagementRate}%`}
+                      readOnly
+                      variant="filled"
+                      styles={{ input: { backgroundColor: 'light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))', fontWeight: 600 } }}
                     />
                   </SimpleGrid>
                 </Stack>

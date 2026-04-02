@@ -159,7 +159,7 @@ export async function action({ request }: ActionFunctionArgs) {
           createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
           createdBy: "系統 AI",
         };
-        await updateInsertionOrder(orderId, { 
+        await updateInsertionOrder(orderId, {
           hasDraft: true,
           reports: [...(io.reports || []), newReport]
         });
@@ -591,7 +591,7 @@ export default function InsertionOrderListPage() {
         {activeOrder && (
           <Stack gap="xl" mt="sm">
             {/* Section 1 - Campaign Info */}
-            <Card withBorder bg="gray.0" p="sm" radius="md">
+            <Card withBorder bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))" p="sm" radius="md">
               <Group gap="xl">
                 <Box>
                   <Text size="xs" c="dimmed">案件編號</Text>
@@ -680,7 +680,7 @@ export default function InsertionOrderListPage() {
                         withBorder
                         p="sm"
                         radius="md"
-                        bg="orange.0"
+                        bg="light-dark(var(--mantine-color-orange-0), rgba(253, 126, 20, 0.15))"
                         style={{ opacity: 0.8, cursor: 'pointer' }}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
@@ -705,7 +705,7 @@ export default function InsertionOrderListPage() {
                 </Box>
 
                 {/* Info box */}
-                <Card bg="blue.0" p="sm" radius="md" mt="xs">
+                <Card bg="light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.15))" p="sm" radius="md" mt="xs">
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
                     <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
@@ -753,7 +753,7 @@ export default function InsertionOrderListPage() {
                   </Group>
                 </Box>
 
-                <Card bg="gray.0" p="sm" radius="md">
+                <Card bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))" p="sm" radius="md">
                   <Group wrap="nowrap">
                     <ThemeIcon color="gray" variant="light"><IconFileDescription size={16} /></ThemeIcon>
                     <Box>
@@ -826,11 +826,11 @@ export default function InsertionOrderListPage() {
               return (
                 <Group key={idx} wrap="nowrap" gap="sm">
                   {isCompleted ? (
-                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14}/></ThemeIcon>
+                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14} /></ThemeIcon>
                   ) : isCurrent ? (
-                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14}/></ThemeIcon>
+                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14} /></ThemeIcon>
                   ) : (
-                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14}/></ThemeIcon>
+                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14} /></ThemeIcon>
                   )}
                   <Text size="sm" fw={isCurrent ? 600 : 400} c={isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5"}>
                     {stepDesc}
@@ -842,7 +842,7 @@ export default function InsertionOrderListPage() {
 
           <Text size="xs" c="dimmed" mt="xs">預計還需 2 分鐘</Text>
 
-          <Card bg="blue.0" w="100%" p="sm" radius="md">
+          <Card bg="light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.15))" w="100%" p="sm" radius="md">
             <Group wrap="nowrap" align="center" justify="center">
               <IconBulb size={18} color="var(--mantine-color-blue-7)" />
               <Text size="sm" c="blue.9">您可以關閉此視窗繼續其他工作，完成後會通知您</Text>

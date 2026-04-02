@@ -16,7 +16,7 @@ a {
 
 .kol-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 24px light-dark(rgba(15, 23, 42, 0.12), rgba(0, 0, 0, 0.4));
 }
 
 .io-card {
@@ -24,41 +24,41 @@ a {
 }
 
 .io-card:hover {
-  background-color: #f8fafc;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.09);
+  background-color: light-dark(#f8fafc, var(--mantine-color-dark-6));
+  box-shadow: 0 10px 24px light-dark(rgba(15, 23, 42, 0.09), rgba(0, 0, 0, 0.3));
   transform: translateY(-1px);
 }
 
 .tier-1-card {
-  background: #ffffff;
+  background: light-dark(#ffffff, var(--mantine-color-dark-7));
 }
 
 .tier-2-card {
-  background: #f8fafc;
+  background: light-dark(#f8fafc, var(--mantine-color-dark-8));
 }
 
 .tier-3-wrap {
-  background: #ffffff;
-  border-left: 3px solid #dbeafe;
+  background: light-dark(#ffffff, var(--mantine-color-dark-7));
+  border-left: 3px solid light-dark(#dbeafe, var(--mantine-color-blue-8));
 }
 
 .upload-zone {
-  border: 2px dashed #94a3b8;
+  border: 2px dashed light-dark(#94a3b8, var(--mantine-color-gray-6));
   border-radius: 14px;
   padding: 28px;
-  background: #f8fafc;
+  background: light-dark(#f8fafc, var(--mantine-color-dark-7));
   cursor: pointer;
 }
 
 .upload-zone:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: light-dark(#3b82f6, var(--mantine-color-blue-5));
+  background: light-dark(#eff6ff, var(--mantine-color-dark-6));
 }
 
 .bulk-bar {
   position: sticky;
   bottom: 12px;
   z-index: 20;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+  background: light-dark(#ffffff, var(--mantine-color-dark-7));
+  box-shadow: 0 10px 30px light-dark(rgba(15, 23, 42, 0.14), rgba(0, 0, 0, 0.5));
 }

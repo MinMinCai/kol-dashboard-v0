@@ -60,7 +60,7 @@ function ModuleCard({
   return (
     <Card
       withBorder
-      padding="lg"
+      padding="xl"
       radius="md"
       component="a"
       href={mod.to}
@@ -68,6 +68,7 @@ function ModuleCard({
         textDecoration: "none",
         transition: "transform 200ms ease, box-shadow 200ms ease",
         height: "100%",
+        minHeight: 180,
         display: "block",
       }}
       onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
@@ -84,10 +85,10 @@ function ModuleCard({
           <mod.icon size={26} stroke={1.5} />
         </ThemeIcon>
         <div>
-          <Text fw={600} size="lg" mb={4} c="dark">
+          <Text fw={600} size="lg" mb={8}>
             {mod.title}
           </Text>
-          <Text size="sm" c="dimmed" style={{ lineHeight: 1.4 }}>
+          <Text size="sm" c="dimmed" style={{ lineHeight: 1.5 }}>
             {mod.description}
           </Text>
         </div>
@@ -127,8 +128,8 @@ export default function DashboardPage() {
           {modules.map((mod, i) => (
             <Grid.Col
               key={mod.title}
-              span={{ base: 12, md: 4 }}
-              offset={i === 3 ? { base: 0, md: 2 } : undefined}
+              span={{ base: 12, md: 6 }}
+              offset={i === 4 ? { base: 0, md: 3 } : undefined}
             >
               <ModuleCard mod={mod} />
             </Grid.Col>
