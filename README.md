@@ -207,10 +207,32 @@ kol-db-demo/
 - **版本管理**
   - 記錄並管理不同版本的報告文件。
 
-### 5. 個人化與系統設定 (Personalization & Settings)
+### 5. 收藏資料夾共享 (Favorite Folders & Sharing)
 
-- **我的收藏**
-  - 個人或團隊共享的 KOL 收藏夾，支援分類與移除。
+- **資料夾管理**
+  - 建立個人 KOL 收藏資料夾，加入 KOL 並附上備註。
+- **共享機制**
+  - 可將資料夾共享給**特定同事**或**整個組別**（AE / KOL / Tech / Media）。
+  - 支援 `view`（唯讀）與 `edit`（可新增 KOL）兩種權限層級。
+- **資料表**
+  - `kol_favorite_folders` — 資料夾本體
+  - `kol_favorite_folder_items` — 資料夾 ↔ KOL 中間表
+  - `kol_favorite_folder_shares` — 資料夾 ↔ 共享對象中間表
+
+### 6. 提案異動通知 (Proposal Change Notifications)
+
+- **訂閱機制**
+  - 提案負責人自動訂閱（`watchType = 'owner'`）；被 @ 的人自動加入（`'mentioned'`）；亦可手動追蹤（`'manual'`）。
+- **通知觸發**
+  - 當跨組同事更新 stage、加入 KOL、新增 feedback 時，所有訂閱者收到通知。
+- **通知管理**
+  - 支援已讀 / 未讀狀態管理，`payload` 記錄異動前後內容供訊息顯示。
+- **資料表**
+  - `proposal_watchers` — 訂閱中間表
+  - `notifications` — 通知本體
+
+### 7. 個人化與系統設定 (Personalization & Settings)
+
 - **系統設定**
   - 客戶資料維護、品牌資料維護、標籤定義管理。
 - **全域操作**
@@ -232,19 +254,30 @@ kol-db-demo/
 2. **KOL (網紅)**  
    - 核心欄位：基本資料、社群數據、報價、標籤、地區、語言。  
    - 關聯：
-     - `1-to-N` → **Favorite (收藏)**：不同使用者對 KOL 的收藏紀錄。  
-     - `1-to-N` → **KolCollaboration (合作紀錄)**：每次合作的成效與評價。  
+     - `1-to-N` → **kol_social_accounts**：各平台帳號明細。  
+     - `1-to-N` → **kol_favorite_folder_items**：被收藏進哪些資料夾。  
+     - `1-to-N` → **campaign_performance**：每次合作的成效數據。  
 
 3. **Proposal (提案)**  
    - 狀態流：草稿 → 內部審核 → 送客戶 → 客戶反饋 → 修訂 → 成功/失敗。  
-   - `1-to-N` 關聯多個 KOL 作為候選名單與實際合作名單。  
+   - `1-to-N` → **proposal_kols**：KOL 候選名單與狀態。  
+   - `1-to-N` → **proposal_feedback**：客戶與內部反饋。  
+   - `1-to-N` → **proposal_watchers**：訂閱此提案的使用者，異動時觸發通知。  
 
 4. **Insertion Order (委刊單)**  
    - 狀態流：已建立 → 已簽署 → 執行中 → 已交付 → 已結算 → 已結案。  
-   - `1-to-N` → **OrderKolCollaboration (委刊單-KOL 執行明細)**：授權項目、報價、稅率、檔期等。  
-   - 關聯到對應的 **Metrics (成效數據)** 與 **Reviews (評價)**。  
+   - `1-to-N` → **io_tasks**：執行任務分派。  
+   - `1-to-N` → **campaign_performance**：成效數據追蹤。  
 
-> 具體 Schema 實作請參考：`db/drizzle/schema.ts`
+5. **收藏資料夾 (Favorite Folders)**  
+   - `kol_favorite_folders` 為本體，透過 `kol_favorite_folder_items` 關聯 KOL。  
+   - 透過 `kol_favorite_folder_shares` 共享給指定用戶或整個組別，支援 view / edit 權限。  
+
+6. **通知 (Notifications)**  
+   - `proposal_watchers` 記錄誰訂閱了哪個提案。  
+   - `notifications` 在提案有異動時產生通知，含 `type`、`payload`、`isRead`。  
+
+> 具體 Schema 實作請參考：`db/drizzle/schema.ts`，完整 ERD 請參考 `docs/ERD.md`。
 
 ---
 
@@ -478,4 +511,4 @@ npm start
    - 在 `root.tsx` 的 `<head>` 中注入 `window.process.env.NODE_ENV` polyfill，避免第三方套件在瀏覽器端引用 Node globals 導致初始化崩潰。
 
 ---
-**更新時間**：2026 年 4 月 2 日  
+**更新時間**：2026 年 4 月 13 日  

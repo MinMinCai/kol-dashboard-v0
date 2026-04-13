@@ -1,7 +1,7 @@
 # KOL Database NextGen - 專案需求文件
 
-> **文件版本**: v1.2
-> **最後更新**: 2026-03-30
+> **文件版本**: v1.3
+> **最後更新**: 2026-04-13
 > **維護者**: Emily Cai
 
 ---
@@ -17,6 +17,8 @@
 - [7. 核心工作流程](#7-核心工作流程)
 - [8. UI 架構設計](#8-ui-架構設計)
 - [9. AI Agent 功能](#9-ai-agent-功能)
+- [10. 收藏資料夾共享功能](#10-收藏資料夾共享功能)
+- [11. 提案異動通知功能](#11-提案異動通知功能)
 
 ---
 
@@ -729,3 +731,110 @@ AI 生成:
 - PPT 草稿檔案 (系統版本)
 - 可下載連結
 ```
+
+---
+
+## 10. 收藏資料夾共享功能
+
+### 10.1 功能背景
+
+原有的收藏機制（`kols.isFavorite`）僅支援個人標記，無法分類管理，也無法讓同組或跨組同事共同維護 KOL 名單。此功能將收藏升級為「資料夾式共享收藏」。
+
+### 10.2 核心功能
+
+| 功能 | 說明 |
+|------|------|
+| **建立資料夾** | 任何成員皆可建立個人收藏資料夾，並附上說明 |
+| **加入 KOL** | 將 KOL 加入指定資料夾，可附上備註（例如「適合親子類提案」） |
+| **共享給指定人** | 選擇 `shareType = 'user'`，共享給特定同事 |
+| **共享給整組** | 選擇 `shareType = 'group'`，共享給 AE / KOL / Tech / Media 等組別 |
+| **權限控制** | `view`（唯讀）或 `edit`（可新增 KOL 進資料夾） |
+
+### 10.3 使用情境
+
+```
+KOL Team 成員建立「美妝類精選」資料夾
+    ↓
+加入 10 位 KOL，並附上各自備註
+    ↓
+共享給 AE 組（permission = 'view'）
+    ↓
+AE 開提案時可直接從共享資料夾挑選 KOL
+    ↓
+AE 也可共享資料夾給特定業務同事並給予 edit 權限
+    ↓
+雙方共同維護同一份 KOL 清單
+```
+
+### 10.4 資料表設計
+
+| 資料表 | 職責 |
+|--------|------|
+| `kol_favorite_folders` | 資料夾本體，綁定建立者 (`ownerId → users`) |
+| `kol_favorite_folder_items` | 資料夾 ↔ KOL 中間表，`(folderId, kolId)` 聯合唯一 |
+| `kol_favorite_folder_shares` | 資料夾 ↔ 共享對象中間表，區分 user / group 兩種模式 |
+
+> 詳細欄位請參考 `docs/ERD.md`。
+
+### 10.5 權限規則
+
+- 資料夾 **owner** 可編輯、刪除資料夾，以及新增 / 移除共享對象
+- `permission = 'edit'` 的共享者可新增 KOL，`addedBy` 記錄操作者
+- `permission = 'view'` 的共享者僅能瀏覽，無法異動
+
+---
+
+## 11. 提案異動通知功能
+
+### 11.1 功能背景
+
+提案通常由跨組人員（業務 + KOL Team）共同維護。當不同組的同事修改提案內容（如調整 stage、新增 KOL、加入 feedback）時，相關人員無從得知，導致資訊落差。此功能透過訂閱機制，在提案有異動時即時通知相關使用者。
+
+### 11.2 核心功能
+
+| 功能 | 說明 |
+|------|------|
+| **自動訂閱** | 提案建立者（owner）自動成為 watcher；被 @ 的人也自動加入 |
+| **手動訂閱** | 任何人可手動點擊「追蹤此提案」 |
+| **異動通知** | 有人更新提案時，所有 watcher 收到通知 |
+| **通知類型** | `proposal.stage_changed`、`proposal.kol_added`、`proposal.feedback_added` 等 |
+| **已讀管理** | 每則通知有 `isRead` 狀態，支援「標為已讀」、「全部已讀」 |
+
+### 11.3 通知觸發邏輯
+
+```
+觸發事件（由後端 Action 層執行）
+    ↓
+查詢 proposal_watchers（訂閱此提案的所有 userId）
+    ↓
+排除操作者本人（actor 不通知自己）
+    ↓
+批次寫入 notifications（每位 watcher 一筆）
+    ↓
+前端輪詢 or Server-Sent Events 推送未讀通知數
+```
+
+### 11.4 訂閱類型（watchType）
+
+| 類型 | 觸發時機 |
+|------|----------|
+| `owner` | 提案建立時，負責人自動訂閱 |
+| `mentioned` | 在 feedback 或備註中被 @ 時自動訂閱 |
+| `manual` | 使用者手動點擊「追蹤提案」 |
+
+### 11.5 通知訊息範例
+
+| 事件類型 | 通知文字範例 |
+|----------|-------------|
+| `proposal.stage_changed` | `Emily 將提案《Panasonic Q3提案》從 draft 更新為 review` |
+| `proposal.kol_added` | `Chloe 在提案《ALLIE夏季提案》中加入了 KOL Gina` |
+| `proposal.feedback_added` | `Jason 在提案《ALLIE夏季提案》新增了客戶反饋` |
+
+### 11.6 資料表設計
+
+| 資料表 | 職責 |
+|--------|------|
+| `proposal_watchers` | 提案 ↔ 訂閱者中間表，`(proposalId, userId)` 聯合唯一 |
+| `notifications` | 通知本體，含 `type`、`payload`、`isRead`、`actorId` |
+
+> 詳細欄位請參考 `docs/ERD.md`。
