@@ -27,7 +27,8 @@ ALTER TABLE kols
   ADD COLUMN IF NOT EXISTS contact jsonb DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS collaboration_history jsonb DEFAULT '[]',
   ADD COLUMN IF NOT EXISTS price_trend jsonb DEFAULT '[]',
-  ADD COLUMN IF NOT EXISTS performance_stats jsonb;
+  ADD COLUMN IF NOT EXISTS performance_stats jsonb,
+  ADD COLUMN IF NOT EXISTS platform_metrics jsonb;
 
 -- ─── 2. 修改 proposals ────────────────────────────────────────
 -- client_id 原本是 NOT NULL，改為可 null
@@ -43,7 +44,8 @@ ALTER TABLE proposal_kols
   ADD COLUMN IF NOT EXISTS kol_name varchar(150),
   ADD COLUMN IF NOT EXISTS kol_avatar_url text,
   ADD COLUMN IF NOT EXISTS status varchar(20) DEFAULT 'pending' NOT NULL,
-  ADD COLUMN IF NOT EXISTS feedback_text text DEFAULT '';
+  ADD COLUMN IF NOT EXISTS feedback_text text DEFAULT '',
+  ADD COLUMN IF NOT EXISTS actual_fee numeric(12,2);
 
 -- ─── 4. 修改 insertion_orders ────────────────────────────────
 ALTER TABLE insertion_orders

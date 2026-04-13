@@ -55,6 +55,7 @@ export const kols = pgTable(
     collaborationHistory: jsonb("collaboration_history").$type<any[]>().default([]),
     priceTrend: jsonb("price_trend").$type<any[]>().default([]),
     performanceStats: jsonb("performance_stats").$type<any>(),
+    platformMetrics: jsonb("platform_metrics").$type<any>(),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -132,6 +133,7 @@ export const proposalKols = pgTable(
     reason: text("reason"),
     status: varchar("status", { length: 20 }).default("pending").notNull(),
     feedbackText: text("feedback_text").default(""),
+    actualFee: numeric("actual_fee", { precision: 12, scale: 2 }),
     createdAt: now,
   },
   (table) => ({

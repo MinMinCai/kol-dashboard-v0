@@ -8,6 +8,13 @@
       "when": 1773311799966,
       "tag": "0000_simple_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744560000000,
+      "tag": "0001_add_actual_fee_platform_metrics",
+      "breakpoints": true
     }
   ]
 }

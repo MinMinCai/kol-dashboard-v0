@@ -18,7 +18,7 @@ import {
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { useState, useCallback } from "react";
-import { createKol } from "~/lib/mock-api.server";
+import { createKol, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function parseHandle(url: string): string {
   const raw = url.trim();
@@ -48,6 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const audienceFemale = Number(formData.get("audienceFemale") ?? 100 - audienceMale);
   const audienceAge = String(formData.get("audienceAge") ?? "").trim();
   const introduction = String(formData.get("introduction") ?? "").trim();
+  const platformMetricsRaw = String(formData.get("platformMetricsJson") ?? "{}");
 
   if (!displayName) {
     return json({ error: "KOL 名稱為必填" }, { status: 400 });
@@ -67,6 +68,16 @@ export async function action({ request }: ActionFunctionArgs) {
     return acc;
   }, {} as Record<string, number>);
 
+  let parsedPlatformMetrics: PlatformMetrics = {};
+  try { parsedPlatformMetrics = JSON.parse(platformMetricsRaw); } catch { parsedPlatformMetrics = {}; }
+
+  // Derive top-level engagement/exposure from Instagram platform metrics if available
+  const igMetrics = parsedPlatformMetrics.audienceMetrics?.["Instagram"];
+  const effectiveEngagementRate = igMetrics?.engagementRate ?? engagementRate;
+  const effectiveExposureRate = igMetrics?.exposureRate ?? exposureRate;
+  const effectiveAudienceGender = igMetrics?.audienceGender ?? { male: audienceMale, female: audienceFemale };
+  const effectiveAudienceAge = igMetrics?.audienceAge ?? audienceAge;
+
   const payload = {
     displayName,
     instagramHandle: parseHandle(
@@ -77,11 +88,12 @@ export async function action({ request }: ActionFunctionArgs) {
     categories: tags.length > 0 ? tags : ["待分類"],
     platform: primarySocial.platform || "Instagram",
     followers: Number(primarySocial.followers ?? 0),
-    engagementRate,
-    exposureRate,
-    audienceGender: { male: audienceMale, female: audienceFemale },
-    audienceAge,
+    engagementRate: effectiveEngagementRate,
+    exposureRate: effectiveExposureRate,
+    audienceGender: effectiveAudienceGender,
+    audienceAge: effectiveAudienceAge,
     introduction,
+    platformMetrics: parsedPlatformMetrics,
     rating: 0,
     collaborations: 0,
     averagePrice: 0,
@@ -103,6 +115,132 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const created = await createKol(payload);
   return redirect(`/kols/${created.id}`);
+}
+
+const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook"] as const;
+type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
+
+type PlatformAudienceState = {
+  engagementRate: string;
+  exposureRate: string;
+  audienceMale: string;
+  audienceFemale: string;
+  audienceAge: string;
+};
+
+function emptyPlatformAudience(): PlatformAudienceState {
+  return { engagementRate: "", exposureRate: "", audienceMale: "", audienceFemale: "", audienceAge: "" };
+}
+
+function PlatformAudienceMetricsSection() {
+  const [activePlatform, setActivePlatform] = useState<AudiencePlatform>("Instagram");
+  const [metrics, setMetrics] = useState<Record<AudiencePlatform, PlatformAudienceState>>({
+    Instagram: emptyPlatformAudience(),
+    YouTube: emptyPlatformAudience(),
+    TikTok: emptyPlatformAudience(),
+    Facebook: emptyPlatformAudience(),
+  });
+
+  const updateField = (field: keyof PlatformAudienceState, value: string) => {
+    setMetrics((prev) => {
+      const updated = { ...prev[activePlatform], [field]: value };
+      if (field === "audienceMale") {
+        const num = Number(value);
+        updated.audienceFemale = String(Math.max(0, 100 - (isNaN(num) ? 0 : num)));
+      } else if (field === "audienceFemale") {
+        const num = Number(value);
+        updated.audienceMale = String(Math.max(0, 100 - (isNaN(num) ? 0 : num)));
+      }
+      return { ...prev, [activePlatform]: updated };
+    });
+  };
+
+  const serialized: PlatformMetrics = {
+    audienceMetrics: Object.fromEntries(
+      AUDIENCE_PLATFORMS.map((p) => {
+        const m = metrics[p];
+        return [p, {
+          engagementRate: m.engagementRate ? Number(m.engagementRate) : undefined,
+          exposureRate: m.exposureRate ? Number(m.exposureRate) : undefined,
+          audienceGender: m.audienceMale
+            ? { male: Number(m.audienceMale), female: Number(m.audienceFemale || 0) }
+            : undefined,
+          audienceAge: m.audienceAge || undefined,
+        }];
+      })
+    ),
+  };
+
+  const current = metrics[activePlatform];
+
+  const tabStyle = (platform: AudiencePlatform): React.CSSProperties => ({
+    padding: "6px 14px",
+    borderRadius: 6,
+    border: "1px solid var(--mantine-color-default-border)",
+    background: activePlatform === platform ? "var(--mantine-color-blue-filled)" : "transparent",
+    color: activePlatform === platform ? "#fff" : "var(--mantine-color-text)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: activePlatform === platform ? 600 : 400,
+    marginRight: 6,
+  });
+
+  return (
+    <Box>
+      <Title order={3} mb="sm">受眾數據與指標</Title>
+      <Text size="sm" c="dimmed" mb="md">各社群平台的受眾指標可分開設定</Text>
+      <Group mb="md" gap={0}>
+        {AUDIENCE_PLATFORMS.map((p) => (
+          <button key={p} type="button" style={tabStyle(p)} onClick={() => setActivePlatform(p)}>
+            {p}
+          </button>
+        ))}
+      </Group>
+      <input type="hidden" name="platformMetricsJson" value={JSON.stringify(serialized)} />
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+        <TextInput
+          label="互動率 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：4.5"
+          value={current.engagementRate}
+          onChange={(e) => updateField("engagementRate", e.currentTarget.value)}
+        />
+        <TextInput
+          label="曝光率 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：12.5"
+          value={current.exposureRate}
+          onChange={(e) => updateField("exposureRate", e.currentTarget.value)}
+        />
+        <Box>
+          <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>
+          <TextInput
+            type="number"
+            placeholder="例如：30"
+            value={current.audienceMale}
+            onChange={(e) => updateField("audienceMale", e.currentTarget.value)}
+          />
+        </Box>
+        <Box>
+          <Text size="sm" fw={500} mb={4}>受眾性別比 (女 %)</Text>
+          <TextInput
+            type="number"
+            placeholder="例如：70"
+            value={current.audienceFemale}
+            onChange={(e) => updateField("audienceFemale", e.currentTarget.value)}
+          />
+        </Box>
+        <TextInput
+          label="主要受眾年齡層"
+          placeholder="例如：18-24, 25-34"
+          value={current.audienceAge}
+          onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
+        />
+      </SimpleGrid>
+    </Box>
+  );
 }
 
 export default function KolCreatePage() {
@@ -308,57 +446,8 @@ export default function KolCreatePage() {
 
             <Divider />
 
-            {/* ── Audience Metrics ── */}
-            <Box>
-              <Title order={3} mb="md">受眾數據與指標</Title>
-              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-                <TextInput
-                  label="互動率 (%)"
-                  name="engagementRate"
-                  type="number"
-                  step="0.01"
-                  placeholder="例如：4.5"
-                />
-                <TextInput
-                  label="曝光率 (%)"
-                  name="exposureRate"
-                  type="number"
-                  step="0.01"
-                  placeholder="例如：12.5"
-                />
-                <Box>
-                  <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>
-                  <TextInput
-                    name="audienceMale"
-                    type="number"
-                    placeholder="例如：30"
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      const fInput = document.getElementsByName("audienceFemale")[0] as HTMLInputElement;
-                      if (fInput) fInput.value = String(Math.max(0, 100 - val));
-                    }}
-                  />
-                </Box>
-                <Box>
-                  <Text size="sm" fw={500} mb={4}>受眾性別比 (女 %)</Text>
-                  <TextInput
-                    name="audienceFemale"
-                    type="number"
-                    placeholder="例如：70"
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      const mInput = document.getElementsByName("audienceMale")[0] as HTMLInputElement;
-                      if (mInput) mInput.value = String(Math.max(0, 100 - val));
-                    }}
-                  />
-                </Box>
-                <TextInput
-                  label="主要受眾年齡層"
-                  name="audienceAge"
-                  placeholder="例如：18-24, 25-34"
-                />
-              </SimpleGrid>
-            </Box>
+            {/* ── Audience Metrics (per platform) ── */}
+            <PlatformAudienceMetricsSection />
 
             <Divider />
 

@@ -142,6 +142,7 @@ export type Kol = {
   city: string;
   notes?: string;
   paymentMethod?: "勞報" | "發票";
+  platformMetrics?: PlatformMetrics;
 };
 
 export type Proposal = {
@@ -153,6 +154,18 @@ export type Proposal = {
   dueDate: string;
 };
 
+export type PlatformAudienceMetrics = {
+  engagementRate?: number;
+  exposureRate?: number;
+  audienceGender?: { male: number; female: number };
+  audienceAge?: string;
+};
+
+export type PlatformMetrics = {
+  audienceMetrics?: Record<string, PlatformAudienceMetrics>;
+  priceTrend?: Record<string, PricePoint[]>;
+};
+
 export type ProposalKol = {
   id: string;
   proposalId: string;
@@ -160,6 +173,7 @@ export type ProposalKol = {
   kolName: string;
   kolAvatarUrl?: string;
   price: number;
+  actualPrice?: number;
   role: string;
   reason: string;
   status: string;
@@ -260,6 +274,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     notes: row.notes ?? undefined,
     instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
+    platformMetrics: (row.platformMetrics as PlatformMetrics) ?? undefined,
   };
 }
 
@@ -293,6 +308,7 @@ function rowToProposalKol(row: typeof proposalKolsTable.$inferSelect): ProposalK
     reason: row.reason ?? "",
     status: row.status,
     feedbackText: row.feedbackText ?? "",
+    actualPrice: row.actualFee != null ? Number(row.actualFee) : undefined,
   };
 }
 
@@ -369,6 +385,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.notes !== undefined) update.notes = data.notes;
   if (data.instagramHandle !== undefined) update.instagramHandle = data.instagramHandle;
   if (data.paymentMethod !== undefined) update.paymentMethod = data.paymentMethod;
+  if (data.platformMetrics !== undefined) update.platformMetrics = data.platformMetrics;
   update.updatedAt = new Date();
 
   const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
@@ -407,6 +424,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       collaborationHistory: data.collaborationHistory ?? [],
       priceTrend: data.priceTrend ?? [],
       performanceStats: data.performanceStats ?? null,
+      platformMetrics: data.platformMetrics ?? null,
       contactEmail: data.contact?.email ?? null,
       contactPhone: data.contact?.phone ?? null,
       status: "active",
@@ -502,6 +520,19 @@ export async function updateProposalKolStatus(
   const rows = await db
     .update(proposalKolsTable)
     .set({ status, feedbackText })
+    .where(eq(proposalKolsTable.id, id))
+    .returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToProposalKol(rows[0]);
+}
+
+export async function updateProposalKolActualPrice(
+  id: string,
+  actualFee: number | null,
+): Promise<ProposalKol> {
+  const rows = await db
+    .update(proposalKolsTable)
+    .set({ actualFee: actualFee != null ? String(actualFee) : null })
     .where(eq(proposalKolsTable.id, id))
     .returning();
   if (rows.length === 0) throw new Error("Update failed");

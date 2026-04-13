@@ -593,6 +593,14 @@ export default function KolListPage() {
                     <Text size="sm">YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
                     <Text size="sm">TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
                   </Stack>
+                  <Group gap="xs" mt={4}>
+                    {kol.engagementRate ? (
+                      <Text size="xs" c="blue">互動率 {kol.engagementRate.toFixed(1)}%</Text>
+                    ) : null}
+                    {kol.exposureRate ? (
+                      <Text size="xs" c="dimmed">曝光率 {kol.exposureRate.toFixed(1)}%</Text>
+                    ) : null}
+                  </Group>
                   <Group gap={6} mt="sm" wrap="wrap">
                     {kolTags.map((tag) => (
                       <Badge key={tag} variant="light" radius="xl" size="sm">{tag}</Badge>

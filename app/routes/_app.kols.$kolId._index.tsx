@@ -18,7 +18,7 @@ import {
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem } from "~/lib/mock-api.server";
+import { getKol, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -306,6 +306,40 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
   );
 }
 
+const DETAIL_PLATFORMS = ["Instagram", "YouTube", "TikTok"] as const;
+
+function PlatformTabSelector({
+  kol,
+  selected,
+  onSelect,
+}: {
+  kol: { social?: { instagram?: number; youtube?: number; tiktok?: number } };
+  selected: string;
+  onSelect: (p: string) => void;
+}) {
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    padding: "5px 12px",
+    borderRadius: 6,
+    border: "1px solid var(--mantine-color-default-border)",
+    background: active ? "var(--mantine-color-blue-filled)" : "transparent",
+    color: active ? "#fff" : "var(--mantine-color-text)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: active ? 600 : 400,
+    marginRight: 6,
+  });
+
+  return (
+    <div>
+      {DETAIL_PLATFORMS.map((p) => (
+        <button key={p} type="button" style={btnStyle(selected === p)} onClick={() => onSelect(p)}>
+          {p}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export async function action({ params, request }: ActionFunctionArgs) {
   const kolId = params.kolId ?? "";
   const formData = await request.formData();
@@ -331,6 +365,7 @@ export default function KolDetailPage() {
   const { kol, tab, limit } = useLoaderData<typeof loader>();
   const [contactOpened, setContactOpened] = useState(false);
   const [perfModalOpened, setPerfModalOpened] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("Instagram");
   const ioFetcher = useFetcher<InsertionOrder | null>();
 
   const openPerfModal = (orderId: string) => {
@@ -529,6 +564,9 @@ export default function KolDetailPage() {
                               📋 <Link to={item.orderId ? `/insertion-orders/${item.orderId}` : "#"}>{item.projectTitle}</Link>
                             </Text>
                             <Text size="sm" c="dimmed">{item.clientName} | 產業: {item.industry}</Text>
+                            {item.date && (
+                              <Text size="xs" c="dimmed">🗓 {item.date}</Text>
+                            )}
                           </Stack>
                           <Stack align="flex-end" gap={2}>
                             <Text fw={600}>{formatCurrency(item.price)}</Text>
@@ -581,9 +619,19 @@ export default function KolDetailPage() {
             {/* Price tab */}
             {tab === "price" && (
               <Stack>
-                <Text c="dimmed">X 軸: 日期 / Y 軸: 價格 (NT$)</Text>
+                <PlatformTabSelector
+                  kol={kol}
+                  selected={selectedPlatform}
+                  onSelect={setSelectedPlatform}
+                />
+                <Text c="dimmed" size="sm">X 軸: 日期 / Y 軸: 價格 (NT$)｜平台: {selectedPlatform}</Text>
                 <Card withBorder>
-                  <SparkLine points={kol.priceTrend ?? []} />
+                  <SparkLine
+                    points={
+                      kol.platformMetrics?.priceTrend?.[selectedPlatform] ??
+                      (selectedPlatform === "Instagram" ? (kol.priceTrend ?? []) : [])
+                    }
+                  />
                 </Card>
               </Stack>
             )}
@@ -591,72 +639,94 @@ export default function KolDetailPage() {
             {/* Performance tab */}
             {tab === "performance" && (
               <Stack>
-                <Grid>
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder style={{ height: "100%" }}>
-                      <Text c="dimmed" size="sm">平均觸及</Text>
-                      <Title order={3}>{formatNumber(stats.averageReach)}</Title>
-                    </Card>
-                  </Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder style={{ height: "100%" }}>
-                      <Text c="dimmed" size="sm">曝光率 (%)</Text>
-                      <Title order={3}>{(kol.exposureRate || 0).toFixed(1)}%</Title>
-                    </Card>
-                  </Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder style={{ height: "100%" }}>
-                      <Text c="dimmed" size="sm">平均互動率</Text>
-                      <Title order={3}>{(stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1)}%</Title>
-                    </Card>
-                  </Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder style={{ height: "100%" }}>
-                      <Text c="dimmed" size="sm">轉換率</Text>
-                      <Title order={3}>{(stats.conversionRate ?? 0).toFixed(1)}%</Title>
-                    </Card>
-                  </Grid.Col>
-                </Grid>
+                <PlatformTabSelector
+                  kol={kol}
+                  selected={selectedPlatform}
+                  onSelect={setSelectedPlatform}
+                />
+                {(() => {
+                  const pm = kol.platformMetrics?.audienceMetrics?.[selectedPlatform];
+                  const engRate = pm?.engagementRate ?? (selectedPlatform === "Instagram" ? (stats.engagementRate ?? kol.engagementRate ?? 0) : 0);
+                  const expRate = pm?.exposureRate ?? (selectedPlatform === "Instagram" ? (kol.exposureRate ?? 0) : 0);
+                  const audienceGender = pm?.audienceGender ?? (selectedPlatform === "Instagram" ? kol.audienceGender : undefined);
+                  const audienceAge = pm?.audienceAge ?? (selectedPlatform === "Instagram" ? kol.audienceAge : undefined);
+                  return (
+                    <>
+                      <Grid>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder style={{ height: "100%" }}>
+                            <Text c="dimmed" size="sm">平均觸及 ({selectedPlatform})</Text>
+                            <Title order={3}>{formatNumber(stats.averageReach)}</Title>
+                          </Card>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder style={{ height: "100%" }}>
+                            <Text c="dimmed" size="sm">曝光率 (%) — {selectedPlatform}</Text>
+                            <Title order={3}>{expRate.toFixed(1)}%</Title>
+                          </Card>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder style={{ height: "100%" }}>
+                            <Text c="dimmed" size="sm">平均互動率 — {selectedPlatform}</Text>
+                            <Title order={3}>{engRate.toFixed(1)}%</Title>
+                          </Card>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder style={{ height: "100%" }}>
+                            <Text c="dimmed" size="sm">轉換率</Text>
+                            <Title order={3}>{(stats.conversionRate ?? 0).toFixed(1)}%</Title>
+                          </Card>
+                        </Grid.Col>
+                      </Grid>
 
-                <Grid mt="sm">
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder>
-                      <Text fw={600} mb="sm">受眾性別比</Text>
-                      <Group justify="space-between">
-                        <Text size="sm">男 {kol.audienceGender?.male || 0}%</Text>
-                        <Text size="sm">女 {kol.audienceGender?.female || 0}%</Text>
-                      </Group>
-                      <Progress.Root size="xl" mt={4}>
-                        <Progress.Section value={kol.audienceGender?.male || 0} color="blue" />
-                        <Progress.Section value={kol.audienceGender?.female || 0} color="pink" />
-                      </Progress.Root>
-                    </Card>
-                  </Grid.Col>
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card withBorder>
-                      <Text fw={600} mb="sm">受眾年齡層</Text>
-                      <Title order={3}>{kol.audienceAge || "未知"}</Title>
-                    </Card>
-                  </Grid.Col>
-                </Grid>
+                      <Grid mt="sm">
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder>
+                            <Text fw={600} mb="sm">受眾性別比 — {selectedPlatform}</Text>
+                            {audienceGender ? (
+                              <>
+                                <Group justify="space-between">
+                                  <Text size="sm">男 {audienceGender.male || 0}%</Text>
+                                  <Text size="sm">女 {audienceGender.female || 0}%</Text>
+                                </Group>
+                                <Progress.Root size="xl" mt={4}>
+                                  <Progress.Section value={audienceGender.male || 0} color="blue" />
+                                  <Progress.Section value={audienceGender.female || 0} color="pink" />
+                                </Progress.Root>
+                              </>
+                            ) : (
+                              <Text size="sm" c="dimmed">尚無資料</Text>
+                            )}
+                          </Card>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder>
+                            <Text fw={600} mb="sm">受眾年齡層 — {selectedPlatform}</Text>
+                            <Title order={3}>{audienceAge || "未知"}</Title>
+                          </Card>
+                        </Grid.Col>
+                      </Grid>
 
-                <Card withBorder mt="md">
-                  <Text fw={600} mb="sm">平台成效比較</Text>
-                  <Stack>
-                    <Box>
-                      <Group justify="space-between"><Text size="sm">Instagram</Text><Text size="sm">{formatNumber(platformPerf.instagram)}</Text></Group>
-                      <Progress value={Math.min(100, (platformPerf.instagram ?? 0) / 1200)} />
-                    </Box>
-                    <Box>
-                      <Group justify="space-between"><Text size="sm">YouTube</Text><Text size="sm">{formatNumber(platformPerf.youtube)}</Text></Group>
-                      <Progress value={Math.min(100, (platformPerf.youtube ?? 0) / 1200)} color="orange" />
-                    </Box>
-                    <Box>
-                      <Group justify="space-between"><Text size="sm">TikTok</Text><Text size="sm">{formatNumber(platformPerf.tiktok)}</Text></Group>
-                      <Progress value={Math.min(100, (platformPerf.tiktok ?? 0) / 1200)} color="grape" />
-                    </Box>
-                  </Stack>
-                </Card>
+                      <Card withBorder mt="md">
+                        <Text fw={600} mb="sm">平台成效比較 (總覽)</Text>
+                        <Stack>
+                          <Box>
+                            <Group justify="space-between"><Text size="sm">Instagram</Text><Text size="sm">{formatNumber(platformPerf.instagram)}</Text></Group>
+                            <Progress value={Math.min(100, (platformPerf.instagram ?? 0) / 1200)} />
+                          </Box>
+                          <Box>
+                            <Group justify="space-between"><Text size="sm">YouTube</Text><Text size="sm">{formatNumber(platformPerf.youtube)}</Text></Group>
+                            <Progress value={Math.min(100, (platformPerf.youtube ?? 0) / 1200)} color="orange" />
+                          </Box>
+                          <Box>
+                            <Group justify="space-between"><Text size="sm">TikTok</Text><Text size="sm">{formatNumber(platformPerf.tiktok)}</Text></Group>
+                            <Progress value={Math.min(100, (platformPerf.tiktok ?? 0) / 1200)} color="grape" />
+                          </Box>
+                        </Stack>
+                      </Card>
+                    </>
+                  );
+                })()}
               </Stack>
             )}
           </Card>

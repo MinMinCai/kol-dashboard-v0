@@ -17,7 +17,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { getKol, updateKol, type Kol } from "~/lib/mock-api.server";
+import { getKol, updateKol, type Kol, type PlatformMetrics } from "~/lib/mock-api.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const kolId = params.kolId;
@@ -54,6 +54,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const audienceAge = String(formData.get("audienceAge") ?? "").trim();
   const introduction = String(formData.get("introduction") ?? "").trim();
   const socialsRaw = String(formData.get("socialsJson") ?? "[]");
+  const platformMetricsRaw = String(formData.get("platformMetricsJson") ?? "{}");
+  let parsedPlatformMetrics: PlatformMetrics = {};
+  try { parsedPlatformMetrics = JSON.parse(platformMetricsRaw); } catch { parsedPlatformMetrics = {}; }
+  const igMetrics = parsedPlatformMetrics.audienceMetrics?.["Instagram"];
+  const effectiveEngagementRate = igMetrics?.engagementRate ?? (Number.isFinite(engagementRate) ? engagementRate : undefined);
+  const effectiveExposureRate = igMetrics?.exposureRate ?? (Number.isFinite(exposureRate) ? exposureRate : undefined);
+  const effectiveAudienceGender = igMetrics?.audienceGender ?? { male: audienceMale, female: audienceFemale };
+  const effectiveAudienceAge = igMetrics?.audienceAge ?? (audienceAge || undefined);
 
   if (!displayName) {
     return json({ error: "KOL 名稱為必填" }, { status: 400 });
@@ -85,11 +93,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     contact: { phone, email },
     notes: notes || undefined,
     paymentMethod: paymentMethod || undefined,
-    engagementRate: Number.isFinite(engagementRate) ? engagementRate : undefined,
-    exposureRate: Number.isFinite(exposureRate) ? exposureRate : undefined,
-    audienceGender: { male: audienceMale, female: audienceFemale },
-    audienceAge: audienceAge || undefined,
+    engagementRate: effectiveEngagementRate,
+    exposureRate: effectiveExposureRate,
+    audienceGender: effectiveAudienceGender,
+    audienceAge: effectiveAudienceAge,
     introduction: introduction || undefined,
+    platformMetrics: parsedPlatformMetrics,
     social: {
       instagram: socialMap.instagram ?? 0,
       youtube: socialMap.youtube ?? 0,
@@ -99,6 +108,146 @@ export async function action({ request, params }: ActionFunctionArgs) {
   });
 
   return redirect(`/kols/${kolId}`);
+}
+
+const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook"] as const;
+type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
+
+type PlatformAudienceState = {
+  engagementRate: string;
+  exposureRate: string;
+  audienceMale: string;
+  audienceFemale: string;
+  audienceAge: string;
+};
+
+function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienceState> {
+  const stored = kol.platformMetrics?.audienceMetrics ?? {};
+  return Object.fromEntries(
+    AUDIENCE_PLATFORMS.map((p) => {
+      const m = stored[p] ?? (p === "Instagram" ? {
+        engagementRate: kol.engagementRate,
+        exposureRate: kol.exposureRate,
+        audienceGender: kol.audienceGender,
+        audienceAge: kol.audienceAge,
+      } : {});
+      return [p, {
+        engagementRate: m.engagementRate != null ? String(m.engagementRate) : "",
+        exposureRate: m.exposureRate != null ? String(m.exposureRate) : "",
+        audienceMale: m.audienceGender?.male != null ? String(m.audienceGender.male) : "",
+        audienceFemale: m.audienceGender?.female != null ? String(m.audienceGender.female) : "",
+        audienceAge: m.audienceAge ?? "",
+      }];
+    })
+  ) as Record<AudiencePlatform, PlatformAudienceState>;
+}
+
+function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
+  const [activePlatform, setActivePlatform] = useState<AudiencePlatform>("Instagram");
+  const [metrics, setMetrics] = useState<Record<AudiencePlatform, PlatformAudienceState>>(
+    () => initPlatformMetrics(kol)
+  );
+
+  const updateField = (field: keyof PlatformAudienceState, value: string) => {
+    setMetrics((prev) => {
+      const updated = { ...prev[activePlatform], [field]: value };
+      if (field === "audienceMale") {
+        const num = Number(value);
+        updated.audienceFemale = String(Math.max(0, 100 - (isNaN(num) ? 0 : num)));
+      } else if (field === "audienceFemale") {
+        const num = Number(value);
+        updated.audienceMale = String(Math.max(0, 100 - (isNaN(num) ? 0 : num)));
+      }
+      return { ...prev, [activePlatform]: updated };
+    });
+  };
+
+  const serialized: PlatformMetrics = {
+    audienceMetrics: Object.fromEntries(
+      AUDIENCE_PLATFORMS.map((p) => {
+        const m = metrics[p];
+        return [p, {
+          engagementRate: m.engagementRate ? Number(m.engagementRate) : undefined,
+          exposureRate: m.exposureRate ? Number(m.exposureRate) : undefined,
+          audienceGender: m.audienceMale
+            ? { male: Number(m.audienceMale), female: Number(m.audienceFemale || 0) }
+            : undefined,
+          audienceAge: m.audienceAge || undefined,
+        }];
+      })
+    ),
+  };
+
+  const current = metrics[activePlatform];
+
+  const tabStyle = (platform: AudiencePlatform): React.CSSProperties => ({
+    padding: "6px 14px",
+    borderRadius: 6,
+    border: "1px solid var(--mantine-color-default-border)",
+    background: activePlatform === platform ? "var(--mantine-color-blue-filled)" : "transparent",
+    color: activePlatform === platform ? "#fff" : "var(--mantine-color-text)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: activePlatform === platform ? 600 : 400,
+    marginRight: 6,
+  });
+
+  return (
+    <Box>
+      <Title order={3} mb="sm">受眾數據與指標</Title>
+      <Text size="sm" c="dimmed" mb="md">各社群平台的受眾指標可分開設定</Text>
+      <Group mb="md" gap={0}>
+        {AUDIENCE_PLATFORMS.map((p) => (
+          <button key={p} type="button" style={tabStyle(p)} onClick={() => setActivePlatform(p)}>
+            {p}
+          </button>
+        ))}
+      </Group>
+      <input type="hidden" name="platformMetricsJson" value={JSON.stringify(serialized)} />
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+        <TextInput
+          label="互動率 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：4.5"
+          value={current.engagementRate}
+          onChange={(e) => updateField("engagementRate", e.currentTarget.value)}
+        />
+        <TextInput
+          label="曝光率 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：12.5"
+          value={current.exposureRate}
+          onChange={(e) => updateField("exposureRate", e.currentTarget.value)}
+        />
+        <Box>
+          <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>
+          <TextInput
+            type="number"
+            placeholder="例如：30"
+            value={current.audienceMale}
+            onChange={(e) => updateField("audienceMale", e.currentTarget.value)}
+          />
+        </Box>
+        <Box>
+          <Text size="sm" fw={500} mb={4}>受眾性別比 (女 %)</Text>
+          <TextInput
+            type="number"
+            placeholder="例如：70"
+            value={current.audienceFemale}
+            onChange={(e) => updateField("audienceFemale", e.currentTarget.value)}
+          />
+        </Box>
+        <TextInput
+          label="主要受眾年齡層"
+          placeholder="例如：18-24, 25-34"
+          value={current.audienceAge}
+          onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
+        />
+      </SimpleGrid>
+    </Box>
+  );
 }
 
 export default function KolEditPage() {
@@ -231,47 +380,17 @@ export default function KolEditPage() {
 
             <Divider />
 
+            <PlatformAudienceMetricsEdit kol={kol} />
+
             <Box>
-              <Title order={3} mb="md">成效指標</Title>
-              <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-                <TextInput
-                  label="互動率 (%)"
-                  name="engagementRate"
-                  type="number"
-                  step="0.01"
-                  defaultValue={kol.engagementRate ?? 0}
-                />
-                <TextInput
-                  label="曝光率 (%)"
-                  name="exposureRate"
-                  type="number"
-                  step="0.01"
-                  defaultValue={kol.exposureRate ?? 0}
-                />
-                <TextInput
-                  label="受眾性別比 (男 %)"
-                  name="audienceMale"
-                  type="number"
-                  defaultValue={kol.audienceGender?.male ?? 0}
-                />
-                <TextInput
-                  label="受眾性別比 (女 %)"
-                  name="audienceFemale"
-                  type="number"
-                  defaultValue={kol.audienceGender?.female ?? 0}
-                />
-                <TextInput
-                  label="受眾內容年齡層"
-                  name="audienceAge"
-                  defaultValue={kol.audienceAge ?? ""}
-                  placeholder="例如：18-24"
-                />
+              <Title order={3} mb="md">成效指標 (自動計算)</Title>
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
                 <Box>
-                  <Text size="sm" fw={500}>評分 (自動計算)</Text>
+                  <Text size="sm" fw={500}>評分</Text>
                   <Text mt={4}>{kol.rating?.toFixed(1) ?? "0.0"}</Text>
                 </Box>
                 <Box>
-                  <Text size="sm" fw={500}>合作次數 (自動計算)</Text>
+                  <Text size="sm" fw={500}>合作次數</Text>
                   <Text mt={4}>{kol.collaborations ?? 0}</Text>
                 </Box>
               </SimpleGrid>

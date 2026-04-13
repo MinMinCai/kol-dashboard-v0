@@ -33,6 +33,7 @@ import {
   listKols,
   listProposalKols,
   updateProposalKolStatus,
+  updateProposalKolActualPrice,
   deleteProposalKol,
   updateProposal,
   type Kol,
@@ -95,6 +96,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const idsString = String(formData.get("candidateIds") || "");
     const ids = idsString.split(",").filter(Boolean);
     await Promise.all(ids.map(id => deleteProposalKol(id)));
+    return json({ success: true });
+  }
+
+  if (intent === "update_actual_price") {
+    const candidateId = String(formData.get("candidateId"));
+    const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
+    const actualPrice = actualPriceStr ? Number(actualPriceStr) : null;
+    await updateProposalKolActualPrice(candidateId, actualPrice);
     return json({ success: true });
   }
 
@@ -466,6 +475,7 @@ export default function ProposalDetailPage() {
                 <Table.Th>KOL 名稱</Table.Th>
                 <Table.Th>合作項目</Table.Th>
                 <Table.Th>預估報價</Table.Th>
+                <Table.Th>實際報價</Table.Th>
                 <Table.Th>推薦理由</Table.Th>
                 <Table.Th>狀態</Table.Th>
                 <Table.Th>客戶反饋</Table.Th>
@@ -475,7 +485,7 @@ export default function ProposalDetailPage() {
             <Table.Tbody>
               {candidates.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={isEditing ? 8 : 6} align="center">尚未加入任何候選人</Table.Td>
+                  <Table.Td colSpan={isEditing ? 9 : 7} align="center">尚未加入任何候選人</Table.Td>
                 </Table.Tr>
               ) : (
                 candidates.map((c) => (
@@ -497,6 +507,26 @@ export default function ProposalDetailPage() {
                     <Table.Td fw={500}>{c.kolName}</Table.Td>
                     <Table.Td>{c.role}</Table.Td>
                     <Table.Td>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
+                    <Table.Td>
+                      {isEditing ? (
+                        <Form method="post" style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                          <input type="hidden" name="intent" value="update_actual_price" />
+                          <input type="hidden" name="candidateId" value={c.id} />
+                          <TextInput
+                            name="actualPrice"
+                            size="xs"
+                            style={{ width: 90 }}
+                            defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""}
+                            placeholder="未填"
+                          />
+                          <Button type="submit" size="compact-xs" variant="light">確認</Button>
+                        </Form>
+                      ) : (
+                        c.actualPrice != null
+                          ? `$${c.actualPrice.toLocaleString("zh-TW")}`
+                          : <Text size="xs" c="dimmed">-</Text>
+                      )}
+                    </Table.Td>
                     <Table.Td>
                       <Text size="sm" lineClamp={2}>{c.reason}</Text>
                     </Table.Td>
