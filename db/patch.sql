@@ -28,13 +28,17 @@ ALTER TABLE kols
   ADD COLUMN IF NOT EXISTS collaboration_history jsonb DEFAULT '[]',
   ADD COLUMN IF NOT EXISTS price_trend jsonb DEFAULT '[]',
   ADD COLUMN IF NOT EXISTS performance_stats jsonb,
-  ADD COLUMN IF NOT EXISTS platform_metrics jsonb;
+  ADD COLUMN IF NOT EXISTS platform_metrics jsonb,
+  ADD COLUMN IF NOT EXISTS social_links jsonb;
 
 -- ─── 2. 修改 proposals ────────────────────────────────────────
 -- client_id 原本是 NOT NULL，改為可 null
 ALTER TABLE proposals ALTER COLUMN client_id DROP NOT NULL;
 -- 新增 client_name
 ALTER TABLE proposals ADD COLUMN IF NOT EXISTS client_name varchar(200);
+-- 新增活動記錄欄位
+ALTER TABLE proposals ADD COLUMN IF NOT EXISTS last_modified_by varchar(100);
+ALTER TABLE proposals ADD COLUMN IF NOT EXISTS activity_log jsonb DEFAULT '[]';
 
 -- ─── 3. 修改 proposal_kols ────────────────────────────────────
 -- kol_id 原本是 NOT NULL，改為可 null
@@ -121,3 +125,64 @@ CREATE TABLE IF NOT EXISTS system_preferences (
 
 -- ─── 6. 建立預設的 system_preferences 資料 ───────────────────
 INSERT INTO system_preferences (id) VALUES ('default') ON CONFLICT DO NOTHING;
+
+-- ─── 7. 建立新表：KOL 收藏資料夾 ──────────────────────────────
+
+CREATE TABLE IF NOT EXISTS kol_favorite_folders (
+  id text PRIMARY KEY,
+  name varchar(100) NOT NULL,
+  description text,
+  owner_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS kol_favorite_folder_items (
+  id text PRIMARY KEY,
+  folder_id text NOT NULL REFERENCES kol_favorite_folders(id) ON DELETE CASCADE,
+  kol_id text NOT NULL REFERENCES kols(id) ON DELETE CASCADE,
+  note text,
+  added_by text REFERENCES users(id),
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  CONSTRAINT uq_folder_kol UNIQUE (folder_id, kol_id)
+);
+
+CREATE TABLE IF NOT EXISTS kol_favorite_folder_shares (
+  id text PRIMARY KEY,
+  folder_id text NOT NULL REFERENCES kol_favorite_folders(id) ON DELETE CASCADE,
+  share_type varchar(10) NOT NULL,
+  target_user_id text REFERENCES users(id),
+  target_group varchar(20),
+  permission varchar(10) NOT NULL,
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  CONSTRAINT uq_folder_share_user UNIQUE (folder_id, share_type, target_user_id),
+  CONSTRAINT uq_folder_share_group UNIQUE (folder_id, share_type, target_group)
+);
+
+-- ─── 8. 建立新表：提案訂閱與通知 ──────────────────────────────
+
+CREATE TABLE IF NOT EXISTS proposal_watchers (
+  id text PRIMARY KEY,
+  proposal_id text NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
+  user_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  watch_type varchar(20) NOT NULL,
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  CONSTRAINT uq_proposal_watcher UNIQUE (proposal_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id text PRIMARY KEY,
+  recipient_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type varchar(50) NOT NULL,
+  ref_table varchar(50) NOT NULL,
+  ref_id text NOT NULL,
+  actor_id text REFERENCES users(id),
+  message text NOT NULL,
+  payload jsonb DEFAULT '{}',
+  is_read boolean DEFAULT false NOT NULL,
+  read_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_notif_recipient_read ON notifications (recipient_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notif_ref ON notifications (ref_table, ref_id);

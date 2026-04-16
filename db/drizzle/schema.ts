@@ -56,6 +56,7 @@ export const kols = pgTable(
     priceTrend: jsonb("price_trend").$type<any[]>().default([]),
     performanceStats: jsonb("performance_stats").$type<any>(),
     platformMetrics: jsonb("platform_metrics").$type<any>(),
+    socialLinks: jsonb("social_links").$type<{ instagram?: string; youtube?: string; tiktok?: string; facebook?: string }>(),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -112,6 +113,8 @@ export const proposals = pgTable(
     stage: varchar("stage", { length: 30 }).default("draft").notNull(),
     owner: varchar("owner", { length: 100 }),
     dueDate: varchar("due_date", { length: 20 }),
+    lastModifiedBy: varchar("last_modified_by", { length: 100 }),
+    activityLog: jsonb("activity_log").$type<any[]>().default([]),
     createdAt: now,
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -310,6 +313,86 @@ export const systemPreferences = pgTable("system_preferences", {
   aiSuggestions: boolean("ai_suggestions").default(true).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+// ─── KOL Favorite Folders ────────────────────────────────────────────────────
+
+export const kolFavoriteFolders = pgTable("kol_favorite_folders", {
+  id: text("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  ownerId: text("owner_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  createdAt: now,
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const kolFavoriteFolderItems = pgTable(
+  "kol_favorite_folder_items",
+  {
+    id: text("id").primaryKey(),
+    folderId: text("folder_id").references(() => kolFavoriteFolders.id, { onDelete: "cascade" }).notNull(),
+    kolId: text("kol_id").references(() => kols.id, { onDelete: "cascade" }).notNull(),
+    note: text("note"),
+    addedBy: text("added_by").references(() => users.id),
+    createdAt: now,
+  },
+  (table) => ({
+    folderKolUq: uniqueIndex("uq_folder_kol").on(table.folderId, table.kolId),
+  }),
+);
+
+export const kolFavoriteFolderShares = pgTable(
+  "kol_favorite_folder_shares",
+  {
+    id: text("id").primaryKey(),
+    folderId: text("folder_id").references(() => kolFavoriteFolders.id, { onDelete: "cascade" }).notNull(),
+    shareType: varchar("share_type", { length: 10 }).notNull(),
+    targetUserId: text("target_user_id").references(() => users.id),
+    targetGroup: varchar("target_group", { length: 20 }),
+    permission: varchar("permission", { length: 10 }).notNull(),
+    createdAt: now,
+  },
+  (table) => ({
+    shareUserUq: uniqueIndex("uq_folder_share_user").on(table.folderId, table.shareType, table.targetUserId),
+    shareGroupUq: uniqueIndex("uq_folder_share_group").on(table.folderId, table.shareType, table.targetGroup),
+  }),
+);
+
+// ─── Proposal Watchers & Notifications ───────────────────────────────────────
+
+export const proposalWatchers = pgTable(
+  "proposal_watchers",
+  {
+    id: text("id").primaryKey(),
+    proposalId: text("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    watchType: varchar("watch_type", { length: 20 }).notNull(),
+    createdAt: now,
+  },
+  (table) => ({
+    proposalUserUq: uniqueIndex("uq_proposal_watcher").on(table.proposalId, table.userId),
+  }),
+);
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: text("id").primaryKey(),
+    recipientId: text("recipient_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    type: varchar("type", { length: 50 }).notNull(),
+    refTable: varchar("ref_table", { length: 50 }).notNull(),
+    refId: text("ref_id").notNull(),
+    actorId: text("actor_id").references(() => users.id),
+    message: text("message").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().default({}),
+    isRead: boolean("is_read").default(false).notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: now,
+  },
+  (table) => ({
+    recipientReadIdx: index("idx_notif_recipient_read").on(table.recipientId, table.isRead),
+    refIdx: index("idx_notif_ref").on(table.refTable, table.refId),
+  }),
+);
 
 // ─── BetterAuth Tables ────────────────────────────────────────────────────────
 

@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Divider,
   Grid,
   Group,
   Modal,
@@ -12,6 +13,7 @@ import {
   Stack,
   Table,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -361,10 +363,121 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   return json({ kol, tab, limit });
 }
 
+// ─── Contract Generator Modal ─────────────────────────────────────────────────
+function ContractModal({ opened, onClose, kol }: {
+  opened: boolean;
+  onClose: () => void;
+  kol: { displayName: string; instagramHandle?: string; contact?: { phone?: string; email?: string }; paymentMethod?: string; averagePrice?: number };
+}) {
+  const today = new Date().toISOString().slice(0, 10);
+  const [contractDate, setContractDate] = useState(today);
+  const [services, setServices] = useState("IG 貼文 x1、IG 限動 x3");
+  const [price, setPrice] = useState(String(kol.averagePrice ?? 0));
+  const [duration, setDuration] = useState("30");
+  const [extraClause, setExtraClause] = useState("");
+
+  const contractText = `
+公版合作合約
+
+合約日期：${contractDate}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+甲方（委託方）：[品牌/公司名稱]
+乙方（創作者）：${kol.displayName}
+  IG 帳號：@${kol.instagramHandle ?? "-"}
+  聯絡電話：${kol.contact?.phone ?? "-"}
+  Email：${kol.contact?.email ?? "-"}
+  請款方式：${kol.paymentMethod ?? "未設定"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+一、合作內容
+
+乙方同意依照甲方要求執行以下服務：
+${services}
+
+二、合作期間
+
+本合約自簽署日起 ${duration} 天內完成交付，逾期須提前通知甲方。
+
+三、合作費用
+
+甲方同意支付乙方費用 NT$ ${Number(price).toLocaleString("zh-TW")} 元整。
+付款方式：依雙方約定之請款方式（${kol.paymentMethod ?? "未設定"}）於驗收完成後 30 日內支付。
+
+四、內容授權
+
+乙方授權甲方於合作期間內，在品牌官方渠道非獨家使用本次合作內容，包含但不限於官方社群媒體、官網及廣告投放。
+
+五、保密條款
+
+雙方同意對本次合作之商業條件及未公開資訊負保密義務，未經對方書面同意，不得向第三方揭露。
+
+六、附加條款
+
+${extraClause || "（無）"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+甲方簽署：______________________  日期：__________
+
+乙方簽署：______________________  日期：__________
+`.trim();
+
+  const handleDownload = () => {
+    const blob = new Blob([contractText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `公版合約_${kol.displayName}_${contractDate}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Modal opened={opened} onClose={onClose} title={<Text fw={700} size="lg">📄 生成公版合約</Text>} size="xl">
+      <Stack gap="md">
+        <Grid>
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <TextInput label="合約日期" type="date" value={contractDate} onChange={(e) => setContractDate(e.currentTarget.value)} />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <TextInput label="合作費用 (NT$)" type="number" value={price} onChange={(e) => setPrice(e.currentTarget.value)} />
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <TextInput label="合作服務項目" value={services} onChange={(e) => setServices(e.currentTarget.value)} placeholder="例如：IG 貼文 x1、IG 限動 x3" />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <TextInput label="交付天數" type="number" value={duration} onChange={(e) => setDuration(e.currentTarget.value)} rightSection={<Text size="xs" c="dimmed">天</Text>} />
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Textarea label="附加條款（選填）" value={extraClause} onChange={(e) => setExtraClause(e.currentTarget.value)} placeholder="如：禁止同類型競品合作 60 天..." minRows={2} />
+          </Grid.Col>
+        </Grid>
+
+        <Divider label="合約預覽" />
+
+        <ScrollArea h={320}>
+          <Box style={{ fontFamily: "monospace", fontSize: 13, whiteSpace: "pre-wrap", padding: "12px", background: "var(--mantine-color-default-hover)", borderRadius: 4 }}>
+            {contractText}
+          </Box>
+        </ScrollArea>
+
+        <Group justify="flex-end">
+          <Button variant="default" onClick={onClose}>關閉</Button>
+          <Button onClick={handleDownload}>⬇ 下載合約 (.txt)</Button>
+        </Group>
+      </Stack>
+    </Modal>
+  );
+}
+
 export default function KolDetailPage() {
   const { kol, tab, limit } = useLoaderData<typeof loader>();
   const [contactOpened, setContactOpened] = useState(false);
   const [perfModalOpened, setPerfModalOpened] = useState(false);
+  const [contractOpened, setContractOpened] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("Instagram");
   const ioFetcher = useFetcher<InsertionOrder | null>();
 
@@ -450,8 +563,36 @@ export default function KolDetailPage() {
                 <Avatar src={kol.avatarUrl} size={96} radius={999} />
                 <Stack gap={6}>
                   <Title order={2}>{kol.displayName}</Title>
-                  <Text>Instagram: @{kol.instagramHandle ?? "-"} | {formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲</Text>
-                  <Text>YouTube: {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱</Text>
+                  <Text>
+                    {kol.socialLinks?.instagram || kol.instagramHandle ? (
+                      <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer">
+                        📷 Instagram @{kol.instagramHandle ?? "-"}
+                      </a>
+                    ) : (
+                      <>📷 Instagram @{kol.instagramHandle ?? "-"}</>
+                    )}
+                    {" "}| {formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲
+                  </Text>
+                  <Text>
+                    {kol.socialLinks?.youtube ? (
+                      <a href={kol.socialLinks.youtube} target="_blank" rel="noreferrer">
+                        ▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱 ↗
+                      </a>
+                    ) : (
+                      <>▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱</>
+                    )}
+                  </Text>
+                  {(kol.social?.tiktok ?? 0) > 0 && (
+                    <Text>
+                      {kol.socialLinks?.tiktok ? (
+                        <a href={kol.socialLinks.tiktok} target="_blank" rel="noreferrer">
+                          ♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲 ↗
+                        </a>
+                      ) : (
+                        <>♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲</>
+                      )}
+                    </Text>
+                  )}
                   <Group gap={6}>
                     {(kol.tags ?? kol.categories).map((tag) => (
                       <Badge key={tag} variant="light" radius="xl">{tag}</Badge>
@@ -492,6 +633,9 @@ export default function KolDetailPage() {
               <Button type="button" variant="default" size="xs" onClick={handleDownloadReport}>
                 📊 下載 KOL 報告
               </Button>
+              <Button type="button" variant="default" size="xs" onClick={() => setContractOpened(true)}>
+                📄 生成公版合約
+              </Button>
             </Group>
           </Card>
 
@@ -509,6 +653,12 @@ export default function KolDetailPage() {
             opened={perfModalOpened}
             onClose={() => setPerfModalOpened(false)}
             order={ioFetcher.data ?? null}
+          />
+
+          <ContractModal
+            opened={contractOpened}
+            onClose={() => setContractOpened(false)}
+            kol={kol}
           />
 
           <Modal

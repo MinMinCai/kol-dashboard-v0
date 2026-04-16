@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   Group,
   SimpleGrid,
   Stack,
@@ -12,6 +13,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { useState } from "react";
 import { listKols, updateKol, type Kol } from "~/lib/mock-api.server";
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
@@ -32,7 +34,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const allKols = await listKols().catch(() => [] as Kol[]);
   const favorites = allKols.filter((k) => k.isFavorite);
 
-  // Collect all folder names from existing KOLs
   const fromRows = favorites.map((r) => r.favoriteFolder).filter(Boolean) as string[];
   const folderSet = new Set(["家電專案", "美妝專案", ...fromRows]);
   const allFolders = ["全部", ...Array.from(folderSet)];
@@ -66,14 +67,17 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "removeFavorite") {
     const kolId = String(formData.get("kolId") ?? "");
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-
     await updateKol(kolId, { isFavorite: false });
-
-    // Redirect back to same URL to preserve search/filters while dropping a param if we want
     const url = new URL(request.url);
     url.searchParams.set("unfavorited", "1");
-    // Ensure we don't duplicate query parameters unnecessarily, but keep it simple
     return redirect(url.pathname + "?" + url.searchParams.toString());
+  }
+
+  if (intent === "moveFolder") {
+    const kolId = String(formData.get("kolId") ?? "");
+    const targetFolder = String(formData.get("targetFolder") ?? "");
+    if (kolId) await updateKol(kolId, { favoriteFolder: targetFolder || undefined });
+    return json({ success: true });
   }
 
   return null;
@@ -82,6 +86,44 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function FavoritesPage() {
   const { rows, allFolders, folderCounts, search, sort, folder } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const allSelected = rows.length > 0 && selectedIds.length === rows.length;
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  };
+
+  const toggleAll = () => {
+    setSelectedIds(allSelected ? [] : rows.map((r) => r.id));
+  };
+
+  const handleExportExcel = async () => {
+    const targets = rows.filter((r) => selectedIds.includes(r.id));
+    if (targets.length === 0) { alert("請先勾選要匯出的 KOL"); return; }
+
+    const XLSX = await import("xlsx");
+    const data = targets.map((k) => ({
+      "KOL 名稱": k.displayName,
+      "IG 帳號": k.instagramHandle ?? "",
+      "IG 粉絲數": k.social?.instagram ?? k.followers ?? 0,
+      "YT 訂閱數": k.social?.youtube ?? 0,
+      "TT 粉絲數": k.social?.tiktok ?? 0,
+      "互動率 (%)": k.engagementRate ?? 0,
+      "曝光率 (%)": k.exposureRate ?? 0,
+      "評分": k.rating ?? 0,
+      "合作次數": k.collaborations ?? 0,
+      "資料夾": k.favoriteFolder ?? "未分類",
+      "標籤": (k.tags ?? k.categories).join(", "),
+      "IG 連結": k.socialLinks?.instagram ?? (k.instagramHandle ? `https://instagram.com/${k.instagramHandle}` : ""),
+      "YT 連結": k.socialLinks?.youtube ?? "",
+      "TT 連結": k.socialLinks?.tiktok ?? "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "收藏名單");
+    XLSX.writeFile(wb, `KOL收藏名單_${folder}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
 
   const inputStyle = {
     padding: "8px 12px",
@@ -92,29 +134,33 @@ export default function FavoritesPage() {
     color: "var(--mantine-color-text)",
   } as const;
 
+  const nonAllFolders = allFolders.filter((f) => f !== "全部");
+
   return (
     <Stack gap="md">
       <Group justify="space-between" align="end">
         <Title order={2}>我的收藏 ({rows.length})</Title>
-        <button
-          type="button"
-          style={{ ...inputStyle, cursor: "pointer", fontWeight: 500 }}
-          onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.showModal(); }}
-        >
-          + 新增資料夾
-        </button>
+        <Group gap="xs">
+          {selectedIds.length > 0 && (
+            <Button variant="light" color="green" size="sm" onClick={handleExportExcel}>
+              ⬇ 匯出 Excel ({selectedIds.length} 筆)
+            </Button>
+          )}
+          <button
+            type="button"
+            style={{ ...inputStyle, cursor: "pointer", fontWeight: 500 }}
+            onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.showModal(); }}
+          >
+            + 新增資料夾
+          </button>
+        </Group>
       </Group>
 
-      {/* ── Search & Sort (native form) ── */}
+      {/* ── Search & Sort ── */}
       <form method="get" style={{ display: "contents" }}>
         <input type="hidden" name="folder" value={folder} />
         <Group>
-          <input
-            name="search"
-            defaultValue={search}
-            placeholder="搜尋收藏 KOL"
-            style={{ ...inputStyle, flex: 1, minWidth: 200 }}
-          />
+          <input name="search" defaultValue={search} placeholder="搜尋收藏 KOL" style={{ ...inputStyle, flex: 1, minWidth: 200 }} />
           <select name="sort" defaultValue={sort} style={inputStyle} aria-label="排序方式">
             <option value="rating_desc">評分由高到低</option>
             <option value="followers_desc">粉絲由高到低</option>
@@ -126,7 +172,7 @@ export default function FavoritesPage() {
         </Group>
       </form>
 
-      {/* ── Folder tabs (each is a link) ── */}
+      {/* ── Folder tabs ── */}
       <Group>
         {allFolders.map((f) => (
           <a
@@ -155,6 +201,21 @@ export default function FavoritesPage() {
         </button>
       </Group>
 
+      {/* ── Batch select toolbar ── */}
+      {rows.length > 0 && (
+        <Group gap="xs">
+          <Checkbox
+            checked={allSelected}
+            indeterminate={selectedIds.length > 0 && !allSelected}
+            onChange={toggleAll}
+            label={allSelected ? "取消全選" : `全選 (${rows.length} 筆)`}
+          />
+          {selectedIds.length > 0 && (
+            <Text size="sm" c="dimmed">已選 {selectedIds.length} 筆</Text>
+          )}
+        </Group>
+      )}
+
       {/* ── KOL Grid ── */}
       {rows.length === 0 ? (
         <Card withBorder p="xl" style={{ textAlign: "center" }}>
@@ -166,8 +227,21 @@ export default function FavoritesPage() {
       ) : (
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={24}>
           {rows.map((kol) => (
-            <Card key={kol.id} withBorder className="kol-card" style={{ cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
-              <Stack align="center" gap={6}>
+            <Card
+              key={kol.id}
+              withBorder
+              style={{ cursor: "pointer", outline: selectedIds.includes(kol.id) ? "2px solid var(--mantine-color-blue-filled)" : undefined }}
+              onClick={() => navigate(`/kols/${kol.id}`)}
+            >
+              {/* Checkbox */}
+              <Box style={{ position: "absolute", top: 10, left: 10 }} onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                  checked={selectedIds.includes(kol.id)}
+                  onChange={() => toggleSelect(kol.id)}
+                />
+              </Box>
+
+              <Stack align="center" gap={6} mt="xs">
                 <Avatar src={kol.avatarUrl} size={72} radius={999} />
                 <Text fw={600}>{kol.displayName}</Text>
                 <Text size="sm" c="dimmed">@{kol.instagramHandle ?? "-"}</Text>
@@ -185,28 +259,35 @@ export default function FavoritesPage() {
                 ))}
               </Group>
 
-              {/* Folder quick-switch links */}
-              <Box mt="sm">
-                <Text size="xs" c="dimmed" mb={4}>移至資料夾：</Text>
-                <Group gap={4}>
-                  {["家電專案", "美妝專案"].map((f) => (
-                    <span
-                      key={f}
-                      style={{
-                        padding: "2px 8px",
-                        borderRadius: 4,
-                        border: "1px solid var(--mantine-color-default-border)",
-                        fontSize: 12,
-                        cursor: "default",
-                        background: "var(--mantine-color-body)",
-                        color: "var(--mantine-color-text)",
-                      }}
-                    >
-                      {f}
-                    </span>
-                  ))}
-                </Group>
-              </Box>
+              {/* Folder quick-move */}
+              {nonAllFolders.length > 0 && (
+                <Box mt="sm" onClick={(e) => e.stopPropagation()}>
+                  <Text size="xs" c="dimmed" mb={4}>移至資料夾：</Text>
+                  <Group gap={4}>
+                    {nonAllFolders.map((f) => (
+                      <Form method="post" key={f} style={{ margin: 0 }}>
+                        <input type="hidden" name="intent" value="moveFolder" />
+                        <input type="hidden" name="kolId" value={kol.id} />
+                        <input type="hidden" name="targetFolder" value={f} />
+                        <button
+                          type="submit"
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 4,
+                            border: "1px solid var(--mantine-color-default-border)",
+                            fontSize: 12,
+                            cursor: "pointer",
+                            background: kol.favoriteFolder === f ? "var(--mantine-color-blue-light)" : "var(--mantine-color-body)",
+                            color: "var(--mantine-color-text)",
+                          }}
+                        >
+                          {f}
+                        </button>
+                      </Form>
+                    ))}
+                  </Group>
+                </Box>
+              )}
 
               <Group justify="space-between" mt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
@@ -237,7 +318,7 @@ export default function FavoritesPage() {
         </SimpleGrid>
       )}
 
-      {/* ── Add Folder Dialog (native HTML) ── */}
+      {/* ── Add Folder Dialog ── */}
       <dialog
         id="add-folder-dialog"
         style={{
@@ -290,7 +371,15 @@ export default function FavoritesPage() {
             <button
               type="button"
               style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
-              onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
+              onClick={() => {
+                const input = document.getElementById("new-folder-name") as HTMLInputElement;
+                const name = input?.value.trim();
+                if (!name) return;
+                // Navigate with new folder created via URL (server would persist on next KOL save)
+                const url = new URL(window.location.href);
+                url.searchParams.set("folder", name);
+                window.location.href = url.toString();
+              }}
             >
               建立
             </button>

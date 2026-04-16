@@ -2435,7 +2435,6 @@
       "feedbackText": ""
     }
   ],
-  "proposalFeedbacks": [],
   "tagCatalog": [
     {
       "id": "tag_001",
@@ -2664,8 +2663,858 @@
     "currency": "TWD",
     "defaultTaxRate": 5,
     "defaultReportLang": "zh-TW",
-    "notifyEmail": "",
+    "notifyEmail": "admin@dac.com.tw",
     "aiSuggestions": true
   },
+  "users": [
+    {
+      "id": "user_001",
+      "name": "Amy Chen",
+      "email": "amy@dac.com.tw",
+      "emailVerified": true,
+      "image": "https://i.pravatar.cc/80?img=32",
+      "role": "manager"
+    },
+    {
+      "id": "user_002",
+      "name": "Leo Wang",
+      "email": "leo@dac.com.tw",
+      "emailVerified": true,
+      "image": "https://i.pravatar.cc/80?img=12",
+      "role": "member"
+    },
+    {
+      "id": "user_003",
+      "name": "Ivy Lin",
+      "email": "ivy@dac.com.tw",
+      "emailVerified": true,
+      "image": "https://i.pravatar.cc/80?img=44",
+      "role": "member"
+    },
+    {
+      "id": "user_004",
+      "name": "John Wu",
+      "email": "john@dac.com.tw",
+      "emailVerified": true,
+      "image": "https://i.pravatar.cc/80?img=15",
+      "role": "member"
+    },
+    {
+      "id": "user_005",
+      "name": "Nina Chang",
+      "email": "nina@dac.com.tw",
+      "emailVerified": true,
+      "image": "https://i.pravatar.cc/80?img=25",
+      "role": "admin"
+    }
+  ],
+  "clients": [
+    {
+      "id": "client_001",
+      "name": "Panasonic Taiwan",
+      "industry": "家電",
+      "preferences": { "preferredPlatforms": ["Instagram", "YouTube"], "targetAudience": "25-45歲家庭主婦" }
+    },
+    {
+      "id": "client_002",
+      "name": "Happy Food Co.",
+      "industry": "食品",
+      "preferences": { "preferredPlatforms": ["Instagram", "TikTok"], "targetAudience": "18-35歲親子家庭" }
+    },
+    {
+      "id": "client_003",
+      "name": "DermaLab",
+      "industry": "美妝保養",
+      "preferences": { "preferredPlatforms": ["Instagram"], "targetAudience": "18-35歲女性" }
+    },
+    {
+      "id": "client_004",
+      "name": "Aqua Home",
+      "industry": "家電",
+      "preferences": { "preferredPlatforms": ["Instagram", "YouTube"], "targetAudience": "25-45歲都市白領" }
+    },
+    {
+      "id": "client_005",
+      "name": "FitMeal",
+      "industry": "食品",
+      "preferences": { "preferredPlatforms": ["Instagram", "TikTok"], "targetAudience": "20-35歲健身族群" }
+    },
+    {
+      "id": "client_006",
+      "name": "BabyCare",
+      "industry": "母嬰",
+      "preferences": { "preferredPlatforms": ["Instagram", "Facebook"], "targetAudience": "25-40歲新手父母" }
+    },
+    {
+      "id": "client_007",
+      "name": "ALLIE",
+      "industry": "美妝保養",
+      "preferences": { "preferredPlatforms": ["Instagram"], "targetAudience": "20-35歲女性" }
+    }
+  ],
+  "kolSocialAccounts": [
+    {
+      "id": "ksa_001",
+      "kolId": "kol_001",
+      "platform": "Instagram",
+      "handle": "amybeauty.tw",
+      "profileUrl": "https://www.instagram.com/amybeauty.tw",
+      "followers": 183000,
+      "avgViews": 98000,
+      "engagementRate": 4.9,
+      "audienceProfile": { "female": 82, "male": 18, "ageGroup": "18-34", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_002",
+      "kolId": "kol_001",
+      "platform": "TikTok",
+      "handle": "amybeauty",
+      "profileUrl": "https://www.tiktok.com/@amybeauty",
+      "followers": 54000,
+      "avgViews": 42000,
+      "engagementRate": 6.2,
+      "audienceProfile": { "female": 78, "male": 22, "ageGroup": "18-24", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_003",
+      "kolId": "kol_002",
+      "platform": "YouTube",
+      "handle": "TechAllenReview",
+      "profileUrl": "https://www.youtube.com/@TechAllenReview",
+      "followers": 210000,
+      "avgViews": 180000,
+      "engagementRate": 3.8,
+      "audienceProfile": { "female": 28, "male": 72, "ageGroup": "25-44", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_004",
+      "kolId": "kol_002",
+      "platform": "Instagram",
+      "handle": "techallen.review",
+      "profileUrl": "https://www.instagram.com/techallen.review",
+      "followers": 92000,
+      "avgViews": 55000,
+      "engagementRate": 3.2,
+      "audienceProfile": { "female": 30, "male": 70, "ageGroup": "25-34", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_005",
+      "kolId": "kol_003",
+      "platform": "Instagram",
+      "handle": "gina_parentlife",
+      "profileUrl": "https://www.instagram.com/gina_parentlife",
+      "followers": 145000,
+      "avgViews": 88000,
+      "engagementRate": 5.4,
+      "audienceProfile": { "female": 88, "male": 12, "ageGroup": "25-44", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_006",
+      "kolId": "kol_003",
+      "platform": "Facebook",
+      "handle": "ginaparentlife",
+      "profileUrl": "https://www.facebook.com/ginaparentlife",
+      "followers": 68000,
+      "avgViews": 32000,
+      "engagementRate": 2.9,
+      "audienceProfile": { "female": 85, "male": 15, "ageGroup": "30-44", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_007",
+      "kolId": "kol_004",
+      "platform": "YouTube",
+      "handle": "MarcFoodLab",
+      "profileUrl": "https://www.youtube.com/@MarcFoodLab",
+      "followers": 320000,
+      "avgViews": 290000,
+      "engagementRate": 4.1,
+      "audienceProfile": { "female": 52, "male": 48, "ageGroup": "25-44", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_008",
+      "kolId": "kol_004",
+      "platform": "Instagram",
+      "handle": "marc.foodlab",
+      "profileUrl": "https://www.instagram.com/marc.foodlab",
+      "followers": 127000,
+      "avgViews": 72000,
+      "engagementRate": 5.7,
+      "audienceProfile": { "female": 55, "male": 45, "ageGroup": "25-34", "topCity": "台中" }
+    },
+    {
+      "id": "ksa_009",
+      "kolId": "kol_005",
+      "platform": "Instagram",
+      "handle": "lunafit.tw",
+      "profileUrl": "https://www.instagram.com/lunafit.tw",
+      "followers": 98000,
+      "avgViews": 62000,
+      "engagementRate": 6.8,
+      "audienceProfile": { "female": 74, "male": 26, "ageGroup": "20-34", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_010",
+      "kolId": "kol_005",
+      "platform": "TikTok",
+      "handle": "lunafit",
+      "profileUrl": "https://www.tiktok.com/@lunafit",
+      "followers": 76000,
+      "avgViews": 58000,
+      "engagementRate": 8.3,
+      "audienceProfile": { "female": 70, "male": 30, "ageGroup": "18-29", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_011",
+      "kolId": "kol_006",
+      "platform": "Instagram",
+      "handle": "kevintech3c",
+      "profileUrl": "https://www.instagram.com/kevintech3c",
+      "followers": 56000,
+      "avgViews": 38000,
+      "engagementRate": 4.5,
+      "audienceProfile": { "female": 22, "male": 78, "ageGroup": "20-39", "topCity": "新北" }
+    },
+    {
+      "id": "ksa_012",
+      "kolId": "kol_007",
+      "platform": "Instagram",
+      "handle": "zoe_familylife",
+      "profileUrl": "https://www.instagram.com/zoe_familylife",
+      "followers": 162000,
+      "avgViews": 105000,
+      "engagementRate": 5.9,
+      "audienceProfile": { "female": 90, "male": 10, "ageGroup": "25-44", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_013",
+      "kolId": "kol_008",
+      "platform": "Instagram",
+      "handle": "rina.travelgram",
+      "profileUrl": "https://www.instagram.com/rina.travelgram",
+      "followers": 74000,
+      "avgViews": 48000,
+      "engagementRate": 5.1,
+      "audienceProfile": { "female": 68, "male": 32, "ageGroup": "22-39", "topCity": "台北" }
+    },
+    {
+      "id": "ksa_014",
+      "kolId": "kol_008",
+      "platform": "YouTube",
+      "handle": "RinaTravelVlog",
+      "profileUrl": "https://www.youtube.com/@RinaTravelVlog",
+      "followers": 38000,
+      "avgViews": 22000,
+      "engagementRate": 3.4,
+      "audienceProfile": { "female": 65, "male": 35, "ageGroup": "25-39", "topCity": "台北" }
+    }
+  ],
+  "proposalFeedbacks": [
+    {
+      "id": "pf_001",
+      "proposalId": "prop_001",
+      "source": "internal",
+      "feedbackText": "KOL 組合選擇合理，建議增加一位 YouTube 頻道創作者以提升觸及多元性。",
+      "decision": "approved",
+      "createdBy": "Amy"
+    },
+    {
+      "id": "pf_002",
+      "proposalId": "prop_001",
+      "source": "client",
+      "feedbackText": "整體方向符合品牌調性，同意進入執行階段。預算可略作彈性調整。",
+      "decision": "approved",
+      "createdBy": "Panasonic PM"
+    },
+    {
+      "id": "pf_003",
+      "proposalId": "prop_002",
+      "source": "internal",
+      "feedbackText": "食品類 KOL 受眾偏年輕，建議補充親子受眾佔比較高的創作者。",
+      "decision": "revision",
+      "createdBy": "Leo"
+    },
+    {
+      "id": "pf_004",
+      "proposalId": "prop_002",
+      "source": "client",
+      "feedbackText": "希望追加一位 TikTok 創作者，增加年輕族群觸及。",
+      "decision": "revision",
+      "createdBy": "Happy Food PM"
+    },
+    {
+      "id": "pf_005",
+      "proposalId": "92a0",
+      "source": "internal",
+      "feedbackText": "保養品類 KOL 覆蓋完整，Amy 與 Luna 的受眾重疊度低，搭配恰當。",
+      "decision": "approved",
+      "createdBy": "Ivy"
+    },
+    {
+      "id": "pf_006",
+      "proposalId": "92a0",
+      "source": "client",
+      "feedbackText": "請確認 KOL 配合拍攝日程，預計 4 月初交稿。",
+      "decision": "approved",
+      "createdBy": "DermaLab PM"
+    }
+  ],
+  "ioTasks": [
+    {
+      "id": "task_001",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_002",
+      "taskType": "contract_sign",
+      "taskStatus": "done",
+      "dueAt": "2024-09-20T00:00:00Z",
+      "completedAt": "2024-09-18T10:00:00Z",
+      "owner": "Amy",
+      "notes": "合約已簽署完成"
+    },
+    {
+      "id": "task_002",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_002",
+      "taskType": "brief_delivery",
+      "taskStatus": "done",
+      "dueAt": "2024-09-25T00:00:00Z",
+      "completedAt": "2024-09-23T14:00:00Z",
+      "owner": "Amy",
+      "notes": "Brief 已寄送"
+    },
+    {
+      "id": "task_003",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_001",
+      "taskType": "content_review",
+      "taskStatus": "done",
+      "dueAt": "2024-10-05T00:00:00Z",
+      "completedAt": "2024-10-04T09:00:00Z",
+      "owner": "Ivy",
+      "notes": "初稿審核通過"
+    },
+    {
+      "id": "task_004",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_001",
+      "taskType": "publish",
+      "taskStatus": "done",
+      "dueAt": "2024-10-16T00:00:00Z",
+      "completedAt": "2024-10-16T12:00:00Z",
+      "owner": "Ivy",
+      "notes": "如期發佈"
+    },
+    {
+      "id": "task_005",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_003",
+      "taskType": "contract_sign",
+      "taskStatus": "done",
+      "dueAt": "2026-01-20T00:00:00Z",
+      "completedAt": "2026-01-18T11:00:00Z",
+      "owner": "Leo",
+      "notes": null
+    },
+    {
+      "id": "task_006",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_003",
+      "taskType": "content_review",
+      "taskStatus": "done",
+      "dueAt": "2026-02-05T00:00:00Z",
+      "completedAt": "2026-02-04T15:00:00Z",
+      "owner": "Ivy",
+      "notes": "內容符合主題"
+    },
+    {
+      "id": "task_007",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_005",
+      "taskType": "brief_delivery",
+      "taskStatus": "done",
+      "dueAt": "2026-01-25T00:00:00Z",
+      "completedAt": "2026-01-24T10:00:00Z",
+      "owner": "Leo",
+      "notes": null
+    },
+    {
+      "id": "task_008",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_005",
+      "taskType": "content_review",
+      "taskStatus": "todo",
+      "dueAt": "2026-03-10T00:00:00Z",
+      "completedAt": null,
+      "owner": "Ivy",
+      "notes": "等待 KOL 提交初稿"
+    },
+    {
+      "id": "task_009",
+      "insertionOrderId": "io_004",
+      "kolId": "kol_003",
+      "taskType": "contract_sign",
+      "taskStatus": "done",
+      "dueAt": "2026-02-15T00:00:00Z",
+      "completedAt": "2026-02-14T09:00:00Z",
+      "owner": "John",
+      "notes": null
+    },
+    {
+      "id": "task_010",
+      "insertionOrderId": "io_004",
+      "kolId": "kol_003",
+      "taskType": "publish",
+      "taskStatus": "done",
+      "dueAt": "2026-02-25T00:00:00Z",
+      "completedAt": "2026-02-25T18:00:00Z",
+      "owner": "John",
+      "notes": "已發佈"
+    },
+    {
+      "id": "task_011",
+      "insertionOrderId": "io_004",
+      "kolId": "kol_001",
+      "taskType": "brief_delivery",
+      "taskStatus": "in_progress",
+      "dueAt": "2026-03-20T00:00:00Z",
+      "completedAt": null,
+      "owner": "John",
+      "notes": "Brief 準備中"
+    },
+    {
+      "id": "task_012",
+      "insertionOrderId": "io_005",
+      "kolId": "kol_001",
+      "taskType": "contract_sign",
+      "taskStatus": "done",
+      "dueAt": "2025-11-10T00:00:00Z",
+      "completedAt": "2025-11-08T10:00:00Z",
+      "owner": "Amy",
+      "notes": null
+    },
+    {
+      "id": "task_013",
+      "insertionOrderId": "io_005",
+      "kolId": "kol_007",
+      "taskType": "content_review",
+      "taskStatus": "done",
+      "dueAt": "2025-11-20T00:00:00Z",
+      "completedAt": "2025-11-19T14:00:00Z",
+      "owner": "Ivy",
+      "notes": "輕微修改後通過"
+    },
+    {
+      "id": "task_014",
+      "insertionOrderId": "io_005",
+      "kolId": "kol_007",
+      "taskType": "publish",
+      "taskStatus": "done",
+      "dueAt": "2025-11-28T00:00:00Z",
+      "completedAt": "2025-11-28T10:00:00Z",
+      "owner": "Ivy",
+      "notes": "如期發佈"
+    },
+    {
+      "id": "task_015",
+      "insertionOrderId": "io_003",
+      "kolId": null,
+      "taskType": "brief_delivery",
+      "taskStatus": "todo",
+      "dueAt": "2026-03-25T00:00:00Z",
+      "completedAt": null,
+      "owner": "Ivy",
+      "notes": "待確認 KOL 名單後發送"
+    }
+  ],
+  "campaignPerformance": [
+    {
+      "id": "cp_001",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_002",
+      "platform": "YouTube",
+      "waveNo": 1,
+      "contentUrl": "https://www.youtube.com/watch?v=sample001",
+      "impressions": 312000,
+      "reach": 245000,
+      "views": 290000,
+      "likes": 9800,
+      "comments": 420,
+      "shares": 310,
+      "saves": 0,
+      "clicks": 4200,
+      "ctr": 1.36,
+      "leads": 182,
+      "purchases": 48,
+      "revenue": 192000,
+      "cost": 85000,
+      "roas": 2.259,
+      "clientScore": 4.8,
+      "teamScore": 4.7,
+      "recordedAt": "2024-10-30T00:00:00Z"
+    },
+    {
+      "id": "cp_002",
+      "insertionOrderId": "io_001",
+      "kolId": "kol_001",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample002",
+      "impressions": 185000,
+      "reach": 148000,
+      "views": 162000,
+      "likes": 7200,
+      "comments": 310,
+      "shares": 240,
+      "saves": 890,
+      "clicks": 2100,
+      "ctr": 1.14,
+      "leads": 95,
+      "purchases": 22,
+      "revenue": 88000,
+      "cost": 54000,
+      "roas": 1.63,
+      "clientScore": 4.6,
+      "teamScore": 4.5,
+      "recordedAt": "2024-10-30T00:00:00Z"
+    },
+    {
+      "id": "cp_003",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_003",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample003",
+      "impressions": 92000,
+      "reach": 74000,
+      "views": 80000,
+      "likes": 5100,
+      "comments": 195,
+      "shares": 160,
+      "saves": 630,
+      "clicks": 1450,
+      "ctr": 1.58,
+      "leads": 68,
+      "purchases": 15,
+      "revenue": 52500,
+      "cost": 48000,
+      "roas": 1.09,
+      "clientScore": 4.6,
+      "teamScore": 4.5,
+      "recordedAt": "2026-02-28T00:00:00Z"
+    },
+    {
+      "id": "cp_004",
+      "insertionOrderId": "io_002",
+      "kolId": "kol_007",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample004",
+      "impressions": 110000,
+      "reach": 88000,
+      "views": 96000,
+      "likes": 6200,
+      "comments": 280,
+      "shares": 210,
+      "saves": 780,
+      "clicks": 1820,
+      "ctr": 1.66,
+      "leads": 82,
+      "purchases": 19,
+      "revenue": 66500,
+      "cost": 52000,
+      "roas": 1.28,
+      "clientScore": 4.7,
+      "teamScore": 4.6,
+      "recordedAt": "2026-02-28T00:00:00Z"
+    },
+    {
+      "id": "cp_005",
+      "insertionOrderId": "io_004",
+      "kolId": "kol_003",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample005",
+      "impressions": 98000,
+      "reach": 78000,
+      "views": 88000,
+      "likes": 5400,
+      "comments": 210,
+      "shares": 175,
+      "saves": 660,
+      "clicks": 1680,
+      "ctr": 1.71,
+      "leads": 74,
+      "purchases": 18,
+      "revenue": 63000,
+      "cost": 50000,
+      "roas": 1.26,
+      "clientScore": 4.7,
+      "teamScore": 4.6,
+      "recordedAt": "2026-03-10T00:00:00Z"
+    },
+    {
+      "id": "cp_006",
+      "insertionOrderId": "io_005",
+      "kolId": "kol_001",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample006",
+      "impressions": 176000,
+      "reach": 142000,
+      "views": 155000,
+      "likes": 6900,
+      "comments": 295,
+      "shares": 230,
+      "saves": 850,
+      "clicks": 2050,
+      "ctr": 1.17,
+      "leads": 90,
+      "purchases": 21,
+      "revenue": 84000,
+      "cost": 54000,
+      "roas": 1.56,
+      "clientScore": 4.8,
+      "teamScore": 4.7,
+      "recordedAt": "2025-12-05T00:00:00Z"
+    },
+    {
+      "id": "cp_007",
+      "insertionOrderId": "io_005",
+      "kolId": "kol_007",
+      "platform": "Instagram",
+      "waveNo": 1,
+      "contentUrl": "https://www.instagram.com/p/sample007",
+      "impressions": 155000,
+      "reach": 124000,
+      "views": 138000,
+      "likes": 7800,
+      "comments": 340,
+      "shares": 265,
+      "saves": 920,
+      "clicks": 2280,
+      "ctr": 1.47,
+      "leads": 105,
+      "purchases": 26,
+      "revenue": 104000,
+      "cost": 58000,
+      "roas": 1.79,
+      "clientScore": 4.9,
+      "teamScore": 4.8,
+      "recordedAt": "2025-12-05T00:00:00Z"
+    }
+  ],
+  "aiReports": [
+    {
+      "id": "air_001",
+      "reportType": "kol_analysis",
+      "refTable": "kols",
+      "refId": "kol_001",
+      "promptVersion": "v1.2",
+      "contentMd": "## Amy Beauty KOL 分析報告\n\n### 受眾概況\nAmy Beauty 擁有高度集中的女性受眾（82%），年齡集中於 18-34 歲，主要居住於台北大都會區。這使她非常適合美妝保養、母嬰及食品等生活類品牌。\n\n### 互動表現\n- Instagram 平均互動率 **4.9%**，高於同類創作者平均（3.2%）\n- TikTok 短影音互動率達 **6.2%**，內容病毒傳播潛力強\n- 平均觸及 120,000 人，曝光穩定\n\n### 品牌合作適配度\n- ✅ 美妝保養品牌：高度適配，受眾重疊率 >70%\n- ✅ 母嬰產品：適配，追蹤者含高比例新手媽媽\n- ⚠️ 3C 科技：低度適配，受眾性別結構不符\n\n### 建議\n建議在春夏換季及母親節檔期優先排入 Amy Beauty，預期 CPE（每次互動成本）可控制在 NT$8 以下。",
+      "createdBy": "AI System"
+    },
+    {
+      "id": "air_002",
+      "reportType": "kol_analysis",
+      "refTable": "kols",
+      "refId": "kol_002",
+      "promptVersion": "v1.2",
+      "contentMd": "## Tech Allen KOL 分析報告\n\n### 受眾概況\nTech Allen 以 3C 科技愛好者為主要受眾，男性佔比 72%，集中於 25-44 歲，為具有一定消費力的科技型消費者族群。\n\n### 互動表現\n- YouTube 平均觀看數 **180,000**，開箱評測完播率高\n- Instagram 互動率 3.2%，輔助觸及補充\n- 追蹤者成長趨勢穩健，月增約 2,000 人\n\n### 品牌合作適配度\n- ✅ 3C、家電品牌：極高度適配，權威感強\n- ✅ 智慧家居產品：適配\n- ⚠️ 美妝保養：不建議，受眾偏差過大\n\n### 建議\n適合長形開箱測評合作，建議搭配 YouTube 首播 + IG 短片的雙平台策略，最大化觸及效益。",
+      "createdBy": "AI System"
+    },
+    {
+      "id": "air_003",
+      "reportType": "campaign_summary",
+      "refTable": "insertion_orders",
+      "refId": "io_001",
+      "promptVersion": "v1.1",
+      "contentMd": "## IO-2024-001 Panasonic 洗碟機 — 活動總結報告\n\n### 執行摘要\n本次活動邀請 Tech Allen（YouTube）及 Amy Beauty（Instagram）共同執行，總觸及超過 **390,000**，表現優異。\n\n### 關鍵數據\n| 指標 | YouTube | Instagram | 合計 |\n|------|---------|-----------|------|\n| 觸及 | 245,000 | 148,000 | 393,000 |\n| 互動 | 10,530 | 8,640 | 19,170 |\n| 點擊 | 4,200 | 2,100 | 6,300 |\n| 購買 | 48 | 22 | 70 |\n| ROAS | 2.26 | 1.63 | 1.97 |\n\n### 亮點\n- Tech Allen 的開箱影片帶動大量搜尋查詢，SEO 效益顯著\n- Amy Beauty 的 IG Reels 在女性受眾中傳播廣泛，儲存數達 890\n- 整體 ROAS **1.97**，高於原設定目標（1.5）\n\n### 改善建議\n1. 下次合作可提前 2 週確認影片腳本，減少修改輪次\n2. 可考慮追加 TikTok 平台擴大年輕族群觸及",
+      "createdBy": "AI System"
+    },
+    {
+      "id": "air_004",
+      "reportType": "proposal_analysis",
+      "refTable": "proposals",
+      "refId": "prop_001",
+      "promptVersion": "v1.0",
+      "contentMd": "## 提案分析：Panasonic 家電推廣計畫\n\n### KOL 組合評估\n目前提案 KOL 組合涵蓋 YouTube 長影片（Tech Allen）與 Instagram 短影片（Amy Beauty），形成有效的多平台覆蓋策略。\n\n### 受眾重疊分析\n- Tech Allen × Amy Beauty 受眾重疊率約 **18%**，屬健康範圍\n- 兩位 KOL 互補性強：Tech Allen 觸及技術導向男性，Amy Beauty 觸及生活導向女性\n\n### 預算效益預測\n預估總觸及：380,000 ~ 450,000\n預估互動率：4.2%\n預估 CPM：NT$360\n\n### 建議\n提案組合優良，建議核准執行。可酌情增加 1 位家居生活類 KOL 以提升母嬰族群觸及。",
+      "createdBy": "AI System"
+    },
+    {
+      "id": "air_005",
+      "reportType": "campaign_summary",
+      "refTable": "insertion_orders",
+      "refId": "io_005",
+      "promptVersion": "v1.1",
+      "contentMd": "## IO-2025-005 BabyCare 母嬰新品 — 活動總結報告\n\n### 執行摘要\n本次活動邀請 Amy Beauty 及 Zoe Family 執行，精準觸及新手父母族群，購買轉換率超出預期。\n\n### 關鍵數據\n| 指標 | Amy Beauty | Zoe Family | 合計 |\n|------|-----------|------------|------|\n| 觸及 | 142,000 | 124,000 | 266,000 |\n| 互動 | 10,275 | 11,325 | 21,600 |\n| 購買 | 21 | 26 | 47 |\n| ROAS | 1.56 | 1.79 | 1.68 |\n\n### 亮點\n- Zoe Family 留言品質極高，多數為有購買意圖的詢問\n- Amy Beauty 的儲存數（850）顯示高內容收藏率，長尾效益強\n- 整體 ROAS **1.68**，達成目標\n\n### 改善建議\n建議下次母嬰活動增加 Facebook 觸及，Gina 的 Facebook 受眾年齡層（30-44）更成熟，購買力更強。",
+      "createdBy": "AI System"
+    }
+  ],
+  "kolFavoriteFolders": [
+    {
+      "id": "folder_001",
+      "name": "家電專案候選",
+      "description": "適合家電品牌合作的 KOL 清單",
+      "ownerId": "user_001"
+    },
+    {
+      "id": "folder_002",
+      "name": "美妝保養 A 咖",
+      "description": "高互動率美妝 KOL，適合新品上市",
+      "ownerId": "user_001"
+    },
+    {
+      "id": "folder_003",
+      "name": "親子食品候選",
+      "description": "Ivy 維護的親子 / 食品類 KOL",
+      "ownerId": "user_003"
+    },
+    {
+      "id": "folder_004",
+      "name": "3C 開箱名單",
+      "description": "科技產品開箱評測 KOL",
+      "ownerId": "user_002"
+    }
+  ],
+  "kolFavoriteFolderItems": [
+    { "id": "ffi_001", "folderId": "folder_001", "kolId": "kol_002", "note": "YouTube 家電開箱 CP 值高", "addedBy": "user_001" },
+    { "id": "ffi_002", "folderId": "folder_001", "kolId": "kol_006", "note": "3C 受眾與家電重疊", "addedBy": "user_001" },
+    { "id": "ffi_003", "folderId": "folder_001", "kolId": "kol_001", "note": "女性家庭受眾", "addedBy": "user_003" },
+    { "id": "ffi_004", "folderId": "folder_002", "kolId": "kol_001", "note": "互動率 4.9%，美妝主力", "addedBy": "user_001" },
+    { "id": "ffi_005", "folderId": "folder_002", "kolId": "kol_005", "note": "健康保養受眾精準", "addedBy": "user_001" },
+    { "id": "ffi_006", "folderId": "folder_003", "kolId": "kol_003", "note": "親子媽媽受眾 88% 女性", "addedBy": "user_003" },
+    { "id": "ffi_007", "folderId": "folder_003", "kolId": "kol_007", "note": "Zoe 家庭生活，轉換率高", "addedBy": "user_003" },
+    { "id": "ffi_008", "folderId": "folder_003", "kolId": "kol_004", "note": "Marc 食品 YouTube 大頻道", "addedBy": "user_003" },
+    { "id": "ffi_009", "folderId": "folder_004", "kolId": "kol_002", "note": "Tech Allen 首選", "addedBy": "user_002" },
+    { "id": "ffi_010", "folderId": "folder_004", "kolId": "kol_006", "note": "Kevin 中型 3C 頻道，性價比高", "addedBy": "user_002" }
+  ],
+  "kolFavoriteFolderShares": [
+    {
+      "id": "ffs_001",
+      "folderId": "folder_001",
+      "shareType": "user",
+      "targetUserId": "user_003",
+      "targetGroup": null,
+      "permission": "edit"
+    },
+    {
+      "id": "ffs_002",
+      "folderId": "folder_001",
+      "shareType": "group",
+      "targetUserId": null,
+      "targetGroup": "AE",
+      "permission": "view"
+    },
+    {
+      "id": "ffs_003",
+      "folderId": "folder_002",
+      "shareType": "user",
+      "targetUserId": "user_002",
+      "targetGroup": null,
+      "permission": "view"
+    },
+    {
+      "id": "ffs_004",
+      "folderId": "folder_003",
+      "shareType": "group",
+      "targetUserId": null,
+      "targetGroup": "KOL",
+      "permission": "view"
+    }
+  ],
+  "proposalWatchers": [
+    { "id": "pw_001", "proposalId": "prop_001", "userId": "user_001", "watchType": "owner" },
+    { "id": "pw_002", "proposalId": "prop_001", "userId": "user_003", "watchType": "manual" },
+    { "id": "pw_003", "proposalId": "prop_002", "userId": "user_002", "watchType": "owner" },
+    { "id": "pw_004", "proposalId": "prop_002", "userId": "user_001", "watchType": "mentioned" },
+    { "id": "pw_005", "proposalId": "92a0",     "userId": "user_003", "watchType": "owner" },
+    { "id": "pw_006", "proposalId": "92a0",     "userId": "user_001", "watchType": "manual" },
+    { "id": "pw_007", "proposalId": "244d",     "userId": "user_002", "watchType": "owner" }
+  ],
+  "notifications": [
+    {
+      "id": "notif_001",
+      "recipientId": "user_001",
+      "type": "proposal.stage_changed",
+      "refTable": "proposals",
+      "refId": "prop_001",
+      "actorId": "user_005",
+      "message": "提案「Panasonic 家電推廣計畫」已由 Nina 核准，進入 approved 階段。",
+      "payload": { "from": "review", "to": "approved" },
+      "isRead": true,
+      "readAt": "2026-03-02T09:15:00Z"
+    },
+    {
+      "id": "notif_002",
+      "recipientId": "user_003",
+      "type": "proposal.stage_changed",
+      "refTable": "proposals",
+      "refId": "prop_001",
+      "actorId": "user_005",
+      "message": "提案「Panasonic 家電推廣計畫」已由 Nina 核准，進入 approved 階段。",
+      "payload": { "from": "review", "to": "approved" },
+      "isRead": false,
+      "readAt": null
+    },
+    {
+      "id": "notif_003",
+      "recipientId": "user_002",
+      "type": "proposal.feedback_added",
+      "refTable": "proposals",
+      "refId": "prop_002",
+      "actorId": "user_001",
+      "message": "Amy 在提案「Happy Food 親子食品導購」新增了內部回饋意見。",
+      "payload": { "feedbackId": "pf_003", "decision": "revision" },
+      "isRead": false,
+      "readAt": null
+    },
+    {
+      "id": "notif_004",
+      "recipientId": "user_001",
+      "type": "proposal.feedback_added",
+      "refTable": "proposals",
+      "refId": "prop_002",
+      "actorId": "user_002",
+      "message": "Leo 在提案「Happy Food 親子食品導購」新增了修改需求。",
+      "payload": { "feedbackId": "pf_004", "decision": "revision" },
+      "isRead": true,
+      "readAt": "2026-03-10T14:30:00Z"
+    },
+    {
+      "id": "notif_005",
+      "recipientId": "user_003",
+      "type": "proposal.kol_added",
+      "refTable": "proposals",
+      "refId": "92a0",
+      "actorId": "user_001",
+      "message": "Amy 在提案「DermaLab 夏季保養新品」加入了新 KOL：Luna Fit。",
+      "payload": { "kolId": "kol_005", "kolName": "Luna Fit" },
+      "isRead": false,
+      "readAt": null
+    },
+    {
+      "id": "notif_006",
+      "recipientId": "user_001",
+      "type": "proposal.kol_added",
+      "refTable": "proposals",
+      "refId": "92a0",
+      "actorId": "user_003",
+      "message": "Ivy 在提案「DermaLab 夏季保養新品」加入了新 KOL：Amy Beauty。",
+      "payload": { "kolId": "kol_001", "kolName": "Amy Beauty" },
+      "isRead": true,
+      "readAt": "2026-03-15T10:00:00Z"
+    },
+    {
+      "id": "notif_007",
+      "recipientId": "user_002",
+      "type": "proposal.stage_changed",
+      "refTable": "proposals",
+      "refId": "244d",
+      "actorId": null,
+      "message": "你負責的提案「ALLIE KOL 行銷活動」截止日期在 3 天後，目前仍在草稿階段。",
+      "payload": { "stage": "draft", "dueDate": "2026-04-20" },
+      "isRead": false,
+      "readAt": null
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

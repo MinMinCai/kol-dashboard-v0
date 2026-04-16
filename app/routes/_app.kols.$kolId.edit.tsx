@@ -74,6 +74,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   let socials: Array<{ platform: string; url: string; followers: number | null }> = [];
   try { socials = JSON.parse(socialsRaw); } catch { socials = []; }
 
+  const socialLinkMap = socials.reduce((acc, item) => {
+    const key = String(item.platform || "").toLowerCase();
+    if (key && item.url) acc[key] = item.url.trim();
+    return acc;
+  }, {} as Record<string, string>);
+
   const socialMap = socials.reduce((acc, item) => {
     const key = String(item.platform || "").toLowerCase();
     if (key) acc[key] = Number(item.followers ?? 0);
@@ -99,6 +105,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     audienceAge: effectiveAudienceAge,
     introduction: introduction || undefined,
     platformMetrics: parsedPlatformMetrics,
+    socialLinks: {
+      instagram: socialLinkMap.instagram,
+      youtube: socialLinkMap.youtube,
+      tiktok: socialLinkMap.tiktok,
+      facebook: socialLinkMap.facebook,
+    },
     social: {
       instagram: socialMap.instagram ?? 0,
       youtube: socialMap.youtube ?? 0,

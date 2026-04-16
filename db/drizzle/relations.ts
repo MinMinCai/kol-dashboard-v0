@@ -5,11 +5,17 @@ import {
   clients,
   insertionOrders,
   ioTasks,
+  kolFavoriteFolderItems,
+  kolFavoriteFolderShares,
+  kolFavoriteFolders,
   kolSocialAccounts,
   kols,
+  notifications,
   proposalFeedback,
   proposalKols,
+  proposalWatchers,
   proposals,
+  users,
 } from "./schema";
 
 export const clientRelations = relations(clients, ({ many }) => ({
@@ -95,3 +101,70 @@ export const campaignPerformanceRelations = relations(campaignPerformance, ({ on
 }));
 
 export const aiReportRelations = relations(aiReports, () => ({}));
+
+export const userRelations = relations(users, ({ many }) => ({
+  ownedFolders: many(kolFavoriteFolders),
+  folderItems: many(kolFavoriteFolderItems),
+  watchedProposals: many(proposalWatchers),
+  notifications: many(notifications, { relationName: "recipient" }),
+  triggeredNotifications: many(notifications, { relationName: "actor" }),
+}));
+
+export const kolFavoriteFolderRelations = relations(kolFavoriteFolders, ({ one, many }) => ({
+  owner: one(users, {
+    fields: [kolFavoriteFolders.ownerId],
+    references: [users.id],
+  }),
+  items: many(kolFavoriteFolderItems),
+  shares: many(kolFavoriteFolderShares),
+}));
+
+export const kolFavoriteFolderItemRelations = relations(kolFavoriteFolderItems, ({ one }) => ({
+  folder: one(kolFavoriteFolders, {
+    fields: [kolFavoriteFolderItems.folderId],
+    references: [kolFavoriteFolders.id],
+  }),
+  kol: one(kols, {
+    fields: [kolFavoriteFolderItems.kolId],
+    references: [kols.id],
+  }),
+  addedByUser: one(users, {
+    fields: [kolFavoriteFolderItems.addedBy],
+    references: [users.id],
+  }),
+}));
+
+export const kolFavoriteFolderShareRelations = relations(kolFavoriteFolderShares, ({ one }) => ({
+  folder: one(kolFavoriteFolders, {
+    fields: [kolFavoriteFolderShares.folderId],
+    references: [kolFavoriteFolders.id],
+  }),
+  targetUser: one(users, {
+    fields: [kolFavoriteFolderShares.targetUserId],
+    references: [users.id],
+  }),
+}));
+
+export const proposalWatcherRelations = relations(proposalWatchers, ({ one }) => ({
+  proposal: one(proposals, {
+    fields: [proposalWatchers.proposalId],
+    references: [proposals.id],
+  }),
+  user: one(users, {
+    fields: [proposalWatchers.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationRelations = relations(notifications, ({ one }) => ({
+  recipient: one(users, {
+    relationName: "recipient",
+    fields: [notifications.recipientId],
+    references: [users.id],
+  }),
+  actor: one(users, {
+    relationName: "actor",
+    fields: [notifications.actorId],
+    references: [users.id],
+  }),
+}));

@@ -589,9 +589,27 @@ export default function KolListPage() {
                   </Stack>
                   <Divider my="sm" />
                   <Stack gap={4}>
-                    <Text size="sm">IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
-                    <Text size="sm">YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
-                    <Text size="sm">TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
+                    {kol.socialLinks?.instagram || kol.instagramHandle ? (
+                      <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
+                        <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()} ↗</Text>
+                      </a>
+                    ) : (
+                      <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
+                    )}
+                    {kol.socialLinks?.youtube ? (
+                      <a href={kol.socialLinks.youtube} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
+                        <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()} ↗</Text>
+                      </a>
+                    ) : (
+                      <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
+                    )}
+                    {kol.socialLinks?.tiktok ? (
+                      <a href={kol.socialLinks.tiktok} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
+                        <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()} ↗</Text>
+                      </a>
+                    ) : (
+                      <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
+                    )}
                   </Stack>
                   <Group gap="xs" mt={4}>
                     {kol.engagementRate ? (
@@ -670,7 +688,15 @@ export default function KolListPage() {
                   <Table.Tr key={kol.id}>
                     <Table.Td><Avatar src={kol.avatarUrl} size={32} radius="xl" /></Table.Td>
                     <Table.Td><Link to={`/kols/${kol.id}`}>{kol.displayName}</Link></Table.Td>
-                    <Table.Td>@{kol.instagramHandle ?? "-"}</Table.Td>
+                    <Table.Td>
+                      {kol.socialLinks?.instagram || kol.instagramHandle ? (
+                        <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer">
+                          @{kol.instagramHandle ?? "-"} ↗
+                        </a>
+                      ) : (
+                        <span>@{kol.instagramHandle ?? "-"}</span>
+                      )}
+                    </Table.Td>
                     <Table.Td>{(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Table.Td>
                     <Table.Td>
                       <Text size="xs">{kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-"}</Text>

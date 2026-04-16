@@ -143,6 +143,12 @@ export type Kol = {
   notes?: string;
   paymentMethod?: "勞報" | "發票";
   platformMetrics?: PlatformMetrics;
+  socialLinks?: {
+    instagram?: string;
+    youtube?: string;
+    tiktok?: string;
+    facebook?: string;
+  };
 };
 
 export type Proposal = {
@@ -275,6 +281,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
     platformMetrics: (row.platformMetrics as PlatformMetrics) ?? undefined,
+    socialLinks: (row.socialLinks as Kol["socialLinks"]) ?? undefined,
   };
 }
 
@@ -386,6 +393,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.instagramHandle !== undefined) update.instagramHandle = data.instagramHandle;
   if (data.paymentMethod !== undefined) update.paymentMethod = data.paymentMethod;
   if (data.platformMetrics !== undefined) update.platformMetrics = data.platformMetrics;
+  if (data.socialLinks !== undefined) update.socialLinks = data.socialLinks;
   update.updatedAt = new Date();
 
   const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
@@ -425,6 +433,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       priceTrend: data.priceTrend ?? [],
       performanceStats: data.performanceStats ?? null,
       platformMetrics: data.platformMetrics ?? null,
+      socialLinks: data.socialLinks ?? null,
       contactEmail: data.contact?.email ?? null,
       contactPhone: data.contact?.phone ?? null,
       status: "active",

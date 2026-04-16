@@ -19,6 +19,28 @@ const dbJson = JSON.parse(
 async function seed() {
   console.log("🌱 Starting seed...");
 
+  // ── Users ─────────────────────────────────────────────────────────────────
+  // Seed dev/preview users (BetterAuth manages production users)
+  if (dbJson.users?.length) {
+    console.log(`  Seeding ${dbJson.users.length} users...`);
+    for (const u of dbJson.users) {
+      await db
+        .insert(schema.users)
+        .values({
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          emailVerified: u.emailVerified ?? false,
+          image: u.image ?? null,
+          role: u.role ?? "member",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Users done");
+  }
+
   // ── KOLs ──────────────────────────────────────────────────────────────────
   if (dbJson.kols?.length) {
     console.log(`  Seeding ${dbJson.kols.length} KOLs...`);
@@ -146,6 +168,236 @@ async function seed() {
         .onConflictDoNothing();
     }
     console.log("  ✓ Insertion orders done");
+  }
+
+  // ── Clients ───────────────────────────────────────────────────────────────
+  if (dbJson.clients?.length) {
+    console.log(`  Seeding ${dbJson.clients.length} clients...`);
+    for (const c of dbJson.clients) {
+      await db
+        .insert(schema.clients)
+        .values({
+          id: c.id,
+          name: c.name,
+          industry: c.industry ?? null,
+          preferences: c.preferences ?? {},
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Clients done");
+  }
+
+  // ── KOL Social Accounts ───────────────────────────────────────────────────
+  if (dbJson.kolSocialAccounts?.length) {
+    console.log(`  Seeding ${dbJson.kolSocialAccounts.length} kolSocialAccounts...`);
+    for (const a of dbJson.kolSocialAccounts) {
+      await db
+        .insert(schema.kolSocialAccounts)
+        .values({
+          id: a.id,
+          kolId: a.kolId,
+          platform: a.platform,
+          handle: a.handle,
+          profileUrl: a.profileUrl ?? null,
+          followers: a.followers ?? 0,
+          avgViews: a.avgViews ?? null,
+          engagementRate: a.engagementRate != null ? String(a.engagementRate) : null,
+          audienceProfile: a.audienceProfile ?? {},
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ KOL Social Accounts done");
+  }
+
+  // ── Proposal Feedback ─────────────────────────────────────────────────────
+  if (dbJson.proposalFeedbacks?.length) {
+    console.log(`  Seeding ${dbJson.proposalFeedbacks.length} proposalFeedbacks...`);
+    for (const f of dbJson.proposalFeedbacks) {
+      await db
+        .insert(schema.proposalFeedback)
+        .values({
+          id: f.id,
+          proposalId: f.proposalId,
+          source: f.source,
+          feedbackText: f.feedbackText,
+          decision: f.decision ?? null,
+          createdBy: f.createdBy ?? null,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Proposal Feedback done");
+  }
+
+  // ── IO Tasks ──────────────────────────────────────────────────────────────
+  if (dbJson.ioTasks?.length) {
+    console.log(`  Seeding ${dbJson.ioTasks.length} ioTasks...`);
+    for (const t of dbJson.ioTasks) {
+      await db
+        .insert(schema.ioTasks)
+        .values({
+          id: t.id,
+          insertionOrderId: t.insertionOrderId,
+          kolId: t.kolId ?? null,
+          taskType: t.taskType,
+          taskStatus: t.taskStatus ?? "todo",
+          dueAt: t.dueAt ? new Date(t.dueAt) : null,
+          completedAt: t.completedAt ? new Date(t.completedAt) : null,
+          owner: t.owner ?? null,
+          notes: t.notes ?? null,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ IO Tasks done");
+  }
+
+  // ── Campaign Performance ──────────────────────────────────────────────────
+  if (dbJson.campaignPerformance?.length) {
+    console.log(`  Seeding ${dbJson.campaignPerformance.length} campaignPerformance...`);
+    for (const cp of dbJson.campaignPerformance) {
+      await db
+        .insert(schema.campaignPerformance)
+        .values({
+          id: cp.id,
+          insertionOrderId: cp.insertionOrderId,
+          kolId: cp.kolId ?? null,
+          platform: cp.platform,
+          waveNo: cp.waveNo ?? 1,
+          contentUrl: cp.contentUrl ?? null,
+          impressions: cp.impressions ?? 0,
+          reach: cp.reach ?? 0,
+          views: cp.views ?? 0,
+          likes: cp.likes ?? 0,
+          comments: cp.comments ?? 0,
+          shares: cp.shares ?? 0,
+          saves: cp.saves ?? 0,
+          clicks: cp.clicks ?? 0,
+          ctr: cp.ctr != null ? String(cp.ctr) : null,
+          leads: cp.leads ?? 0,
+          purchases: cp.purchases ?? 0,
+          revenue: cp.revenue != null ? String(cp.revenue) : null,
+          cost: cp.cost != null ? String(cp.cost) : null,
+          roas: cp.roas != null ? String(cp.roas) : null,
+          clientScore: cp.clientScore != null ? String(cp.clientScore) : null,
+          teamScore: cp.teamScore != null ? String(cp.teamScore) : null,
+          recordedAt: cp.recordedAt ? new Date(cp.recordedAt) : undefined,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Campaign Performance done");
+  }
+
+  // ── AI Reports ────────────────────────────────────────────────────────────
+  if (dbJson.aiReports?.length) {
+    console.log(`  Seeding ${dbJson.aiReports.length} aiReports...`);
+    for (const r of dbJson.aiReports) {
+      await db
+        .insert(schema.aiReports)
+        .values({
+          id: r.id,
+          reportType: r.reportType,
+          refTable: r.refTable,
+          refId: r.refId,
+          promptVersion: r.promptVersion ?? null,
+          contentMd: r.contentMd,
+          createdBy: r.createdBy ?? null,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ AI Reports done");
+  }
+
+  // ── KOL Favorite Folders ─────────────────────────────────────────────────
+  if (dbJson.kolFavoriteFolders?.length) {
+    console.log(`  Seeding ${dbJson.kolFavoriteFolders.length} kolFavoriteFolders...`);
+    for (const f of dbJson.kolFavoriteFolders) {
+      await db
+        .insert(schema.kolFavoriteFolders)
+        .values({
+          id: f.id,
+          name: f.name,
+          description: f.description ?? null,
+          ownerId: f.ownerId,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ KOL Favorite Folders done");
+  }
+
+  // ── KOL Favorite Folder Items ─────────────────────────────────────────────
+  if (dbJson.kolFavoriteFolderItems?.length) {
+    console.log(`  Seeding ${dbJson.kolFavoriteFolderItems.length} kolFavoriteFolderItems...`);
+    for (const item of dbJson.kolFavoriteFolderItems) {
+      await db
+        .insert(schema.kolFavoriteFolderItems)
+        .values({
+          id: item.id,
+          folderId: item.folderId,
+          kolId: item.kolId,
+          note: item.note ?? null,
+          addedBy: item.addedBy ?? null,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ KOL Favorite Folder Items done");
+  }
+
+  // ── KOL Favorite Folder Shares ────────────────────────────────────────────
+  if (dbJson.kolFavoriteFolderShares?.length) {
+    console.log(`  Seeding ${dbJson.kolFavoriteFolderShares.length} kolFavoriteFolderShares...`);
+    for (const s of dbJson.kolFavoriteFolderShares) {
+      await db
+        .insert(schema.kolFavoriteFolderShares)
+        .values({
+          id: s.id,
+          folderId: s.folderId,
+          shareType: s.shareType,
+          targetUserId: s.targetUserId ?? null,
+          targetGroup: s.targetGroup ?? null,
+          permission: s.permission,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ KOL Favorite Folder Shares done");
+  }
+
+  // ── Proposal Watchers ─────────────────────────────────────────────────────
+  if (dbJson.proposalWatchers?.length) {
+    console.log(`  Seeding ${dbJson.proposalWatchers.length} proposalWatchers...`);
+    for (const w of dbJson.proposalWatchers) {
+      await db
+        .insert(schema.proposalWatchers)
+        .values({
+          id: w.id,
+          proposalId: w.proposalId,
+          userId: w.userId,
+          watchType: w.watchType,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Proposal Watchers done");
+  }
+
+  // ── Notifications ─────────────────────────────────────────────────────────
+  if (dbJson.notifications?.length) {
+    console.log(`  Seeding ${dbJson.notifications.length} notifications...`);
+    for (const n of dbJson.notifications) {
+      await db
+        .insert(schema.notifications)
+        .values({
+          id: n.id,
+          recipientId: n.recipientId,
+          type: n.type,
+          refTable: n.refTable,
+          refId: n.refId,
+          actorId: n.actorId ?? null,
+          message: n.message,
+          payload: n.payload ?? {},
+          isRead: n.isRead ?? false,
+          readAt: n.readAt ? new Date(n.readAt) : null,
+        })
+        .onConflictDoNothing();
+    }
+    console.log("  ✓ Notifications done");
   }
 
   // ── Tag Catalog ───────────────────────────────────────────────────────────

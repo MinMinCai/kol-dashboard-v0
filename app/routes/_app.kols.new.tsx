@@ -68,6 +68,12 @@ export async function action({ request }: ActionFunctionArgs) {
     return acc;
   }, {} as Record<string, number>);
 
+  const socialLinkMap = socials.reduce((acc, item) => {
+    const key = String(item.platform || "").toLowerCase();
+    if (key && item.url) acc[key] = item.url.trim();
+    return acc;
+  }, {} as Record<string, string>);
+
   let parsedPlatformMetrics: PlatformMetrics = {};
   try { parsedPlatformMetrics = JSON.parse(platformMetricsRaw); } catch { parsedPlatformMetrics = {}; }
 
@@ -94,6 +100,12 @@ export async function action({ request }: ActionFunctionArgs) {
     audienceAge: effectiveAudienceAge,
     introduction,
     platformMetrics: parsedPlatformMetrics,
+    socialLinks: {
+      instagram: socialLinkMap.instagram,
+      youtube: socialLinkMap.youtube,
+      tiktok: socialLinkMap.tiktok,
+      facebook: socialLinkMap.facebook,
+    },
     rating: 0,
     collaborations: 0,
     averagePrice: 0,

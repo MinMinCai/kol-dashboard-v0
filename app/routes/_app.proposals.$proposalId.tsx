@@ -25,8 +25,8 @@ import {
 import { useMantineColorScheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
-import { useEffect, useMemo, useState } from "react";
+import { Form, Link, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   addProposalKol,
   getProposal,
@@ -38,7 +38,8 @@ import {
   updateProposal,
   type Kol,
 } from "~/lib/mock-api.server";
-import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft } from "@tabler/icons-react";
+import { notifyProposalUpdated } from "~/lib/notifications.server";
+import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell } from "@tabler/icons-react";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const proposalId = params.proposalId ?? "";
@@ -58,6 +59,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  // Helper: who made this change (from form or default)
+  const updatedBy = String(formData.get("updatedBy") ?? "同事");
+  const ts = new Date().toISOString();
+
   if (intent === "add_candidate") {
     const kolId = String(formData.get("kolId"));
     // Strip commas from price string (e.g., "10,000" -> "10000") before conversion
@@ -67,14 +72,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const reason = String(formData.get("reason"));
     const kolName = String(formData.get("kolName"));
 
-    await addProposalKol({
-      proposalId,
-      kolId,
-      kolName,
-      price,
-      role,
-      reason,
-    });
+    await addProposalKol({ proposalId, kolId, kolName, price, role, reason });
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `新增人選「${kolName}」`, timestamp: ts });
     return json({ success: true });
   }
 
@@ -83,12 +82,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const status = String(formData.get("status"));
     const feedback = String(formData.get("feedback"));
     await updateProposalKolStatus(candidateId, status, feedback);
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新人選狀態", timestamp: ts });
     return json({ success: true });
   }
 
   if (intent === "delete_candidate") {
     const candidateId = String(formData.get("candidateId"));
     await deleteProposalKol(candidateId);
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "移除人選", timestamp: ts });
     return json({ success: true });
   }
 
@@ -96,6 +97,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const idsString = String(formData.get("candidateIds") || "");
     const ids = idsString.split(",").filter(Boolean);
     await Promise.all(ids.map(id => deleteProposalKol(id)));
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `批次移除 ${ids.length} 位人選`, timestamp: ts });
     return json({ success: true });
   }
 
@@ -104,6 +106,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
     const actualPrice = actualPriceStr ? Number(actualPriceStr) : null;
     await updateProposalKolActualPrice(candidateId, actualPrice);
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新實際報價", timestamp: ts });
     return json({ success: true });
   }
 
@@ -116,6 +119,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const dueDate = formData.get("dueDate") ? String(formData.get("dueDate")) : undefined;
 
     await updateProposal(proposalId, { stage, title, clientName, budget, dueDate });
+    const changedFields = ([stage ? "階段" : "", title ? "標題" : "", clientName ? "客戶" : "", budget !== undefined ? "預算" : "", dueDate ? "截止日" : ""]).filter((s) => s !== "").join("、");
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `修改${changedFields}`, timestamp: ts });
     return json({ success: true });
   }
 
@@ -155,6 +160,37 @@ export default function ProposalDetailPage() {
   const [deleteTarget, setDeleteTarget] = useState<
     { type: "single"; candidateId: string; name: string } | { type: "batch"; candidateIds: string[] } | null
   >(null);
+
+  // ── SSE: real-time update notifications ──────────────────────────────────────
+  type UpdateNotice = { updatedBy: string; field: string; timestamp: string };
+  const [updateNotices, setUpdateNotices] = useState<UpdateNotice[]>([]);
+  const revalidator = useRevalidator();
+  const sseRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    // Use a stable "userId" for demo — in production derive from session
+    const stored = sessionStorage.getItem("demoUserId");
+    const myUserId: string = stored ?? "user-A";
+    if (!stored) sessionStorage.setItem("demoUserId", myUserId);
+
+    const es = new EventSource(`/api/proposals/${proposal.id}/events?userId=${encodeURIComponent(myUserId)}`);
+    sseRef.current = es;
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as { updatedBy: string; field: string; timestamp: string };
+        setUpdateNotices((prev) => [data, ...prev].slice(0, 5));
+        // Auto-refresh page data so the table reflects the change
+        revalidator.revalidate();
+      } catch { /* ignore malformed events */ }
+    };
+
+    return () => {
+      es.close();
+      sseRef.current = null;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposal.id]);
 
   const statusColor: Record<string, string> = {
     pending: "gray",
@@ -273,6 +309,23 @@ export default function ProposalDetailPage() {
 
   return (
     <Stack gap="lg">
+      {/* ── Real-time update notifications ── */}
+      {updateNotices.length > 0 && (
+        <Card withBorder p="xs" style={{ borderColor: "var(--mantine-color-blue-4)", background: "var(--mantine-color-blue-0)" }}>
+          <Group gap="xs" mb={4}>
+            <IconBell size={16} color="var(--mantine-color-blue-6)" />
+            <Text size="sm" fw={600} c="blue.7">有同事更新了此提案</Text>
+            <Button variant="subtle" size="compact-xs" ml="auto" onClick={() => setUpdateNotices([])}>清除</Button>
+          </Group>
+          <Stack gap={4}>
+            {updateNotices.map((n, i) => (
+              <Text key={i} size="xs" c="dimmed">
+                {new Date(n.timestamp).toLocaleTimeString("zh-TW")}　<Text span fw={500} c="blue.7">{n.updatedBy}</Text>　{n.field}
+              </Text>
+            ))}
+          </Stack>
+        </Card>
+      )}
       <Group justify="space-between" align="flex-start">
         <Group align="center" gap="md" style={{ flex: 1 }}>
           <ActionIcon 
