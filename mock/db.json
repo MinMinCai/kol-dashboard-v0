@@ -108,22 +108,10 @@
         }
       ],
       "priceTrend": [
-        {
-          "date": "2025-09",
-          "price": 54000
-        },
-        {
-          "date": "2025-11",
-          "price": 54000
-        },
-        {
-          "date": "2026-02",
-          "price": 52000
-        },
-        {
-          "date": "2026-03",
-          "price": 52000
-        }
+        { "date": "2025-09", "price": 54000 },
+        { "date": "2025-11", "price": 54000 },
+        { "date": "2026-02", "price": 52000 },
+        { "date": "2026-03", "price": 52000 }
       ],
       "performanceStats": {
         "averageReach": 120000,
@@ -134,6 +122,55 @@
           "instagram": 1050,
           "youtube": 420,
           "tiktok": 580
+        }
+      },
+      "platformMetrics": {
+        "platforms": ["Instagram", "YouTube", "TikTok"],
+        "priceTrend": {
+          "Instagram": [
+            { "date": "2025-09", "price": 54000 },
+            { "date": "2025-11", "price": 54000 },
+            { "date": "2026-02", "price": 52000 },
+            { "date": "2026-03", "price": 52000 }
+          ],
+          "YouTube": [
+            { "date": "2025-09", "price": 28000 },
+            { "date": "2026-02", "price": 30000 }
+          ],
+          "TikTok": [
+            { "date": "2025-11", "price": 22000 },
+            { "date": "2026-03", "price": 24000 }
+          ]
+        },
+        "avgRating": {
+          "Instagram": 4.7,
+          "YouTube": 4.3,
+          "TikTok": 4.5
+        },
+        "avgEngagementRate": {
+          "Instagram": 4.9,
+          "YouTube": 3.2,
+          "TikTok": 6.8
+        },
+        "audienceMetrics": {
+          "Instagram": {
+            "engagementRate": 4.9,
+            "exposureRate": 14.2,
+            "audienceGender": { "male": 18, "female": 82 },
+            "audienceAge": "18-24, 25-34"
+          },
+          "YouTube": {
+            "engagementRate": 3.2,
+            "exposureRate": 8.5,
+            "audienceGender": { "male": 25, "female": 75 },
+            "audienceAge": "18-24, 25-34"
+          },
+          "TikTok": {
+            "engagementRate": 6.8,
+            "exposureRate": 18.0,
+            "audienceGender": { "male": 15, "female": 85 },
+            "audienceAge": "18-24"
+          }
         }
       }
     },
@@ -200,14 +237,8 @@
         }
       ],
       "priceTrend": [
-        {
-          "date": "2024-10",
-          "price": 52000
-        },
-        {
-          "date": "2026-02",
-          "price": 62000
-        }
+        { "date": "2024-10", "price": 52000 },
+        { "date": "2026-02", "price": 62000 }
       ],
       "performanceStats": {
         "averageReach": 85000,
@@ -218,6 +249,52 @@
           "instagram": 650,
           "youtube": 1100,
           "tiktok": 310
+        }
+      },
+      "platformMetrics": {
+        "platforms": ["YouTube", "Instagram", "TikTok"],
+        "priceTrend": {
+          "YouTube": [
+            { "date": "2024-10", "price": 52000 },
+            { "date": "2026-02", "price": 62000 }
+          ],
+          "Instagram": [
+            { "date": "2024-10", "price": 22000 },
+            { "date": "2026-02", "price": 28000 }
+          ],
+          "TikTok": [
+            { "date": "2026-02", "price": 15000 }
+          ]
+        },
+        "avgRating": {
+          "YouTube": 4.5,
+          "Instagram": 4.3,
+          "TikTok": 4.2
+        },
+        "avgEngagementRate": {
+          "YouTube": 5.4,
+          "Instagram": 3.8,
+          "TikTok": 7.2
+        },
+        "audienceMetrics": {
+          "YouTube": {
+            "engagementRate": 5.4,
+            "exposureRate": 12.0,
+            "audienceGender": { "male": 72, "female": 28 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "Instagram": {
+            "engagementRate": 3.8,
+            "exposureRate": 9.5,
+            "audienceGender": { "male": 68, "female": 32 },
+            "audienceAge": "25-34"
+          },
+          "TikTok": {
+            "engagementRate": 7.2,
+            "exposureRate": 20.0,
+            "audienceGender": { "male": 65, "female": 35 },
+            "audienceAge": "18-24, 25-34"
+          }
         }
       }
     },
@@ -401,6 +478,57 @@
           "tiktok": 740
         }
       },
+      "platformMetrics": {
+        "platforms": ["Instagram", "YouTube", "TikTok"],
+        "priceTrend": {
+          "Instagram": [
+            { "date": "2023-09", "price": 45000 },
+            { "date": "2023-12", "price": 44000 },
+            { "date": "2024-03", "price": 49000 },
+            { "date": "2024-06", "price": 47000 },
+            { "date": "2024-08", "price": 46000 },
+            { "date": "2024-10", "price": 50000 }
+          ],
+          "YouTube": [
+            { "date": "2024-03", "price": 25000 },
+            { "date": "2024-10", "price": 28000 }
+          ],
+          "TikTok": [
+            { "date": "2023-12", "price": 18000 },
+            { "date": "2024-06", "price": 20000 }
+          ]
+        },
+        "avgRating": {
+          "Instagram": 4.5,
+          "YouTube": 4.3,
+          "TikTok": 4.4
+        },
+        "avgEngagementRate": {
+          "Instagram": 7.8,
+          "YouTube": 4.5,
+          "TikTok": 9.2
+        },
+        "audienceMetrics": {
+          "Instagram": {
+            "engagementRate": 7.8,
+            "exposureRate": 16.5,
+            "audienceGender": { "male": 22, "female": 78 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "YouTube": {
+            "engagementRate": 4.5,
+            "exposureRate": 10.2,
+            "audienceGender": { "male": 30, "female": 70 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "TikTok": {
+            "engagementRate": 9.2,
+            "exposureRate": 22.0,
+            "audienceGender": { "male": 20, "female": 80 },
+            "audienceAge": "18-24, 25-34"
+          }
+        }
+      },
       "city": "Kaohsiung",
       "notes": "短影音表現佳",
       "favoriteFolder": "家電專案"
@@ -522,6 +650,43 @@
           "youtube": 480,
           "tiktok": 140
         }
+      },
+      "platformMetrics": {
+        "platforms": ["Instagram", "YouTube"],
+        "priceTrend": {
+          "Instagram": [
+            { "date": "2024-10", "price": 42000 },
+            { "date": "2025-09", "price": 42000 },
+            { "date": "2025-12", "price": 42000 },
+            { "date": "2026-03", "price": 42000 }
+          ],
+          "YouTube": [
+            { "date": "2025-09", "price": 35000 },
+            { "date": "2025-12", "price": 35000 }
+          ]
+        },
+        "avgRating": {
+          "Instagram": 4.1,
+          "YouTube": 4.3
+        },
+        "avgEngagementRate": {
+          "Instagram": 3.9,
+          "YouTube": 5.2
+        },
+        "audienceMetrics": {
+          "Instagram": {
+            "engagementRate": 3.9,
+            "exposureRate": 10.5,
+            "audienceGender": { "male": 45, "female": 55 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "YouTube": {
+            "engagementRate": 5.2,
+            "exposureRate": 13.8,
+            "audienceGender": { "male": 50, "female": 50 },
+            "audienceAge": "25-34, 35-44"
+          }
+        }
       }
     },
     {
@@ -615,6 +780,53 @@
           "youtube": 320,
           "tiktok": 760
         }
+      },
+      "platformMetrics": {
+        "platforms": ["Instagram", "TikTok", "YouTube"],
+        "priceTrend": {
+          "Instagram": [
+            { "date": "2025-09", "price": 48000 },
+            { "date": "2025-11", "price": 46000 },
+            { "date": "2026-03", "price": 46000 }
+          ],
+          "TikTok": [
+            { "date": "2025-09", "price": 32000 },
+            { "date": "2026-03", "price": 35000 }
+          ],
+          "YouTube": [
+            { "date": "2025-11", "price": 22000 }
+          ]
+        },
+        "avgRating": {
+          "Instagram": 4.3,
+          "TikTok": 4.5,
+          "YouTube": 4.2
+        },
+        "avgEngagementRate": {
+          "Instagram": 5.1,
+          "TikTok": 8.8,
+          "YouTube": 3.5
+        },
+        "audienceMetrics": {
+          "Instagram": {
+            "engagementRate": 5.1,
+            "exposureRate": 13.5,
+            "audienceGender": { "male": 20, "female": 80 },
+            "audienceAge": "18-24, 25-34"
+          },
+          "TikTok": {
+            "engagementRate": 8.8,
+            "exposureRate": 21.0,
+            "audienceGender": { "male": 18, "female": 82 },
+            "audienceAge": "18-24"
+          },
+          "YouTube": {
+            "engagementRate": 3.5,
+            "exposureRate": 9.0,
+            "audienceGender": { "male": 28, "female": 72 },
+            "audienceAge": "25-34"
+          }
+        }
       }
     },
     {
@@ -677,6 +889,39 @@
           "instagram": 480,
           "youtube": 920,
           "tiktok": 210
+        }
+      },
+      "platformMetrics": {
+        "platforms": ["YouTube", "Instagram"],
+        "priceTrend": {
+          "YouTube": [
+            { "date": "2026-03", "price": 48000 }
+          ],
+          "Instagram": [
+            { "date": "2026-03", "price": 18000 }
+          ]
+        },
+        "avgRating": {
+          "YouTube": 4.0,
+          "Instagram": 3.8
+        },
+        "avgEngagementRate": {
+          "YouTube": 4.2,
+          "Instagram": 2.8
+        },
+        "audienceMetrics": {
+          "YouTube": {
+            "engagementRate": 4.2,
+            "exposureRate": 11.0,
+            "audienceGender": { "male": 62, "female": 38 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "Instagram": {
+            "engagementRate": 2.8,
+            "exposureRate": 7.5,
+            "audienceGender": { "male": 58, "female": 42 },
+            "audienceAge": "25-34"
+          }
         }
       }
     },
@@ -786,6 +1031,54 @@
           "youtube": 280,
           "tiktok": 820
         }
+      },
+      "platformMetrics": {
+        "platforms": ["Instagram", "TikTok", "YouTube"],
+        "priceTrend": {
+          "Instagram": [
+            { "date": "2024-10", "price": 52000 },
+            { "date": "2025-09", "price": 52000 },
+            { "date": "2025-11", "price": 52000 },
+            { "date": "2026-02", "price": 52000 }
+          ],
+          "TikTok": [
+            { "date": "2025-09", "price": 28000 },
+            { "date": "2026-02", "price": 30000 }
+          ],
+          "YouTube": [
+            { "date": "2025-11", "price": 18000 }
+          ]
+        },
+        "avgRating": {
+          "Instagram": 4.6,
+          "TikTok": 4.7,
+          "YouTube": 4.2
+        },
+        "avgEngagementRate": {
+          "Instagram": 4.8,
+          "TikTok": 9.5,
+          "YouTube": 3.2
+        },
+        "audienceMetrics": {
+          "Instagram": {
+            "engagementRate": 4.8,
+            "exposureRate": 13.0,
+            "audienceGender": { "male": 25, "female": 75 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "TikTok": {
+            "engagementRate": 9.5,
+            "exposureRate": 23.5,
+            "audienceGender": { "male": 22, "female": 78 },
+            "audienceAge": "18-24, 25-34"
+          },
+          "YouTube": {
+            "engagementRate": 3.2,
+            "exposureRate": 8.5,
+            "audienceGender": { "male": 30, "female": 70 },
+            "audienceAge": "25-34"
+          }
+        }
       }
     },
     {
@@ -848,6 +1141,39 @@
           "instagram": 580,
           "youtube": 1850,
           "tiktok": 220
+        }
+      },
+      "platformMetrics": {
+        "platforms": ["YouTube", "Instagram"],
+        "priceTrend": {
+          "YouTube": [
+            { "date": "2026-02", "price": 85000 }
+          ],
+          "Instagram": [
+            { "date": "2026-02", "price": 32000 }
+          ]
+        },
+        "avgRating": {
+          "YouTube": 4.8,
+          "Instagram": 4.5
+        },
+        "avgEngagementRate": {
+          "YouTube": 4.4,
+          "Instagram": 3.8
+        },
+        "audienceMetrics": {
+          "YouTube": {
+            "engagementRate": 4.4,
+            "exposureRate": 15.0,
+            "audienceGender": { "male": 80, "female": 20 },
+            "audienceAge": "25-34, 35-44"
+          },
+          "Instagram": {
+            "engagementRate": 3.8,
+            "exposureRate": 10.5,
+            "audienceGender": { "male": 75, "female": 25 },
+            "audienceAge": "25-34, 35-44"
+          }
         }
       }
     }
@@ -2670,7 +2996,7 @@
     {
       "id": "user_001",
       "name": "Amy Chen",
-      "email": "amy@dac.com.tw",
+      "email": "amy@example.com.tw",
       "emailVerified": true,
       "image": "https://i.pravatar.cc/80?img=32",
       "role": "manager"
@@ -2678,7 +3004,7 @@
     {
       "id": "user_002",
       "name": "Leo Wang",
-      "email": "leo@dac.com.tw",
+      "email": "leo@example.com.tw",
       "emailVerified": true,
       "image": "https://i.pravatar.cc/80?img=12",
       "role": "member"
@@ -2686,7 +3012,7 @@
     {
       "id": "user_003",
       "name": "Ivy Lin",
-      "email": "ivy@dac.com.tw",
+      "email": "ivy@example.com.tw",
       "emailVerified": true,
       "image": "https://i.pravatar.cc/80?img=44",
       "role": "member"
@@ -2694,7 +3020,7 @@
     {
       "id": "user_004",
       "name": "John Wu",
-      "email": "john@dac.com.tw",
+      "email": "john@example.com.tw",
       "emailVerified": true,
       "image": "https://i.pravatar.cc/80?img=15",
       "role": "member"
@@ -2702,7 +3028,7 @@
     {
       "id": "user_005",
       "name": "Nina Chang",
-      "email": "nina@dac.com.tw",
+      "email": "nina@example.com.tw",
       "emailVerified": true,
       "image": "https://i.pravatar.cc/80?img=25",
       "role": "admin"

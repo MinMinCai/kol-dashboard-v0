@@ -308,14 +308,12 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
   );
 }
 
-const DETAIL_PLATFORMS = ["Instagram", "YouTube", "TikTok"] as const;
-
 function PlatformTabSelector({
-  kol,
+  platforms,
   selected,
   onSelect,
 }: {
-  kol: { social?: { instagram?: number; youtube?: number; tiktok?: number } };
+  platforms: string[];
   selected: string;
   onSelect: (p: string) => void;
 }) {
@@ -333,7 +331,7 @@ function PlatformTabSelector({
 
   return (
     <div>
-      {DETAIL_PLATFORMS.map((p) => (
+      {platforms.map((p) => (
         <button key={p} type="button" style={btnStyle(selected === p)} onClick={() => onSelect(p)}>
           {p}
         </button>
@@ -770,9 +768,9 @@ export default function KolDetailPage() {
             {tab === "price" && (
               <Stack>
                 <PlatformTabSelector
-                  kol={kol}
+                  platforms={kol.platforms && kol.platforms.length > 0 ? kol.platforms : ["Instagram"]}
                   selected={selectedPlatform}
-                  onSelect={setSelectedPlatform}
+                  onSelect={(p) => setSelectedPlatform(p)}
                 />
                 <Text c="dimmed" size="sm">X 軸: 日期 / Y 軸: 價格 (NT$)｜平台: {selectedPlatform}</Text>
                 <Card withBorder>
@@ -790,16 +788,20 @@ export default function KolDetailPage() {
             {tab === "performance" && (
               <Stack>
                 <PlatformTabSelector
-                  kol={kol}
+                  platforms={kol.platforms && kol.platforms.length > 0 ? kol.platforms : ["Instagram"]}
                   selected={selectedPlatform}
-                  onSelect={setSelectedPlatform}
+                  onSelect={(p) => setSelectedPlatform(p)}
                 />
                 {(() => {
                   const pm = kol.platformMetrics?.audienceMetrics?.[selectedPlatform];
-                  const engRate = pm?.engagementRate ?? (selectedPlatform === "Instagram" ? (stats.engagementRate ?? kol.engagementRate ?? 0) : 0);
+                  // Per-platform avgRating and avgEngagementRate from platformMetrics
+                  const platformAvgRating = kol.platformMetrics?.avgRating?.[selectedPlatform];
+                  const platformAvgEngRate = kol.platformMetrics?.avgEngagementRate?.[selectedPlatform];
+                  const engRate = platformAvgEngRate ?? pm?.engagementRate ?? (selectedPlatform === "Instagram" ? (stats.engagementRate ?? kol.engagementRate ?? 0) : 0);
                   const expRate = pm?.exposureRate ?? (selectedPlatform === "Instagram" ? (kol.exposureRate ?? 0) : 0);
                   const audienceGender = pm?.audienceGender ?? (selectedPlatform === "Instagram" ? kol.audienceGender : undefined);
                   const audienceAge = pm?.audienceAge ?? (selectedPlatform === "Instagram" ? kol.audienceAge : undefined);
+                  const displayRating = platformAvgRating ?? (selectedPlatform === "Instagram" ? (kol.rating ?? avgRating) : undefined);
                   return (
                     <>
                       <Grid>
@@ -823,8 +825,8 @@ export default function KolDetailPage() {
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, md: 6 }}>
                           <Card withBorder style={{ height: "100%" }}>
-                            <Text c="dimmed" size="sm">轉換率</Text>
-                            <Title order={3}>{(stats.conversionRate ?? 0).toFixed(1)}%</Title>
+                            <Text c="dimmed" size="sm">平均評分 — {selectedPlatform}</Text>
+                            <Title order={3}>{displayRating != null ? `⭐ ${displayRating.toFixed(1)}` : "-"}</Title>
                           </Card>
                         </Grid.Col>
                       </Grid>
@@ -890,8 +892,34 @@ export default function KolDetailPage() {
               <Text>💰 平均價格: {formatCurrency(avgPrice)}</Text>
               <Text>🏢 合作產業: {(kol.industryDistribution ?? []).join(" ") || (kol.industry ?? "-")}</Text>
               <Text>👁️ 平均觸及: {formatNumber(stats.averageReach)}</Text>
-              <Text>💗 平均互動率: {(stats.engagementRate ?? kol.engagementRate ?? 0).toFixed(1)}%</Text>
-              <Text>📢 曝光率: {(kol.exposureRate || 0).toFixed(1)}%</Text>
+              <Divider my={4} />
+              <Text size="sm" fw={600} c="dimmed">平台互動率</Text>
+              {(kol.platforms && kol.platforms.length > 0
+                ? kol.platforms
+                : [kol.platform]
+              ).filter(Boolean).map((p) => {
+                const rate = kol.platformMetrics?.avgEngagementRate?.[p]
+                  ?? (p === "Instagram" ? kol.engagementRate : undefined);
+                return (
+                  <Text key={p} size="sm">
+                    {p}: {rate != null ? `${rate.toFixed(1)}%` : "-"}
+                  </Text>
+                );
+              })}
+              <Divider my={4} />
+              <Text size="sm" fw={600} c="dimmed">平台評分</Text>
+              {(kol.platforms && kol.platforms.length > 0
+                ? kol.platforms
+                : [kol.platform]
+              ).filter(Boolean).map((p) => {
+                const rating = kol.platformMetrics?.avgRating?.[p]
+                  ?? (p === "Instagram" ? kol.rating : undefined);
+                return (
+                  <Text key={p} size="sm">
+                    {p}: {rating != null ? `⭐ ${rating.toFixed(1)}` : "-"}
+                  </Text>
+                );
+              })}
             </Stack>
           </Card>
         </Grid.Col>

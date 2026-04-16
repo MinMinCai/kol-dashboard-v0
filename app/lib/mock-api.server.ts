@@ -132,7 +132,10 @@ export type Kol = {
   priceTrend?: PricePoint[];
   performanceStats?: PerformanceStats;
   categories: string[];
+  /** @deprecated Use `platforms` (from platformMetrics.platforms) for multi-platform support */
   platform: string;
+  /** 此 KOL 實際經營的所有社群平台清單 (e.g. ["Instagram", "YouTube", "TikTok"]) */
+  platforms?: string[];
   followers: number;
   engagementRate: number;
   exposureRate?: number;
@@ -169,7 +172,14 @@ export type PlatformAudienceMetrics = {
 
 export type PlatformMetrics = {
   audienceMetrics?: Record<string, PlatformAudienceMetrics>;
+  /** 各平台的價格趨勢 e.g. { Instagram: [{date, price}, ...], YouTube: [...] } */
   priceTrend?: Record<string, PricePoint[]>;
+  /** 各平台的平均評分 e.g. { Instagram: 4.7, YouTube: 4.2 } */
+  avgRating?: Record<string, number>;
+  /** 各平台的平均互動率(%) e.g. { Instagram: 4.9, YouTube: 3.5 } */
+  avgEngagementRate?: Record<string, number>;
+  /** KOL 實際經營的平台清單 e.g. ["Instagram", "YouTube", "TikTok"] */
+  platforms?: string[];
 };
 
 export type ProposalKol = {
@@ -251,6 +261,20 @@ export type InsertionOrder = {
 // ─── Row mappers ──────────────────────────────────────────────────────────────
 
 function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
+  const platformMetrics = (row.platformMetrics as PlatformMetrics) ?? undefined;
+  // Derive platforms list: prefer platformMetrics.platforms, fallback to social keys, then single platform field
+  const derivedPlatforms: string[] = (() => {
+    if (platformMetrics?.platforms && platformMetrics.platforms.length > 0) {
+      return platformMetrics.platforms;
+    }
+    const social = (row.social as Record<string, number> | null) ?? {};
+    const fromSocial = Object.entries(social)
+      .filter(([, v]) => v > 0)
+      .map(([k]) => k.charAt(0).toUpperCase() + k.slice(1));
+    if (fromSocial.length > 0) return fromSocial;
+    return row.platform ? [row.platform] : [];
+  })();
+
   return {
     id: row.id,
     displayName: row.displayName,
@@ -270,6 +294,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     performanceStats: (row.performanceStats as PerformanceStats) ?? undefined,
     categories: row.categories ?? [],
     platform: row.platform ?? "",
+    platforms: derivedPlatforms,
     followers: row.followers ?? 0,
     engagementRate: row.engagementRate != null ? Number(row.engagementRate) : 0,
     exposureRate: row.exposureRate != null ? Number(row.exposureRate) : undefined,
@@ -280,7 +305,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     notes: row.notes ?? undefined,
     instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
-    platformMetrics: (row.platformMetrics as PlatformMetrics) ?? undefined,
+    platformMetrics,
     socialLinks: (row.socialLinks as Kol["socialLinks"]) ?? undefined,
   };
 }

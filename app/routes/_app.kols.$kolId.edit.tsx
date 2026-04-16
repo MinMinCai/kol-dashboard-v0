@@ -104,7 +104,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     audienceGender: effectiveAudienceGender,
     audienceAge: effectiveAudienceAge,
     introduction: introduction || undefined,
-    platformMetrics: parsedPlatformMetrics,
+    platformMetrics: {
+      ...parsedPlatformMetrics,
+      // Update platforms list derived from socials
+      platforms: socials.filter(s => s.platform).map(s => s.platform),
+    },
     socialLinks: {
       instagram: socialLinkMap.instagram,
       youtube: socialLinkMap.youtube,
@@ -131,10 +135,12 @@ type PlatformAudienceState = {
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
+  avgRating: string;
 };
 
 function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienceState> {
   const stored = kol.platformMetrics?.audienceMetrics ?? {};
+  const storedRatings = kol.platformMetrics?.avgRating ?? {};
   return Object.fromEntries(
     AUDIENCE_PLATFORMS.map((p) => {
       const m = stored[p] ?? (p === "Instagram" ? {
@@ -149,6 +155,7 @@ function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienc
         audienceMale: m.audienceGender?.male != null ? String(m.audienceGender.male) : "",
         audienceFemale: m.audienceGender?.female != null ? String(m.audienceGender.female) : "",
         audienceAge: m.audienceAge ?? "",
+        avgRating: storedRatings[p] != null ? String(storedRatings[p]) : (p === "Instagram" && kol.rating != null ? String(kol.rating) : ""),
       }];
     })
   ) as Record<AudiencePlatform, PlatformAudienceState>;
@@ -187,6 +194,14 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
           audienceAge: m.audienceAge || undefined,
         }];
       })
+    ),
+    avgEngagementRate: Object.fromEntries(
+      AUDIENCE_PLATFORMS.filter(p => metrics[p].engagementRate)
+        .map(p => [p, Number(metrics[p].engagementRate)])
+    ),
+    avgRating: Object.fromEntries(
+      AUDIENCE_PLATFORMS.filter(p => metrics[p].avgRating)
+        .map(p => [p, Number(metrics[p].avgRating)])
     ),
   };
 
@@ -256,6 +271,16 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
           placeholder="例如：18-24, 25-34"
           value={current.audienceAge}
           onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
+        />
+        <TextInput
+          label="平均評分 (0-5)"
+          type="number"
+          step="0.1"
+          min={0}
+          max={5}
+          placeholder="例如：4.5"
+          value={current.avgRating}
+          onChange={(e) => updateField("avgRating", e.currentTarget.value)}
         />
       </SimpleGrid>
     </Box>

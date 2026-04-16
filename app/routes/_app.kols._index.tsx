@@ -620,6 +620,18 @@ export default function KolListPage() {
                     ) : null}
                   </Group>
                   <Group gap={6} mt="sm" wrap="wrap">
+                    {(kol.platforms ?? [kol.platform]).filter(Boolean).map((p) => {
+                      const platformColor: Record<string, string> = {
+                        Instagram: "pink", YouTube: "red", TikTok: "violet", Facebook: "blue", Twitter: "cyan",
+                      };
+                      return (
+                        <Badge key={p} variant="light" radius="xl" size="xs" color={platformColor[p] ?? "gray"}>
+                          {p}
+                        </Badge>
+                      );
+                    })}
+                  </Group>
+                  <Group gap={6} mt={4} wrap="wrap">
                     {kolTags.map((tag) => (
                       <Badge key={tag} variant="light" radius="xl" size="sm">{tag}</Badge>
                     ))}
@@ -674,7 +686,7 @@ export default function KolListPage() {
                 <Table.Tr>
                   <Table.Th>Photo</Table.Th>
                   <Table.Th>名稱{sortLabel("name")}</Table.Th>
-                  <Table.Th>Instagram</Table.Th>
+                  <Table.Th>社群平台</Table.Th>
                   <Table.Th>粉絲數{sortLabel("followers")}</Table.Th>
                   <Table.Th>互動/曝光</Table.Th>
                   <Table.Th>標籤</Table.Th>
@@ -689,13 +701,14 @@ export default function KolListPage() {
                     <Table.Td><Avatar src={kol.avatarUrl} size={32} radius="xl" /></Table.Td>
                     <Table.Td><Link to={`/kols/${kol.id}`}>{kol.displayName}</Link></Table.Td>
                     <Table.Td>
-                      {kol.socialLinks?.instagram || kol.instagramHandle ? (
-                        <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer">
-                          @{kol.instagramHandle ?? "-"} ↗
-                        </a>
-                      ) : (
-                        <span>@{kol.instagramHandle ?? "-"}</span>
-                      )}
+                      <Group gap={4}>
+                        {(kol.platforms ?? [kol.platform]).filter(Boolean).map((p) => {
+                          const platformColor: Record<string, string> = {
+                            Instagram: "pink", YouTube: "red", TikTok: "violet", Facebook: "blue", Twitter: "cyan",
+                          };
+                          return <Badge key={p} size="xs" variant="light" color={platformColor[p] ?? "gray"}>{p}</Badge>;
+                        })}
+                      </Group>
                     </Table.Td>
                     <Table.Td>{(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Table.Td>
                     <Table.Td>

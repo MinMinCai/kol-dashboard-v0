@@ -99,7 +99,11 @@ export async function action({ request }: ActionFunctionArgs) {
     audienceGender: effectiveAudienceGender,
     audienceAge: effectiveAudienceAge,
     introduction,
-    platformMetrics: parsedPlatformMetrics,
+    platformMetrics: {
+      ...parsedPlatformMetrics,
+      // Store the platforms list derived from the socials array
+      platforms: socials.filter(s => s.platform).map(s => s.platform),
+    },
     socialLinks: {
       instagram: socialLinkMap.instagram,
       youtube: socialLinkMap.youtube,
@@ -138,10 +142,11 @@ type PlatformAudienceState = {
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
+  avgRating: string;
 };
 
 function emptyPlatformAudience(): PlatformAudienceState {
-  return { engagementRate: "", exposureRate: "", audienceMale: "", audienceFemale: "", audienceAge: "" };
+  return { engagementRate: "", exposureRate: "", audienceMale: "", audienceFemale: "", audienceAge: "", avgRating: "" };
 }
 
 function PlatformAudienceMetricsSection() {
@@ -180,6 +185,14 @@ function PlatformAudienceMetricsSection() {
           audienceAge: m.audienceAge || undefined,
         }];
       })
+    ),
+    avgEngagementRate: Object.fromEntries(
+      AUDIENCE_PLATFORMS.filter(p => metrics[p].engagementRate)
+        .map(p => [p, Number(metrics[p].engagementRate)])
+    ),
+    avgRating: Object.fromEntries(
+      AUDIENCE_PLATFORMS.filter(p => metrics[p].avgRating)
+        .map(p => [p, Number(metrics[p].avgRating)])
     ),
   };
 
@@ -249,6 +262,16 @@ function PlatformAudienceMetricsSection() {
           placeholder="例如：18-24, 25-34"
           value={current.audienceAge}
           onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
+        />
+        <TextInput
+          label="平均評分 (0-5)"
+          type="number"
+          step="0.1"
+          min={0}
+          max={5}
+          placeholder="例如：4.5"
+          value={current.avgRating}
+          onChange={(e) => updateField("avgRating", e.currentTarget.value)}
         />
       </SimpleGrid>
     </Box>
