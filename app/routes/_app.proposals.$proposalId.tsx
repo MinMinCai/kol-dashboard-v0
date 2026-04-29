@@ -131,7 +131,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const candidateId = String(formData.get("candidateId"));
     const price = Number(String(formData.get("price") || "0").replace(/,/g, ""));
     const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
-    const actualPrice = actualPriceStr ? Number(actualPriceStr) : null;
+    const actualPrice = actualPriceStr ? Number(actualPriceStr) : undefined;
     await updateProposalKolDetails(candidateId, {
       role: String(formData.get("role") || ""),
       price,
