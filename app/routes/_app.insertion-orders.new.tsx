@@ -67,6 +67,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       proposalData = {
         title: prop.title,
         clientName: prop.clientName,
+        budget: prop.budget,
         acceptedKols: propKols.filter(pk => pk.status === 'accepted'),
       };
     }
@@ -210,16 +211,31 @@ export default function InsertionOrderCreatePage() {
   const brandSuggestions = brands;
   const industrySuggestions = industries;
 
-  // ── Form field state (for Excel autofill) ──
+  // ── Form field state ──
   const [orderTitleVal, setOrderTitleVal] = useState(proposalData?.title ?? "");
   const [projectNameVal, setProjectNameVal] = useState(proposalData?.title ?? "");
   const [clientNameVal, setClientNameVal] = useState(proposalData?.clientName ?? "");
   const [mcnNameVal, setMcnNameVal] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [projectQuote, setProjectQuote] = useState(0);
+  const [projectQuote, setProjectQuote] = useState(proposalData?.budget ?? 0);
   const [taxRate, setTaxRate] = useState(5);
   const totalWithTax = Math.round(projectQuote * (1 + taxRate / 100));
+
+  /* ── Initial KOLs from proposal (accepted candidates) ── */
+  const initialKolsJson = JSON.stringify(
+    (proposalData?.acceptedKols ?? []).map((pk) => ({
+      id: `row_${pk.kolId || Math.random().toString(36).slice(2, 9)}`,
+      kolId: pk.kolId,
+      name: pk.kolName,
+      avatarUrl: pk.kolAvatarUrl ?? "",
+      services: pk.role ? [pk.role] : ["待定"],
+      uploadDate: "",
+      executionDate: "",
+      authorization: "",
+      price: pk.actualPrice ?? pk.price ?? 0,
+    }))
+  );
 
   /* ── Embed KOL data for native JS dialog ── */
   const kolsJson = JSON.stringify(
@@ -375,16 +391,18 @@ export default function InsertionOrderCreatePage() {
   useEffect(() => {
     const scriptId = "dynamic-kol-script";
     let script = document.getElementById(scriptId);
-    if (script) {
-      script.remove();
-    }
+    if (script) script.remove();
     script = document.createElement("script");
     script.id = scriptId;
     script.innerHTML = nativeDialogScript;
     document.body.appendChild(script);
 
-    // Initial render triggering
     setTimeout(() => {
+      // Pre-fill KOLs from proposal if present
+      const ta = document.getElementById("kol-selected-json") as HTMLTextAreaElement | null;
+      if (ta && initialKolsJson !== "[]") {
+        ta.value = initialKolsJson;
+      }
       // @ts-ignore
       if (typeof window.kolRenderSelected === "function") window.kolRenderSelected();
     }, 50);
@@ -392,47 +410,8 @@ export default function InsertionOrderCreatePage() {
     return () => {
       if (script) script.remove();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nativeDialogScript]);
-
-  /* ── Excel autofill handler (React-controlled fields) ── */
-  const handleExcelUpload = (file: File) => {
-    // Simulate parsing delay
-    setTimeout(() => {
-      // Mock parsed values — in production, replace with real xlsx parsing
-      const parsed = {
-        orderTitle: "DAC_ALLIE_KOL行銷活動 委刊單",
-        projectName: "2026 夏季新品上市推廣",
-        clientName: "ALLIE",
-        mcnName: "雲太資訊有限公司",
-        startDate: "2026-06-01",
-        endDate: "2026-06-30",
-        executionDate: "2026-05-23",
-        projectQuote: 150000,
-        taxRate: 5,
-      };
-
-      setOrderTitleVal(parsed.orderTitle);
-      setProjectNameVal(parsed.projectName);
-      setClientNameVal(parsed.clientName);
-      setMcnNameVal(parsed.mcnName);
-      setStartDate(parsed.startDate);
-      setEndDate(parsed.endDate);
-      setProjectQuote(parsed.projectQuote);
-      setTaxRate(parsed.taxRate);
-      setSelectedBrands(["ALLIE"]);
-
-      // Add a mock KOL (Gina) via native JS
-      try {
-        // @ts-ignore
-        if (typeof window.kolDialogAdd === "function") {
-          // @ts-ignore
-          window.kolDialogAdd("kol-001", encodeURIComponent("Gina"), encodeURIComponent("https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png"), 40000);
-        }
-      } catch (_) {}
-
-      alert("✅ 成功解析 Excel！已自動帶入委刊單標題、客戶、網紅公司、日期與報價等欄位。");
-    }, 600);
-  };
 
   return (
     <Stack gap="md">
@@ -457,46 +436,24 @@ export default function InsertionOrderCreatePage() {
           <input type="hidden" name="kolManagers" value={selectedKolManagers ?? ""} />
 
           <Stack gap="lg">
-            {/* ── Excel Upload Dropzone ── */}
-            <Box>
-              <Text fw={600} mb="xs">匯入委刊單 (Excel)</Text>
-              <label
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "24px",
-                  border: "2px dashed var(--mantine-color-blue-4)",
-                  borderRadius: "8px",
-                  backgroundColor: "var(--mantine-color-blue-light)",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                onDragOver={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-1)"; }}
-                onDragLeave={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-light)"; }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mantine-color-blue-light)";
-                  const f = e.dataTransfer.files[0];
-                  if (f) handleExcelUpload(f);
-                }}
-              >
-                <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
-                <Text fw={600} c="blue">點擊上傳或拖曳 Excel 檔案至此</Text>
-                <Text size="sm" c="dimmed" mt={4}>支援 .xlsx, .xls — 上傳後自動帶入下方欄位，可手動修改</Text>
-                <input
-                  id="excel-upload-input"
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  aria-label="上傳 Excel 檔案"
-                  style={{ display: "none" }}
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleExcelUpload(f); }}
-                />
-              </label>
-            </Box>
-
-            <Divider />
+            {/* ── Proposal source banner ── */}
+            {proposalData && (
+              <>
+                <Box
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: 6,
+                    border: "1px solid var(--mantine-color-blue-3)",
+                    background: "var(--mantine-color-blue-light)",
+                  }}
+                >
+                  <Text size="sm" c="blue" fw={500}>
+                    已從提案「{proposalData.title}」帶入基本資訊與已接受的 KOL 名單（共 {proposalData.acceptedKols.length} 位）
+                  </Text>
+                </Box>
+                <Divider />
+              </>
+            )}
 
             {/* ── Basic info ── */}
             <Box>
