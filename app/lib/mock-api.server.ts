@@ -668,6 +668,16 @@ export async function addProposalKol(
       reason: data.reason,
       status: "pending",
       feedbackText: "",
+      actualFee: data.actualPrice != null ? String(data.actualPrice) : null,
+      realFollowerRatio: data.realFollowerRatio != null ? String(data.realFollowerRatio) : null,
+      reputationScore: data.reputationScore != null ? String(data.reputationScore) : null,
+      avgEngagementRate: data.avgEngagementRate != null ? String(data.avgEngagementRate) : null,
+      engagementIndex: data.engagementIndex != null ? String(data.engagementIndex) : null,
+      engagementScore: data.engagementScore != null ? String(data.engagementScore) : null,
+      brandFitScore: data.brandFitScore != null ? String(data.brandFitScore) : null,
+      qualityScore: data.qualityScore != null ? String(data.qualityScore) : null,
+      cpfr: data.cpfr != null ? String(data.cpfr) : null,
+      recommendation: data.recommendation ?? null,
     })
     .returning();
   return rowToProposalKol(rows[0]);
@@ -694,6 +704,33 @@ export async function updateProposalKolActualPrice(
   const rows = await db
     .update(proposalKolsTable)
     .set({ actualFee: actualFee != null ? String(actualFee) : null })
+    .where(eq(proposalKolsTable.id, id))
+    .returning();
+  if (rows.length === 0) throw new Error("Update failed");
+  return rowToProposalKol(rows[0]);
+}
+
+export async function updateProposalKolDetails(
+  id: string,
+  data: Partial<ProposalKol>,
+): Promise<ProposalKol> {
+  const update: Partial<typeof proposalKolsTable.$inferInsert> = {};
+  if (data.role !== undefined) update.role = data.role;
+  if (data.price !== undefined) update.proposedFee = String(data.price);
+  if (data.actualPrice !== undefined) update.actualFee = data.actualPrice != null ? String(data.actualPrice) : null;
+  if (data.realFollowerRatio !== undefined) update.realFollowerRatio = data.realFollowerRatio != null ? String(data.realFollowerRatio) : null;
+  if (data.reputationScore !== undefined) update.reputationScore = data.reputationScore != null ? String(data.reputationScore) : null;
+  if (data.avgEngagementRate !== undefined) update.avgEngagementRate = data.avgEngagementRate != null ? String(data.avgEngagementRate) : null;
+  if (data.engagementIndex !== undefined) update.engagementIndex = data.engagementIndex != null ? String(data.engagementIndex) : null;
+  if (data.engagementScore !== undefined) update.engagementScore = data.engagementScore != null ? String(data.engagementScore) : null;
+  if (data.brandFitScore !== undefined) update.brandFitScore = data.brandFitScore != null ? String(data.brandFitScore) : null;
+  if (data.qualityScore !== undefined) update.qualityScore = data.qualityScore != null ? String(data.qualityScore) : null;
+  if (data.cpfr !== undefined) update.cpfr = data.cpfr != null ? String(data.cpfr) : null;
+  if (data.recommendation !== undefined) update.recommendation = data.recommendation ?? null;
+
+  const rows = await db
+    .update(proposalKolsTable)
+    .set(update)
     .where(eq(proposalKolsTable.id, id))
     .returning();
   if (rows.length === 0) throw new Error("Update failed");

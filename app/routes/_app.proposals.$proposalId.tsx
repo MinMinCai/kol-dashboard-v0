@@ -33,8 +33,8 @@ import {
   getProposal,
   listKols,
   listProposalKols,
+  updateProposalKolDetails,
   updateProposalKolStatus,
-  updateProposalKolActualPrice,
   deleteProposalKol,
   updateProposal,
   type Kol,
@@ -66,14 +66,39 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (intent === "add_candidate") {
     const kolId = String(formData.get("kolId"));
-    // Strip commas from price string (e.g., "10,000" -> "10000") before conversion
-    const priceStr = String(formData.get("price") || "0").replace(/,/g, "");
-    const price = Number(priceStr);
+    const price = Number(String(formData.get("price") || "0").replace(/,/g, ""));
     const role = String(formData.get("role"));
-    const reason = String(formData.get("reason"));
+    const recommendation = String(formData.get("recommendation") || formData.get("reason") || "");
     const kolName = String(formData.get("kolName"));
+    const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
+    const actualPrice = actualPriceStr ? Number(actualPriceStr) : undefined;
+    const realFollowerRatio = parseOptionalNumber(formData.get("realFollowerRatio"));
+    const reputationScore = parseOptionalNumber(formData.get("reputationScore"));
+    const avgEngagementRate = parseOptionalNumber(formData.get("avgEngagementRate"));
+    const engagementIndex = parseOptionalNumber(formData.get("engagementIndex"));
+    const engagementScore = parseOptionalNumber(formData.get("engagementScore"));
+    const brandFitScore = parseOptionalNumber(formData.get("brandFitScore"));
+    const qualityScore = parseOptionalNumber(formData.get("qualityScore"));
+    const cpfr = parseOptionalNumber(formData.get("cpfr"));
 
-    await addProposalKol({ proposalId, kolId, kolName, price, role, reason });
+    await addProposalKol({
+      proposalId,
+      kolId,
+      kolName,
+      price,
+      actualPrice,
+      role,
+      reason: recommendation,
+      realFollowerRatio,
+      reputationScore,
+      avgEngagementRate,
+      engagementIndex,
+      engagementScore,
+      brandFitScore,
+      qualityScore,
+      cpfr,
+      recommendation,
+    });
     notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `新增人選「${kolName}」`, timestamp: ts });
     return json({ success: true });
   }
@@ -102,12 +127,26 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ success: true });
   }
 
-  if (intent === "update_actual_price") {
+  if (intent === "update_candidate_details") {
     const candidateId = String(formData.get("candidateId"));
+    const price = Number(String(formData.get("price") || "0").replace(/,/g, ""));
     const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
     const actualPrice = actualPriceStr ? Number(actualPriceStr) : null;
-    await updateProposalKolActualPrice(candidateId, actualPrice);
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新實際報價", timestamp: ts });
+    await updateProposalKolDetails(candidateId, {
+      role: String(formData.get("role") || ""),
+      price,
+      actualPrice,
+      realFollowerRatio: parseOptionalNumber(formData.get("realFollowerRatio")),
+      reputationScore: parseOptionalNumber(formData.get("reputationScore")),
+      avgEngagementRate: parseOptionalNumber(formData.get("avgEngagementRate")),
+      engagementIndex: parseOptionalNumber(formData.get("engagementIndex")),
+      engagementScore: parseOptionalNumber(formData.get("engagementScore")),
+      brandFitScore: parseOptionalNumber(formData.get("brandFitScore")),
+      qualityScore: parseOptionalNumber(formData.get("qualityScore")),
+      cpfr: parseOptionalNumber(formData.get("cpfr")),
+      recommendation: String(formData.get("recommendation") || ""),
+    });
+    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新候選人資料", timestamp: ts });
     return json({ success: true });
   }
 
@@ -126,6 +165,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   return json({ success: false });
+}
+
+function parseOptionalNumber(value: FormDataEntryValue | null): number | undefined {
+  if (value == null) return undefined;
+  const raw = String(value).replace(/,/g, "").trim();
+  if (!raw) return undefined;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 export default function ProposalDetailPage() {
@@ -157,6 +204,20 @@ export default function ProposalDetailPage() {
   const [aiSearchDone, setAiSearchDone] = useState(false);
   const [feedbackCandidate, setFeedbackCandidate] = useState<{ id: string; name: string } | null>(null);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
+  const [manualCandidateForm, setManualCandidateForm] = useState({
+    role: "待定",
+    price: 0,
+    actualPrice: "",
+    realFollowerRatio: "",
+    reputationScore: "",
+    avgEngagementRate: "",
+    engagementIndex: "",
+    engagementScore: "",
+    brandFitScore: "",
+    qualityScore: "",
+    cpfr: "",
+    recommendation: "",
+  });
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
   const [downloadingDocType, setDownloadingDocType] = useState<"contract" | "io" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
@@ -241,8 +302,12 @@ export default function ProposalDetailPage() {
   ];
 
   const allKolOptions = useMemo(
-    () => kols.map((k) => ({ value: k.id, label: k.displayName })),
+    () => kols.map((k) => ({ value: k.id, label: k.displayName, followers: k.followers, averagePrice: k.averagePrice, rating: k.rating, engagementRate: k.engagementRate })),
     [kols],
+  );
+  const manualSelectedKol = useMemo(
+    () => allKolOptions.find((option) => option.value === manualKolId) ?? null,
+    [allKolOptions, manualKolId],
   );
   const selectedCandidates = useMemo(
     () => candidates.filter((candidate) => selectedCandidateIds.includes(candidate.id)),
@@ -257,6 +322,35 @@ export default function ProposalDetailPage() {
   useEffect(() => {
     setSelectedCandidateIds((prev) => prev.filter((id) => candidates.some((candidate) => candidate.id === id)));
   }, [candidates]);
+
+  useEffect(() => {
+    if (!manualSelectedKol) return;
+    const followerBase = Math.max(manualSelectedKol.followers ?? 0, 1);
+    const price = manualSelectedKol.averagePrice ?? 0;
+    const seed = manualSelectedKol.value;
+    const seededValue = (suffix: string, min: number, max: number, decimals = 1) => {
+      let h = 0;
+      const input = seed + suffix;
+      for (let i = 0; i < input.length; i++) h = (Math.imul(31, h) + input.charCodeAt(i)) | 0;
+      const t = Math.abs(h) / 2147483647;
+      return (min + t * (max - min)).toFixed(decimals);
+    };
+
+    setManualCandidateForm({
+      role: "待定",
+      price,
+      actualPrice: "",
+      realFollowerRatio: seededValue("rfr", 60, 98),
+      reputationScore: String(manualSelectedKol.rating ?? Number(seededValue("rep", 5, 9.5))),
+      avgEngagementRate: String(manualSelectedKol.engagementRate ?? Number(seededValue("aer", 1.5, 8))),
+      engagementIndex: seededValue("ei", 0.8, 2.5, 2),
+      engagementScore: seededValue("es", 5, 9.5),
+      brandFitScore: seededValue("bfs", 5, 9.5),
+      qualityScore: seededValue("qs", 60, 95),
+      cpfr: (price / followerBase).toFixed(4),
+      recommendation: "手動新增至候選名單。",
+    });
+  }, [manualSelectedKol]);
 
   const getDownloadFilename = (contentDisposition: string | null, fallback: string) => {
     if (!contentDisposition) return fallback;
@@ -662,48 +756,91 @@ export default function ProposalDetailPage() {
                       />
                     </Table.Td>
                     <Table.Td fw={500} style={{ whiteSpace: "nowrap" }}>{c.kolName}</Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>{c.role || "-"}</Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
                       {isEditing ? (
-                        <Form method="post" style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                          <input type="hidden" name="intent" value="update_actual_price" />
-                          <input type="hidden" name="candidateId" value={c.id} />
-                          <TextInput name="actualPrice" size="xs" style={{ width: 90 }} defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
-                          <Button type="submit" size="compact-xs" variant="light">確認</Button>
-                        </Form>
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="role" size="xs" defaultValue={c.role || ""} />
+                      ) : (
+                        c.role || "-"
+                      )}
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="price" size="xs" style={{ width: 90 }} defaultValue={c.price != null ? String(c.price) : "0"} />
+                      ) : (
+                        `$${(c.price ?? 0).toLocaleString("zh-TW")}`
+                      )}
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="actualPrice" size="xs" style={{ width: 90 }} defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
                       ) : (
                         c.actualPrice != null ? `$${c.actualPrice.toLocaleString("zh-TW")}` : <Text size="xs" c="dimmed">-</Text>
                       )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="realFollowerRatio" size="xs" style={{ width: 80 }} defaultValue={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
+                      ) : (
+                        <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="reputationScore" size="xs" style={{ width: 80 }} defaultValue={c.reputationScore != null ? String(c.reputationScore) : ""} />
+                      ) : (
+                        <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="avgEngagementRate" size="xs" style={{ width: 80 }} defaultValue={c.avgEngagementRate != null ? String(c.avgEngagementRate) : ""} />
+                      ) : (
+                        <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="engagementIndex" size="xs" style={{ width: 80 }} defaultValue={c.engagementIndex != null ? String(c.engagementIndex) : ""} />
+                      ) : (
+                        <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="engagementScore" size="xs" style={{ width: 80 }} defaultValue={c.engagementScore != null ? String(c.engagementScore) : ""} />
+                      ) : (
+                        <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="brandFitScore" size="xs" style={{ width: 80 }} defaultValue={c.brandFitScore != null ? String(c.brandFitScore) : ""} />
+                      ) : (
+                        <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
-                        {c.qualityScore != null ? c.qualityScore : "-"}
-                      </Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="qualityScore" size="xs" style={{ width: 80 }} defaultValue={c.qualityScore != null ? String(c.qualityScore) : ""} />
+                      ) : (
+                        <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
+                          {c.qualityScore != null ? c.qualityScore : "-"}
+                        </Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
+                      {isEditing ? (
+                        <TextInput form={`candidate-edit-form-${c.id}`} name="cpfr" size="xs" style={{ width: 90 }} defaultValue={c.cpfr != null ? String(c.cpfr) : ""} />
+                      ) : (
+                        <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ minWidth: 160 }}>
-                      <Text size="xs" lineClamp={2}>{c.recommendation || "-"}</Text>
+                      {isEditing ? (
+                        <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
+                      ) : (
+                        <Text size="xs" lineClamp={2}>{c.recommendation || "-"}</Text>
+                      )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
                       <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
@@ -713,7 +850,11 @@ export default function ProposalDetailPage() {
                     </Table.Td>
                     {isEditing && (
                       <Table.Td style={{ whiteSpace: "nowrap" }}>
+                        <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
                         <Group gap={5}>
+                          <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
+                          <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
+                          <Button variant="light" color="blue" size="compact-xs" type="submit" form={`candidate-edit-form-${c.id}`}>儲存</Button>
                           <Form method="post" style={{ display: "inline" }}>
                             <input type="hidden" name="intent" value="update_status" />
                             <input type="hidden" name="candidateId" value={c.id} />
@@ -892,6 +1033,20 @@ export default function ProposalDetailPage() {
         opened={addOpened}
         onClose={() => {
           setManualKolId(null);
+          setManualCandidateForm({
+            role: "待定",
+            price: 0,
+            actualPrice: "",
+            realFollowerRatio: "",
+            reputationScore: "",
+            avgEngagementRate: "",
+            engagementIndex: "",
+            engagementScore: "",
+            brandFitScore: "",
+            qualityScore: "",
+            cpfr: "",
+            recommendation: "",
+          });
           closeAdd();
         }}
         title="新增 KOL 候選人"
@@ -926,6 +1081,8 @@ export default function ProposalDetailPage() {
               label="建議合作版位"
               placeholder="例如：IG 貼文 x1, Reels x1"
               required
+              value={manualCandidateForm.role}
+              onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, role: e.currentTarget.value }))}
             />
             <NumberInput
               name="price"
@@ -933,13 +1090,33 @@ export default function ProposalDetailPage() {
               required
               min={0}
               thousandSeparator=","
-              defaultValue={kols.find((k) => k.id === manualKolId)?.averagePrice ?? 0}
+              value={manualCandidateForm.price}
+              onChange={(value) => setManualCandidateForm((prev) => ({ ...prev, price: Number(value) || 0 }))}
             />
+            <TextInput name="actualPrice" label="實際報價" value={manualCandidateForm.actualPrice} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, actualPrice: e.currentTarget.value }))} />
+            <Group grow>
+              <TextInput name="realFollowerRatio" label="真粉比例" value={manualCandidateForm.realFollowerRatio} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, realFollowerRatio: e.currentTarget.value }))} />
+              <TextInput name="reputationScore" label="KOL 名聲" value={manualCandidateForm.reputationScore} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, reputationScore: e.currentTarget.value }))} />
+            </Group>
+            <Group grow>
+              <TextInput name="avgEngagementRate" label="平均互動率" value={manualCandidateForm.avgEngagementRate} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, avgEngagementRate: e.currentTarget.value }))} />
+              <TextInput name="engagementIndex" label="互動率 index" value={manualCandidateForm.engagementIndex} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, engagementIndex: e.currentTarget.value }))} />
+            </Group>
+            <Group grow>
+              <TextInput name="engagementScore" label="互動率評分" value={manualCandidateForm.engagementScore} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, engagementScore: e.currentTarget.value }))} />
+              <TextInput name="brandFitScore" label="品牌適配度" value={manualCandidateForm.brandFitScore} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, brandFitScore: e.currentTarget.value }))} />
+            </Group>
+            <Group grow>
+              <TextInput name="qualityScore" label="綜合品質分數" value={manualCandidateForm.qualityScore} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, qualityScore: e.currentTarget.value }))} />
+              <TextInput name="cpfr" label="CPFR" value={manualCandidateForm.cpfr} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, cpfr: e.currentTarget.value }))} />
+            </Group>
             <Textarea
-              name="reason"
-              label="推薦理由"
+              name="recommendation"
+              label="KOL 選擇建議"
               placeholder="為什麼這個 KOL 適合此專案？"
               rows={3}
+              value={manualCandidateForm.recommendation}
+              onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, recommendation: e.currentTarget.value }))}
             />
             <Group justify="flex-end" mt="md">
               <Button
