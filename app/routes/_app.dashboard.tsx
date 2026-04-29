@@ -1,5 +1,8 @@
 import { Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import type { MouseEvent } from "react";
+import { sql } from "drizzle-orm";
 import {
   IconUsers,
   IconFileText,
@@ -7,12 +10,36 @@ import {
   IconHeart,
   IconReportAnalytics
 } from "@tabler/icons-react";
+import { db } from "~/lib/db.server";
+import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
 
-const stats = [
-  { label: "KOL 總數", value: "128" },
-  { label: "進行中提案", value: "32" },
-  { label: "執行中委刊單", value: "19" },
-];
+export async function loader(_: LoaderFunctionArgs) {
+  try {
+    const [
+      [{ count: kolCount }],
+      [{ count: activeProposalCount }],
+      [{ count: insertionOrderCount }],
+    ] = await Promise.all([
+      db.select({ count: sql<number>`count(*)::int` }).from(kols),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(proposals)
+        .where(sql`${proposals.stage} not in ('approved', 'rejected')`),
+      db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
+    ]);
+
+    return json({
+      stats: [
+        { label: "KOL 總數", value: String(kolCount ?? 0) },
+        { label: "進行中提案", value: String(activeProposalCount ?? 0) },
+        { label: "委刊單總數", value: String(insertionOrderCount ?? 0) },
+      ],
+    });
+  } catch (err) {
+    console.error("[dashboard loader]", err);
+    throw new Response(err instanceof Error ? err.message : String(err), { status: 500 });
+  }
+}
 
 const modules = [
   {
@@ -98,6 +125,8 @@ function ModuleCard({
 }
 
 export default function DashboardPage() {
+  const { stats } = useLoaderData<typeof loader>();
+
   return (
     <Stack gap="xl">
       <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
