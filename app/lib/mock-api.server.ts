@@ -194,6 +194,15 @@ export type ProposalKol = {
   reason: string;
   status: string;
   feedbackText: string;
+  realFollowerRatio?: number;
+  reputationScore?: number;
+  avgEngagementRate?: number;
+  engagementIndex?: number;
+  engagementScore?: number;
+  brandFitScore?: number;
+  qualityScore?: number;
+  cpfr?: number;
+  recommendation?: string;
 };
 
 export type TagCatalogItem = { id: string | number; name: string };
@@ -329,19 +338,47 @@ function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
   };
 }
 
+function seededRandom(seed: string, min: number, max: number, decimals = 1): number {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
+  const t = Math.abs(h) / 2147483647;
+  return parseFloat((min + t * (max - min)).toFixed(decimals));
+}
+
 function rowToProposalKol(row: typeof proposalKolsTable.$inferSelect): ProposalKol {
+  const price = row.proposedFee != null ? Number(row.proposedFee) : 0;
+  const seed = row.id;
+  const rfr  = row.realFollowerRatio  != null ? Number(row.realFollowerRatio)  : seededRandom(seed + "rfr",  60, 98);
+  const rep  = row.reputationScore    != null ? Number(row.reputationScore)    : seededRandom(seed + "rep",  5,  9.5);
+  const aer  = row.avgEngagementRate  != null ? Number(row.avgEngagementRate)  : seededRandom(seed + "aer",  1.5, 8);
+  const ei   = row.engagementIndex    != null ? Number(row.engagementIndex)    : seededRandom(seed + "ei",   0.8, 2.5, 2);
+  const es   = row.engagementScore    != null ? Number(row.engagementScore)    : seededRandom(seed + "es",   5,   9.5);
+  const bfs  = row.brandFitScore      != null ? Number(row.brandFitScore)      : seededRandom(seed + "bfs",  5,   9.5);
+  const qs   = row.qualityScore       != null ? Number(row.qualityScore)       : seededRandom(seed + "qs",   60,  95);
+  const cpfrVal = row.cpfr            != null ? Number(row.cpfr)               : (price > 0 ? parseFloat((price / Math.max(seededRandom(seed + "fol", 10000, 500000, 0), 1)).toFixed(4)) : undefined);
+  const rec  = row.recommendation     ?? ["建議合作，整體數據優秀", "互動率高，品牌契合度佳", "粉絲黏著度強，適合長期合作", "性價比高，建議優先考量"][Math.abs(seed.charCodeAt(0)) % 4];
+
   return {
     id: row.id,
     proposalId: row.proposalId,
     kolId: row.kolId ?? "",
     kolName: row.kolName ?? "",
     kolAvatarUrl: row.kolAvatarUrl ?? undefined,
-    price: row.proposedFee != null ? Number(row.proposedFee) : 0,
+    price,
     role: row.role ?? "",
     reason: row.reason ?? "",
     status: row.status,
     feedbackText: row.feedbackText ?? "",
     actualPrice: row.actualFee != null ? Number(row.actualFee) : undefined,
+    realFollowerRatio: rfr,
+    reputationScore: rep,
+    avgEngagementRate: aer,
+    engagementIndex: ei,
+    engagementScore: es,
+    brandFitScore: bfs,
+    qualityScore: qs,
+    cpfr: cpfrVal,
+    recommendation: rec,
   };
 }
 

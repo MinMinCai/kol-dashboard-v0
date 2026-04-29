@@ -16,7 +16,8 @@
       "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(typeof m.createRequestHandler\\)\")",
       "Bash(node -e \"const m = require\\('./node_modules/@remix-run/node/dist/index.js'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.toLowerCase\\(\\).includes\\('request'\\) || k.toLowerCase\\(\\).includes\\('handler'\\) || k.toLowerCase\\(\\).includes\\('response'\\) || k.toLowerCase\\(\\).includes\\('writable'\\)\\)\\)\")",
       "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)",
-      "Bash(node --env-file=.env --input-type=module)"
+      "Bash(node --env-file=.env --input-type=module)",
+      "Bash(DATABASE_URL=\"postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres\" node scripts/migrate.mjs)"
     ]
   }
 }

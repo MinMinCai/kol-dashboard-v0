@@ -189,3 +189,15 @@ CREATE INDEX IF NOT EXISTS idx_notif_ref ON notifications (ref_table, ref_id);
 
 -- ─── 9. 新增 system_preferences.favorite_folders ──────────────
 ALTER TABLE system_preferences ADD COLUMN IF NOT EXISTS favorite_folders text[] DEFAULT '{}' NOT NULL;
+
+-- ─── 10. 新增 proposal_kols 分析欄位 ──────────────────────────
+ALTER TABLE proposal_kols
+  ADD COLUMN IF NOT EXISTS real_follower_ratio  numeric(5,2),
+  ADD COLUMN IF NOT EXISTS reputation_score     numeric(4,2),
+  ADD COLUMN IF NOT EXISTS avg_engagement_rate  numeric(5,2),
+  ADD COLUMN IF NOT EXISTS engagement_index     numeric(6,3),
+  ADD COLUMN IF NOT EXISTS engagement_score     numeric(4,2),
+  ADD COLUMN IF NOT EXISTS brand_fit_score      numeric(4,2),
+  ADD COLUMN IF NOT EXISTS quality_score        numeric(5,2),
+  ADD COLUMN IF NOT EXISTS cpfr                 numeric(10,4),
+  ADD COLUMN IF NOT EXISTS recommendation       text;

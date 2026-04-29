@@ -11,6 +11,7 @@ import {
   NumberInput,
   Progress,
   RingProgress,
+  ScrollArea,
   Select,
   SimpleGrid,
   Stack,
@@ -507,121 +508,120 @@ export default function ProposalDetailPage() {
             )}
           </Group>
 
-          <Table striped withTableBorder>
+          <ScrollArea>
+          <Table striped withTableBorder style={{ minWidth: 1400 }}>
             <Table.Thead>
               <Table.Tr>
                 {isEditing && (
                   <Table.Th style={{ width: 40 }}>
-                    <Checkbox 
+                    <Checkbox
                       checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
                       indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
                       onChange={(e) => {
-                        if (e.currentTarget.checked) {
-                          setSelectedCandidateIds(candidates.map(c => c.id));
-                        } else {
-                          setSelectedCandidateIds([]);
-                        }
+                        if (e.currentTarget.checked) setSelectedCandidateIds(candidates.map(c => c.id));
+                        else setSelectedCandidateIds([]);
                       }}
                     />
                   </Table.Th>
                 )}
-                <Table.Th>KOL 名稱</Table.Th>
-                <Table.Th>合作項目</Table.Th>
-                <Table.Th>預估報價</Table.Th>
-                <Table.Th>實際報價</Table.Th>
-                <Table.Th>推薦理由</Table.Th>
-                <Table.Th>狀態</Table.Th>
-                <Table.Th>客戶反饋</Table.Th>
-                {isEditing && <Table.Th>操作</Table.Th>}
+                <Table.Th style={{ whiteSpace: "nowrap" }}>KOL 名稱</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>合作項目</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>預估報價</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>實際報價</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>真粉比例</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>KOL 名聲</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>平均互動率</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>互動率 index</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>互動率評分</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>品牌適配度</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>綜合品質分數</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>CPFR</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap", minWidth: 160 }}>KOL 選擇建議</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap" }}>狀態</Table.Th>
+                <Table.Th style={{ whiteSpace: "nowrap", minWidth: 120 }}>客戶反饋</Table.Th>
+                {isEditing && <Table.Th style={{ whiteSpace: "nowrap" }}>操作</Table.Th>}
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {candidates.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={isEditing ? 9 : 7} align="center">尚未加入任何候選人</Table.Td>
+                  <Table.Td colSpan={isEditing ? 17 : 15} align="center">尚未加入任何候選人</Table.Td>
                 </Table.Tr>
               ) : (
                 candidates.map((c) => (
                   <Table.Tr key={c.id}>
                     {isEditing && (
                       <Table.Td>
-                        <Checkbox 
+                        <Checkbox
                           checked={selectedCandidateIds.includes(c.id)}
                           onChange={(e) => {
-                            if (e.currentTarget.checked) {
-                              setSelectedCandidateIds([...selectedCandidateIds, c.id]);
-                            } else {
-                              setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
-                            }
+                            if (e.currentTarget.checked) setSelectedCandidateIds([...selectedCandidateIds, c.id]);
+                            else setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
                           }}
                         />
                       </Table.Td>
                     )}
-                    <Table.Td fw={500}>{c.kolName}</Table.Td>
-                    <Table.Td>{c.role}</Table.Td>
-                    <Table.Td>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
-                    <Table.Td>
+                    <Table.Td fw={500} style={{ whiteSpace: "nowrap" }}>{c.kolName}</Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>{c.role || "-"}</Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
                       {isEditing ? (
                         <Form method="post" style={{ display: "flex", gap: 4, alignItems: "center" }}>
                           <input type="hidden" name="intent" value="update_actual_price" />
                           <input type="hidden" name="candidateId" value={c.id} />
-                          <TextInput
-                            name="actualPrice"
-                            size="xs"
-                            style={{ width: 90 }}
-                            defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""}
-                            placeholder="未填"
-                          />
+                          <TextInput name="actualPrice" size="xs" style={{ width: 90 }} defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
                           <Button type="submit" size="compact-xs" variant="light">確認</Button>
                         </Form>
                       ) : (
-                        c.actualPrice != null
-                          ? `$${c.actualPrice.toLocaleString("zh-TW")}`
-                          : <Text size="xs" c="dimmed">-</Text>
+                        c.actualPrice != null ? `$${c.actualPrice.toLocaleString("zh-TW")}` : <Text size="xs" c="dimmed">-</Text>
                       )}
                     </Table.Td>
-                    <Table.Td>
-                      <Text size="sm" lineClamp={2}>{c.reason}</Text>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
                     </Table.Td>
-                    <Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
+                        {c.qualityScore != null ? c.qualityScore : "-"}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ minWidth: 160 }}>
+                      <Text size="xs" lineClamp={2}>{c.recommendation || "-"}</Text>
+                    </Table.Td>
+                    <Table.Td style={{ whiteSpace: "nowrap" }}>
                       <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
                     </Table.Td>
-                    <Table.Td>
+                    <Table.Td style={{ minWidth: 120 }}>
                       <Text size="xs" c="dimmed">{c.feedbackText || "-"}</Text>
                     </Table.Td>
                     {isEditing && (
-                      <Table.Td>
+                      <Table.Td style={{ whiteSpace: "nowrap" }}>
                         <Group gap={5}>
-                          <Form method="post" style={{ display: 'inline' }}>
+                          <Form method="post" style={{ display: "inline" }}>
                             <input type="hidden" name="intent" value="update_status" />
                             <input type="hidden" name="candidateId" value={c.id} />
                             <input type="hidden" name="status" value="accepted" />
-                            <Button
-                              variant="light"
-                              color="green"
-                              size="compact-xs"
-                              type="submit"
-                              disabled={c.status === "accepted"}
-                            >
-                              接受
-                            </Button>
+                            <Button variant="light" color="green" size="compact-xs" type="submit" disabled={c.status === "accepted"}>接受</Button>
                           </Form>
-                          <Button
-                            variant="light"
-                            color="red"
-                            size="compact-xs"
-                            onClick={() => setFeedbackCandidate({ id: c.id, name: c.kolName })}
-                            disabled={c.status === "rejected"}
-                          >
-                            拒絕
-                          </Button>
-                          <ActionIcon
-                            variant="light"
-                            color="gray"
-                            size="sm"
-                            type="button"
-                            onClick={() => requestDeleteSingle(c.id, c.kolName)}
-                          >
+                          <Button variant="light" color="red" size="compact-xs" onClick={() => setFeedbackCandidate({ id: c.id, name: c.kolName })} disabled={c.status === "rejected"}>拒絕</Button>
+                          <ActionIcon variant="light" color="gray" size="sm" type="button" onClick={() => requestDeleteSingle(c.id, c.kolName)}>
                             <IconTrash size={14} />
                           </ActionIcon>
                         </Group>
@@ -632,6 +632,7 @@ export default function ProposalDetailPage() {
               )}
             </Table.Tbody>
           </Table>
+          </ScrollArea>
         </Stack>
       </Card>
 
