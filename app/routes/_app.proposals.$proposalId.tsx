@@ -158,6 +158,8 @@ export default function ProposalDetailPage() {
   const [feedbackCandidate, setFeedbackCandidate] = useState<{ id: string; name: string } | null>(null);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
+  const [downloadingDocType, setDownloadingDocType] = useState<"contract" | "io" | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<
     { type: "single"; candidateId: string; name: string } | { type: "batch"; candidateIds: string[] } | null
   >(null);
@@ -242,6 +244,71 @@ export default function ProposalDetailPage() {
     () => kols.map((k) => ({ value: k.id, label: k.displayName })),
     [kols],
   );
+  const selectedCandidates = useMemo(
+    () => candidates.filter((candidate) => selectedCandidateIds.includes(candidate.id)),
+    [candidates, selectedCandidateIds],
+  );
+  const selectedAcceptedCandidates = useMemo(
+    () => selectedCandidates.filter((candidate) => candidate.status === "accepted"),
+    [selectedCandidates],
+  );
+  const hasNonAcceptedSelection = selectedCandidates.some((candidate) => candidate.status !== "accepted");
+
+  useEffect(() => {
+    setSelectedCandidateIds((prev) => prev.filter((id) => candidates.some((candidate) => candidate.id === id)));
+  }, [candidates]);
+
+  const getDownloadFilename = (contentDisposition: string | null, fallback: string) => {
+    if (!contentDisposition) return fallback;
+
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) {
+      try {
+        return decodeURIComponent(utf8Match[1]);
+      } catch {
+        return utf8Match[1];
+      }
+    }
+
+    const basicMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
+    return basicMatch?.[1] ?? fallback;
+  };
+
+  const downloadSelectedDocuments = async (docType: "contract" | "io") => {
+    if (selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection) return;
+
+    setDownloadingDocType(docType);
+    setDownloadError(null);
+
+    try {
+      for (const candidate of selectedAcceptedCandidates) {
+        const response = await fetch(
+          `/api/proposals/${proposal.id}/generate-doc?type=${docType}&candidateId=${encodeURIComponent(candidate.id)}`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`${candidate.kolName} 下載失敗`);
+        }
+
+        const blob = await response.blob();
+        const fallbackName = `${docType === "contract" ? "KOL合約" : "KOL委刊單"}_${candidate.kolName}.docx`;
+        const filename = getDownloadFilename(response.headers.get("Content-Disposition"), fallbackName);
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
+      }
+    } catch (error) {
+      setDownloadError(error instanceof Error ? error.message : "文件下載失敗，請稍後再試");
+    } finally {
+      setDownloadingDocType(null);
+    }
+  };
 
   const handleAiSearch = () => {
     if (!aiQuery.trim()) return;
@@ -488,8 +555,45 @@ export default function ProposalDetailPage() {
       <Card withBorder>
         <Stack gap="md">
           <Group justify="space-between">
-            <Group gap="md">
+            <Stack gap={4}>
               <Title order={4}>KOL 候選名單 ({candidates.length})</Title>
+              <Text size="xs" c="dimmed">
+                勾選後可批次生成文件；僅「已接受」的 KOL 可生成合約與委刊單。
+              </Text>
+              {downloadError && (
+                <Text size="xs" c="red">
+                  {downloadError}
+                </Text>
+              )}
+              {hasNonAcceptedSelection && selectedCandidateIds.length > 0 && (
+                <Text size="xs" c="orange">
+                  目前選取名單中含有未接受的 KOL，請取消後再生成文件。
+                </Text>
+              )}
+            </Stack>
+            <Group gap="xs">
+              <Button
+                type="button"
+                size="xs"
+                variant="light"
+                color="grape"
+                loading={downloadingDocType === "contract"}
+                disabled={selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection}
+                onClick={() => void downloadSelectedDocuments("contract")}
+              >
+                生成 KOL 合約
+              </Button>
+              <Button
+                type="button"
+                size="xs"
+                variant="light"
+                color="blue"
+                loading={downloadingDocType === "io"}
+                disabled={selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection}
+                onClick={() => void downloadSelectedDocuments("io")}
+              >
+                生成 KOL 委刊單
+              </Button>
               {isEditing && selectedCandidateIds.length > 0 && (
                 <Button
                   variant="light"
@@ -502,28 +606,26 @@ export default function ProposalDetailPage() {
                   批量刪除 ({selectedCandidateIds.length})
                 </Button>
               )}
+              {isEditing && (
+                <Button type="button" size="xs" onClick={openAdd}>+ 手動新增</Button>
+              )}
             </Group>
-            {isEditing && (
-              <Button type="button" size="xs" onClick={openAdd}>+ 手動新增</Button>
-            )}
           </Group>
 
           <ScrollArea>
           <Table striped withTableBorder style={{ minWidth: 1400 }}>
             <Table.Thead>
               <Table.Tr>
-                {isEditing && (
-                  <Table.Th style={{ width: 40 }}>
-                    <Checkbox
-                      checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
-                      indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
-                      onChange={(e) => {
-                        if (e.currentTarget.checked) setSelectedCandidateIds(candidates.map(c => c.id));
-                        else setSelectedCandidateIds([]);
-                      }}
-                    />
-                  </Table.Th>
-                )}
+                <Table.Th style={{ width: 40 }}>
+                  <Checkbox
+                    checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
+                    indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
+                    onChange={(e) => {
+                      if (e.currentTarget.checked) setSelectedCandidateIds(candidates.map(c => c.id));
+                      else setSelectedCandidateIds([]);
+                    }}
+                  />
+                </Table.Th>
                 <Table.Th style={{ whiteSpace: "nowrap" }}>KOL 名稱</Table.Th>
                 <Table.Th style={{ whiteSpace: "nowrap" }}>合作項目</Table.Th>
                 <Table.Th style={{ whiteSpace: "nowrap" }}>預估報價</Table.Th>
@@ -545,22 +647,20 @@ export default function ProposalDetailPage() {
             <Table.Tbody>
               {candidates.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={isEditing ? 17 : 15} align="center">尚未加入任何候選人</Table.Td>
+                  <Table.Td colSpan={isEditing ? 17 : 16} align="center">尚未加入任何候選人</Table.Td>
                 </Table.Tr>
               ) : (
                 candidates.map((c) => (
                   <Table.Tr key={c.id}>
-                    {isEditing && (
-                      <Table.Td>
-                        <Checkbox
-                          checked={selectedCandidateIds.includes(c.id)}
-                          onChange={(e) => {
-                            if (e.currentTarget.checked) setSelectedCandidateIds([...selectedCandidateIds, c.id]);
-                            else setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
-                          }}
-                        />
-                      </Table.Td>
-                    )}
+                    <Table.Td>
+                      <Checkbox
+                        checked={selectedCandidateIds.includes(c.id)}
+                        onChange={(e) => {
+                          if (e.currentTarget.checked) setSelectedCandidateIds([...selectedCandidateIds, c.id]);
+                          else setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
+                        }}
+                      />
+                    </Table.Td>
                     <Table.Td fw={500} style={{ whiteSpace: "nowrap" }}>{c.kolName}</Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>{c.role || "-"}</Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>${(c.price ?? 0).toLocaleString("zh-TW")}</Table.Td>
@@ -949,4 +1049,3 @@ export default function ProposalDetailPage() {
     </Stack>
   );
 }
-
