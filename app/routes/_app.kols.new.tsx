@@ -374,7 +374,7 @@ export default function KolCreatePage() {
               </Stack>
 
               <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-                <TextInput label="KOL 名稱 *" name="displayName" placeholder="例如：Gina" required />
+                <TextInput label="KOL 名稱" name="displayName" placeholder="例如：Gina" required />
 
                 <Box>
                   <Text size="sm" fw={500} mb={6}>性別</Text>

@@ -20,7 +20,7 @@ import {
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, listFavoriteFolders, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
+import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -345,10 +345,10 @@ export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
   if (formData.get("intent") === "add_favorite") {
     const folder = String(formData.get("folder") ?? "").trim() || undefined;
-    await updateKol(kolId, { isFavorite: true, favoriteFolder: folder });
+    await addKolToFavoriteFolder(kolId, folder ?? "");
   }
   if (formData.get("intent") === "remove_favorite") {
-    await updateKol(kolId, { isFavorite: false });
+    await clearKolFavorites(kolId);
   }
   return json({ success: true });
 }

@@ -32,14 +32,14 @@ export async function loader(_: LoaderFunctionArgs) {
     listFavoriteFolders(),
   ]);
   const favorites = allKols.filter((k) => k.isFavorite);
-  const usedFolders = favorites.map((r) => r.favoriteFolder).filter(Boolean) as string[];
+  const usedFolders = favorites.flatMap((r) => r.favoriteFolders ?? (r.favoriteFolder ? [r.favoriteFolder] : []));
   const folderSet = new Set([...savedFolders, ...usedFolders]);
   const folders = Array.from(folderSet);
-  const folderKols: Record<string, Pick<Kol, "id" | "displayName" | "engagementRate" | "exposureRate" | "favoriteFolder">[]> = {};
+  const folderKols: Record<string, Pick<Kol, "id" | "displayName" | "engagementRate" | "exposureRate" | "favoriteFolder" | "favoriteFolders">[]> = {};
   for (const f of folders) {
     folderKols[f] = favorites
-      .filter((k) => (k.favoriteFolder ?? "未分類") === f)
-      .map(({ id, displayName, engagementRate, exposureRate, favoriteFolder }) => ({ id, displayName, engagementRate, exposureRate, favoriteFolder }));
+      .filter((k) => (k.favoriteFolders ?? []).includes(f) || k.favoriteFolder === f)
+      .map(({ id, displayName, engagementRate, exposureRate, favoriteFolder, favoriteFolders }) => ({ id, displayName, engagementRate, exposureRate, favoriteFolder, favoriteFolders }));
   }
   return json({ folders, folderKols });
 }

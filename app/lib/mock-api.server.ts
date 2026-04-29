@@ -4,6 +4,8 @@ import {
   proposals as proposalsTable,
   proposalKols as proposalKolsTable,
   insertionOrders as ioTable,
+  kolFavoriteFolders as kolFavoriteFoldersTable,
+  kolFavoriteFolderItems as kolFavoriteFolderItemsTable,
   tagCatalog as tagCatalogTable,
   brandCatalog as brandCatalogTable,
   industryCatalog as industryCatalogTable,
@@ -116,6 +118,7 @@ export type Kol = {
   industryDistribution?: string[];
   isFavorite?: boolean;
   favoriteFolder?: string;
+  favoriteFolders?: string[];
   avatarUrl?: string;
   social?: {
     instagram?: number;
@@ -237,6 +240,13 @@ export type SystemPreferences = {
   favoriteFolders: string[];
 };
 
+export type FavoriteFolder = {
+  id: string;
+  name: string;
+  description?: string;
+  kolCount: number;
+};
+
 export type InsertionOrder = {
   id: string;
   orderNo: string;
@@ -296,6 +306,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     industryDistribution: row.industryDistribution ?? [],
     isFavorite: row.isFavorite,
     favoriteFolder: row.favoriteFolder ?? undefined,
+    favoriteFolders: [],
     avatarUrl: row.avatarUrl ?? undefined,
     social: (row.social as Kol["social"]) ?? undefined,
     contact: (row.contact as Kol["contact"]) ?? undefined,
@@ -318,6 +329,80 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     platformMetrics,
     socialLinks: (row.socialLinks as Kol["socialLinks"]) ?? undefined,
   };
+}
+
+async function getFavoriteFolderState() {
+  const [folderRows, itemRows, prefs] = await Promise.all([
+    db.select().from(kolFavoriteFoldersTable).catch(() => []),
+    db.select().from(kolFavoriteFolderItemsTable).catch(() => []),
+    getSystemPreferences(),
+  ]);
+
+  const folderById = new Map(folderRows.map((row) => [row.id, row]));
+  const folderNames = new Set<string>(prefs.favoriteFolders);
+
+  for (const row of folderRows) {
+    folderNames.add(row.name);
+  }
+
+  const folderNamesByKolId = new Map<string, string[]>();
+  for (const item of itemRows) {
+    const folder = folderById.get(item.folderId);
+    if (!folder) continue;
+    const current = folderNamesByKolId.get(item.kolId) ?? [];
+    if (!current.includes(folder.name)) current.push(folder.name);
+    folderNamesByKolId.set(item.kolId, current);
+  }
+
+  return {
+    folderRows,
+    itemRows,
+    folderById,
+    folderNames: Array.from(folderNames),
+    folderNamesByKolId,
+  };
+}
+
+async function enrichKolsWithFavoriteFolders(kols: Kol[]): Promise<Kol[]> {
+  const { folderNamesByKolId } = await getFavoriteFolderState();
+
+  return kols.map((kol) => {
+    const linkedFolders = folderNamesByKolId.get(kol.id) ?? [];
+    const mergedFolders = Array.from(
+      new Set([
+        ...linkedFolders,
+        ...(kol.favoriteFolder ? [kol.favoriteFolder] : []),
+        ...(kol.favoriteFolders ?? []),
+      ]),
+    );
+
+    return {
+      ...kol,
+      isFavorite: Boolean(kol.isFavorite || mergedFolders.length > 0),
+      favoriteFolders: mergedFolders,
+      favoriteFolder: mergedFolders[0] ?? kol.favoriteFolder,
+    };
+  });
+}
+
+async function getOrCreateFavoriteFolderRow(name: string) {
+  const normalized = name.trim();
+  if (!normalized) return null;
+
+  const existing = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  if (existing.length > 0) return existing[0];
+
+  const created = await db
+    .insert(kolFavoriteFoldersTable)
+    .values({
+      id: crypto.randomUUID(),
+      name: normalized,
+      ownerId: "user_001",
+      description: null,
+    })
+    .returning();
+
+  return created[0];
 }
 
 function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
@@ -418,12 +503,14 @@ function rowToInsertionOrder(row: typeof ioTable.$inferSelect): InsertionOrder {
 
 export async function listKols(): Promise<Kol[]> {
   const rows = await db.select().from(kolsTable);
-  return rows.map(rowToKol);
+  return enrichKolsWithFavoriteFolders(rows.map(rowToKol));
 }
 
 export async function getKol(id: string): Promise<Kol | null> {
   const rows = await db.select().from(kolsTable).where(eq(kolsTable.id, id)).limit(1);
-  return rows.length > 0 ? rowToKol(rows[0]) : null;
+  if (rows.length === 0) return null;
+  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  return kol ?? null;
 }
 
 export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
@@ -436,7 +523,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.averagePrice !== undefined) update.averagePrice = String(data.averagePrice);
   if (data.industryDistribution !== undefined) update.industryDistribution = data.industryDistribution;
   if (data.isFavorite !== undefined) update.isFavorite = data.isFavorite;
-  if (data.favoriteFolder !== undefined) update.favoriteFolder = data.favoriteFolder;
+  if (data.favoriteFolder !== undefined) update.favoriteFolder = data.favoriteFolder ?? null;
   if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl;
   if (data.social !== undefined) update.social = data.social;
   if (data.contact !== undefined) update.contact = data.contact;
@@ -461,7 +548,8 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
 
   const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
-  return rowToKol(rows[0]);
+  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  return kol;
 }
 
 export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
@@ -502,7 +590,8 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       status: "active",
     })
     .returning();
-  return rowToKol(rows[0]);
+  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  return kol;
 }
 
 export async function deleteKol(id: string): Promise<boolean> {
@@ -963,13 +1052,171 @@ export async function updateSystemPreferences(
 }
 
 export async function listFavoriteFolders(): Promise<string[]> {
-  const prefs = await getSystemPreferences();
-  return prefs.favoriteFolders;
+  const state = await getFavoriteFolderState();
+  const kols = await db.select({ favoriteFolder: kolsTable.favoriteFolder }).from(kolsTable).catch(() => []);
+  for (const row of kols) {
+    if (row.favoriteFolder) state.folderNames.push(row.favoriteFolder);
+  }
+  return Array.from(new Set(state.folderNames)).sort((a, b) => a.localeCompare(b, "zh-TW"));
 }
 
 export async function createFavoriteFolder(name: string): Promise<string[]> {
+  const normalized = name.trim();
+  if (!normalized) return listFavoriteFolders();
   const prefs = await getSystemPreferences();
-  if (prefs.favoriteFolders.includes(name)) return prefs.favoriteFolders;
-  const updated = await updateSystemPreferences({ favoriteFolders: [...prefs.favoriteFolders, name] });
-  return updated.favoriteFolders;
+  if (!prefs.favoriteFolders.includes(normalized)) {
+    await updateSystemPreferences({ favoriteFolders: [...prefs.favoriteFolders, normalized] });
+  }
+  await getOrCreateFavoriteFolderRow(normalized);
+  return listFavoriteFolders();
+}
+
+export async function listFavoriteFolderDetails(): Promise<FavoriteFolder[]> {
+  const { folderRows, itemRows } = await getFavoriteFolderState();
+  const counts = itemRows.reduce<Record<string, number>>((acc, item) => {
+    acc[item.folderId] = (acc[item.folderId] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const savedNames = await listFavoriteFolders();
+  const detailsFromRows = folderRows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    description: row.description ?? undefined,
+    kolCount: counts[row.id] ?? 0,
+  }));
+  const existingNames = new Set(detailsFromRows.map((folder) => folder.name));
+  const virtualFolders = savedNames
+    .filter((name) => !existingNames.has(name))
+    .map((name) => ({
+      id: `virtual_${name}`,
+      name,
+      kolCount: 0,
+    }));
+
+  return [...detailsFromRows, ...virtualFolders].sort((a, b) => a.name.localeCompare(b.name, "zh-TW"));
+}
+
+export async function renameFavoriteFolder(oldName: string, newName: string): Promise<string[]> {
+  const from = oldName.trim();
+  const to = newName.trim();
+  if (!from || !to || from === to) return listFavoriteFolders();
+
+  const prefs = await getSystemPreferences();
+  const updatedNames = prefs.favoriteFolders.map((name) => (name === from ? to : name));
+  if (!updatedNames.includes(to)) updatedNames.push(to);
+  await updateSystemPreferences({ favoriteFolders: Array.from(new Set(updatedNames)).filter((name) => name !== from || to === from) });
+
+  const folderRows = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, from)).limit(1);
+  if (folderRows.length > 0) {
+    await db.update(kolFavoriteFoldersTable).set({ name: to, updatedAt: new Date() }).where(eq(kolFavoriteFoldersTable.id, folderRows[0].id));
+  }
+
+  const kols = await db.select().from(kolsTable).where(eq(kolsTable.favoriteFolder, from));
+  await Promise.all(kols.map((kol) => updateKol(kol.id, { favoriteFolder: to })));
+
+  return listFavoriteFolders();
+}
+
+export async function deleteFavoriteFolder(name: string): Promise<string[]> {
+  const normalized = name.trim();
+  if (!normalized) return listFavoriteFolders();
+
+  const prefs = await getSystemPreferences();
+  await updateSystemPreferences({ favoriteFolders: prefs.favoriteFolders.filter((folder) => folder !== normalized) });
+
+  const folderRows = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  if (folderRows.length > 0) {
+    await db.delete(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.id, folderRows[0].id));
+  }
+
+  const legacyKols = await db.select().from(kolsTable).where(eq(kolsTable.favoriteFolder, normalized));
+  await Promise.all(legacyKols.map((kol) => updateKol(kol.id, { favoriteFolder: null, isFavorite: kol.isFavorite })));
+
+  return listFavoriteFolders();
+}
+
+export async function addKolToFavoriteFolder(kolId: string, folderName: string): Promise<Kol> {
+  const normalized = folderName.trim();
+  if (!normalized) {
+    return updateKol(kolId, { isFavorite: true });
+  }
+
+  await createFavoriteFolder(normalized);
+  const folder = await getOrCreateFavoriteFolderRow(normalized);
+  if (folder) {
+    const existing = await db
+      .select()
+      .from(kolFavoriteFolderItemsTable)
+      .where(eq(kolFavoriteFolderItemsTable.folderId, folder.id))
+      .catch(() => []);
+    if (!existing.some((item) => item.kolId === kolId)) {
+      await db.insert(kolFavoriteFolderItemsTable).values({
+        id: crypto.randomUUID(),
+        folderId: folder.id,
+        kolId,
+        note: null,
+        addedBy: "user_001",
+      });
+    }
+  }
+
+  return updateKol(kolId, { isFavorite: true, favoriteFolder: normalized });
+}
+
+export async function removeKolFromFavoriteFolder(kolId: string, folderName: string): Promise<Kol> {
+  const normalized = folderName.trim();
+  if (!normalized) return getKol(kolId).then((kol) => {
+    if (!kol) throw new Error("KOL not found");
+    return kol;
+  });
+
+  const folders = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  if (folders.length > 0) {
+    const items = await db.select().from(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.folderId, folders[0].id));
+    const target = items.find((item) => item.kolId === kolId);
+    if (target) {
+      await db.delete(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.id, target.id));
+    }
+  }
+
+  const current = await getKol(kolId);
+  if (!current) throw new Error("KOL not found");
+  const remainingFolders = (current.favoriteFolders ?? []).filter((name) => name !== normalized);
+
+  return updateKol(kolId, {
+    isFavorite: remainingFolders.length > 0 || Boolean(current.isFavorite && current.favoriteFolder !== normalized),
+    favoriteFolder: remainingFolders[0] ?? null,
+  });
+}
+
+export async function replaceKolFavoriteFolders(kolId: string, folderNames: string[]): Promise<Kol> {
+  const normalizedFolders = Array.from(new Set(folderNames.map((name) => name.trim()).filter(Boolean)));
+  const current = await getKol(kolId);
+  if (!current) throw new Error("KOL not found");
+
+  const currentFolders = current.favoriteFolders ?? [];
+  const toAdd = normalizedFolders.filter((name) => !currentFolders.includes(name));
+  const toRemove = currentFolders.filter((name) => !normalizedFolders.includes(name));
+
+  for (const folder of toAdd) {
+    await addKolToFavoriteFolder(kolId, folder);
+  }
+  for (const folder of toRemove) {
+    await removeKolFromFavoriteFolder(kolId, folder);
+  }
+
+  return updateKol(kolId, {
+    isFavorite: normalizedFolders.length > 0 || current.isFavorite,
+    favoriteFolder: normalizedFolders[0] ?? null,
+  });
+}
+
+export async function clearKolFavorites(kolId: string): Promise<Kol> {
+  const current = await getKol(kolId);
+  if (!current) throw new Error("KOL not found");
+  for (const folder of current.favoriteFolders ?? []) {
+    await removeKolFromFavoriteFolder(kolId, folder);
+  }
+  return updateKol(kolId, { isFavorite: false, favoriteFolder: null });
 }

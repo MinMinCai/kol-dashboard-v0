@@ -19,7 +19,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { deleteKol, listFavoriteFolders, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api.server";
+import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, type Kol } from "~/lib/mock-api.server";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -171,14 +171,14 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "addFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
     const folder = String(formData.get("folder") ?? "").trim() || undefined;
-    await updateKol(kolId, { isFavorite: true, favoriteFolder: folder });
+    await addKolToFavoriteFolder(kolId, folder ?? "");
     const url = new URL(request.url);
     return redirect(url.pathname + url.search);
   }
 
   if (intent === "removeFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    await updateKol(kolId, { isFavorite: false });
+    await clearKolFavorites(kolId);
     const url = new URL(request.url);
     return redirect(url.pathname + url.search);
   }
@@ -968,7 +968,6 @@ export default function KolListPage() {
     </Stack >
   );
 }
-
 
 
 
