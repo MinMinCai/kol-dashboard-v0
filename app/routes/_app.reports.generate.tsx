@@ -397,7 +397,7 @@ export default function ReportManagementPage() {
     const readyIds = (order.collaborations || [])
       .filter((k: any) => (k.performanceItems || []).length > 0)
       .map((k: any) => k.id)
-      .slice(0, 3);
+      .slice(0, 10);
     setSelectedKolIds(readyIds);
     setReportTitle(`${order.title || order.projectName} 結案報告`);
     openGenModal();
@@ -408,7 +408,7 @@ export default function ReportManagementPage() {
       if (prev.includes(kolId)) {
         return prev.filter((id) => id !== kolId);
       }
-      if (prev.length >= 3) {
+      if (prev.length >= 10) {
         return prev;
       }
       return [...prev, kolId];
@@ -961,7 +961,7 @@ export default function ReportManagementPage() {
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
                     <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
-                      未勾選的 KOL 將不會出現在報告中。由於目前套用的是固定模板，單次報告最多帶入 3 位 KOL；建議先上傳所有 KOL 的成效資料後再生成報告。
+                      未勾選的 KOL 將不會出現在報告中。系統目前會依模板自動擴充頁面，單次報告最多可帶入 10 位 KOL；建議先上傳所有 KOL 的成效資料後再生成報告。
                     </Text>
                   </Group>
                 </Card>
@@ -1010,8 +1010,8 @@ export default function ReportManagementPage() {
                   <Group wrap="nowrap">
                     <ThemeIcon color="gray" variant="light"><IconFileDescription size={16} /></ThemeIcon>
                     <Box>
-                      <Text size="sm" fw={600}>預估頁數: 約 18 頁</Text>
-                      <Text size="xs" c="dimmed">(封面 + 3個KOL × 平均5頁 + 總結)</Text>
+                      <Text size="sm" fw={600}>預估頁數: 約 {selectedKolIds.length * 3 + 5} 頁</Text>
+                      <Text size="xs" c="dimmed">(封面 + 總覽 + 每位 KOL 3 頁 + 合作心得)</Text>
                     </Box>
                   </Group>
                 </Card>
