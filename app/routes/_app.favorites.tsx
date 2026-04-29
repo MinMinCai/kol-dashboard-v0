@@ -14,7 +14,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
-import { listKols, updateKol, type Kol } from "~/lib/mock-api.server";
+import { createFavoriteFolder, listFavoriteFolders, listKols, updateKol, type Kol } from "~/lib/mock-api.server";
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
 
@@ -31,11 +31,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const sort = (url.searchParams.get("sort") ?? "rating_desc") as SortMode;
   const folder = url.searchParams.get("folder") ?? "全部";
 
-  const allKols = await listKols().catch(() => [] as Kol[]);
+  const [allKols, savedFolders] = await Promise.all([
+    listKols().catch(() => [] as Kol[]),
+    listFavoriteFolders(),
+  ]);
   const favorites = allKols.filter((k) => k.isFavorite);
 
-  const fromRows = favorites.map((r) => r.favoriteFolder).filter(Boolean) as string[];
-  const folderSet = new Set(["家電專案", "美妝專案", ...fromRows]);
+  // Merge saved folders + any folders already used by KOLs (for backwards compat)
+  const usedFolders = favorites.map((r) => r.favoriteFolder).filter(Boolean) as string[];
+  const folderSet = new Set([...savedFolders, ...usedFolders]);
   const allFolders = ["全部", ...Array.from(folderSet)];
 
   const folderFiltered = folder === "全部" ? favorites : favorites.filter((r) => (r.favoriteFolder ?? "未分類") === folder);
@@ -69,7 +73,6 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
     await updateKol(kolId, { isFavorite: false });
     const url = new URL(request.url);
-    url.searchParams.set("unfavorited", "1");
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
 
@@ -78,6 +81,15 @@ export async function action({ request }: ActionFunctionArgs) {
     const targetFolder = String(formData.get("targetFolder") ?? "");
     if (kolId) await updateKol(kolId, { favoriteFolder: targetFolder || undefined });
     return json({ success: true });
+  }
+
+  if (intent === "createFolder") {
+    const name = String(formData.get("folderName") ?? "").trim();
+    if (!name) return json({ error: "資料夾名稱不得為空" }, { status: 400 });
+    await createFavoriteFolder(name);
+    const url = new URL(request.url);
+    url.searchParams.set("folder", name);
+    return redirect(url.pathname + "?" + url.searchParams.toString());
   }
 
   return null;
@@ -318,7 +330,7 @@ export default function FavoritesPage() {
         </SimpleGrid>
       )}
 
-      {/* ── Add Folder Dialog ── */}
+      {/* ── Add Folder Dialog (form-based, server-persisted) ── */}
       <dialog
         id="add-folder-dialog"
         style={{
@@ -341,50 +353,48 @@ export default function FavoritesPage() {
             ✕
           </button>
         </Group>
-        <Stack gap="md">
-          <div>
-            <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>資料夾名稱</label>
-            <input
-              id="new-folder-name"
-              type="text"
-              placeholder="例如：母嬰專案"
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 4,
-                fontSize: 14,
-                background: "var(--mantine-color-body)",
-                color: "var(--mantine-color-text)",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-          <Group justify="flex-end">
-            <button
-              type="button"
-              style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
-              onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
-            >
-              取消
-            </button>
-            <button
-              type="button"
-              style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
-              onClick={() => {
-                const input = document.getElementById("new-folder-name") as HTMLInputElement;
-                const name = input?.value.trim();
-                if (!name) return;
-                // Navigate with new folder created via URL (server would persist on next KOL save)
-                const url = new URL(window.location.href);
-                url.searchParams.set("folder", name);
-                window.location.href = url.toString();
-              }}
-            >
-              建立
-            </button>
-          </Group>
-        </Stack>
+        <Form
+          method="post"
+          onSubmit={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
+        >
+          <input type="hidden" name="intent" value="createFolder" />
+          <Stack gap="md">
+            <div>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>資料夾名稱</label>
+              <input
+                name="folderName"
+                type="text"
+                placeholder="例如：母嬰專案"
+                required
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid var(--mantine-color-default-border)",
+                  borderRadius: 4,
+                  fontSize: 14,
+                  background: "var(--mantine-color-body)",
+                  color: "var(--mantine-color-text)",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <Group justify="flex-end">
+              <button
+                type="button"
+                style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
+                onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement; if (d) d.close(); }}
+              >
+                取消
+              </button>
+              <button
+                type="submit"
+                style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+              >
+                建立
+              </button>
+            </Group>
+          </Stack>
+        </Form>
       </dialog>
     </Stack>
   );

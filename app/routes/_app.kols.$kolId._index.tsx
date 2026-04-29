@@ -20,7 +20,7 @@ import {
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { getKol, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
+import { getKol, listFavoriteFolders, updateKol, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -343,9 +343,12 @@ function PlatformTabSelector({
 export async function action({ params, request }: ActionFunctionArgs) {
   const kolId = params.kolId ?? "";
   const formData = await request.formData();
-  if (formData.get("intent") === "toggle_favorite") {
-    const isFavorite = formData.get("isFavorite") === "true";
-    await updateKol(kolId, { isFavorite: !isFavorite });
+  if (formData.get("intent") === "add_favorite") {
+    const folder = String(formData.get("folder") ?? "").trim() || undefined;
+    await updateKol(kolId, { isFavorite: true, favoriteFolder: folder });
+  }
+  if (formData.get("intent") === "remove_favorite") {
+    await updateKol(kolId, { isFavorite: false });
   }
   return json({ success: true });
 }
@@ -357,8 +360,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const tab = url.searchParams.get("tab") ?? "projects";
   const limit = Math.max(5, Number(url.searchParams.get("limit") ?? "5"));
+  const folders = await listFavoriteFolders();
 
-  return json({ kol, tab, limit });
+  return json({ kol, tab, limit, folders });
 }
 
 // ─── Contract Generator Modal ─────────────────────────────────────────────────
@@ -472,9 +476,10 @@ ${extraClause || "（無）"}
 }
 
 export default function KolDetailPage() {
-  const { kol, tab, limit } = useLoaderData<typeof loader>();
+  const { kol, tab, limit, folders } = useLoaderData<typeof loader>();
   const [contactOpened, setContactOpened] = useState(false);
   const [perfModalOpened, setPerfModalOpened] = useState(false);
+  const [folderPickerOpen, setFolderPickerOpen] = useState(false);
   const [contractOpened, setContractOpened] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("Instagram");
   const ioFetcher = useFetcher<InsertionOrder | null>();
@@ -610,13 +615,22 @@ export default function KolDetailPage() {
               </Stack>
             </Group>
             <Group mt="md">
-              <Form method="post">
-                <input type="hidden" name="intent" value="toggle_favorite" />
-                <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
-                <button type="submit" style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}>
-                  {kol.isFavorite ? "❤️ 取消收藏" : "🤍 加入收藏"}
+              {kol.isFavorite ? (
+                <Form method="post">
+                  <input type="hidden" name="intent" value="remove_favorite" />
+                  <button type="submit" style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}>
+                    ❤️ 取消收藏
+                  </button>
+                </Form>
+              ) : (
+                <button
+                  type="button"
+                  style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}
+                  onClick={() => { setFolderPickerOpen(true); const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement; d?.showModal(); }}
+                >
+                  🤍 加入收藏
                 </button>
-              </Form>
+              )}
               <Button
                 type="button"
                 variant="default"
@@ -924,6 +938,77 @@ export default function KolDetailPage() {
           </Card>
         </Grid.Col>
       </Grid>
+
+      {/* ── Folder Picker Dialog ── */}
+      <dialog
+        id="folder-picker-dialog"
+        style={{
+          padding: 24,
+          borderRadius: 8,
+          border: "1px solid var(--mantine-color-default-border)",
+          background: "var(--mantine-color-body)",
+          color: "var(--mantine-color-text)",
+          minWidth: 320,
+          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
+        }}
+        onClose={() => setFolderPickerOpen(false)}
+      >
+        <Group justify="space-between" mb="md">
+          <Title order={4}>選擇收藏資料夾</Title>
+          <button
+            type="button"
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            onClick={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
+          >
+            ✕
+          </button>
+        </Group>
+        <Form
+          method="post"
+          onSubmit={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
+        >
+          <input type="hidden" name="intent" value="add_favorite" />
+          <Stack gap="md">
+            <div>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>資料夾</label>
+              <select
+                name="folder"
+                defaultValue=""
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid var(--mantine-color-default-border)",
+                  borderRadius: 4,
+                  fontSize: 14,
+                  background: "var(--mantine-color-body)",
+                  color: "var(--mantine-color-text)",
+                  boxSizing: "border-box",
+                }}
+              >
+                <option value="">不指定資料夾</option>
+                {folders.map((f) => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
+            </div>
+            <Group justify="flex-end">
+              <button
+                type="button"
+                style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
+                onClick={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
+              >
+                取消
+              </button>
+              <button
+                type="submit"
+                style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+              >
+                加入收藏
+              </button>
+            </Group>
+          </Stack>
+        </Form>
+      </dialog>
     </Stack>
   );
 }

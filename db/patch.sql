@@ -186,3 +186,6 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notif_recipient_read ON notifications (recipient_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_notif_ref ON notifications (ref_table, ref_id);
+
+-- ─── 9. 新增 system_preferences.favorite_folders ──────────────
+ALTER TABLE system_preferences ADD COLUMN IF NOT EXISTS favorite_folders text[] DEFAULT '{}' NOT NULL;

@@ -311,6 +311,7 @@ export const systemPreferences = pgTable("system_preferences", {
   defaultReportLang: varchar("default_report_lang", { length: 20 }).default("zh-TW").notNull(),
   notifyEmail: varchar("notify_email", { length: 200 }).default("").notNull(),
   aiSuggestions: boolean("ai_suggestions").default(true).notNull(),
+  favoriteFolders: text("favorite_folders").array().default([]).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

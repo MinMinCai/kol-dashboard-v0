@@ -225,6 +225,7 @@ export type SystemPreferences = {
   defaultReportLang: string;
   notifyEmail: string;
   aiSuggestions: boolean;
+  favoriteFolders: string[];
 };
 
 export type InsertionOrder = {
@@ -889,9 +890,8 @@ export async function getSystemPreferences(): Promise<SystemPreferences> {
     .limit(1);
 
   if (rows.length === 0) {
-    // Insert default row if not exists
     await db.insert(systemPreferencesTable).values({ id: "default" }).onConflictDoNothing();
-    return { currency: "TWD", defaultTaxRate: 5, defaultReportLang: "zh-TW", notifyEmail: "", aiSuggestions: true };
+    return { currency: "TWD", defaultTaxRate: 5, defaultReportLang: "zh-TW", notifyEmail: "", aiSuggestions: true, favoriteFolders: [] };
   }
 
   const r = rows[0];
@@ -901,6 +901,7 @@ export async function getSystemPreferences(): Promise<SystemPreferences> {
     defaultReportLang: r.defaultReportLang,
     notifyEmail: r.notifyEmail,
     aiSuggestions: r.aiSuggestions,
+    favoriteFolders: r.favoriteFolders ?? [],
   };
 }
 
@@ -913,6 +914,7 @@ export async function updateSystemPreferences(
   if (data.defaultReportLang !== undefined) update.defaultReportLang = data.defaultReportLang;
   if (data.notifyEmail !== undefined) update.notifyEmail = data.notifyEmail;
   if (data.aiSuggestions !== undefined) update.aiSuggestions = data.aiSuggestions;
+  if (data.favoriteFolders !== undefined) update.favoriteFolders = data.favoriteFolders;
   update.updatedAt = new Date();
 
   await db
@@ -921,4 +923,16 @@ export async function updateSystemPreferences(
     .onConflictDoUpdate({ target: systemPreferencesTable.id, set: update });
 
   return getSystemPreferences();
+}
+
+export async function listFavoriteFolders(): Promise<string[]> {
+  const prefs = await getSystemPreferences();
+  return prefs.favoriteFolders;
+}
+
+export async function createFavoriteFolder(name: string): Promise<string[]> {
+  const prefs = await getSystemPreferences();
+  if (prefs.favoriteFolders.includes(name)) return prefs.favoriteFolders;
+  const updated = await updateSystemPreferences({ favoriteFolders: [...prefs.favoriteFolders, name] });
+  return updated.favoriteFolders;
 }
