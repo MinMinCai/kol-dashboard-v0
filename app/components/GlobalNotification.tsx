@@ -99,7 +99,9 @@ export function GlobalNotification() {
                           size="xs" 
                           color="blue" 
                           onClick={() => {
-                            alert("報告下載中...");
+                            if (toast?.actionLink) {
+                              window.open(toast.actionLink, "_blank");
+                            }
                             hideToast();
                           }}
                         >

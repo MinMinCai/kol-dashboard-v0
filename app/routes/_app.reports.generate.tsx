@@ -29,6 +29,7 @@ import { updateInsertionOrder, getInsertionOrder } from "~/lib/mock-api.server";
 import { useNotificationStore } from "~/store/notification";
 import { useState, useEffect, useRef } from "react";
 import { listInsertionOrders } from "~/lib/mock-api.server";
+import { generateReportPpt } from "~/lib/report-ppt.server";
 import { 
   IconFileTypePpt, 
   IconTrash, 
@@ -203,6 +204,51 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ ok: true });
   }
 
+  if (intent === "generateReport") {
+    const orderId = String(formData.get("orderId") ?? "");
+    const reportTitle = String(formData.get("reportTitle") ?? "").trim();
+    const templateKey = String(formData.get("templateKey") ?? "standard");
+    const rawSelectedKolIds = String(formData.get("selectedKolIds") ?? "[]");
+
+    const io = await getInsertionOrder(orderId);
+    if (!io) return json({ ok: false }, { status: 404 });
+    const parsedKolIds = (() => {
+      try {
+        const parsed = JSON.parse(rawSelectedKolIds);
+        return Array.isArray(parsed) ? parsed.map(String) : [];
+      } catch {
+        return [];
+      }
+    })();
+
+    const version = (io.reports?.filter((r) => r.type === "draft").length || 0) + 1;
+    const newReport = {
+      id: `rep_${Date.now()}`,
+      name: reportTitle ? `${reportTitle}.pptx` : `結案報告_v${version}.pptx`,
+      type: "draft" as const,
+      createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
+      createdBy: "系統 AI",
+      templateKey,
+      selectedKolIds: parsedKolIds,
+      reportTitle: reportTitle || `結案報告_v${version}`,
+    };
+    const filePath = await generateReportPpt({
+      order: io,
+      report: newReport,
+    });
+    const reportWithFile = {
+      ...newReport,
+      filePath,
+    };
+
+    await updateInsertionOrder(orderId, {
+      hasDraft: true,
+      reports: [...(io.reports ?? []), reportWithFile],
+    });
+
+    return json({ ok: true, report: reportWithFile });
+  }
+
   return json({ ok: false }, { status: 400 });
 }
 
@@ -226,6 +272,7 @@ export default function ReportManagementPage() {
 
   const uploadFetcher = useFetcher<typeof action>();
   const deleteFetcher = useFetcher<typeof action>();
+  const generateFetcher = useFetcher<typeof action>();
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -241,6 +288,7 @@ export default function ReportManagementPage() {
   const [reportDeleteTarget, setReportDeleteTarget] = useState<{ id: string; name: string; orderId: string } | null>(null);
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
+  const [reportTitle, setReportTitle] = useState("");
   
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -250,9 +298,42 @@ export default function ReportManagementPage() {
     if (deleteFetcher.state === "idle" && deleteFetcher.data?.ok) {
       navigate(".", { replace: true });
     }
-  }, [deleteFetcher.state, deleteFetcher.data]);
+  }, [deleteFetcher.state, deleteFetcher.data, navigate]);
 
-  const handleDownload = () => alert("報告下載中...");
+  useEffect(() => {
+    if (generateFetcher.state !== "idle" || !generateFetcher.data?.ok || !generateFetcher.data.report || !activeOrder) {
+      return;
+    }
+
+    closeProgressModal();
+    const createdReport = generateFetcher.data.report;
+    const title = "結案報告已生成完成！";
+    const message = `${activeOrder.orderNo} ${activeOrder.title || activeOrder.projectName}|${createdReport.name}`;
+    const downloadLink = `/api/reports/${activeOrder.id}/${createdReport.id}/download`;
+    showToast(title, message, downloadLink);
+    showBanner(title, message, downloadLink);
+    navigate(".", { replace: true });
+
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        new Notification("🎉 結案報告已完成", {
+          body: `案件 #${activeOrder.orderNo} 的結案報告已生成完成，點擊查看`,
+        });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            new Notification("🎉 結案報告已完成", {
+              body: `案件 #${activeOrder.orderNo} 的結案報告已生成完成，點擊查看`,
+            });
+          }
+        });
+      }
+    }
+  }, [activeOrder, closeProgressModal, generateFetcher.data, generateFetcher.state, navigate, showBanner, showToast]);
+
+  const handleDownload = (orderId: string, reportId: string) => {
+    window.open(`/api/reports/${orderId}/${reportId}/download`, "_blank");
+  };
 
   const handleAskDeleteReport = (report: { id: string; name: string; orderId: string }) => {
     setReportDeleteTarget(report);
@@ -311,18 +392,27 @@ export default function ReportManagementPage() {
 
   const handleOpenGenModal = (order: any) => {
     setActiveOrder(order);
+    setSelectedTemplate("standard");
     // Initialize selected KOLs to those with performance data
     const readyIds = (order.collaborations || [])
       .filter((k: any) => (k.performanceItems || []).length > 0)
-      .map((k: any) => k.id);
+      .map((k: any) => k.id)
+      .slice(0, 3);
     setSelectedKolIds(readyIds);
+    setReportTitle(`${order.title || order.projectName} 結案報告`);
     openGenModal();
   };
 
   const toggleKolSelection = (kolId: string) => {
-    setSelectedKolIds((prev) => 
-      prev.includes(kolId) ? prev.filter(id => id !== kolId) : [...prev, kolId]
-    );
+    setSelectedKolIds((prev) => {
+      if (prev.includes(kolId)) {
+        return prev.filter((id) => id !== kolId);
+      }
+      if (prev.length >= 3) {
+        return prev;
+      }
+      return [...prev, kolId];
+    });
   };
 
   const startGeneration = () => {
@@ -339,27 +429,14 @@ export default function ReportManagementPage() {
         
         if (p === 100) {
           setTimeout(() => {
-            closeProgressModal();
-            const title = "結案報告已生成完成！";
-            const message = `${activeOrder?.orderNo} ${activeOrder?.title || activeOrder?.projectName}|結案報告_v1.pptx`;
-            showToast(title, message, "/reports/generate");
-            showBanner(title, message, "/reports/generate");
-            
-            if ("Notification" in window) {
-              if (Notification.permission === "granted") {
-                new Notification("🎉 結案報告已完成", {
-                  body: `案件 #${activeOrder?.orderNo} 的結案報告已生成完成，點擊查看`,
-                });
-              } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then((permission) => {
-                  if (permission === "granted") {
-                    new Notification("🎉 結案報告已完成", {
-                      body: `案件 #${activeOrder?.orderNo} 的結案報告已生成完成，點擊查看`,
-                    });
-                  }
-                });
-              }
-            }
+            if (!activeOrder) return;
+            const fd = new FormData();
+            fd.append("intent", "generateReport");
+            fd.append("orderId", activeOrder.id);
+            fd.append("reportTitle", reportTitle.trim() || `${activeOrder.title || activeOrder.projectName} 結案報告`);
+            fd.append("templateKey", selectedTemplate);
+            fd.append("selectedKolIds", JSON.stringify(selectedKolIds));
+            generateFetcher.submit(fd, { method: "post" });
           }, 800);
         }
       }, (idx + 1) * 1200);
@@ -519,7 +596,7 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id)}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
@@ -548,7 +625,7 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={handleDownload}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id)}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
@@ -884,7 +961,7 @@ export default function ReportManagementPage() {
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
                     <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
-                      未勾選的 KOL 將不會出現在報告中。建議先上傳所有 KOL 的成效資料後再生成報告。
+                      未勾選的 KOL 將不會出現在報告中。由於目前套用的是固定模板，單次報告最多帶入 3 位 KOL；建議先上傳所有 KOL 的成效資料後再生成報告。
                     </Text>
                   </Group>
                 </Card>
@@ -900,7 +977,8 @@ export default function ReportManagementPage() {
               <Stack gap="lg">
                 <TextInput 
                   label="報告標題" 
-                  defaultValue={`${activeOrder.title || activeOrder.projectName} 結案報告`}
+                  value={reportTitle}
+                  onChange={(event) => setReportTitle(event.currentTarget.value.slice(0, 100))}
                   description="0/100"
                 />
 

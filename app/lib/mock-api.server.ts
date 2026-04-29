@@ -229,6 +229,10 @@ export type Report = {
   createdBy: string;
   fileSize?: string;
   note?: string;
+  filePath?: string;
+  templateKey?: string;
+  selectedKolIds?: string[];
+  reportTitle?: string;
 };
 
 export type SystemPreferences = {
