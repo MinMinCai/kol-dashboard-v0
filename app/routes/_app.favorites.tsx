@@ -146,8 +146,6 @@ export default function FavoritesPage() {
     color: "var(--mantine-color-text)",
   } as const;
 
-  const nonAllFolders = allFolders.filter((f) => f !== "全部");
-
   return (
     <Stack gap="md">
       <Group justify="space-between" align="end">
@@ -271,35 +269,13 @@ export default function FavoritesPage() {
                 ))}
               </Group>
 
-              {/* Folder quick-move */}
-              {nonAllFolders.length > 0 && (
-                <Box mt="sm" onClick={(e) => e.stopPropagation()}>
-                  <Text size="xs" c="dimmed" mb={4}>移至資料夾：</Text>
-                  <Group gap={4}>
-                    {nonAllFolders.map((f) => (
-                      <Form method="post" key={f} style={{ margin: 0 }}>
-                        <input type="hidden" name="intent" value="moveFolder" />
-                        <input type="hidden" name="kolId" value={kol.id} />
-                        <input type="hidden" name="targetFolder" value={f} />
-                        <button
-                          type="submit"
-                          style={{
-                            padding: "2px 8px",
-                            borderRadius: 4,
-                            border: "1px solid var(--mantine-color-default-border)",
-                            fontSize: 12,
-                            cursor: "pointer",
-                            background: kol.favoriteFolder === f ? "var(--mantine-color-blue-light)" : "var(--mantine-color-body)",
-                            color: "var(--mantine-color-text)",
-                          }}
-                        >
-                          {f}
-                        </button>
-                      </Form>
-                    ))}
-                  </Group>
-                </Box>
-              )}
+              {/* Current folder badge */}
+              <Box mt="sm">
+                <Text size="xs" c="dimmed" mb={4}>收藏資料夾：</Text>
+                <Badge variant="light" color={kol.favoriteFolder ? "blue" : "gray"} size="sm">
+                  {kol.favoriteFolder ?? "未分類"}
+                </Badge>
+              </Box>
 
               <Group justify="space-between" mt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>

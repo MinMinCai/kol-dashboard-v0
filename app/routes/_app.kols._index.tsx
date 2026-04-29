@@ -19,7 +19,7 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { deleteKol, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api.server";
+import { deleteKol, listFavoriteFolders, listKols, listTagCatalog, updateKol, type Kol } from "~/lib/mock-api.server";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -127,7 +127,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize);
 
   // derive filter options from ALL kols (before filtering)
-  const allKols = await listKols().catch(() => [] as Kol[]);
+  const [allKols, folders] = await Promise.all([
+    listKols().catch(() => [] as Kol[]),
+    listFavoriteFolders(),
+  ]);
   const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
   const tagCatalog = await listTagCatalog().catch(() => [] as { name: string }[]);
   const catalogTags = tagCatalog.map((t) => t.name);
@@ -152,6 +155,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     q,
     allIndustries,
     allTags,
+    folders,
     // active filter count for badge
     activeFilterCount:
       followerRanges.length + industries.length + tags.length +
@@ -164,10 +168,17 @@ export async function action({ request }: ActionFunctionArgs) {
   const intent = formData.get("intent");
   const kolId = String(formData.get("kolId") ?? "");
 
-  if (intent === "toggleFavorite") {
-    const isFavorite = formData.get("isFavorite") === "true";
+  if (intent === "addFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    await updateKol(kolId, { isFavorite: !isFavorite });
+    const folder = String(formData.get("folder") ?? "").trim() || undefined;
+    await updateKol(kolId, { isFavorite: true, favoriteFolder: folder });
+    const url = new URL(request.url);
+    return redirect(url.pathname + url.search);
+  }
+
+  if (intent === "removeFavorite") {
+    if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
+    await updateKol(kolId, { isFavorite: false });
     const url = new URL(request.url);
     return redirect(url.pathname + url.search);
   }
@@ -219,13 +230,15 @@ export default function KolListPage() {
   const {
     pageRows, total, totalPages, page, view, sortKey, sortOrder,
     showFilters, followerRanges, industries, tags, minRating, maxRating,
-    q, allIndustries, allTags, activeFilterCount, deleted,
+    q, allIndustries, allTags, activeFilterCount, deleted, folders,
   } = useLoaderData<typeof loader>();
   const submit = useSubmit();
   const navigation = useNavigation();
   const navigate = useNavigate();
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
+  const [favoritePickerKolId, setFavoritePickerKolId] = useState<string | null>(null);
+  const [favoritePickerFolder, setFavoritePickerFolder] = useState<string>("");
 
   // Current params object for URL building
   const current: Record<string, string | string[]> = {
@@ -559,27 +572,22 @@ export default function KolListPage() {
               const kolTags = getPrimaryTags(kol);
               return (
                 <Card key={kol.id} withBorder radius="md" p="lg" style={{ position: "relative", cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
-                  <Form method="post" style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
-                    <input type="hidden" name="intent" value="toggleFavorite" />
-                    <input type="hidden" name="kolId" value={kol.id} />
-                    <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
-                    <button
-                      type="submit"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: 18,
-                        padding: 0,
-                        lineHeight: 1,
-                        color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
-                        textShadow: kol.isFavorite ? "0 0 2px rgba(250, 82, 82, 0.4)" : "none"
-                      }}
-                      title={kol.isFavorite ? "取消收藏" : "加入收藏"}
-                    >
-                      {kol.isFavorite ? "♥" : "♡"}
-                    </button>
-                  </Form>
+                  <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
+                    {kol.isFavorite ? (
+                      <Form method="post">
+                        <input type="hidden" name="intent" value="removeFavorite" />
+                        <input type="hidden" name="kolId" value={kol.id} />
+                        <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: 0, lineHeight: 1, color: "var(--mantine-color-red-filled)", textShadow: "0 0 2px rgba(250,82,82,0.4)" }} title="取消收藏">♥</button>
+                      </Form>
+                    ) : (
+                      <button
+                        type="button"
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: 0, lineHeight: 1, color: "var(--mantine-color-gray-4)" }}
+                        title="加入收藏"
+                        onClick={() => { setFavoritePickerKolId(kol.id); setFavoritePickerFolder(""); }}
+                      >♡</button>
+                    )}
+                  </div>
                   <Stack align="center" gap="xs">
                     <Avatar src={kol.avatarUrl} size={72} radius={999} />
                     <Text fw={600}>{kol.displayName}</Text>
@@ -726,26 +734,20 @@ export default function KolListPage() {
                     <Table.Td>{kol.collaborations ?? 0}</Table.Td>
                     <Table.Td>
                       <Group gap="xs">
-                        <Form method="post" style={{ display: "inline" }}>
-                          <input type="hidden" name="intent" value="toggleFavorite" />
-                          <input type="hidden" name="kolId" value={kol.id} />
-                          <input type="hidden" name="isFavorite" value={String(kol.isFavorite)} />
+                        {kol.isFavorite ? (
+                          <Form method="post" style={{ display: "inline" }}>
+                            <input type="hidden" name="intent" value="removeFavorite" />
+                            <input type="hidden" name="kolId" value={kol.id} />
+                            <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: 0, lineHeight: 1, color: "var(--mantine-color-red-filled)" }} title="取消收藏">♥</button>
+                          </Form>
+                        ) : (
                           <button
-                            type="submit"
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              fontSize: 16,
-                              padding: 0,
-                              lineHeight: 1,
-                              color: kol.isFavorite ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
-                            }}
-                            title={kol.isFavorite ? "取消收藏" : "加入收藏"}
-                          >
-                            {kol.isFavorite ? "♥" : "♡"}
-                          </button>
-                        </Form>
+                            type="button"
+                            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: 0, lineHeight: 1, color: "var(--mantine-color-gray-4)" }}
+                            title="加入收藏"
+                            onClick={() => { setFavoritePickerKolId(kol.id); setFavoritePickerFolder(""); }}
+                          >♡</button>
+                        )}
                         <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>
                         <Button component={Link} to={`/kols/${kol.id}/edit`} variant="default" size="xs">編輯</Button>
                         <Button
@@ -827,6 +829,50 @@ export default function KolListPage() {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* ── Favorite Folder Picker Modal ── */}
+      <Modal
+        opened={!!favoritePickerKolId}
+        onClose={() => setFavoritePickerKolId(null)}
+        title="加入收藏"
+        centered
+        size="sm"
+      >
+        <Form
+          method="post"
+          onSubmit={() => setFavoritePickerKolId(null)}
+        >
+          <input type="hidden" name="intent" value="addFavorite" />
+          <input type="hidden" name="kolId" value={favoritePickerKolId ?? ""} />
+          <Stack gap="md">
+            <Text size="sm" c="dimmed">選擇要收藏到哪個資料夾，或直接加入不指定資料夾。</Text>
+            <select
+              name="folder"
+              aria-label="選擇收藏資料夾"
+              value={favoritePickerFolder}
+              onChange={(e) => setFavoritePickerFolder(e.currentTarget.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid var(--mantine-color-default-border)",
+                borderRadius: 4,
+                fontSize: 14,
+                background: "var(--mantine-color-body)",
+                color: "var(--mantine-color-text)",
+              }}
+            >
+              <option value="">不指定資料夾</option>
+              {folders.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+            <Group justify="flex-end">
+              <Button variant="default" onClick={() => setFavoritePickerKolId(null)}>取消</Button>
+              <Button type="submit">加入收藏</Button>
+            </Group>
+          </Stack>
+        </Form>
       </Modal>
 
       {/* ── Batch Import Dialog ── */}
