@@ -127,6 +127,7 @@ export async function loader(_: LoaderFunctionArgs) {
     averagePrice: kol.averagePrice,
     rating: kol.rating,
     engagementRate: kol.engagementRate,
+    realFollowerRatio: kol.realFollowerRatio,
   }));
   return json({ folders, folderKols, allKolOptions });
 }
@@ -218,21 +219,19 @@ export default function ProposalCreatePage() {
 
   useEffect(() => {
     if (!manualSelectedKol) return;
-    const followerBase = Math.max(manualSelectedKol.followers ?? 0, 1);
-    const price = manualSelectedKol.averagePrice ?? 0;
     setManualCandidate({
       role: "待定",
-      price,
+      price: 0,
       actualPrice: undefined,
-      realFollowerRatio: seededRandom(manualSelectedKol.value + "rfr", 60, 98),
-      reputationScore: manualSelectedKol.rating ?? seededRandom(manualSelectedKol.value + "rep", 5, 9.5),
-      avgEngagementRate: manualSelectedKol.engagementRate ?? seededRandom(manualSelectedKol.value + "aer", 1.5, 8),
-      engagementIndex: seededRandom(manualSelectedKol.value + "ei", 0.8, 2.5, 2),
-      engagementScore: seededRandom(manualSelectedKol.value + "es", 5, 9.5),
-      brandFitScore: seededRandom(manualSelectedKol.value + "bfs", 5, 9.5),
-      qualityScore: seededRandom(manualSelectedKol.value + "qs", 60, 95),
-      cpfr: Number((price / followerBase).toFixed(4)),
-      recommendation: "手動新增至候選名單。",
+      realFollowerRatio: manualSelectedKol.realFollowerRatio,
+      reputationScore: undefined,
+      avgEngagementRate: undefined,
+      engagementIndex: undefined,
+      engagementScore: undefined,
+      brandFitScore: undefined,
+      qualityScore: undefined,
+      cpfr: undefined,
+      recommendation: "",
     });
   }, [manualSelectedKol]);
 
@@ -448,7 +447,13 @@ export default function ProposalCreatePage() {
             <TextInput label="實際報價" value={manualCandidate.actualPrice ?? ""} onChange={(event) => setManualCandidate((prev) => ({ ...prev, actualPrice: toOptionalNumber(event.currentTarget.value) }))} />
           </Group>
           <Group grow>
-            <TextInput label="真粉比例" value={manualCandidate.realFollowerRatio ?? ""} onChange={(event) => setManualCandidate((prev) => ({ ...prev, realFollowerRatio: toOptionalNumber(event.currentTarget.value) }))} />
+            <TextInput
+              label="真粉比例"
+              value={manualCandidate.realFollowerRatio != null ? `${manualCandidate.realFollowerRatio}%` : "-"}
+              readOnly
+              description="從 KOL 資料自動帶入"
+              styles={{ input: { background: "var(--mantine-color-default-hover)", cursor: "default" } }}
+            />
             <TextInput label="KOL 名聲" value={manualCandidate.reputationScore ?? ""} onChange={(event) => setManualCandidate((prev) => ({ ...prev, reputationScore: toOptionalNumber(event.currentTarget.value) }))} />
             <TextInput label="平均互動率" value={manualCandidate.avgEngagementRate ?? ""} onChange={(event) => setManualCandidate((prev) => ({ ...prev, avgEngagementRate: toOptionalNumber(event.currentTarget.value) }))} />
           </Group>

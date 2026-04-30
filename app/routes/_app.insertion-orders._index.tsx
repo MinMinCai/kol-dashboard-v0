@@ -331,7 +331,7 @@ export default function InsertionOrderListPage() {
       <Group justify="space-between">
         <Title order={2}>委刊單管理</Title>
         <Group>
-          <Button component={Link} to="/insertion-orders/new">新增委刊單</Button>
+          <Button component="a" href="/insertion-orders/new">新增委刊單</Button>
         </Group>
       </Group>
 

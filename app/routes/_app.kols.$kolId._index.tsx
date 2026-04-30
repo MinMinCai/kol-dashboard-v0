@@ -956,6 +956,7 @@ export default function KolDetailPage() {
               <Text>💰 平均價格: {formatCurrency(avgPrice)}</Text>
               <Text>🏢 合作產業: {(kol.industryDistribution ?? []).join(" ") || (kol.industry ?? "-")}</Text>
               <Text>👁️ 平均觸及: {formatNumber(stats.averageReach)}</Text>
+              <Text>👥 真粉比例: {kol.realFollowerRatio != null ? `${kol.realFollowerRatio}%` : "-"}</Text>
               <Divider my={4} />
               <Text size="sm" fw={600} c="dimmed">平台互動率</Text>
               {(kol.platforms && kol.platforms.length > 0

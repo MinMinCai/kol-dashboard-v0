@@ -148,6 +148,7 @@ export type Kol = {
   city: string;
   notes?: string;
   paymentMethod?: "勞報" | "發票";
+  realFollowerRatio?: number;
   platformMetrics?: PlatformMetrics;
   socialLinks?: {
     instagram?: string;

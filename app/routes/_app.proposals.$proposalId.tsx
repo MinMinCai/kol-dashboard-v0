@@ -302,7 +302,7 @@ export default function ProposalDetailPage() {
   ];
 
   const allKolOptions = useMemo(
-    () => kols.map((k) => ({ value: k.id, label: k.displayName, followers: k.followers, averagePrice: k.averagePrice, rating: k.rating, engagementRate: k.engagementRate })),
+    () => kols.map((k) => ({ value: k.id, label: k.displayName, followers: k.followers, averagePrice: k.averagePrice, rating: k.rating, engagementRate: k.engagementRate, realFollowerRatio: k.realFollowerRatio })),
     [kols],
   );
   const manualSelectedKol = useMemo(
@@ -325,30 +325,19 @@ export default function ProposalDetailPage() {
 
   useEffect(() => {
     if (!manualSelectedKol) return;
-    const followerBase = Math.max(manualSelectedKol.followers ?? 0, 1);
-    const price = manualSelectedKol.averagePrice ?? 0;
-    const seed = manualSelectedKol.value;
-    const seededValue = (suffix: string, min: number, max: number, decimals = 1) => {
-      let h = 0;
-      const input = seed + suffix;
-      for (let i = 0; i < input.length; i++) h = (Math.imul(31, h) + input.charCodeAt(i)) | 0;
-      const t = Math.abs(h) / 2147483647;
-      return (min + t * (max - min)).toFixed(decimals);
-    };
-
     setManualCandidateForm({
       role: "待定",
-      price,
+      price: 0,
       actualPrice: "",
-      realFollowerRatio: seededValue("rfr", 60, 98),
-      reputationScore: String(manualSelectedKol.rating ?? Number(seededValue("rep", 5, 9.5))),
-      avgEngagementRate: String(manualSelectedKol.engagementRate ?? Number(seededValue("aer", 1.5, 8))),
-      engagementIndex: seededValue("ei", 0.8, 2.5, 2),
-      engagementScore: seededValue("es", 5, 9.5),
-      brandFitScore: seededValue("bfs", 5, 9.5),
-      qualityScore: seededValue("qs", 60, 95),
-      cpfr: (price / followerBase).toFixed(4),
-      recommendation: "手動新增至候選名單。",
+      realFollowerRatio: manualSelectedKol.realFollowerRatio != null ? String(manualSelectedKol.realFollowerRatio) : "",
+      reputationScore: "",
+      avgEngagementRate: "",
+      engagementIndex: "",
+      engagementScore: "",
+      brandFitScore: "",
+      qualityScore: "",
+      cpfr: "",
+      recommendation: "",
     });
   }, [manualSelectedKol]);
 
@@ -778,11 +767,10 @@ export default function ProposalDetailPage() {
                       )}
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="realFollowerRatio" size="xs" style={{ width: 80 }} defaultValue={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
-                      ) : (
-                        <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
+                      {isEditing && (
+                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
                       )}
+                      <Text size="sm" c={isEditing ? "dimmed" : undefined}>{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
                     </Table.Td>
                     <Table.Td style={{ whiteSpace: "nowrap" }}>
                       {isEditing ? (
@@ -1095,7 +1083,16 @@ export default function ProposalDetailPage() {
             />
             <TextInput name="actualPrice" label="實際報價" value={manualCandidateForm.actualPrice} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, actualPrice: e.currentTarget.value }))} />
             <Group grow>
-              <TextInput name="realFollowerRatio" label="真粉比例" value={manualCandidateForm.realFollowerRatio} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, realFollowerRatio: e.currentTarget.value }))} />
+              <div>
+                <input type="hidden" name="realFollowerRatio" value={manualCandidateForm.realFollowerRatio} />
+                <TextInput
+                  label="真粉比例"
+                  value={manualCandidateForm.realFollowerRatio ? `${manualCandidateForm.realFollowerRatio}%` : "-"}
+                  readOnly
+                  description="從 KOL 資料自動帶入"
+                  styles={{ input: { background: "var(--mantine-color-default-hover)", cursor: "default" } }}
+                />
+              </div>
               <TextInput name="reputationScore" label="KOL 名聲" value={manualCandidateForm.reputationScore} onChange={(e) => setManualCandidateForm((prev) => ({ ...prev, reputationScore: e.currentTarget.value }))} />
             </Group>
             <Group grow>
