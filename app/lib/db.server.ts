@@ -45,15 +45,15 @@ const client =
     prepare: false,
     connection: {
       application_name: "kol-db-demo",
+      // Set statement_timeout per-connection instead of via a top-level await,
+      // which was hanging module initialization on slow/cold DB connections.
+      // 0 = no timeout (rely on connect_timeout + query-level try/catch instead)
+      statement_timeout: 0,
     },
   });
 
 if (process.env.NODE_ENV !== "production") {
   global.__dbClient = client;
 }
-
-await client.unsafe("set statement_timeout = 0").catch((error) => {
-  console.warn("[db.server] Failed to disable statement_timeout:", error);
-});
 
 export const db = drizzle(client, { schema });
