@@ -1,5 +1,5 @@
 import { Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import type { MouseEvent } from "react";
 import { sql } from "drizzle-orm";
@@ -28,16 +28,24 @@ export async function loader(_: LoaderFunctionArgs) {
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
     ]);
 
-    return json({
+    return {
       stats: [
         { label: "KOL 總數", value: String(kolCount ?? 0) },
         { label: "進行中提案", value: String(activeProposalCount ?? 0) },
         { label: "委刊單總數", value: String(insertionOrderCount ?? 0) },
       ],
-    });
+      dbError: null as string | null,
+    };
   } catch (err) {
     console.error("[dashboard loader]", err);
-    throw new Response(err instanceof Error ? err.message : String(err), { status: 500 });
+    return {
+      stats: [
+        { label: "KOL 總數", value: "-" },
+        { label: "進行中提案", value: "-" },
+        { label: "委刊單總數", value: "-" },
+      ],
+      dbError: err instanceof Error ? err.message : String(err),
+    };
   }
 }
 
@@ -125,7 +133,7 @@ function ModuleCard({
 }
 
 export default function DashboardPage() {
-  const { stats } = useLoaderData<typeof loader>();
+  const { stats, dbError } = useLoaderData<typeof loader>();
 
   return (
     <Stack gap="xl">
@@ -136,8 +144,12 @@ export default function DashboardPage() {
         </Text>
       </Group>
 
+      {dbError && (
+        <Text c="red" size="sm">⚠ 資料庫連線失敗，統計數字暫時無法顯示。請確認環境變數 DATABASE_URL 設定是否正確。</Text>
+      )}
+
       <Grid gutter="md">
-        {stats.map((s) => (
+        {stats.map((s: { label: string; value: string }) => (
           <Grid.Col key={s.label} span={{ base: 12, sm: 4 }}>
             <Paper withBorder p="md" radius="md" shadow="xs" h="100%">
               <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb={6}>

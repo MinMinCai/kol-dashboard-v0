@@ -22,6 +22,8 @@ const client =
     max: 5,
     idle_timeout: 20,
     connect_timeout: 10,
+    // Abort any query that takes longer than 8s — prevents loader hangs when DB is unreachable
+    max_lifetime: 60 * 10,
     // Required for Supabase pgBouncer (Transaction Mode, port 6543)
     // Also needed when DATABASE_URL uses port 6543
     prepare: false,

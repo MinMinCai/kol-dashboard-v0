@@ -45,23 +45,28 @@ type SelectedKolRow = {
   price: number;
 };
 
+function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  const timeout = new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms));
+  return Promise.race([promise, timeout]).catch(() => fallback);
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const fromProposalId = url.searchParams.get("fromProposalId");
 
   const [kols, orders, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
-    listKols().catch((): Kol[] => []),
-    listInsertionOrders(),
-    listBrandCatalog(),
-    listIndustryCatalog(),
-    listTeamMembers(),
+    withTimeout(listKols(), [] as Kol[]),
+    withTimeout(listInsertionOrders(), []),
+    withTimeout(listBrandCatalog(), []),
+    withTimeout(listIndustryCatalog(), []),
+    withTimeout(listTeamMembers(), []),
   ]);
 
   let proposalData = null;
   if (fromProposalId) {
     const [prop, propKols] = await Promise.all([
-      getProposal(fromProposalId),
-      listProposalKols(fromProposalId),
+      withTimeout(getProposal(fromProposalId), null),
+      withTimeout(listProposalKols(fromProposalId), []),
     ]);
     if (prop) {
       proposalData = {

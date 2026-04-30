@@ -20,7 +20,25 @@
       "Bash(DATABASE_URL=\"postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres\" node scripts/migrate.mjs)",
       "Bash(node -e ' *)",
       "Bash(powershell -Command ' *)",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(echo \"Server PID: $!\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' http://localhost:50423/dashboard)",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' http://localhost:50423/insertion-orders/new)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} time:%{time_total}s\\\\n\" --max-time 30 http://localhost:50423/insertion-orders/new)",
+      "Bash(pkill -f \"remix dev\")",
+      "Bash(pkill -f \"remix-serve\")",
+      "Bash(npm run *)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code} in %{time_total}s\\\\n' --max-time 15 http://localhost:59890/dashboard)",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code} in %{time_total}s\\\\n' --max-time 15 http://localhost:59890/insertion-orders/new)",
+      "Bash(curl -s --max-time 15 http://localhost:59890/insertion-orders/new)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} in %{time_total}s\\\\n\" --max-time 15 http://localhost:3000/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} in %{time_total}s\\\\n\" --max-time 15 http://localhost:3000/insertion-orders/new)",
+      "Bash(curl -s --max-time 10 http://localhost:3000/dashboard)"
     ]
   }
 }
