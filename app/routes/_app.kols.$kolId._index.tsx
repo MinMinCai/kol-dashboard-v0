@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   Divider,
   Grid,
   Group,
@@ -20,13 +21,22 @@ import {
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
-import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
+import { buildSocialProfileUrl } from "~/lib/social-links";
+import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, replaceKolFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
 }
 function formatCurrency(value: number | undefined): string {
   return `NT$ ${(value ?? 0).toLocaleString("zh-TW")}`;
+}
+
+function isKolFavorited(kol: { isFavorite?: boolean; favoriteFolder?: string; favoriteFolders?: string[] }): boolean {
+  return Boolean(kol.isFavorite || kol.favoriteFolder || (kol.favoriteFolders ?? []).length > 0);
+}
+
+function getFavoriteSelection(kol: { favoriteFolder?: string; favoriteFolders?: string[] }): string[] {
+  return Array.from(new Set(kol.favoriteFolders ?? (kol.favoriteFolder ? [kol.favoriteFolder] : [])));
 }
 
 function SparkLine({ points }: { points: { date: string; price: number }[] }) {
@@ -400,6 +410,17 @@ export async function action({ params, request }: ActionFunctionArgs) {
     const folder = String(formData.get("folder") ?? "").trim() || undefined;
     await addKolToFavoriteFolder(kolId, folder ?? "");
   }
+  if (formData.get("intent") === "update_favorite_folders") {
+    const selectedFolders = String(formData.get("selectedFolders") ?? "")
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+    if (selectedFolders.length > 0) {
+      await replaceKolFavoriteFolders(kolId, selectedFolders);
+    } else {
+      await addKolToFavoriteFolder(kolId, "");
+    }
+  }
   if (formData.get("intent") === "remove_favorite") {
     await clearKolFavorites(kolId);
   }
@@ -533,8 +554,9 @@ export default function KolDetailPage() {
   const [contactOpened, setContactOpened] = useState(false);
   const [perfModalOpened, setPerfModalOpened] = useState(false);
   const [folderPickerOpen, setFolderPickerOpen] = useState(false);
+  const [folderSelection, setFolderSelection] = useState<string[]>(() => getFavoriteSelection(kol));
   const [contractOpened, setContractOpened] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState<string>("Instagram");
+  const [selectedPlatform, setSelectedPlatform] = useState<string>(kol.platforms?.[0] ?? kol.platform ?? "Instagram");
   const ioFetcher = useFetcher<InsertionOrder | null>();
 
   const openPerfModal = (orderId: string) => {
@@ -559,6 +581,21 @@ export default function KolDetailPage() {
   const collabCount = kol.collaborations ?? history.length;
   const stats = kol.performanceStats ?? {};
   const platformPerf = stats.platformPerformance ?? {};
+  const primaryInstagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
+  const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
+  const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
+  const activePlatformMetrics = kol.platformMetrics?.audienceMetrics?.[selectedPlatform];
+  const activeRealFollowerRatio =
+    activePlatformMetrics?.realFollowerRatio
+    ?? (selectedPlatform === "Instagram" ? kol.realFollowerRatio : undefined);
+  const favoriteActionLabel = isKolFavorited(kol) ? "管理收藏" : "加入收藏";
+  const socialLinkStyle = {
+    color: "inherit",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    width: "fit-content",
+  } as const;
 
   const handleDownloadReport = () => {
     const report = {
@@ -620,8 +657,8 @@ export default function KolDetailPage() {
                 <Stack gap={6}>
                   <Title order={2}>{kol.displayName}</Title>
                   <Text>
-                    {kol.socialLinks?.instagram || kol.instagramHandle ? (
-                      <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer">
+                    {primaryInstagramUrl ? (
+                      <a href={primaryInstagramUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 Instagram">
                         📷 Instagram @{kol.instagramHandle ?? "-"}
                       </a>
                     ) : (
@@ -630,9 +667,9 @@ export default function KolDetailPage() {
                     {" "}| {formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲
                   </Text>
                   <Text>
-                    {kol.socialLinks?.youtube ? (
-                      <a href={kol.socialLinks.youtube} target="_blank" rel="noreferrer">
-                        ▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱 ↗
+                    {youtubeUrl ? (
+                      <a href={youtubeUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 YouTube">
+                        ▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱
                       </a>
                     ) : (
                       <>▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱</>
@@ -640,9 +677,9 @@ export default function KolDetailPage() {
                   </Text>
                   {(kol.social?.tiktok ?? 0) > 0 && (
                     <Text>
-                      {kol.socialLinks?.tiktok ? (
-                        <a href={kol.socialLinks.tiktok} target="_blank" rel="noreferrer">
-                          ♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲 ↗
+                      {tiktokUrl ? (
+                        <a href={tiktokUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 TikTok">
+                          ♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲
                         </a>
                       ) : (
                         <>♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲</>
@@ -668,22 +705,26 @@ export default function KolDetailPage() {
               </Stack>
             </Group>
             <Group mt="md">
-              {kol.isFavorite ? (
-                <Form method="post">
-                  <input type="hidden" name="intent" value="remove_favorite" />
-                  <button type="submit" style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}>
-                    ❤️ 取消收藏
-                  </button>
-                </Form>
-              ) : (
-                <button
-                  type="button"
-                  style={{ padding: "6px 14px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "transparent", cursor: "pointer", fontSize: 14, color: "var(--mantine-color-text)" }}
-                  onClick={() => { setFolderPickerOpen(true); const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement; d?.showModal(); }}
-                >
-                  🤍 加入收藏
-                </button>
-              )}
+              <button
+                type="button"
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 4,
+                  border: "1px solid var(--mantine-color-default-border)",
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontSize: 14,
+                  color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-text)",
+                }}
+                onClick={() => {
+                  setFolderSelection(getFavoriteSelection(kol));
+                  setFolderPickerOpen(true);
+                  const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement;
+                  d?.showModal();
+                }}
+              >
+                {isKolFavorited(kol) ? "♥" : "♡"} {favoriteActionLabel}
+              </button>
               <Button
                 type="button"
                 variant="default"
@@ -863,6 +904,7 @@ export default function KolDetailPage() {
                   const platformAvgEngRate = kol.platformMetrics?.avgEngagementRate?.[selectedPlatform];
                   const engRate = platformAvgEngRate ?? pm?.engagementRate ?? (selectedPlatform === "Instagram" ? (stats.engagementRate ?? kol.engagementRate ?? 0) : 0);
                   const expRate = pm?.exposureRate ?? (selectedPlatform === "Instagram" ? (kol.exposureRate ?? 0) : 0);
+                  const realFollowerRatio = pm?.realFollowerRatio ?? (selectedPlatform === "Instagram" ? kol.realFollowerRatio : undefined);
                   const audienceGender = pm?.audienceGender ?? (selectedPlatform === "Instagram" ? kol.audienceGender : undefined);
                   const audienceAge = pm?.audienceAge ?? (selectedPlatform === "Instagram" ? kol.audienceAge : undefined);
                   const displayRating = platformAvgRating ?? (selectedPlatform === "Instagram" ? (kol.rating ?? avgRating) : undefined);
@@ -891,6 +933,12 @@ export default function KolDetailPage() {
                           <Card withBorder style={{ height: "100%" }}>
                             <Text c="dimmed" size="sm">平均評分 — {selectedPlatform}</Text>
                             <Title order={3}>{displayRating != null ? `⭐ ${displayRating.toFixed(1)}` : "-"}</Title>
+                          </Card>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
+                          <Card withBorder style={{ height: "100%" }}>
+                            <Text c="dimmed" size="sm">真粉比例 — {selectedPlatform}</Text>
+                            <Title order={3}>{realFollowerRatio != null ? `${realFollowerRatio.toFixed(1)}%` : "-"}</Title>
                           </Card>
                         </Grid.Col>
                       </Grid>
@@ -956,7 +1004,7 @@ export default function KolDetailPage() {
               <Text>💰 平均價格: {formatCurrency(avgPrice)}</Text>
               <Text>🏢 合作產業: {(kol.industryDistribution ?? []).join(" ") || (kol.industry ?? "-")}</Text>
               <Text>👁️ 平均觸及: {formatNumber(stats.averageReach)}</Text>
-              <Text>👥 真粉比例: {kol.realFollowerRatio != null ? `${kol.realFollowerRatio}%` : "-"}</Text>
+              <Text>👥 真粉比例: {activeRealFollowerRatio != null ? `${activeRealFollowerRatio.toFixed(1)}%` : "-"}</Text>
               <Divider my={4} />
               <Text size="sm" fw={600} c="dimmed">平台互動率</Text>
               {(kol.platforms && kol.platforms.length > 0
@@ -1018,43 +1066,61 @@ export default function KolDetailPage() {
           method="post"
           onSubmit={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
         >
-          <input type="hidden" name="intent" value="add_favorite" />
+          <input type="hidden" name="selectedFolders" value={folderSelection.join(",")} />
           <Stack gap="md">
-            <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>資料夾</label>
-              <select
-                name="folder"
-                defaultValue=""
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  boxSizing: "border-box",
-                }}
-              >
-                <option value="">不指定資料夾</option>
-                {folders.map((f) => (
-                  <option key={f} value={f}>{f}</option>
-                ))}
-              </select>
-            </div>
+            <Text size="sm" c="dimmed">可多選資料夾；若暫時不分類，也可以直接儲存為收藏。</Text>
+            <Stack
+              gap="xs"
+              style={{
+                border: "1px solid var(--mantine-color-default-border)",
+                borderRadius: 4,
+                padding: "10px 12px",
+              }}
+            >
+              {folders.length === 0 ? (
+                <Text size="sm" c="dimmed">尚未建立任何資料夾，儲存後會先加入收藏但不分類。</Text>
+              ) : (
+                folders.map((folderName) => (
+                  <Checkbox
+                    key={folderName}
+                    label={folderName}
+                    checked={folderSelection.includes(folderName)}
+                    onChange={(event) => {
+                      setFolderSelection((prev) =>
+                        event.currentTarget.checked
+                          ? [...prev, folderName]
+                          : prev.filter((name) => name !== folderName),
+                      );
+                    }}
+                  />
+                ))
+              )}
+            </Stack>
             <Group justify="flex-end">
+              {isKolFavorited(kol) ? (
+                <button
+                  type="submit"
+                  name="intent"
+                  value="remove_favorite"
+                  style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-red-light)", background: "var(--mantine-color-red-light)", color: "var(--mantine-color-red-filled)", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+                >
+                  取消收藏
+                </button>
+              ) : null}
               <button
                 type="button"
                 style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
-                onClick={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
+                onClick={() => { setFolderPickerOpen(false); setFolderSelection(getFavoriteSelection(kol)); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
               >
                 取消
               </button>
               <button
                 type="submit"
+                name="intent"
+                value="update_favorite_folders"
                 style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
               >
-                加入收藏
+                儲存收藏
               </button>
             </Group>
           </Stack>

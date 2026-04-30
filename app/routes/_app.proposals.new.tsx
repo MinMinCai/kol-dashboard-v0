@@ -28,7 +28,7 @@ import {
 
 type FolderKol = Pick<
   Kol,
-  "id" | "displayName" | "engagementRate" | "exposureRate" | "favoriteFolder" | "favoriteFolders" | "followers" | "averagePrice" | "rating"
+  "id" | "displayName" | "engagementRate" | "exposureRate" | "favoriteFolder" | "favoriteFolders" | "followers" | "averagePrice" | "rating" | "realFollowerRatio"
 >;
 
 type ImportRow = {
@@ -81,7 +81,7 @@ function buildCandidateFromKol(kol: FolderKol, folderName: string): ImportRow {
     role: "待定",
     price: estimatedPrice,
     actualPrice: undefined,
-    realFollowerRatio: seededRandom(kol.id + "rfr", 60, 98),
+    realFollowerRatio: kol.realFollowerRatio ?? seededRandom(kol.id + "rfr", 60, 98),
     reputationScore: kol.rating ?? seededRandom(kol.id + "rep", 5, 9.5),
     avgEngagementRate,
     engagementIndex,
@@ -108,7 +108,7 @@ export async function loader(_: LoaderFunctionArgs) {
   for (const f of folders) {
     folderKols[f] = favorites
       .filter((k) => (k.favoriteFolders ?? []).includes(f) || k.favoriteFolder === f)
-      .map(({ id, displayName, engagementRate, exposureRate, favoriteFolder, favoriteFolders, followers, averagePrice, rating }) => ({
+      .map(({ id, displayName, engagementRate, exposureRate, favoriteFolder, favoriteFolders, followers, averagePrice, rating, realFollowerRatio }) => ({
         id,
         displayName,
         engagementRate,
@@ -118,6 +118,7 @@ export async function loader(_: LoaderFunctionArgs) {
         followers,
         averagePrice,
         rating,
+        realFollowerRatio,
       }));
   }
   const allKolOptions = allKols.map((kol) => ({

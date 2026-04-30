@@ -132,6 +132,7 @@ type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 type PlatformAudienceState = {
   engagementRate: string;
   exposureRate: string;
+  realFollowerRatio: string;
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
@@ -152,6 +153,7 @@ function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienc
       return [p, {
         engagementRate: m.engagementRate != null ? String(m.engagementRate) : "",
         exposureRate: m.exposureRate != null ? String(m.exposureRate) : "",
+        realFollowerRatio: m.realFollowerRatio != null ? String(m.realFollowerRatio) : (p === "Instagram" && kol.realFollowerRatio != null ? String(kol.realFollowerRatio) : ""),
         audienceMale: m.audienceGender?.male != null ? String(m.audienceGender.male) : "",
         audienceFemale: m.audienceGender?.female != null ? String(m.audienceGender.female) : "",
         audienceAge: m.audienceAge ?? "",
@@ -188,6 +190,7 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
         return [p, {
           engagementRate: m.engagementRate ? Number(m.engagementRate) : undefined,
           exposureRate: m.exposureRate ? Number(m.exposureRate) : undefined,
+          realFollowerRatio: m.realFollowerRatio ? Number(m.realFollowerRatio) : undefined,
           audienceGender: m.audienceMale
             ? { male: Number(m.audienceMale), female: Number(m.audienceFemale || 0) }
             : undefined,
@@ -247,6 +250,14 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
           placeholder="例如：12.5"
           value={current.exposureRate}
           onChange={(e) => updateField("exposureRate", e.currentTarget.value)}
+        />
+        <TextInput
+          label="真粉比例 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：82.5"
+          value={current.realFollowerRatio}
+          onChange={(e) => updateField("realFollowerRatio", e.currentTarget.value)}
         />
         <Box>
           <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>

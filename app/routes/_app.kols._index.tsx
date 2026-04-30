@@ -19,7 +19,8 @@ import {
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
-import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, type Kol } from "~/lib/mock-api.server";
+import { buildSocialProfileUrl } from "~/lib/social-links";
+import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, replaceKolFavoriteFolders, type Kol } from "~/lib/mock-api.server";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -43,6 +44,14 @@ function getPrimaryTags(kol: Kol): string[] {
 
 function getFollowerBase(kol: Kol): number {
   return kol.social?.instagram ?? kol.followers ?? 0;
+}
+
+function isKolFavorited(kol: Kol): boolean {
+  return Boolean(kol.isFavorite || kol.favoriteFolder || (kol.favoriteFolders ?? []).length > 0);
+}
+
+function getFavoriteSelection(kol: Kol): string[] {
+  return Array.from(new Set(kol.favoriteFolders ?? (kol.favoriteFolder ? [kol.favoriteFolder] : [])));
 }
 
 // ─── loader (all filtering / sorting / paging done server-side) ──────────────
@@ -176,6 +185,23 @@ export async function action({ request }: ActionFunctionArgs) {
     return redirect(url.pathname + url.search);
   }
 
+  if (intent === "updateFavoriteFolders") {
+    if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
+    const selectedFolders = String(formData.get("selectedFolders") ?? "")
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+
+    if (selectedFolders.length > 0) {
+      await replaceKolFavoriteFolders(kolId, selectedFolders);
+    } else {
+      await addKolToFavoriteFolder(kolId, "");
+    }
+
+    const url = new URL(request.url);
+    return redirect(url.pathname + url.search);
+  }
+
   if (intent === "removeFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
     await clearKolFavorites(kolId);
@@ -238,7 +264,8 @@ export default function KolListPage() {
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
   const [favoritePickerKolId, setFavoritePickerKolId] = useState<string | null>(null);
-  const [favoritePickerFolder, setFavoritePickerFolder] = useState<string>("");
+  const [favoritePickerSelection, setFavoritePickerSelection] = useState<string[]>([]);
+  const [favoritePickerIsFavorite, setFavoritePickerIsFavorite] = useState(false);
 
   // Current params object for URL building
   const current: Record<string, string | string[]> = {
@@ -260,6 +287,31 @@ export default function KolListPage() {
       key === sortKey ? (sortOrder === "asc" ? "desc" : "asc") : "desc";
     return buildUrl(current, { sort: key, order: nextOrder });
   }
+
+  function openFavoritePicker(kol: Kol) {
+    setFavoritePickerKolId(kol.id);
+    setFavoritePickerSelection(getFavoriteSelection(kol));
+    setFavoritePickerIsFavorite(isKolFavorited(kol));
+  }
+
+  const favoriteInputStyle = {
+    width: "100%",
+    padding: "8px 12px",
+    border: "1px solid var(--mantine-color-default-border)",
+    borderRadius: 4,
+    fontSize: 14,
+    background: "var(--mantine-color-body)",
+    color: "var(--mantine-color-text)",
+  } as const;
+
+  const socialLinkStyle = {
+    textDecoration: "none",
+    color: "inherit",
+    display: "inline-flex",
+    alignItems: "center",
+    cursor: "pointer",
+    width: "fit-content",
+  } as const;
 
   function sortLabel(key: string) {
     if (key !== sortKey) return "";
@@ -570,23 +622,30 @@ export default function KolListPage() {
           <SimpleGrid cols={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing={24}>
             {pageRows.map((kol) => {
               const kolTags = getPrimaryTags(kol);
+              const isFavorited = isKolFavorited(kol);
+              const instagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
+              const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
+              const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
               return (
                 <Card key={kol.id} withBorder radius="md" p="lg" style={{ position: "relative", cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
                   <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
-                    {kol.isFavorite ? (
-                      <Form method="post">
-                        <input type="hidden" name="intent" value="removeFavorite" />
-                        <input type="hidden" name="kolId" value={kol.id} />
-                        <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: 0, lineHeight: 1, color: "var(--mantine-color-red-filled)", textShadow: "0 0 2px rgba(250,82,82,0.4)" }} title="取消收藏">♥</button>
-                      </Form>
-                    ) : (
-                      <button
-                        type="button"
-                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: 0, lineHeight: 1, color: "var(--mantine-color-gray-4)" }}
-                        title="加入收藏"
-                        onClick={() => { setFavoritePickerKolId(kol.id); setFavoritePickerFolder(""); }}
-                      >♡</button>
-                    )}
+                    <button
+                      type="button"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: 18,
+                        padding: 0,
+                        lineHeight: 1,
+                        color: isFavorited ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+                        textShadow: isFavorited ? "0 0 2px rgba(250,82,82,0.4)" : undefined,
+                      }}
+                      title={isFavorited ? "管理收藏資料夾" : "加入收藏"}
+                      onClick={() => openFavoritePicker(kol)}
+                    >
+                      {isFavorited ? "♥" : "♡"}
+                    </button>
                   </div>
                   <Stack align="center" gap="xs">
                     <Avatar src={kol.avatarUrl} size={72} radius={999} />
@@ -597,23 +656,23 @@ export default function KolListPage() {
                   </Stack>
                   <Divider my="sm" />
                   <Stack gap={4}>
-                    {kol.socialLinks?.instagram || kol.instagramHandle ? (
-                      <a href={kol.socialLinks?.instagram ?? `https://instagram.com/${kol.instagramHandle}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
-                        <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()} ↗</Text>
+                    {instagramUrl ? (
+                      <a href={instagramUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 Instagram" onClick={(event) => event.stopPropagation()}>
+                        <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
                       </a>
                     ) : (
                       <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
                     )}
-                    {kol.socialLinks?.youtube ? (
-                      <a href={kol.socialLinks.youtube} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
-                        <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()} ↗</Text>
+                    {youtubeUrl ? (
+                      <a href={youtubeUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 YouTube" onClick={(event) => event.stopPropagation()}>
+                        <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
                       </a>
                     ) : (
                       <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
                     )}
-                    {kol.socialLinks?.tiktok ? (
-                      <a href={kol.socialLinks.tiktok} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
-                        <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()} ↗</Text>
+                    {tiktokUrl ? (
+                      <a href={tiktokUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 TikTok" onClick={(event) => event.stopPropagation()}>
+                        <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
                       </a>
                     ) : (
                       <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
@@ -734,20 +793,22 @@ export default function KolListPage() {
                     <Table.Td>{kol.collaborations ?? 0}</Table.Td>
                     <Table.Td>
                       <Group gap="xs">
-                        {kol.isFavorite ? (
-                          <Form method="post" style={{ display: "inline" }}>
-                            <input type="hidden" name="intent" value="removeFavorite" />
-                            <input type="hidden" name="kolId" value={kol.id} />
-                            <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: 0, lineHeight: 1, color: "var(--mantine-color-red-filled)" }} title="取消收藏">♥</button>
-                          </Form>
-                        ) : (
-                          <button
-                            type="button"
-                            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: 0, lineHeight: 1, color: "var(--mantine-color-gray-4)" }}
-                            title="加入收藏"
-                            onClick={() => { setFavoritePickerKolId(kol.id); setFavoritePickerFolder(""); }}
-                          >♡</button>
-                        )}
+                        <button
+                          type="button"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: 16,
+                            padding: 0,
+                            lineHeight: 1,
+                            color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+                          }}
+                          title={isKolFavorited(kol) ? "管理收藏資料夾" : "加入收藏"}
+                          onClick={() => openFavoritePicker(kol)}
+                        >
+                          {isKolFavorited(kol) ? "♥" : "♡"}
+                        </button>
                         <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>
                         <Button component={Link} to={`/kols/${kol.id}/edit`} variant="default" size="xs">編輯</Button>
                         <Button
@@ -834,42 +895,63 @@ export default function KolListPage() {
       {/* ── Favorite Folder Picker Modal ── */}
       <Modal
         opened={!!favoritePickerKolId}
-        onClose={() => setFavoritePickerKolId(null)}
-        title="加入收藏"
+        onClose={() => {
+          setFavoritePickerKolId(null);
+          setFavoritePickerSelection([]);
+          setFavoritePickerIsFavorite(false);
+        }}
+        title="收藏資料夾"
         centered
         size="sm"
       >
         <Form
           method="post"
-          onSubmit={() => setFavoritePickerKolId(null)}
+          onSubmit={() => {
+            setFavoritePickerKolId(null);
+            setFavoritePickerSelection([]);
+            setFavoritePickerIsFavorite(false);
+          }}
         >
-          <input type="hidden" name="intent" value="addFavorite" />
           <input type="hidden" name="kolId" value={favoritePickerKolId ?? ""} />
+          <input type="hidden" name="selectedFolders" value={favoritePickerSelection.join(",")} />
           <Stack gap="md">
-            <Text size="sm" c="dimmed">選擇要收藏到哪個資料夾，或直接加入不指定資料夾。</Text>
-            <select
-              name="folder"
-              aria-label="選擇收藏資料夾"
-              value={favoritePickerFolder}
-              onChange={(e) => setFavoritePickerFolder(e.currentTarget.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 4,
-                fontSize: 14,
-                background: "var(--mantine-color-body)",
-                color: "var(--mantine-color-text)",
-              }}
-            >
-              <option value="">不指定資料夾</option>
-              {folders.map((f) => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
+            <Text size="sm" c="dimmed">可多選資料夾；若先收藏但暫時不分類，也可以直接儲存。</Text>
+            <Stack gap="xs" style={favoriteInputStyle}>
+              {folders.length === 0 ? (
+                <Text size="sm" c="dimmed">尚未建立任何收藏資料夾，儲存後會先加入收藏但不分類。</Text>
+              ) : (
+                folders.map((folderName) => (
+                  <Checkbox
+                    key={folderName}
+                    label={folderName}
+                    checked={favoritePickerSelection.includes(folderName)}
+                    onChange={(event) => {
+                      setFavoritePickerSelection((prev) =>
+                        event.currentTarget.checked
+                          ? [...prev, folderName]
+                          : prev.filter((name) => name !== folderName),
+                      );
+                    }}
+                  />
+                ))
+              )}
+            </Stack>
             <Group justify="flex-end">
-              <Button variant="default" onClick={() => setFavoritePickerKolId(null)}>取消</Button>
-              <Button type="submit">加入收藏</Button>
+              {favoritePickerIsFavorite ? (
+                <Button type="submit" name="intent" value="removeFavorite" color="red" variant="light">
+                  取消收藏
+                </Button>
+              ) : null}
+              <Button variant="default" onClick={() => {
+                setFavoritePickerKolId(null);
+                setFavoritePickerSelection([]);
+                setFavoritePickerIsFavorite(false);
+              }}>
+                取消
+              </Button>
+              <Button type="submit" name="intent" value="updateFavoriteFolders">
+                儲存收藏
+              </Button>
             </Group>
           </Stack>
         </Form>
@@ -968,7 +1050,6 @@ export default function KolListPage() {
     </Stack >
   );
 }
-
 
 
 

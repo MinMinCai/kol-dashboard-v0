@@ -1,12 +1,10 @@
-import { access, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import AdmZip from "adm-zip";
 import { getKol, type InsertionOrder, type OrderKolCollaboration, type OrderPerformanceItem, type Report } from "./mock-api.server";
 
-const execFileAsync = promisify(execFile);
-const POWERSHELL_PATH = "C:\\Program Files\\PowerShell\\7\\pwsh.exe";
 const MAX_REPORT_KOLS = 10;
+const ASSET_DOWNLOAD_TIMEOUT_MS = 1500;
 
 type MediaAsset = {
   extension: string;
@@ -34,12 +32,13 @@ function escapeXml(value: string): string {
     .replaceAll("'", "&apos;");
 }
 
-function escapePowerShellLiteral(value: string): string {
-  return value.replaceAll("'", "''");
-}
-
 function sanitizeFileName(value: string): string {
   return value.replace(/[<>:"/\\|?*\u0000-\u001F]/g, "_").trim() || "結案報告";
+}
+
+function normalizePptxName(value: string): string {
+  const sanitized = sanitizeFileName(value).replace(/\.pptx$/i, "");
+  return `${sanitized}.pptx`;
 }
 
 function formatDateLabel(value?: string): string {
@@ -104,7 +103,7 @@ function resolvePlatformLabel(item: OrderPerformanceItem | undefined, kol: Enric
   if (/ig|instagram/i.test(title)) return "Instagram";
   if (kol.socialLinks?.youtube) return "YouTube";
   if (kol.socialLinks?.tiktok) return "TikTok";
-  if (kol.socialLinks?.facebook) return "Facebook";
+  if ((kol.socialLinks as any)?.facebook) return "Facebook";
   return "Instagram";
 }
 
@@ -283,12 +282,6 @@ function updateSummarySlide(raw: string, order: InsertionOrder, summary: string)
     );
 }
 
-async function runPowerShell(command: string) {
-  await execFileAsync(POWERSHELL_PATH, ["-NoProfile", "-Command", command], {
-    windowsHide: true,
-    maxBuffer: 10 * 1024 * 1024,
-  });
-}
 
 export function resolveReportTemplatePath(templateKey?: string): string {
   const templateFile = "fake結案報告.pptx";
@@ -308,7 +301,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
 }
 
 async function downloadImageAsset(
-  workDir: string,
+  _workDir: string,
   mediaDir: string,
   url: string,
   relId: string,
@@ -316,7 +309,7 @@ async function downloadImageAsset(
 ): Promise<MediaAsset | null> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), ASSET_DOWNLOAD_TIMEOUT_MS);
     const response = await fetch(url, { signal: controller.signal });
     clearTimeout(timeout);
     if (!response.ok) return null;
@@ -337,12 +330,17 @@ async function enrichSelectedKols(order: InsertionOrder, selectedKolIds?: string
   const raw = (order.collaborations ?? []).filter((kol) => selectedSet.size === 0 || selectedSet.has(kol.id)).slice(0, MAX_REPORT_KOLS);
   const enriched = await Promise.all(
     raw.map(async (kol) => {
-      const detail = kol.kolId ? await getKol(kol.kolId).catch(() => null) : null;
+      const detail = kol.kolId
+        ? await Promise.race([
+            getKol(kol.kolId),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+          ]).catch(() => null)
+        : null;
       const primaryLink =
         kol.socialLinks?.instagram ||
         kol.socialLinks?.youtube ||
         kol.socialLinks?.tiktok ||
-        kol.socialLinks?.facebook ||
+        (kol.socialLinks as any)?.facebook ||
         detail?.socialLinks?.instagram ||
         detail?.socialLinks?.youtube ||
         detail?.socialLinks?.tiktok ||
@@ -374,54 +372,62 @@ async function writeGeneratedKolSlides(params: {
   const templateShowcase = await readFile(path.join(slideDir, "slide3.xml"), "utf8");
   const templatePost = await readFile(path.join(slideDir, "slide4.xml"), "utf8");
   const templateStory = await readFile(path.join(slideDir, "slide5.xml"), "utf8");
+  // Pre-assign slide numbers and media sequence offsets so KOLs can be processed in parallel
+  const PER_KOL_SLIDES = 3;
+  const PER_KOL_IMAGES = 10; // max images per KOL (4 showcase + 3 post + 3 story)
+
+  const kolResults = await Promise.all(
+    selectedKols.map(async (kol, kolIndex) => {
+      const baseSlideNo = 17 + kolIndex * PER_KOL_SLIDES;
+      const baseRelNo = 30 + kolIndex * PER_KOL_SLIDES;
+      const baseMediaSeq = 1 + kolIndex * PER_KOL_IMAGES;
+
+      const postItem = pickPostItem(kol);
+      const storyItem = pickStoryItem(kol) ?? postItem;
+
+      const showcaseAssets = (
+        await Promise.all(
+          getBestImageUrls(postItem, "thumbnail")
+            .concat(getBestImageUrls(storyItem, "thumbnail"))
+            .slice(0, 4)
+            .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, baseMediaSeq + index)),
+        )
+      ).filter(Boolean) as MediaAsset[];
+      const postAssets = (
+        await Promise.all(
+          getBestImageUrls(postItem, "metric")
+            .slice(0, 3)
+            .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, baseMediaSeq + 4 + index)),
+        )
+      ).filter(Boolean) as MediaAsset[];
+      const storyAssets = (
+        await Promise.all(
+          getBestImageUrls(storyItem, "metric")
+            .slice(0, 3)
+            .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, baseMediaSeq + 7 + index)),
+        )
+      ).filter(Boolean) as MediaAsset[];
+
+      return { kol, baseSlideNo, baseRelNo, showcaseAssets, postAssets, storyAssets, postItem, storyItem };
+    }),
+  );
+
   const slides: SlideDefinition[] = [];
-  let slideNo = 17;
-  let slideRelNo = 30;
-  let mediaSequence = 1;
-
-  for (const kol of selectedKols) {
-    const postItem = pickPostItem(kol);
-    const storyItem = pickStoryItem(kol) ?? postItem;
-
-    const showcaseAssets = (
-      await Promise.all(
-        getBestImageUrls(postItem, "thumbnail")
-          .concat(getBestImageUrls(storyItem, "thumbnail"))
-          .slice(0, 4)
-          .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, mediaSequence++)),
-      )
-    ).filter(Boolean) as MediaAsset[];
+  for (const { kol, baseSlideNo, baseRelNo, showcaseAssets, postAssets, storyAssets, postItem, storyItem } of kolResults) {
     const showcaseXml = buildShowcaseSlide(templateShowcase, kol, showcaseAssets);
-    await writeFile(path.join(slideDir, `slide${slideNo}.xml`), showcaseXml, "utf8");
-    await writeFile(path.join(slideRelsDir, `slide${slideNo}.xml.rels`), buildSlideRels(showcaseAssets), "utf8");
-    slides.push({ slideNo, title: `${kol.name}-上刊截圖`, relId: `rId${slideRelNo++}` });
-    slideNo += 1;
+    await writeFile(path.join(slideDir, `slide${baseSlideNo}.xml`), showcaseXml, "utf8");
+    await writeFile(path.join(slideRelsDir, `slide${baseSlideNo}.xml.rels`), buildSlideRels(showcaseAssets), "utf8");
+    slides.push({ slideNo: baseSlideNo, title: `${kol.name}-上刊截圖`, relId: `rId${baseRelNo}` });
 
-    const postAssets = (
-      await Promise.all(
-        getBestImageUrls(postItem, "metric")
-          .slice(0, 3)
-          .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, mediaSequence++)),
-      )
-    ).filter(Boolean) as MediaAsset[];
     const postXml = buildMetricSlide(templatePost, kol, "貼文成效數據截圖", postAssets, buildMetricSummary(postItem, kol));
-    await writeFile(path.join(slideDir, `slide${slideNo}.xml`), postXml, "utf8");
-    await writeFile(path.join(slideRelsDir, `slide${slideNo}.xml.rels`), buildLayout3SlideRels(postAssets), "utf8");
-    slides.push({ slideNo, title: `${kol.name}-貼文成效數據截圖`, relId: `rId${slideRelNo++}` });
-    slideNo += 1;
+    await writeFile(path.join(slideDir, `slide${baseSlideNo + 1}.xml`), postXml, "utf8");
+    await writeFile(path.join(slideRelsDir, `slide${baseSlideNo + 1}.xml.rels`), buildLayout3SlideRels(postAssets), "utf8");
+    slides.push({ slideNo: baseSlideNo + 1, title: `${kol.name}-貼文成效數據截圖`, relId: `rId${baseRelNo + 1}` });
 
-    const storyAssets = (
-      await Promise.all(
-        getBestImageUrls(storyItem, "metric")
-          .slice(0, 3)
-          .map((url, index) => downloadImageAsset(extractDir, mediaDir, url, `rId${index + 2}`, mediaSequence++)),
-      )
-    ).filter(Boolean) as MediaAsset[];
     const storyXml = buildMetricSlide(templateStory, kol, "限動成效數據截圖", storyAssets, buildMetricSummary(storyItem, kol));
-    await writeFile(path.join(slideDir, `slide${slideNo}.xml`), storyXml, "utf8");
-    await writeFile(path.join(slideRelsDir, `slide${slideNo}.xml.rels`), buildLayout3SlideRels(storyAssets), "utf8");
-    slides.push({ slideNo, title: `${kol.name}-限動成效數據截圖`, relId: `rId${slideRelNo++}` });
-    slideNo += 1;
+    await writeFile(path.join(slideDir, `slide${baseSlideNo + 2}.xml`), storyXml, "utf8");
+    await writeFile(path.join(slideRelsDir, `slide${baseSlideNo + 2}.xml.rels`), buildLayout3SlideRels(storyAssets), "utf8");
+    slides.push({ slideNo: baseSlideNo + 2, title: `${kol.name}-限動成效數據截圖`, relId: `rId${baseRelNo + 2}` });
   }
 
   return slides;
@@ -533,29 +539,26 @@ export async function generateReportPpt(params: {
   const workRoot = path.resolve(process.cwd(), "tmp", "generated_reports", report.id);
   const extractDir = path.join(workRoot, "template");
   const mediaDir = path.join(extractDir, "ppt", "media");
-  const sourceZip = path.join(workRoot, "source.pptx");
-  const outputPath = path.join(workRoot, `${sanitizeFileName(report.name || report.reportTitle || "結案報告")}.pptx`);
+  const outputPath = path.join(workRoot, normalizePptxName(report.name || report.reportTitle || "結案報告"));
   const selectedKols = await enrichSelectedKols(order, report.selectedKolIds);
 
   await rm(workRoot, { recursive: true, force: true });
   await mkdir(extractDir, { recursive: true });
-  await copyFile(templatePath, sourceZip);
 
-  await runPowerShell(
-    `Expand-Archive -LiteralPath '${escapePowerShellLiteral(sourceZip)}' -DestinationPath '${escapePowerShellLiteral(extractDir)}' -Force`,
-  );
+  // Extract template PPTX using adm-zip (no PowerShell needed)
+  const zip = new AdmZip(templatePath);
+  zip.extractAllTo(extractDir, true);
+
+  await mkdir(mediaDir, { recursive: true });
 
   const generatedSlides = await writeGeneratedKolSlides({ extractDir, mediaDir, selectedKols });
   await updateFixedSlides(extractDir, order, selectedKols);
   await rewritePresentationFiles(extractDir, generatedSlides, selectedKols);
 
-  if (await fileExists(outputPath)) {
-    await rm(outputPath, { force: true });
-  }
-
-  await runPowerShell(
-    `Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory('${escapePowerShellLiteral(extractDir)}', '${escapePowerShellLiteral(outputPath)}')`,
-  );
+  // Re-pack directory back into a PPTX zip using adm-zip
+  const outZip = new AdmZip();
+  outZip.addLocalFolder(extractDir);
+  outZip.writeZip(outputPath);
 
   return outputPath;
 }

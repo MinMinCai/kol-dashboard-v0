@@ -4,6 +4,7 @@
  * for KOL rows that were seeded before those columns existed.
  * Safe to re-run: only updates rows where instagram_handle IS NULL.
  */
+import "dotenv/config";
 import postgres from "postgres";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";

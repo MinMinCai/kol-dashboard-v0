@@ -1,7 +1,7 @@
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { readFile } from "node:fs/promises";
 import { getInsertionOrder } from "~/lib/mock-api.server";
-import { fileExists, generateReportPpt, resolveReportTemplatePath } from "~/lib/report-ppt.server";
+import { fileExists, generateReportPpt } from "~/lib/report-ppt.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const orderId = params.orderId ?? "";
@@ -17,18 +17,33 @@ export async function loader({ params }: LoaderFunctionArgs) {
     return new Response("Report not found", { status: 404 });
   }
 
-  const filePath = report.filePath && await fileExists(report.filePath)
-    ? report.filePath
-    : await generateReportPpt({
-        order,
-        report: {
-          id: report.id,
-          name: report.name,
-          templateKey: report.templateKey,
-          selectedKolIds: report.selectedKolIds,
-          reportTitle: report.reportTitle,
-        },
-      }).catch(async () => resolveReportTemplatePath(report.templateKey));
+  const canRegenerate =
+    report.type === "draft"
+    || Boolean(report.templateKey || report.reportTitle || report.selectedKolIds?.length);
+
+  let filePath: string;
+  try {
+    filePath = report.filePath && await fileExists(report.filePath)
+      ? report.filePath
+      : !canRegenerate
+        ? ""
+      : await generateReportPpt({
+          order,
+          report: {
+            id: report.id,
+            name: report.name,
+            templateKey: report.templateKey,
+            selectedKolIds: report.selectedKolIds,
+            reportTitle: report.reportTitle,
+          },
+        });
+    if (!filePath) {
+      return new Response("Report file is unavailable", { status: 404 });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Report generation failed";
+    return new Response(message, { status: 500 });
+  }
 
   const buffer = await readFile(filePath);
   const filename = report.name || `${order.orderNo}_結案報告.pptx`;

@@ -3,6 +3,7 @@
  * Applies db/patch.sql to the production database before the server starts.
  * Safe to re-run: all statements use IF NOT EXISTS / IF EXISTS guards.
  */
+import "dotenv/config";
 import postgres from "postgres";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";

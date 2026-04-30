@@ -8,6 +8,7 @@ import { resolve } from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../db/drizzle/schema";
+import { buildSupplementalProposalKols, buildSupplementalProposals, enrichKolSeedData } from "./sample-data-utils.mjs";
 
 const client = postgres(process.env.DATABASE_URL!);
 const db = drizzle(client, { schema });
@@ -15,6 +16,15 @@ const db = drizzle(client, { schema });
 const dbJson = JSON.parse(
   readFileSync(resolve(process.cwd(), "mock/db.json"), "utf-8"),
 );
+const socialAccountsByKolId = new Map<string, any[]>();
+for (const account of dbJson.kolSocialAccounts ?? []) {
+  const current = socialAccountsByKolId.get(account.kolId) ?? [];
+  current.push(account);
+  socialAccountsByKolId.set(account.kolId, current);
+}
+const enrichedKols = (dbJson.kols ?? []).map((kol: any) => enrichKolSeedData(kol, socialAccountsByKolId.get(kol.id) ?? []));
+const supplementalProposals = buildSupplementalProposals(dbJson);
+const supplementalProposalKols = buildSupplementalProposalKols(dbJson, enrichedKols);
 
 async function seed() {
   console.log("🌱 Starting seed...");
@@ -42,9 +52,9 @@ async function seed() {
   }
 
   // ── KOLs ──────────────────────────────────────────────────────────────────
-  if (dbJson.kols?.length) {
-    console.log(`  Seeding ${dbJson.kols.length} KOLs...`);
-    for (const kol of dbJson.kols) {
+  if (enrichedKols.length) {
+    console.log(`  Seeding ${enrichedKols.length} KOLs...`);
+    for (const kol of enrichedKols) {
       await db
         .insert(schema.kols)
         .values({
@@ -77,6 +87,8 @@ async function seed() {
           collaborationHistory: kol.collaborationHistory ?? [],
           priceTrend: kol.priceTrend ?? [],
           performanceStats: kol.performanceStats ?? null,
+          platformMetrics: kol.platformMetrics ?? null,
+          socialLinks: kol.socialLinks ?? null,
           contactEmail: kol.contact?.email ?? null,
           contactPhone: kol.contact?.phone ?? null,
           status: "active",
@@ -87,9 +99,10 @@ async function seed() {
   }
 
   // ── Proposals ─────────────────────────────────────────────────────────────
-  if (dbJson.proposals?.length) {
-    console.log(`  Seeding ${dbJson.proposals.length} proposals...`);
-    for (const p of dbJson.proposals) {
+  const allProposals = [...(dbJson.proposals ?? []), ...supplementalProposals];
+  if (allProposals.length) {
+    console.log(`  Seeding ${allProposals.length} proposals...`);
+    for (const p of allProposals) {
       await db
         .insert(schema.proposals)
         .values({
@@ -106,9 +119,10 @@ async function seed() {
   }
 
   // ── ProposalKols ──────────────────────────────────────────────────────────
-  if (dbJson.proposalKols?.length) {
-    console.log(`  Seeding ${dbJson.proposalKols.length} proposalKols...`);
-    for (const pk of dbJson.proposalKols) {
+  const allProposalKols = [...(dbJson.proposalKols ?? []), ...supplementalProposalKols];
+  if (allProposalKols.length) {
+    console.log(`  Seeding ${allProposalKols.length} proposalKols...`);
+    for (const pk of allProposalKols) {
       await db
         .insert(schema.proposalKols)
         .values({
@@ -122,6 +136,16 @@ async function seed() {
           reason: pk.reason ?? null,
           status: pk.status ?? "pending",
           feedbackText: pk.feedbackText ?? "",
+          actualFee: pk.actualPrice != null ? String(pk.actualPrice) : null,
+          realFollowerRatio: pk.realFollowerRatio != null ? String(pk.realFollowerRatio) : null,
+          reputationScore: pk.reputationScore != null ? String(pk.reputationScore) : null,
+          avgEngagementRate: pk.avgEngagementRate != null ? String(pk.avgEngagementRate) : null,
+          engagementIndex: pk.engagementIndex != null ? String(pk.engagementIndex) : null,
+          engagementScore: pk.engagementScore != null ? String(pk.engagementScore) : null,
+          brandFitScore: pk.brandFitScore != null ? String(pk.brandFitScore) : null,
+          qualityScore: pk.qualityScore != null ? String(pk.qualityScore) : null,
+          cpfr: pk.cpfr != null ? String(pk.cpfr) : null,
+          recommendation: pk.recommendation ?? null,
         })
         .onConflictDoNothing();
     }

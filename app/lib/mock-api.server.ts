@@ -1,6 +1,7 @@
 import { db } from "./db.server";
 import {
   kols as kolsTable,
+  kolSocialAccounts as kolSocialAccountsTable,
   proposals as proposalsTable,
   proposalKols as proposalKolsTable,
   insertionOrders as ioTable,
@@ -170,6 +171,7 @@ export type Proposal = {
 export type PlatformAudienceMetrics = {
   engagementRate?: number;
   exposureRate?: number;
+  realFollowerRatio?: number;
   audienceGender?: { male: number; female: number };
   audienceAge?: string;
 };
@@ -299,6 +301,10 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     if (fromSocial.length > 0) return fromSocial;
     return row.platform ? [row.platform] : [];
   })();
+  const primaryPlatform = derivedPlatforms[0] ?? "Instagram";
+  const derivedRealFollowerRatio =
+    platformMetrics?.audienceMetrics?.[primaryPlatform]?.realFollowerRatio
+    ?? platformMetrics?.audienceMetrics?.Instagram?.realFollowerRatio;
 
   return {
     id: row.id,
@@ -331,6 +337,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     notes: row.notes ?? undefined,
     instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
+    realFollowerRatio: derivedRealFollowerRatio,
     platformMetrics,
     socialLinks: (row.socialLinks as Kol["socialLinks"]) ?? undefined,
   };
@@ -368,11 +375,24 @@ async function getFavoriteFolderState() {
   };
 }
 
-async function enrichKolsWithFavoriteFolders(kols: Kol[]): Promise<Kol[]> {
-  const { folderNamesByKolId } = await getFavoriteFolderState();
+async function enrichKols(kols: Kol[]): Promise<Kol[]> {
+  const [{ folderNamesByKolId }, socialAccountRows] = await Promise.all([
+    getFavoriteFolderState(),
+    db.select().from(kolSocialAccountsTable).catch(() => []),
+  ]);
+
+  const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
+  for (const row of socialAccountRows) {
+    const platformKey = row.platform.toLowerCase() as keyof NonNullable<Kol["socialLinks"]>;
+    if (!["instagram", "youtube", "tiktok", "facebook"].includes(platformKey)) continue;
+    const current = socialLinksByKolId.get(row.kolId) ?? {};
+    if (row.profileUrl) current[platformKey] = row.profileUrl;
+    socialLinksByKolId.set(row.kolId, current);
+  }
 
   return kols.map((kol) => {
     const linkedFolders = folderNamesByKolId.get(kol.id) ?? [];
+    const accountSocialLinks = socialLinksByKolId.get(kol.id) ?? {};
     const mergedFolders = Array.from(
       new Set([
         ...linkedFolders,
@@ -386,6 +406,10 @@ async function enrichKolsWithFavoriteFolders(kols: Kol[]): Promise<Kol[]> {
       isFavorite: Boolean(kol.isFavorite || mergedFolders.length > 0),
       favoriteFolders: mergedFolders,
       favoriteFolder: mergedFolders[0] ?? kol.favoriteFolder,
+      socialLinks: {
+        ...accountSocialLinks,
+        ...(kol.socialLinks ?? {}),
+      },
     };
   });
 }
@@ -508,13 +532,13 @@ function rowToInsertionOrder(row: typeof ioTable.$inferSelect): InsertionOrder {
 
 export async function listKols(): Promise<Kol[]> {
   const rows = await db.select().from(kolsTable);
-  return enrichKolsWithFavoriteFolders(rows.map(rowToKol));
+  return enrichKols(rows.map(rowToKol));
 }
 
 export async function getKol(id: string): Promise<Kol | null> {
   const rows = await db.select().from(kolsTable).where(eq(kolsTable.id, id)).limit(1);
   if (rows.length === 0) return null;
-  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  const [kol] = await enrichKols([rowToKol(rows[0])]);
   return kol ?? null;
 }
 
@@ -553,7 +577,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
 
   const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
-  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  const [kol] = await enrichKols([rowToKol(rows[0])]);
   return kol;
 }
 
@@ -595,7 +619,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       status: "active",
     })
     .returning();
-  const [kol] = await enrichKolsWithFavoriteFolders([rowToKol(rows[0])]);
+  const [kol] = await enrichKols([rowToKol(rows[0])]);
   return kol;
 }
 

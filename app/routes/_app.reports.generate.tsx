@@ -1,4 +1,5 @@
 import {
+  Alert,
   Badge,
   Box,
   Button,
@@ -27,7 +28,7 @@ import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-r
 import { Link, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import { updateInsertionOrder, getInsertionOrder } from "~/lib/mock-api.server";
 import { useNotificationStore } from "~/store/notification";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { listInsertionOrders } from "~/lib/mock-api.server";
 import { generateReportPpt } from "~/lib/report-ppt.server";
 import { 
@@ -50,6 +51,15 @@ import {
 
 function formatShortDate(date: string): string {
   return date.slice(0, 7);
+}
+
+function normalizePptFileName(value: string): string {
+  const trimmed = value.trim() || "結案報告";
+  return /\.pptx$/i.test(trimmed) ? trimmed : `${trimmed}.pptx`;
+}
+
+function buildReportDownloadPath(orderId: string, reportId: string): string {
+  return `/api/reports/${orderId}/${reportId}/download`;
 }
 
 type SortOption =
@@ -221,32 +231,42 @@ export async function action({ request }: ActionFunctionArgs) {
       }
     })();
 
-    const version = (io.reports?.filter((r) => r.type === "draft").length || 0) + 1;
-    const newReport = {
-      id: `rep_${Date.now()}`,
-      name: reportTitle ? `${reportTitle}.pptx` : `結案報告_v${version}.pptx`,
-      type: "draft" as const,
-      createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
-      createdBy: "系統 AI",
-      templateKey,
-      selectedKolIds: parsedKolIds,
-      reportTitle: reportTitle || `結案報告_v${version}`,
-    };
-    const filePath = await generateReportPpt({
-      order: io,
-      report: newReport,
-    });
-    const reportWithFile = {
-      ...newReport,
-      filePath,
-    };
+    try {
+      const version = (io.reports?.filter((r) => r.type === "draft").length || 0) + 1;
+      const normalizedTitle = reportTitle || `結案報告_v${version}`;
+      const newReport = {
+        id: `rep_${Date.now()}`,
+        name: normalizePptFileName(normalizedTitle),
+        type: "draft" as const,
+        createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
+        createdBy: "系統 AI",
+        templateKey,
+        selectedKolIds: parsedKolIds,
+        reportTitle: normalizedTitle,
+      };
+      const filePath = await generateReportPpt({
+        order: io,
+        report: newReport,
+      });
+      const reportWithFile = {
+        ...newReport,
+        filePath,
+      };
 
-    await updateInsertionOrder(orderId, {
-      hasDraft: true,
-      reports: [...(io.reports ?? []), reportWithFile],
-    });
+      await updateInsertionOrder(orderId, {
+        hasDraft: true,
+        reports: [...(io.reports ?? []), reportWithFile],
+      });
 
-    return json({ ok: true, report: reportWithFile });
+      return json({
+        ok: true,
+        report: reportWithFile,
+        downloadUrl: buildReportDownloadPath(orderId, reportWithFile.id),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "結案報告生成失敗";
+      return json({ ok: false, error: message }, { status: 500 });
+    }
   }
 
   return json({ ok: false }, { status: 400 });
@@ -289,6 +309,7 @@ export default function ReportManagementPage() {
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
   const [reportTitle, setReportTitle] = useState("");
+  const [generationError, setGenerationError] = useState<string | null>(null);
   
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -301,17 +322,48 @@ export default function ReportManagementPage() {
   }, [deleteFetcher.state, deleteFetcher.data, navigate]);
 
   useEffect(() => {
-    if (generateFetcher.state !== "idle" || !generateFetcher.data?.ok || !generateFetcher.data.report || !activeOrder) {
+    if (!progressModalOpen || generateFetcher.state === "idle") {
       return;
     }
 
-    closeProgressModal();
+    const interval = window.setInterval(() => {
+      setProgressPercentage((previous) => {
+        const next = Math.min(previous + (previous < 30 ? 7 : previous < 60 ? 5 : previous < 85 ? 3 : 1), 92);
+        setCurrentStepIndex(next >= 85 ? 4 : next >= 60 ? 3 : next >= 30 ? 2 : next >= 15 ? 1 : 0);
+        return next;
+      });
+    }, 700);
+
+    return () => window.clearInterval(interval);
+  }, [generateFetcher.state, progressModalOpen]);
+
+  useEffect(() => {
+    if (generateFetcher.state !== "idle" || !generateFetcher.data) {
+      return;
+    }
+
+    if (!generateFetcher.data.ok) {
+      setGenerationError(generateFetcher.data.error || "結案報告生成失敗，請稍後再試。");
+      return;
+    }
+
+    if (!generateFetcher.data.report || !activeOrder) {
+      return;
+    }
+
+    setProgressPercentage(100);
+    setCurrentStepIndex(4);
+    setGenerationError(null);
+
     const createdReport = generateFetcher.data.report;
     const title = "結案報告已生成完成！";
     const message = `${activeOrder.orderNo} ${activeOrder.title || activeOrder.projectName}|${createdReport.name}`;
-    const downloadLink = `/api/reports/${activeOrder.id}/${createdReport.id}/download`;
+    const downloadLink =
+      generateFetcher.data.downloadUrl || buildReportDownloadPath(activeOrder.id, createdReport.id);
     showToast(title, message, downloadLink);
     showBanner(title, message, downloadLink);
+    handleDownload(downloadLink, createdReport.name);
+    closeProgressModal();
     navigate(".", { replace: true });
 
     if ("Notification" in window) {
@@ -331,9 +383,9 @@ export default function ReportManagementPage() {
     }
   }, [activeOrder, closeProgressModal, generateFetcher.data, generateFetcher.state, navigate, showBanner, showToast]);
 
-  const handleDownload = (orderId: string, reportId: string, reportName?: string) => {
+  const handleDownload = (downloadUrl: string, reportName?: string) => {
     const a = document.createElement("a");
-    a.href = `/api/reports/${orderId}/${reportId}/download`;
+    a.href = downloadUrl;
     a.download = reportName || "report.pptx";
     document.body.appendChild(a);
     a.click();
@@ -421,31 +473,30 @@ export default function ReportManagementPage() {
   };
 
   const startGeneration = () => {
+    if (!activeOrder) return;
+
+    const normalizedTitle = reportTitle.trim() || `${activeOrder.title || activeOrder.projectName} 結案報告`;
     closeGenModal();
+    setGenerationError(null);
+    setProgressPercentage(12);
+    setCurrentStepIndex(0);
+    const fd = new FormData();
+    fd.append("intent", "generateReport");
+    fd.append("orderId", activeOrder.id);
+    fd.append("reportTitle", normalizedTitle);
+    fd.append("templateKey", selectedTemplate);
+    fd.append("selectedKolIds", JSON.stringify(selectedKolIds));
+    generateFetcher.submit(fd, { method: "post" });
+
+    openProgressModal();
+  };
+
+  const retryGeneration = () => {
+    closeProgressModal();
     setProgressPercentage(0);
     setCurrentStepIndex(0);
-    openProgressModal();
-
-    const stepsProgress = [15, 30, 60, 80, 100];
-    stepsProgress.forEach((p, idx) => {
-      setTimeout(() => {
-        setProgressPercentage(p);
-        setCurrentStepIndex(idx);
-        
-        if (p === 100) {
-          setTimeout(() => {
-            if (!activeOrder) return;
-            const fd = new FormData();
-            fd.append("intent", "generateReport");
-            fd.append("orderId", activeOrder.id);
-            fd.append("reportTitle", reportTitle.trim() || `${activeOrder.title || activeOrder.projectName} 結案報告`);
-            fd.append("templateKey", selectedTemplate);
-            fd.append("selectedKolIds", JSON.stringify(selectedKolIds));
-            generateFetcher.submit(fd, { method: "post" });
-          }, 800);
-        }
-      }, (idx + 1) * 1200);
-    });
+    setGenerationError(null);
+    startGeneration();
   };
 
   return (
@@ -601,7 +652,14 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id, report.name)}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon
+                                    component="a"
+                                    href={buildReportDownloadPath(order.id, report.id)}
+                                    variant="light"
+                                    color="blue"
+                                  >
+                                    <IconDownload size={18} />
+                                  </ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
@@ -630,7 +688,14 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id, report.name)}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon
+                                    component="a"
+                                    href={buildReportDownloadPath(order.id, report.id)}
+                                    variant="light"
+                                    color="blue"
+                                  >
+                                    <IconDownload size={18} />
+                                  </ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
@@ -1026,7 +1091,7 @@ export default function ReportManagementPage() {
             <Group justify="flex-end" mt="md">
               <Button variant="ghost" color="gray" onClick={closeGenModal}>取消</Button>
               <Tooltip label="報告將在背景生成，完成後會通知您" position="top" withArrow>
-                <Button color="blue" onClick={startGeneration} leftSection={<IconRobot size={20} />}>
+                <Button color="blue" onClick={startGeneration} leftSection={<IconRobot size={20} />} disabled={selectedKolIds.length === 0}>
                   開始生成
                 </Button>
               </Tooltip>
@@ -1044,74 +1109,95 @@ export default function ReportManagementPage() {
         centered
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
       >
-        <Stack align="center" ta="center" gap="md" py="md">
-          <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
-            <IconRobot size={40} />
-          </ThemeIcon>
-          <Box>
-            <Title order={3}>AI 正在為您生成報告</Title>
-            <Text c="dimmed" mt={4}>
-              案件 #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}
-            </Text>
-          </Box>
-
-          <Box w="100%" my="sm">
-            <Group justify="space-between" mb={8}>
-              <Text size="sm" fw={600}>進度</Text>
-              <Text size="sm" fw={600} c="blue">{progressPercentage}%</Text>
+        {generationError ? (
+          <Stack gap="md" py="md">
+            <ThemeIcon size={64} radius="100%" variant="light" color="red" mx="auto">
+              <IconX size={40} />
+            </ThemeIcon>
+            <Box ta="center">
+              <Title order={3}>結案報告生成失敗</Title>
+              <Text c="dimmed" mt={4}>
+                案件 #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}
+              </Text>
+            </Box>
+            <Alert color="red" title="錯誤訊息">
+              {generationError}
+            </Alert>
+            <Group justify="flex-end">
+              <Button variant="default" onClick={closeProgressModal}>關閉</Button>
+              <Button color="blue" onClick={retryGeneration}>重新生成</Button>
             </Group>
-            <Progress 
-              value={progressPercentage} 
-              size="lg" 
-              radius="xl" 
-              striped 
-              animated 
-              color="blue" 
-            />
-          </Box>
-
-          {/* Checklist */}
-          <Stack gap="xs" w="100%" align="flex-start" pl="md">
-            {[
-              "收集案件資料",
-              "整理 KOL 成效數據",
-              "AI 生成報告內容中...",
-              "套用 PowerPoint 模板",
-              "上傳至雲端儲存"
-            ].map((stepDesc, idx) => {
-              const isCompleted = currentStepIndex > idx;
-              const isCurrent = currentStepIndex === idx;
-              return (
-                <Group key={idx} wrap="nowrap" gap="sm">
-                  {isCompleted ? (
-                    <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14}/></ThemeIcon>
-                  ) : isCurrent ? (
-                    <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14}/></ThemeIcon>
-                  ) : (
-                    <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14}/></ThemeIcon>
-                  )}
-                  <Text size="sm" fw={isCurrent ? 600 : 400} c={isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5"}>
-                    {stepDesc}
-                  </Text>
-                </Group>
-              );
-            })}
           </Stack>
+        ) : (
+          <Stack align="center" ta="center" gap="md" py="md">
+            <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
+              <IconRobot size={40} />
+            </ThemeIcon>
+            <Box>
+              <Title order={3}>AI 正在為您生成報告</Title>
+              <Text c="dimmed" mt={4}>
+                案件 #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}
+              </Text>
+            </Box>
 
-          <Text size="xs" c="dimmed" mt="xs">預計還需 2 分鐘</Text>
+            <Box w="100%" my="sm">
+              <Group justify="space-between" mb={8}>
+                <Text size="sm" fw={600}>進度</Text>
+                <Text size="sm" fw={600} c="blue">{progressPercentage}%</Text>
+              </Group>
+              <Progress 
+                value={progressPercentage} 
+                size="lg" 
+                radius="xl" 
+                striped 
+                animated 
+                color="blue" 
+              />
+            </Box>
 
-          <Card bg="blue.0" w="100%" p="sm" radius="md">
-            <Group wrap="nowrap" align="center" justify="center">
-              <IconBulb size={18} color="var(--mantine-color-blue-7)" />
-              <Text size="sm" c="blue.9">您可以關閉此視窗繼續其他工作，完成後會通知您</Text>
+            {/* Checklist */}
+            <Stack gap="xs" w="100%" align="flex-start" pl="md">
+              {[
+                "收集案件資料",
+                "整理 KOL 成效數據",
+                "AI 生成報告內容中...",
+                "套用 PowerPoint 模板",
+                "建立可下載 PPT 檔"
+              ].map((stepDesc, idx) => {
+                const isCompleted = currentStepIndex > idx;
+                const isCurrent = currentStepIndex === idx;
+                return (
+                  <Group key={idx} wrap="nowrap" gap="sm">
+                    {isCompleted ? (
+                      <ThemeIcon color="green" size={20} radius="xl" variant="filled"><IconCheck size={14}/></ThemeIcon>
+                    ) : isCurrent ? (
+                      <ThemeIcon color="blue" size={20} radius="xl" variant="light"><IconRobot size={14}/></ThemeIcon>
+                    ) : (
+                      <ThemeIcon color="gray" size={20} radius="xl" variant="light"><IconClockHour4 size={14}/></ThemeIcon>
+                    )}
+                    <Text size="sm" fw={isCurrent ? 600 : 400} c={isCompleted ? "dimmed" : isCurrent ? "blue.7" : "gray.5"}>
+                      {stepDesc}
+                    </Text>
+                  </Group>
+                );
+              })}
+            </Stack>
+
+            <Text size="xs" c="dimmed" mt="xs">後端正在實際生成 PPT，完成後會自動提供下載。</Text>
+
+            <Card bg="blue.0" w="100%" p="sm" radius="md">
+              <Group wrap="nowrap" align="center" justify="center">
+                <IconBulb size={18} color="var(--mantine-color-blue-7)" />
+                <Text size="sm" c="blue.9">您可以關閉此視窗繼續其他工作，完成後會通知您</Text>
+              </Group>
+            </Card>
+
+            <Group w="100%" grow mt="sm">
+              <Button variant="outline" color="red" onClick={closeProgressModal}>關閉視窗</Button>
+              <Button onClick={closeProgressModal}>在背景繼續</Button>
             </Group>
-          </Card>
-
-          <Group w="100%" grow mt="sm">
-            <Button variant="outline" color="red" onClick={closeProgressModal}>取消生成</Button>
-            <Button onClick={closeProgressModal}>在背景繼續</Button>
-          </Group>
-        </Stack>
+          </Stack>
+        )}
       </Modal>
 
       {/* ── Upload Modal ── */}

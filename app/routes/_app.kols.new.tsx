@@ -139,6 +139,7 @@ type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 type PlatformAudienceState = {
   engagementRate: string;
   exposureRate: string;
+  realFollowerRatio: string;
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
@@ -146,7 +147,7 @@ type PlatformAudienceState = {
 };
 
 function emptyPlatformAudience(): PlatformAudienceState {
-  return { engagementRate: "", exposureRate: "", audienceMale: "", audienceFemale: "", audienceAge: "", avgRating: "" };
+  return { engagementRate: "", exposureRate: "", realFollowerRatio: "", audienceMale: "", audienceFemale: "", audienceAge: "", avgRating: "" };
 }
 
 function PlatformAudienceMetricsSection() {
@@ -179,6 +180,7 @@ function PlatformAudienceMetricsSection() {
         return [p, {
           engagementRate: m.engagementRate ? Number(m.engagementRate) : undefined,
           exposureRate: m.exposureRate ? Number(m.exposureRate) : undefined,
+          realFollowerRatio: m.realFollowerRatio ? Number(m.realFollowerRatio) : undefined,
           audienceGender: m.audienceMale
             ? { male: Number(m.audienceMale), female: Number(m.audienceFemale || 0) }
             : undefined,
@@ -238,6 +240,14 @@ function PlatformAudienceMetricsSection() {
           placeholder="例如：12.5"
           value={current.exposureRate}
           onChange={(e) => updateField("exposureRate", e.currentTarget.value)}
+        />
+        <TextInput
+          label="真粉比例 (%)"
+          type="number"
+          step="0.01"
+          placeholder="例如：82.5"
+          value={current.realFollowerRatio}
+          onChange={(e) => updateField("realFollowerRatio", e.currentTarget.value)}
         />
         <Box>
           <Text size="sm" fw={500} mb={4}>受眾性別比 (男 %)</Text>
