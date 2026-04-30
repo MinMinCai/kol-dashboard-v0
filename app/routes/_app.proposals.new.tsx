@@ -451,7 +451,6 @@ export default function ProposalCreatePage() {
               label="真粉比例"
               value={manualCandidate.realFollowerRatio != null ? `${manualCandidate.realFollowerRatio}%` : "-"}
               readOnly
-              description="從 KOL 資料自動帶入"
               styles={{ input: { background: "var(--mantine-color-default-hover)", cursor: "default" } }}
             />
             <TextInput label="KOL 名聲" value={manualCandidate.reputationScore ?? ""} onChange={(event) => setManualCandidate((prev) => ({ ...prev, reputationScore: toOptionalNumber(event.currentTarget.value) }))} />

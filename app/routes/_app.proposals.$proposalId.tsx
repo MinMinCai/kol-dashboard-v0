@@ -1089,7 +1089,6 @@ export default function ProposalDetailPage() {
                   label="真粉比例"
                   value={manualCandidateForm.realFollowerRatio ? `${manualCandidateForm.realFollowerRatio}%` : "-"}
                   readOnly
-                  description="從 KOL 資料自動帶入"
                   styles={{ input: { background: "var(--mantine-color-default-hover)", cursor: "default" } }}
                 />
               </div>

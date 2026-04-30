@@ -6,6 +6,8 @@ import {
   Card,
   Divider,
   Group,
+  Modal,
+  ScrollArea,
   Select,
   SimpleGrid,
   Stack,
@@ -17,8 +19,8 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
-import { useState, useEffect } from "react";
-import { IconChevronDown } from "@tabler/icons-react";
+import { useState } from "react";
+import { IconChevronDown, IconSearch } from "@tabler/icons-react";
 import {
   addBrandCatalog,
   addIndustryCatalog,
@@ -227,8 +229,10 @@ export default function InsertionOrderCreatePage() {
   const [taxRate, setTaxRate] = useState(5);
   const totalWithTax = Math.round(projectQuote * (1 + taxRate / 100));
 
-  /* ── Initial KOLs from proposal (accepted candidates) ── */
-  const initialKolsJson = JSON.stringify(
+  /* ── KOL modal state ── */
+  const [kolModalOpen, setKolModalOpen] = useState(false);
+  const [kolSearch, setKolSearch] = useState("");
+  const [selectedKols, setSelectedKols] = useState<SelectedKolRow[]>(() =>
     (proposalData?.acceptedKols ?? []).map((pk) => ({
       id: `row_${pk.kolId || Math.random().toString(36).slice(2, 9)}`,
       kolId: pk.kolId,
@@ -242,181 +246,49 @@ export default function InsertionOrderCreatePage() {
     }))
   );
 
-  /* ── Embed KOL data for native JS dialog ── */
-  const kolsJson = JSON.stringify(
-    kols.map((k) => ({
-      id: k.id,
-      name: k.displayName,
-      handle: k.instagramHandle ?? "",
-      industry: k.industry ?? "未分類",
-      avatarUrl: k.avatarUrl ?? "",
-      price: Number(k.averagePrice ?? 0),
-    }))
-  );
+  const kolOptions = kols.map((k) => ({
+    id: k.id,
+    name: k.displayName,
+    handle: k.instagramHandle ?? "",
+    industry: k.industry ?? "未分類",
+    avatarUrl: k.avatarUrl ?? "",
+    price: Number(k.averagePrice ?? 0),
+  }));
 
-  const nativeDialogScript = `
-    window.__ALL_KOLS__ = ${kolsJson};
+  const filteredKols = kolSearch.trim()
+    ? kolOptions.filter((k) =>
+        `${k.name} ${k.handle} ${k.industry}`.toLowerCase().includes(kolSearch.toLowerCase())
+      )
+    : kolOptions;
 
-    function kolDialogOpen() {
-      var dlg = document.getElementById('kol-select-dialog');
-      if (dlg) { dlg.showModal(); kolDialogSearch(''); }
-    }
-    function kolDialogClose() {
-      var dlg = document.getElementById('kol-select-dialog');
-      if (dlg) dlg.close();
-    }
-    function kolDialogSearch(q) {
-      var list = document.getElementById('kol-dialog-list');
-      if (!list) return;
-      var rows = window.__ALL_KOLS__ || [];
-      var lq = (q || '').toLowerCase();
-      var filtered = lq ? rows.filter(function(k){ return (k.name+k.handle+k.industry).toLowerCase().indexOf(lq) !== -1; }) : rows;
-      var selectedRaw = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(selectedRaw ? selectedRaw.value || '[]' : '[]'); } catch(e){}
-      var selectedIds = selected.map(function(x){ return x.kolId; });
-      list.innerHTML = filtered.map(function(k){
-        var isSel = selectedIds.indexOf(k.id) !== -1;
-        var btnAttr = isSel
-          ? 'onclick="kolDialogRemove(\\''+k.id+'\\');return false;" style="padding:5px 14px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;"'
-          : 'onclick="kolDialogAdd(\\''+k.id+'\\',\\''+encodeURIComponent(k.name)+'\\',\\''+encodeURIComponent(k.avatarUrl||'')+'\\','+k.price+');return false;" style="padding:5px 14px;border-radius:4px;border:none;background:var(--mantine-color-blue-filled);color:#fff;cursor:pointer;font-size:12px;"';
-        return '<div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
-          +'<img src="'+(k.avatarUrl||'')+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:#e2e8f0;"/>'
-          +'<div style="flex:1;"><div style="font-weight:600;font-size:14px;">'+k.name+'</div><div style="font-size:12px;color:var(--mantine-color-dimmed);">@'+k.handle+' · '+k.industry+'</div></div>'
-          +'<button type="button" '+btnAttr+'>'+(isSel ? '移除' : '加入')+'</button>'
-          +'</div>';
-      }).join('');
-    }
-    window.kolDialogAdd = function(id, nameEnc, avatarEnc, price) {
-      var name = decodeURIComponent(nameEnc);
-      var avatar = decodeURIComponent(avatarEnc);
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      if (selected.some(function(x){ return x.kolId === id; })) return;
-      selected.push({ id:'row_'+Math.random().toString(36).slice(2,10), kolId:id, name:name, avatarUrl:avatar, services:['IG貼文'], uploadDate:'', executionDate:'', authorization:'', price:Number(price)||0 });
-      if (ta) ta.value = JSON.stringify(selected);
-      kolRenderSelected();
-      var searchEl = document.getElementById('kol-dialog-search');
-      kolDialogSearch(searchEl ? searchEl.value : '');
-    }
-    window.kolDialogRemove = function(kolId) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      selected = selected.filter(function(x){ return x.kolId !== kolId; });
-      if (ta) ta.value = JSON.stringify(selected);
-      kolRenderSelected();
-      var searchEl = document.getElementById('kol-dialog-search');
-      kolDialogSearch(searchEl ? searchEl.value : '');
-    }
-    function kolRemove(rowId) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      selected = selected.filter(function(x){ return x.id !== rowId; });
-      if (ta) ta.value = JSON.stringify(selected);
-      kolRenderSelected();
-    }
-    function kolRenderSelected() {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      var container = document.getElementById('kol-selected-display');
-      if (!container) return;
-      if (selected.length === 0) {
-        container.innerHTML = '<p style="font-size:14px;color:var(--mantine-color-dimmed);margin:8px 0;">尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。</p>';
-        return;
-      }
-      container.innerHTML = selected.map(function(row){
-        var servicesVal = Array.isArray(row.services) ? row.services.join(' + ') : (row.services || '');
-        return '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
-          +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;"/>'
-          +'<div style="flex:1;">'
-          +'<div style="display:flex;justify-content:space-between;align-items:center;">'
-          +'<span style="font-weight:600;font-size:14px;">'+row.name+'</span>'
-          +'<div style="display:flex;align-items:center;gap:6px;">'
-          +'<span style="font-size:13px;color:var(--mantine-color-dimmed);white-space:nowrap;">NT$</span>'
-          +'<input type="number" min="0" step="1000" aria-label="報價金額" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
-          +'</div>'
-          +'</div>'
-          +'<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-          +'<div>'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">合作內容</label>'
-          +'<input type="text" aria-label="合作內容" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" value="'+servicesVal+'" oninput="kolUpdateServices(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
-          +'</div>'
-          +'<div>'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">授權項目</label>'
-          +'<input type="text" aria-label="授權項目" placeholder="例如：數位廣告投放一年" value="'+(row.authorization||'')+'" oninput="kolUpdateAuthorization(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
-          +'</div>'
-          +'</div>'
-          +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);">執行日期</label>'
-          +'<input type="date" aria-label="執行日期" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="font-size:12px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);"/>'
-          +'</div>'
-          +'</div>'
-          +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:4px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;flex-shrink:0;">移除</button>'
-          +'</div>';
-      }).join('');
-    }
-    window.kolUpdateExecDate = function(rowId, val) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      var idx = selected.findIndex(function(x){ return x.id === rowId; });
-      if (idx !== -1) selected[idx].executionDate = val;
-      if (ta) ta.value = JSON.stringify(selected);
-    }
-    window.kolUpdatePrice = function(rowId, val) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      var idx = selected.findIndex(function(x){ return x.id === rowId; });
-      if (idx !== -1) selected[idx].price = Number(val) || 0;
-      if (ta) ta.value = JSON.stringify(selected);
-    }
-    window.kolUpdateServices = function(rowId, val) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      var idx = selected.findIndex(function(x){ return x.id === rowId; });
-      if (idx !== -1) selected[idx].services = val;
-      if (ta) ta.value = JSON.stringify(selected);
-    }
-    window.kolUpdateAuthorization = function(rowId, val) {
-      var ta = document.getElementById('kol-selected-json');
-      var selected = [];
-      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
-      var idx = selected.findIndex(function(x){ return x.id === rowId; });
-      if (idx !== -1) selected[idx].authorization = val;
-      if (ta) ta.value = JSON.stringify(selected);
-    }
-  `;
+  function addKol(k: typeof kolOptions[number]) {
+    if (selectedKols.some((r) => r.kolId === k.id)) return;
+    setSelectedKols((prev) => [
+      ...prev,
+      {
+        id: `row_${Math.random().toString(36).slice(2, 10)}`,
+        kolId: k.id,
+        name: k.name,
+        avatarUrl: k.avatarUrl,
+        services: ["IG貼文"],
+        uploadDate: "",
+        executionDate: "",
+        authorization: "",
+        price: k.price,
+      },
+    ]);
+  }
 
-  useEffect(() => {
-    const scriptId = "dynamic-kol-script";
-    let script = document.getElementById(scriptId);
-    if (script) script.remove();
-    script = document.createElement("script");
-    script.id = scriptId;
-    script.innerHTML = nativeDialogScript;
-    document.body.appendChild(script);
+  function removeKol(kolId: string) {
+    setSelectedKols((prev) => prev.filter((r) => r.kolId !== kolId));
+  }
 
-    setTimeout(() => {
-      // Pre-fill KOLs from proposal if present
-      const ta = document.getElementById("kol-selected-json") as HTMLTextAreaElement | null;
-      if (ta && initialKolsJson !== "[]") {
-        ta.value = initialKolsJson;
-      }
-      // @ts-ignore
-      if (typeof window.kolRenderSelected === "function") window.kolRenderSelected();
-    }, 50);
+  function updateKolField(rowId: string, field: keyof SelectedKolRow, value: unknown) {
+    setSelectedKols((prev) =>
+      prev.map((r) => (r.id === rowId ? { ...r, [field]: value } : r))
+    );
+  }
 
-    return () => {
-      if (script) script.remove();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nativeDialogScript]);
 
   return (
     <Stack gap="md">
@@ -596,38 +468,104 @@ export default function InsertionOrderCreatePage() {
                 <Button
                   type="button"
                   variant="default"
-                  onClick={() => {
-                    // @ts-ignore
-                    if (typeof window.kolDialogOpen === "function") window.kolDialogOpen();
-                  }}
+                  onClick={() => setKolModalOpen(true)}
                 >
                   選擇合作 KOL
                 </Button>
               </Group>
 
-              <div id="kol-selected-display" style={{ minHeight: 40 }}>
-                <p style={{ fontSize: 14, color: "var(--mantine-color-dimmed)", margin: "8px 0" }}>
-                  尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。
-                </p>
-              </div>
-
-              <textarea
-                id="kol-selected-json"
+              <input
+                type="hidden"
                 name="selectedKolsJson"
-                aria-hidden="true"
-                style={{ display: "none" }}
-                defaultValue="[]"
+                value={JSON.stringify(selectedKols)}
                 readOnly
               />
-            </Box>
 
-            
-            <Divider />
-            {/* ── File Upload ── */}
-            <Box>
-              <Title order={4} mb="sm">委刊單檔案 (合約)</Title>
-              <Text size="sm" c="dimmed" mb="xs">上傳經雙方確認的委刊單 PDF/Word 檔案 (選填)</Text>
-              <input type="file" name="documentUrl" accept=".pdf,.doc,.docx" aria-label="上傳委刊單檔案" />
+              {selectedKols.length === 0 ? (
+                <Box
+                  style={{
+                    minHeight: 40,
+                    padding: "12px 0",
+                  }}
+                >
+                  <Text size="sm" c="dimmed">
+                    尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。
+                  </Text>
+                </Box>
+              ) : (
+                <Stack gap="sm">
+                  {selectedKols.map((row) => (
+                    <Card key={row.id} withBorder padding="md">
+                      <Stack gap="sm">
+                        <Group justify="space-between" align="flex-start">
+                          <Group gap="sm" align="center">
+                            <Avatar src={row.avatarUrl} radius="xl" />
+                            <div>
+                              <Text fw={600}>{row.name}</Text>
+                              <Text size="sm" c="dimmed">
+                                KOL 報價可於此直接調整
+                              </Text>
+                            </div>
+                          </Group>
+                          <Button
+                            type="button"
+                            variant="light"
+                            color="red"
+                            size="xs"
+                            onClick={() => removeKol(row.kolId)}
+                          >
+                            移除
+                          </Button>
+                        </Group>
+
+                        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="sm">
+                          <TextInput
+                            label="合作內容"
+                            placeholder="例如：IG 貼文 1 篇、限時動態 2 則"
+                            value={row.services.join(" + ")}
+                            onChange={(e) =>
+                              updateKolField(
+                                row.id,
+                                "services",
+                                e.currentTarget.value
+                                  .split("+")
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                          />
+                          <TextInput
+                            label="授權項目"
+                            placeholder="例如：數位廣告投放一年"
+                            value={row.authorization}
+                            onChange={(e) =>
+                              updateKolField(row.id, "authorization", e.currentTarget.value)
+                            }
+                          />
+                          <TextInput
+                            label="執行日期"
+                            type="date"
+                            value={row.executionDate}
+                            onChange={(e) =>
+                              updateKolField(row.id, "executionDate", e.currentTarget.value)
+                            }
+                          />
+                          <TextInput
+                            label="KOL 報價"
+                            type="number"
+                            min={0}
+                            step={1000}
+                            value={String(row.price || "")}
+                            onChange={(e) =>
+                              updateKolField(row.id, "price", Number(e.currentTarget.value) || 0)
+                            }
+                          />
+                        </SimpleGrid>
+                      </Stack>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
             </Box>
 
             <Divider />
@@ -653,68 +591,66 @@ export default function InsertionOrderCreatePage() {
         </Form>
       </Card>
 
-      {/* ── KOL Selection Dialog (native <dialog> element) ── */}
-      <dialog
-        id="kol-select-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          width: "100%",
-          maxWidth: 600,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+      <Modal
+        opened={kolModalOpen}
+        onClose={() => setKolModalOpen(false)}
+        title="選擇合作 KOL"
+        size="lg"
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <strong style={{ fontSize: 18 }}>選擇合作 KOL</strong>
-          <button
-            type="button"
-            onClick={() => {
-              // @ts-ignore
-              if (typeof window.kolDialogClose === "function") window.kolDialogClose();
-            }}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}
-          >✕</button>
-        </div>
-        <input
-          id="kol-dialog-search"
-          type="text"
-          aria-label="搜尋 KOL"
-          placeholder="搜尋 KOL 名稱、帳號或產業"
-          onChange={(e) => {
-            // @ts-ignore
-            if (typeof window.kolDialogSearch === "function") window.kolDialogSearch(e.target.value);
-          }}
-          style={{
-            width: "100%",
-            padding: "8px 12px",
-            border: "1px solid var(--mantine-color-default-border)",
-            borderRadius: 4,
-            fontSize: 14,
-            background: "var(--mantine-color-body)",
-            color: "var(--mantine-color-text)",
-            boxSizing: "border-box",
-          }}
-        />
-        <div
-          id="kol-dialog-list"
-          style={{ maxHeight: 400, overflowY: "auto", marginTop: 12, paddingRight: 4 }}
-        />
-        <div style={{ marginTop: 16, textAlign: "right" }}>
-          <button
-            type="button"
-            onClick={() => {
-              // @ts-ignore
-              if (typeof window.kolDialogClose === "function") window.kolDialogClose();
-            }}
-            style={{ padding: "8px 20px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
-          >
-            完成選擇
-          </button>
-        </div>
-      </dialog>
+        <Stack gap="md">
+          <TextInput
+            placeholder="搜尋 KOL 名稱、帳號或產業"
+            value={kolSearch}
+            onChange={(e) => setKolSearch(e.currentTarget.value)}
+            leftSection={<IconSearch size={16} />}
+          />
+
+          <ScrollArea.Autosize mah={420}>
+            <Stack gap="sm">
+              {filteredKols.length === 0 ? (
+                <Text size="sm" c="dimmed">
+                  找不到符合條件的 KOL。
+                </Text>
+              ) : (
+                filteredKols.map((kol) => {
+                  const isSelected = selectedKols.some((row) => row.kolId === kol.id);
+
+                  return (
+                    <Card key={kol.id} withBorder padding="sm">
+                      <Group justify="space-between" align="center" wrap="nowrap">
+                        <Group gap="sm" wrap="nowrap">
+                          <Avatar src={kol.avatarUrl} radius="xl" />
+                          <div>
+                            <Text fw={600}>{kol.name}</Text>
+                            <Text size="sm" c="dimmed">
+                              @{kol.handle || "-"} · {kol.industry}
+                            </Text>
+                          </div>
+                        </Group>
+                        <Button
+                          type="button"
+                          size="xs"
+                          variant={isSelected ? "light" : "filled"}
+                          color={isSelected ? "red" : "blue"}
+                          onClick={() => (isSelected ? removeKol(kol.id) : addKol(kol))}
+                        >
+                          {isSelected ? "移除" : "加入"}
+                        </Button>
+                      </Group>
+                    </Card>
+                  );
+                })
+              )}
+            </Stack>
+          </ScrollArea.Autosize>
+
+          <Group justify="flex-end">
+            <Button type="button" variant="default" onClick={() => setKolModalOpen(false)}>
+              完成
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Stack>
   );
 }
