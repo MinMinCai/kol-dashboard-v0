@@ -331,8 +331,13 @@ export default function ReportManagementPage() {
     }
   }, [activeOrder, closeProgressModal, generateFetcher.data, generateFetcher.state, navigate, showBanner, showToast]);
 
-  const handleDownload = (orderId: string, reportId: string) => {
-    window.open(`/api/reports/${orderId}/${reportId}/download`, "_blank");
+  const handleDownload = (orderId: string, reportId: string, reportName?: string) => {
+    const a = document.createElement("a");
+    a.href = `/api/reports/${orderId}/${reportId}/download`;
+    a.download = reportName || "report.pptx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handleAskDeleteReport = (report: { id: string; name: string; orderId: string }) => {
@@ -596,7 +601,7 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id)}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id, report.name)}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
@@ -625,7 +630,7 @@ export default function ReportManagementPage() {
                                   </Box>
                                 </Group>
                                 <Group gap="xs" style={{ flexShrink: 0 }}>
-                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id)}><IconDownload size={18} /></ActionIcon>
+                                  <ActionIcon variant="light" color="blue" onClick={() => handleDownload(order.id, report.id, report.name)}><IconDownload size={18} /></ActionIcon>
                                   <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
                                 </Group>
                               </Group>
