@@ -1,4 +1,5 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import AdmZip from "adm-zip";
 import { getKol, type InsertionOrder, type OrderKolCollaboration, type OrderPerformanceItem, type Report } from "./mock-api.server";
@@ -530,13 +531,40 @@ async function rewritePresentationFiles(extractDir: string, generatedSlides: Sli
   await writeFile(appPropsPath, nextAppProps, "utf8");
 }
 
+async function resolveWritableTempRoot(): Promise<string> {
+  const candidates = Array.from(
+    new Set(
+      [
+        process.env.TMPDIR,
+        process.env.TEMP,
+        process.env.TMP,
+        tmpdir(),
+        path.resolve(process.cwd(), "tmp"),
+        "/tmp",
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  );
+
+  for (const candidate of candidates) {
+    try {
+      await mkdir(candidate, { recursive: true });
+      return candidate;
+    } catch {
+      // Try the next writable temp location.
+    }
+  }
+
+  throw new Error("No writable temp directory is available for PPT generation");
+}
+
 export async function generateReportPpt(params: {
   order: InsertionOrder;
   report: Pick<Report, "id" | "name" | "templateKey" | "selectedKolIds" | "reportTitle">;
 }): Promise<string> {
   const { order, report } = params;
   const templatePath = resolveReportTemplatePath(report.templateKey);
-  const workRoot = path.resolve(process.cwd(), "tmp", "generated_reports", report.id);
+  const tempRoot = await resolveWritableTempRoot();
+  const workRoot = path.join(tempRoot, "kol-db-demo", "generated_reports", report.id);
   const extractDir = path.join(workRoot, "template");
   const mediaDir = path.join(extractDir, "ppt", "media");
   const outputPath = path.join(workRoot, normalizePptxName(report.name || report.reportTitle || "結案報告"));

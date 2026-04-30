@@ -317,10 +317,10 @@ export default function ProposalCreatePage() {
                   <Text size="sm" c="dimmed">可先調整合作條件與評估指標，再建立正式提案。</Text>
                 </Stack>
                 <Group gap="xs">
-                  <Button variant="light" onClick={() => setIsEditingCandidates((prev) => !prev)}>
+                  <Button type="button" variant="light" onClick={() => setIsEditingCandidates((prev) => !prev)}>
                     {isEditingCandidates ? "完成編輯" : "編輯"}
                   </Button>
-                  <Button onClick={() => setAddModalOpen(true)}>新增 KOL 候選人</Button>
+                  <Button type="button" onClick={() => setAddModalOpen(true)}>新增 KOL 候選人</Button>
                 </Group>
               </Group>
 
@@ -473,8 +473,8 @@ export default function ProposalCreatePage() {
             onChange={(event) => setManualCandidate((prev) => ({ ...prev, recommendation: event.currentTarget.value }))}
           />
           <Group justify="flex-end">
-            <Button variant="default" onClick={() => setAddModalOpen(false)}>取消</Button>
-            <Button onClick={addManualCandidate} disabled={!manualSelectedKol}>加入候選名單</Button>
+            <Button type="button" variant="default" onClick={() => setAddModalOpen(false)}>取消</Button>
+            <Button type="button" onClick={addManualCandidate} disabled={!manualSelectedKol}>加入候選名單</Button>
           </Group>
         </Stack>
       </Modal>

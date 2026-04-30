@@ -2,13 +2,16 @@
  * Seed script: imports mock/db.json into Supabase via Drizzle ORM
  * Usage: npx tsx scripts/seed.ts
  */
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../db/drizzle/schema";
 import { buildSupplementalProposalKols, buildSupplementalProposals, enrichKolSeedData } from "./sample-data-utils.mjs";
+
+loadEnv({ path: resolve(process.cwd(), ".env.local"), override: true });
+loadEnv({ path: resolve(process.cwd(), ".env"), override: false });
 
 const client = postgres(process.env.DATABASE_URL!);
 const db = drizzle(client, { schema });

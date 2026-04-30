@@ -1,8 +1,11 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
 import postgres from "postgres";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { buildSupplementalProposalKols, buildSupplementalProposals, enrichKolSeedData } from "./sample-data-utils.mjs";
+
+loadEnv({ path: resolve(process.cwd(), ".env.local"), override: true });
+loadEnv({ path: resolve(process.cwd(), ".env"), override: false });
 
 const DATABASE_URL = process.env.DATABASE_URL;
 

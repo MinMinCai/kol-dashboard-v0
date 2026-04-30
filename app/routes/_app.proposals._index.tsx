@@ -83,7 +83,7 @@ export default function ProposalListPage() {
             {proposals.map((p) => (
               <Table.Tr key={p.id}>
                 <Table.Td>
-                  <a href={`/proposals/${p.id}`}>{p.title}</a>
+                  <Link to={`/proposals/${p.id}`}>{p.title}</Link>
                 </Table.Td>
                 <Table.Td>{p.clientName}</Table.Td>
                 <Table.Td>{p.stage}</Table.Td>
@@ -94,8 +94,8 @@ export default function ProposalListPage() {
                     <ActionIcon
                       variant="light"
                       color="blue"
-                      component="a"
-                      href={`/proposals/${p.id}`}
+                      component={Link}
+                      to={`/proposals/${p.id}`}
                       title="查看詳細"
                     >
                       <IconEye size={16} />
@@ -167,7 +167,7 @@ export default function ProposalListPage() {
                 required
               />
               <Group justify="flex-end" mt="md">
-                <Button variant="default" onClick={close}>
+                <Button type="button" variant="default" onClick={close}>
                   取消
                 </Button>
                 <Button type="submit">儲存變更</Button>

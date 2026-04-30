@@ -13,27 +13,20 @@ import {
 import { db } from "~/lib/db.server";
 import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
 
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout after ${timeoutMs}ms`)), timeoutMs)),
-  ]);
-}
-
 export async function loader(_: LoaderFunctionArgs) {
   try {
     const [
       [{ count: kolCount }],
       [{ count: activeProposalCount }],
       [{ count: insertionOrderCount }],
-    ] = await withTimeout(Promise.all([
+    ] = await Promise.all([
       db.select({ count: sql<number>`count(*)::int` }).from(kols),
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(proposals)
         .where(sql`${proposals.stage} not in ('approved', 'rejected')`),
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
-    ]), 2000);
+    ]);
 
     return {
       stats: [
@@ -152,7 +145,7 @@ export default function DashboardPage() {
       </Group>
 
       {dbError && (
-        <Text c="red" size="sm">⚠ 資料庫連線失敗，統計數字暫時無法顯示。請確認環境變數 DATABASE_URL 設定是否正確。</Text>
+        <Text c="red" size="sm">⚠ 統計資料暫時無法顯示，請稍後再試或檢查資料庫連線狀態。</Text>
       )}
 
       <Grid gutter="md">

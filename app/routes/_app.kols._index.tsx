@@ -942,7 +942,7 @@ export default function KolListPage() {
                   取消收藏
                 </Button>
               ) : null}
-              <Button variant="default" onClick={() => {
+              <Button type="button" variant="default" onClick={() => {
                 setFavoritePickerKolId(null);
                 setFavoritePickerSelection([]);
                 setFavoritePickerIsFavorite(false);
@@ -1050,8 +1050,6 @@ export default function KolListPage() {
     </Stack >
   );
 }
-
-
 
 
 

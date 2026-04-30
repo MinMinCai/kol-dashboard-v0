@@ -418,7 +418,12 @@ async function getOrCreateFavoriteFolderRow(name: string) {
   const normalized = name.trim();
   if (!normalized) return null;
 
-  const existing = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  const existing = await db
+    .select()
+    .from(kolFavoriteFoldersTable)
+    .where(eq(kolFavoriteFoldersTable.name, normalized))
+    .limit(1)
+    .catch(() => []);
   if (existing.length > 0) return existing[0];
 
   const created = await db
@@ -429,7 +434,8 @@ async function getOrCreateFavoriteFolderRow(name: string) {
       ownerId: "user_001",
       description: null,
     })
-    .returning();
+    .returning()
+    .catch(() => []);
 
   return created[0];
 }
@@ -1079,10 +1085,11 @@ export async function getSystemPreferences(): Promise<SystemPreferences> {
     .select()
     .from(systemPreferencesTable)
     .where(eq(systemPreferencesTable.id, "default"))
-    .limit(1);
+    .limit(1)
+    .catch(() => []);
 
   if (rows.length === 0) {
-    await db.insert(systemPreferencesTable).values({ id: "default" }).onConflictDoNothing();
+    await db.insert(systemPreferencesTable).values({ id: "default" }).onConflictDoNothing().catch(() => null);
     return { currency: "TWD", defaultTaxRate: 5, defaultReportLang: "zh-TW", notifyEmail: "", aiSuggestions: true, favoriteFolders: [] };
   }
 
@@ -1112,7 +1119,8 @@ export async function updateSystemPreferences(
   await db
     .insert(systemPreferencesTable)
     .values({ id: "default", ...update })
-    .onConflictDoUpdate({ target: systemPreferencesTable.id, set: update });
+    .onConflictDoUpdate({ target: systemPreferencesTable.id, set: update })
+    .catch(() => null);
 
   return getSystemPreferences();
 }
@@ -1191,12 +1199,12 @@ export async function deleteFavoriteFolder(name: string): Promise<string[]> {
   const prefs = await getSystemPreferences();
   await updateSystemPreferences({ favoriteFolders: prefs.favoriteFolders.filter((folder) => folder !== normalized) });
 
-  const folderRows = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  const folderRows = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1).catch(() => []);
   if (folderRows.length > 0) {
-    await db.delete(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.id, folderRows[0].id));
+    await db.delete(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.id, folderRows[0].id)).catch(() => null);
   }
 
-  const legacyKols = await db.select().from(kolsTable).where(eq(kolsTable.favoriteFolder, normalized));
+  const legacyKols = await db.select().from(kolsTable).where(eq(kolsTable.favoriteFolder, normalized)).catch(() => []);
   await Promise.all(legacyKols.map((kol) => updateKol(kol.id, { favoriteFolder: null, isFavorite: kol.isFavorite })));
 
   return listFavoriteFolders();
@@ -1223,7 +1231,7 @@ export async function addKolToFavoriteFolder(kolId: string, folderName: string):
         kolId,
         note: null,
         addedBy: "user_001",
-      });
+      }).catch(() => null);
     }
   }
 
@@ -1237,12 +1245,12 @@ export async function removeKolFromFavoriteFolder(kolId: string, folderName: str
     return kol;
   });
 
-  const folders = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1);
+  const folders = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1).catch(() => []);
   if (folders.length > 0) {
-    const items = await db.select().from(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.folderId, folders[0].id));
+    const items = await db.select().from(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.folderId, folders[0].id)).catch(() => []);
     const target = items.find((item) => item.kolId === kolId);
     if (target) {
-      await db.delete(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.id, target.id));
+      await db.delete(kolFavoriteFolderItemsTable).where(eq(kolFavoriteFolderItemsTable.id, target.id)).catch(() => null);
     }
   }
 
