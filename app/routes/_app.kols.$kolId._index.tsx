@@ -32,37 +32,90 @@ function formatCurrency(value: number | undefined): string {
 function SparkLine({ points }: { points: { date: string; price: number }[] }) {
   const width = 620;
   const height = 220;
-  const pad = 24;
+  const padLeft = 80;
+  const padRight = 20;
+  const padTop = 16;
+  const padBottom = 32;
 
-  const mapped = useMemo(() => {
-    if (points.length === 0) return [];
-    const max = Math.max(...points.map((p) => p.price));
-    const min = Math.min(...points.map((p) => p.price));
+  const { mapped, yTicks } = useMemo(() => {
+    if (points.length === 0) return { mapped: [], yTicks: [] };
+    const prices = points.map((p) => p.price);
+    const max = Math.max(...prices);
+    const min = Math.min(...prices);
     const range = Math.max(1, max - min);
-    return points.map((p, index) => {
-      const x = pad + (index * (width - pad * 2)) / Math.max(1, points.length - 1);
-      const y = height - pad - ((p.price - min) / range) * (height - pad * 2);
+
+    const chartW = width - padLeft - padRight;
+    const chartH = height - padTop - padBottom;
+
+    const mapped = points.map((p, index) => {
+      const x = padLeft + (index * chartW) / Math.max(1, points.length - 1);
+      const y = padTop + chartH - ((p.price - min) / range) * chartH;
       return { ...p, x, y };
     });
+
+    // Generate 4-5 nice Y-axis ticks
+    const tickCount = 4;
+    const step = range / tickCount;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(step)));
+    const niceStep = Math.ceil(step / magnitude) * magnitude;
+    const tickMin = Math.floor(min / niceStep) * niceStep;
+    const yTicks: number[] = [];
+    for (let v = tickMin; v <= max + niceStep; v += niceStep) {
+      yTicks.push(v);
+      if (yTicks.length > tickCount + 1) break;
+    }
+
+    return { mapped, yTicks };
   }, [points]);
 
+  const chartH = height - padTop - padBottom;
+  const prices = points.map((p) => p.price);
+  const max = points.length > 0 ? Math.max(...prices) : 1;
+  const min = points.length > 0 ? Math.min(...prices) : 0;
+  const range = Math.max(1, max - min);
+
   const path = mapped.map((p) => `${p.x},${p.y}`).join(" ");
+
+  if (points.length === 0) {
+    return <Text size="sm" c="dimmed" ta="center" py="xl">尚無價格資料</Text>;
+  }
 
   return (
     <Box>
       <svg width="100%" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="price trend">
-        <line x1={pad} y1={height - pad} x2={width - pad} y2={height - pad} stroke="#cbd5e1" />
-        <line x1={pad} y1={pad} x2={pad} y2={height - pad} stroke="#cbd5e1" />
-        <polyline fill="none" stroke="#228be6" strokeWidth="3" points={path} />
+        {/* Y-axis ticks and grid lines */}
+        {yTicks.map((v) => {
+          const y = padTop + chartH - ((v - min) / range) * chartH;
+          if (y < padTop - 4 || y > height - padBottom + 4) return null;
+          return (
+            <g key={v}>
+              <line x1={padLeft} y1={y} x2={width - padRight} y2={y} stroke="#e2e8f0" strokeDasharray="4 3" />
+              <text x={padLeft - 6} y={y + 4} textAnchor="end" fontSize={11} fill="#94a3b8">
+                {v >= 10000 ? `${(v / 1000).toFixed(0)}k` : v.toLocaleString("zh-TW")}
+              </text>
+            </g>
+          );
+        })}
+        {/* Axes */}
+        <line x1={padLeft} y1={height - padBottom} x2={width - padRight} y2={height - padBottom} stroke="#cbd5e1" />
+        <line x1={padLeft} y1={padTop} x2={padLeft} y2={height - padBottom} stroke="#cbd5e1" />
+        {/* Line and dots */}
+        {mapped.length > 1 && (
+          <polyline fill="none" stroke="#228be6" strokeWidth="2.5" points={path} />
+        )}
         {mapped.map((p) => (
-          <circle key={p.date} cx={p.x} cy={p.y} r="4" fill="#228be6" />
+          <g key={p.date}>
+            <circle cx={p.x} cy={p.y} r="4" fill="#228be6" />
+            <title>NT$ {p.price.toLocaleString("zh-TW")}</title>
+          </g>
+        ))}
+        {/* X-axis date labels */}
+        {mapped.map((p) => (
+          <text key={`lbl-${p.date}`} x={p.x} y={height - padBottom + 18} textAnchor="middle" fontSize={11} fill="#94a3b8">
+            {p.date.slice(0, 7)}
+          </text>
         ))}
       </svg>
-      <Group justify="space-between">
-        {points.map((p) => (
-          <Text key={p.date} size="xs" c="dimmed">{p.date}</Text>
-        ))}
-      </Group>
     </Box>
   );
 }
@@ -644,9 +697,6 @@ export default function KolDetailPage() {
               </Button>
               <Button type="button" variant="default" size="xs" onClick={handleDownloadReport}>
                 📊 下載 KOL 報告
-              </Button>
-              <Button type="button" variant="default" size="xs" onClick={() => setContractOpened(true)}>
-                📄 生成公版合約
               </Button>
             </Group>
           </Card>
