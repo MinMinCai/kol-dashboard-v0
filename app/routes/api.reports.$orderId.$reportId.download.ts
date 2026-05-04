@@ -7,7 +7,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const orderId = params.orderId ?? "";
   const reportId = params.reportId ?? "";
 
-  const order = await getInsertionOrder(orderId);
+  const order = await Promise.race([
+    getInsertionOrder(orderId),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+  ]).catch(() => null);
   if (!order) {
     return new Response("Insertion order not found", { status: 404 });
   }

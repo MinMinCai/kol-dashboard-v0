@@ -332,10 +332,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return new Response("Invalid type", { status: 400 });
   }
 
+  const to = <T,>(p: Promise<T>) => Promise.race([p, new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000))]);
   const [proposal, candidates] = await Promise.all([
-    getProposal(proposalId),
-    listProposalKols(proposalId),
-  ]);
+    to(getProposal(proposalId)),
+    to(listProposalKols(proposalId)),
+  ]).catch(() => [null, []] as [null, never[]]);
 
   if (!proposal) return new Response("Proposal not found", { status: 404 });
 

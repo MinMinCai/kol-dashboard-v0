@@ -1089,7 +1089,8 @@ export async function getSystemPreferences(): Promise<SystemPreferences> {
     .catch(() => []);
 
   if (rows.length === 0) {
-    await db.insert(systemPreferencesTable).values({ id: "default" }).onConflictDoNothing().catch(() => null);
+    // Don't INSERT here — avoids row-level lock contention with concurrent requests.
+    // The seed/migration creates the default row; if it's missing just return defaults.
     return { currency: "TWD", defaultTaxRate: 5, defaultReportLang: "zh-TW", notifyEmail: "", aiSuggestions: true, favoriteFolders: [] };
   }
 

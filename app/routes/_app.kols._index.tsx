@@ -75,10 +75,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const minRating = Number(sp.get("minRating") ?? "0");
   const maxRating = Number(sp.get("maxRating") ?? "5");
 
-  let kols = await Promise.race([
-    listKols(),
-    new Promise<Kol[]>((resolve) => setTimeout(() => resolve([]), 8000)),
-  ]).catch(() => [] as Kol[]);
+  const withTimeout = <T,>(p: Promise<T>, fallback: T, ms = 8000): Promise<T> =>
+    Promise.race([p, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+
+  const [allKols, folders, tagCatalog] = await Promise.all([
+    withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
+    withTimeout(listFavoriteFolders(), [] as string[]).catch(() => [] as string[]),
+    withTimeout(listTagCatalog(), [] as { name: string }[]).catch(() => [] as { name: string }[]),
+  ]);
+
+  let kols = allKols;
 
   // --- text search ---
   if (q) {
@@ -138,13 +144,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const safePageNo = Math.min(page, totalPages);
   const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize);
 
-  // derive filter options from ALL kols (before filtering)
-  const [allKols, folders] = await Promise.all([
-    listKols().catch(() => [] as Kol[]),
-    listFavoriteFolders(),
-  ]);
   const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
-  const tagCatalog = await listTagCatalog().catch(() => [] as { name: string }[]);
   const catalogTags = tagCatalog.map((t) => t.name);
   const allTags = [...new Set([...allKols.flatMap((k) => getPrimaryTags(k)), ...catalogTags])];
 
