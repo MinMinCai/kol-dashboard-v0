@@ -88,7 +88,7 @@ export default function ProposalListPage() {
                   <Link to={`/proposals/${p.id}`}>{p.title}</Link>
                 </Table.Td>
                 <Table.Td>{p.clientName}</Table.Td>
-                <Table.Td>{{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶" }[p.stage ?? ""] ?? p.stage ?? ""}</Table.Td>
+                <Table.Td>{{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶", approved: "已送出給客戶" }[p.stage ?? ""] ?? p.stage ?? ""}</Table.Td>
                 <Table.Td>${(p.budget ?? 0).toLocaleString()}</Table.Td>
                 <Table.Td>{p.dueDate}</Table.Td>
                 <Table.Td>
@@ -152,15 +152,15 @@ export default function ProposalListPage() {
                 thousandSeparator=","
               />
               <TextInput
+                type="date"
                 name="dueDate"
                 label="截止日"
-                defaultValue={editingProposal.dueDate}
-                placeholder="2026-03-20"
+                defaultValue={editingProposal.dueDate?.slice(0, 10) ?? ""}
               />
               <Select
                 name="stage"
                 label="提案階段"
-                defaultValue={editingProposal.stage}
+                defaultValue={["draft", "internal_review", "sent_to_client"].includes(editingProposal.stage) ? editingProposal.stage : "sent_to_client"}
                 data={[
                   { value: "draft", label: "草稿" },
                   { value: "internal_review", label: "內部審核" },

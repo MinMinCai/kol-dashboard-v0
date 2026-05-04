@@ -16,8 +16,6 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
-import "@mantine/dates/styles.css";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect, useMemo, useState } from "react";
@@ -201,7 +199,7 @@ export default function ProposalCreatePage() {
   const [manualKolId, setManualKolId] = useState<string | null>(null);
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [budget, setBudget] = useState<number | string>(0);
-  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState("");
   const [manualCandidate, setManualCandidate] = useState<Omit<ImportRow, "kolId" | "kolName">>({
     role: "待定",
     price: 0,
@@ -304,7 +302,7 @@ export default function ProposalCreatePage() {
 
   const tableInputStyle = { width: numericInputWidth };
 
-  const dueDateString = dueDate ? dueDate.toISOString().slice(0, 10) : "";
+  const dueDateString = dueDate;
 
   return (
     <Stack gap="md">
@@ -334,14 +332,11 @@ export default function ProposalCreatePage() {
                   min={0}
                   allowNegative={false}
                 />
-                {/* Task 2: Date picker with calendar */}
-                <DatePickerInput
+                <TextInput
+                  type="date"
                   label="截止日"
-                  placeholder="請選擇截止日期"
                   value={dueDate}
-                  onChange={(val) => setDueDate(val as Date | null)}
-                  clearable
-                  valueFormat="YYYY-MM-DD"
+                  onChange={(e) => setDueDate(e.currentTarget.value)}
                 />
               </Stack>
             </Box>

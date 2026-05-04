@@ -24,8 +24,6 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { useMantineColorScheme } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
-import "@mantine/dates/styles.css";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
@@ -201,10 +199,7 @@ export default function ProposalDetailPage() {
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
   const [editedBudget, setEditedBudget] = useState(proposal.budget);
-  const [editedDueDate, setEditedDueDate] = useState<Date | null>(() => {
-    const d = new Date(proposal.dueDate);
-    return isNaN(d.getTime()) ? null : d;
-  });
+  const [editedDueDate, setEditedDueDate] = useState(proposal.dueDate?.slice(0, 10) ?? "");
   const [editedStage, setEditedStage] = useState(proposal.stage);
 
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
@@ -593,13 +588,11 @@ export default function ProposalDetailPage() {
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>截止日期</Text>
           {isEditing ? (
-            <DatePickerInput
+            <TextInput
+              type="date"
               mt={5}
               value={editedDueDate}
-              onChange={(val) => setEditedDueDate(val as Date | null)}
-              clearable
-              valueFormat="YYYY-MM-DD"
-              placeholder="請選擇截止日期"
+              onChange={(e) => setEditedDueDate(e.currentTarget.value)}
             />
           ) : (
             <Text size="xl" fw={700} mt={5}>{proposal.dueDate}</Text>
@@ -1230,7 +1223,7 @@ export default function ProposalDetailPage() {
               setEditedTitle(proposal.title);
               setEditedClient(proposal.clientName);
               setEditedBudget(proposal.budget);
-              setEditedDueDate(() => { const d = new Date(proposal.dueDate); return isNaN(d.getTime()) ? null : d; });
+              setEditedDueDate(proposal.dueDate?.slice(0, 10) ?? "");
               setEditedStage(proposal.stage);
               setIsEditing(false);
             }}
@@ -1246,7 +1239,7 @@ export default function ProposalDetailPage() {
               formData.append("title", editedTitle);
               formData.append("clientName", editedClient);
               formData.append("budget", String(editedBudget));
-              formData.append("dueDate", editedDueDate ? editedDueDate.toISOString().slice(0, 10) : "");
+              formData.append("dueDate", editedDueDate);
               formData.append("stage", editedStage);
               submit(formData, { method: "post" });
               setIsEditing(false);
