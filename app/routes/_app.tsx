@@ -4,7 +4,6 @@ import { isRouteErrorResponse, Outlet, useLoaderData, useLocation, useRouteError
 import { useEffect, useState } from "react";
 import { GlobalNotification } from "~/components/GlobalNotification";
 import { DEMO_USER, demoAuthCookie } from "~/lib/demo-auth.server";
-import { listTeamMembers } from "~/lib/mock-api.server";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -281,35 +280,12 @@ export default function AppLayoutRoute() {
   );
 }
 
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), timeoutMs)),
-  ]);
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const demoSession = await demoAuthCookie.parse(request.headers.get("Cookie"));
-  if (demoSession) {
-    return json({
-      currentUserName: demoSession.name ?? DEMO_USER.name,
-      currentUserRole: demoSession.role ?? DEMO_USER.role,
-    });
-  }
-
-  try {
-    const teamMembers = await withTimeout(listTeamMembers(), 1500, []);
-    const currentUser =
-      teamMembers.find((member) => member.role === "admin") ?? teamMembers[0];
-
-    return json({
-      currentUserName: currentUser?.name ?? DEMO_USER.name,
-      currentUserRole: currentUser?.role ?? DEMO_USER.role,
-    });
-  } catch (err) {
-    console.error("[_app loader] listTeamMembers failed — DB schema may be out of sync:", err);
-    return json({ currentUserName: DEMO_USER.name, currentUserRole: DEMO_USER.role });
-  }
+  return json({
+    currentUserName: demoSession?.name ?? DEMO_USER.name,
+    currentUserRole: demoSession?.role ?? DEMO_USER.role,
+  });
 }
 
 export function ErrorBoundary() {

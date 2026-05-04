@@ -1,28 +1,23 @@
 import { json } from "@remix-run/node";
-import { sql } from "drizzle-orm";
-import { db } from "~/lib/db.server";
-import { kols } from "../../db/drizzle/schema";
+import { listKols, listInsertionOrders, listProposals, listTeamMembers } from "~/lib/mock-api.server";
+
+async function timed<T>(label: string, fn: () => Promise<T>) {
+  const t = Date.now();
+  try {
+    const r = await fn();
+    return { label, ok: true, ms: Date.now() - t, count: Array.isArray(r) ? r.length : "n/a" };
+  } catch (err) {
+    return { label, ok: false, ms: Date.now() - t, error: String(err) };
+  }
+}
 
 export async function loader() {
-  const results: Record<string, unknown> = {};
-
-  // Test 1: basic connectivity
-  const t0 = Date.now();
-  try {
-    await db.execute(sql`SELECT 1`);
-    results.ping = { ok: true, ms: Date.now() - t0 };
-  } catch (err) {
-    results.ping = { ok: false, ms: Date.now() - t0, error: String(err) };
-  }
-
-  // Test 2: kols table
-  const t1 = Date.now();
-  try {
-    const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(kols);
-    results.kols = { ok: true, ms: Date.now() - t1, count };
-  } catch (err) {
-    results.kols = { ok: false, ms: Date.now() - t1, error: String(err) };
-  }
-
-  return json(results);
+  const total = Date.now();
+  const parallel = await Promise.all([
+    timed("listKols", () => listKols()),
+    timed("listInsertionOrders", () => listInsertionOrders()),
+    timed("listProposals", () => listProposals()),
+    timed("listTeamMembers", () => listTeamMembers()),
+  ]);
+  return json({ totalMs: Date.now() - total, parallel });
 }

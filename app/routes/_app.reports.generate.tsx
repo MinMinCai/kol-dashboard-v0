@@ -97,7 +97,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
   
 
-  const orders = await listInsertionOrders();
+  const orders = await Promise.race([
+    listInsertionOrders(),
+    new Promise<never[]>((resolve) => setTimeout(() => resolve([]), 8000)),
+  ]).catch(() => [] as never[]);
   const allClients = Array.from(new Set(orders.map((o) => o.clientName)));
 
   const mappedOrders = orders.map((order) => ({
