@@ -95,10 +95,17 @@ function buildCandidateFromKol(kol: FolderKol, folderName: string): ImportRow {
 
 const numericInputWidth = 110;
 
+function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export async function loader(_: LoaderFunctionArgs) {
   const [allKols, savedFolders] = await Promise.all([
-    listKols().catch(() => [] as Kol[]),
-    listFavoriteFolders(),
+    withTimeout(listKols(), [] as Kol[]),
+    withTimeout(listFavoriteFolders(), [] as string[]),
   ]);
   const favorites = allKols.filter((k) => k.isFavorite);
   const usedFolders = favorites.flatMap((r) => r.favoriteFolders ?? (r.favoriteFolder ? [r.favoriteFolder] : []));

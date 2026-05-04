@@ -33,7 +33,7 @@ export async function loader(_: LoaderFunctionArgs) {
         .from(proposals)
         .where(sql`${proposals.stage} not in ('approved', 'rejected')`),
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
-    ]), 3000);
+    ]), 8000);
 
     return {
       stats: [

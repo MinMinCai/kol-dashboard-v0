@@ -19,10 +19,17 @@ import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-
 import { useState } from "react";
 import { getKol, updateKol, type Kol, type PlatformMetrics } from "~/lib/mock-api.server";
 
+function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export async function loader({ params }: LoaderFunctionArgs) {
   const kolId = params.kolId;
   if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-  const kol = await getKol(kolId);
+  const kol = await withTimeout(getKol(kolId), null).catch(() => null);
   if (!kol) throw new Response("KOL not found", { status: 404 });
   return json({ kol });
 }

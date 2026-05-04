@@ -427,14 +427,21 @@ export async function action({ params, request }: ActionFunctionArgs) {
   return json({ success: true });
 }
 
+function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  const kol = await getKol(params.kolId ?? "");
+  const kol = await withTimeout(getKol(params.kolId ?? ""), null).catch(() => null);
   if (!kol) throw new Response("Not Found", { status: 404 });
 
   const url = new URL(request.url);
   const tab = url.searchParams.get("tab") ?? "projects";
   const limit = Math.max(5, Number(url.searchParams.get("limit") ?? "5"));
-  const folders = await listFavoriteFolders();
+  const folders = await withTimeout(listFavoriteFolders(), [] as string[]).catch(() => [] as string[]);
 
   return json({ kol, tab, limit, folders });
 }

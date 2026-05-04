@@ -35,7 +35,7 @@ const client =
   postgres(process.env.DATABASE_URL, {
     max: 3,
     idle_timeout: 20,
-    connect_timeout: 10,
+    connect_timeout: 5,
     // Abort any query that takes longer than 8s — prevents loader hangs when DB is unreachable
     max_lifetime: 60 * 10,
     // Required for Supabase pgBouncer (Transaction Mode, port 6543)

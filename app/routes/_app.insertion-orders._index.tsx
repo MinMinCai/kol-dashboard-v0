@@ -109,7 +109,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
     const pageSize = Number(url.searchParams.get("pageSize") ?? "5");
 
-    const allOrders = await listInsertionOrders().catch(() => []);
+    const allOrders = await Promise.race([
+      listInsertionOrders(),
+      new Promise<never[]>((resolve) => setTimeout(() => resolve([]), 8000)),
+    ]).catch(() => []);
 
     const allClients = Array.from(new Set(allOrders.map((o) => o.clientName)));
     const allIndustries = Array.from(

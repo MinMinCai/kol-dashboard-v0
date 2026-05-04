@@ -247,11 +247,14 @@ function KolCollabCard({
 export async function loader({ params }: LoaderFunctionArgs) {
   const insertionOrderId = params.insertionOrderId ?? "";
   try {
+    function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+      return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+    }
     const [insertionOrder, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
-      getInsertionOrder(insertionOrderId).catch(() => null),
-      listBrandCatalog().catch(() => []),
-      listIndustryCatalog().catch(() => []),
-      listTeamMembers().catch(() => []),
+      withTimeout(getInsertionOrder(insertionOrderId), null),
+      withTimeout(listBrandCatalog(), []),
+      withTimeout(listIndustryCatalog(), []),
+      withTimeout(listTeamMembers(), []),
     ]);
 
     if (!insertionOrder) {

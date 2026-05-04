@@ -31,14 +31,16 @@ export async function action({ request }: ActionFunctionArgs) {
   return json({ success: false });
 }
 
+function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export async function loader(_: LoaderFunctionArgs) {
-  try {
-    const proposals = await listProposals();
-    return json({ proposals });
-  } catch (err) {
-    console.error("[proposals loader]", err);
-    throw new Response(err instanceof Error ? err.message : String(err), { status: 500 });
-  }
+  const proposals = await withTimeout(listProposals(), []).catch(() => []);
+  return json({ proposals });
 }
 
 export default function ProposalListPage() {

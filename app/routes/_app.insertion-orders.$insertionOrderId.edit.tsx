@@ -53,13 +53,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const insertionOrderId = params.insertionOrderId;
   if (!insertionOrderId) throw new Response("Not Found", { status: 404 });
 
+  function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+    return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+  }
   const [kols, orders, brandCatalog, industryCatalog, teamMembers, insertionOrder] = await Promise.all([
-    listKols().catch((): Kol[] => []),
-    listInsertionOrders(),
-    listBrandCatalog(),
-    listIndustryCatalog(),
-    listTeamMembers(),
-    getInsertionOrder(insertionOrderId),
+    withTimeout(listKols(), [] as Kol[]),
+    withTimeout(listInsertionOrders(), []),
+    withTimeout(listBrandCatalog(), []),
+    withTimeout(listIndustryCatalog(), []),
+    withTimeout(listTeamMembers(), []),
+    withTimeout(getInsertionOrder(insertionOrderId), null),
   ]);
 
   if (!insertionOrder) throw new Response("Order Not Found", { status: 404 });

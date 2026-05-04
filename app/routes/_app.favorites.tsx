@@ -30,6 +30,13 @@ import {
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
 
+function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 function sortRows(rows: Kol[], sort: SortMode) {
   const list = [...rows];
   if (sort === "name_asc") return list.sort((a, b) => a.displayName.localeCompare(b.displayName));
@@ -44,8 +51,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const folder = url.searchParams.get("folder") ?? "全部";
 
   const [allKols, folderDetails] = await Promise.all([
-    listKols().catch(() => [] as Kol[]),
-    listFavoriteFolderDetails().catch(() => [] as FavoriteFolder[]),
+    withTimeout(listKols(), [] as Kol[]),
+    withTimeout(listFavoriteFolderDetails(), [] as FavoriteFolder[]),
   ]);
 
   const favorites = allKols.filter((k) => k.isFavorite);

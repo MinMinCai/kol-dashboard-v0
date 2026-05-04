@@ -75,12 +75,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const tab = url.searchParams.get("tab") ?? "clients";
   const q = url.searchParams.get("q") ?? "";
 
-  const kols = await listKols().catch(() => [] as any[]);
-  const tagCatalog = await listTagCatalog().catch(() => [] as any[]);
-  const brandCatalog = await listBrandCatalog().catch(() => [] as any[]);
-  const industryCatalog = await listIndustryCatalog().catch(() => [] as any[]);
-  const platformCatalog = await listPlatformCatalog().catch(() => [] as any[]);
-  const teamMembers = await listTeamMembers().catch(() => [] as any[]);
+  const timeout = <T>(p: Promise<T>) => Promise.race([p, new Promise<T>((r) => setTimeout(() => r([] as any), 8000))]);
+  const [kols, tagCatalog, brandCatalog, industryCatalog, platformCatalog, teamMembers] = await Promise.all([
+    timeout(listKols()).catch(() => [] as any[]),
+    timeout(listTagCatalog()).catch(() => [] as any[]),
+    timeout(listBrandCatalog()).catch(() => [] as any[]),
+    timeout(listIndustryCatalog()).catch(() => [] as any[]),
+    timeout(listPlatformCatalog()).catch(() => [] as any[]),
+    timeout(listTeamMembers()).catch(() => [] as any[]),
+  ]);
 
   const brands = Array.from(new Set([
     ...brandCatalog.map((b: any) => b.name),

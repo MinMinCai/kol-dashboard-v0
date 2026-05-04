@@ -75,7 +75,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const minRating = Number(sp.get("minRating") ?? "0");
   const maxRating = Number(sp.get("maxRating") ?? "5");
 
-  let kols = await listKols().catch(() => [] as Kol[]);
+  let kols = await Promise.race([
+    listKols(),
+    new Promise<Kol[]>((resolve) => setTimeout(() => resolve([]), 8000)),
+  ]).catch(() => [] as Kol[]);
 
   // --- text search ---
   if (q) {

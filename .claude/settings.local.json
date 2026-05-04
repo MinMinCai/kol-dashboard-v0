@@ -6,7 +6,12 @@
       "Bash(sed -i 's/uuid\\(\"\"kol_id\"\"\\)/text\\(\"\"kol_id\"\"\\)/g' db/drizzle/schema.ts)",
       "Bash(sed -i 's/uuid\\(\"\"proposal_id\"\"\\)/text\\(\"\"proposal_id\"\"\\)/g' db/drizzle/schema.ts)",
       "Bash(sed -i 's/uuid\\(\"\"client_id\"\"\\)/text\\(\"\"client_id\"\"\\)/g' db/drizzle/schema.ts)",
-      "Bash(sed -i 's/uuid\\(\"\"insertion_order_id\"\"\\)/text\\(\"\"insertion_order_id\"\"\\)/g' db/drizzle/schema.ts)"
+      "Bash(sed -i 's/uuid\\(\"\"insertion_order_id\"\"\\)/text\\(\"\"insertion_order_id\"\"\\)/g' db/drizzle/schema.ts)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" -Force | Select-Object Name | Where-Object { $_.Name -match \"env\" })",
+      "PowerShell(cmd /c \"dir /a /b \"\"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\"\" | findstr /i env\")",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\\\\routes\" | Select-Object Name | Where-Object { $_.Name -match \"kol|proposal|insertion\" })",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\\\\routes\" | ForEach-Object { $_.Name })",
+      "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)"
     ]
   }
 }

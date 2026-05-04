@@ -42,12 +42,19 @@ import {
 import { notifyProposalUpdated } from "~/lib/notifications.server";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell } from "@tabler/icons-react";
 
+function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export async function loader({ params }: LoaderFunctionArgs) {
   const proposalId = params.proposalId ?? "";
   const [proposal, candidates, allKols] = await Promise.all([
-    getProposal(proposalId),
-    listProposalKols(proposalId),
-    listKols().catch(() => []),
+    withTimeout(getProposal(proposalId), null),
+    withTimeout(listProposalKols(proposalId), []),
+    withTimeout(listKols(), []),
   ]);
 
   if (!proposal) throw new Response("Not Found", { status: 404 });
