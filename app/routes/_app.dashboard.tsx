@@ -13,20 +13,27 @@ import {
 import { db } from "~/lib/db.server";
 import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout after ${timeoutMs}ms`)), timeoutMs)),
+  ]);
+}
+
 export async function loader(_: LoaderFunctionArgs) {
   try {
     const [
       [{ count: kolCount }],
       [{ count: activeProposalCount }],
       [{ count: insertionOrderCount }],
-    ] = await Promise.all([
+    ] = await withTimeout(Promise.all([
       db.select({ count: sql<number>`count(*)::int` }).from(kols),
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(proposals)
         .where(sql`${proposals.stage} not in ('approved', 'rejected')`),
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
-    ]);
+    ]), 3000);
 
     return {
       stats: [

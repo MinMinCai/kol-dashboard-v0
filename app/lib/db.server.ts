@@ -33,9 +33,7 @@ declare global {
 const client =
   global.__dbClient ??
   postgres(process.env.DATABASE_URL, {
-    // This demo app doesn't need concurrency-heavy pooling; a single connection is
-    // more stable for preview/dev databases behind pgBouncer.
-    max: 1,
+    max: 3,
     idle_timeout: 20,
     connect_timeout: 10,
     // Abort any query that takes longer than 8s — prevents loader hangs when DB is unreachable
