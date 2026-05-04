@@ -16,6 +16,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandX, IconBrandYoutube } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
@@ -307,14 +308,6 @@ export default function KolListPage() {
     color: "var(--mantine-color-text)",
   } as const;
 
-  const socialLinkStyle = {
-    textDecoration: "none",
-    color: "inherit",
-    display: "inline-flex",
-    alignItems: "center",
-    cursor: "pointer",
-    width: "fit-content",
-  } as const;
 
   function sortLabel(key: string) {
     if (key !== sortKey) return "";
@@ -629,8 +622,23 @@ export default function KolListPage() {
               const instagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
               const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
               const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
+              const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
+              const socialRows: { icon: React.ReactNode; label: string; count: number; url: string | null }[] = [
+                { icon: <IconBrandInstagram size={16} />, label: "Instagram", count: kol.social?.instagram ?? 0, url: instagramUrl },
+                { icon: <IconBrandYoutube size={16} />, label: "YouTube", count: kol.social?.youtube ?? 0, url: youtubeUrl },
+                { icon: <IconBrandTiktok size={16} />, label: "TikTok", count: kol.social?.tiktok ?? 0, url: tiktokUrl },
+                { icon: <IconBrandFacebook size={16} />, label: "Facebook", count: kol.social?.facebook ?? 0, url: facebookUrl },
+              ].filter((row) => row.count > 0 || row.url);
               return (
-                <Card key={kol.id} withBorder radius="md" p="lg" style={{ position: "relative", cursor: "pointer" }} onClick={() => navigate(`/kols/${kol.id}`)}>
+                <Card
+                  key={kol.id}
+                  withBorder
+                  radius="md"
+                  p="lg"
+                  className="kol-card"
+                  style={{ position: "relative", cursor: "pointer" }}
+                  onClick={() => navigate(`/kols/${kol.id}`)}
+                >
                   <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
@@ -659,26 +667,18 @@ export default function KolListPage() {
                   </Stack>
                   <Divider my="sm" />
                   <Stack gap={4}>
-                    {instagramUrl ? (
-                      <a href={instagramUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 Instagram" onClick={(event) => event.stopPropagation()}>
-                        <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
-                      </a>
-                    ) : (
-                      <Text size="sm">📷 IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
-                    )}
-                    {youtubeUrl ? (
-                      <a href={youtubeUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 YouTube" onClick={(event) => event.stopPropagation()}>
-                        <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
-                      </a>
-                    ) : (
-                      <Text size="sm">▶ YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
-                    )}
-                    {tiktokUrl ? (
-                      <a href={tiktokUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 TikTok" onClick={(event) => event.stopPropagation()}>
-                        <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
-                      </a>
-                    ) : (
-                      <Text size="sm">♪ TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
+                    {socialRows.map((row) =>
+                      row.url ? (
+                        <a key={row.label} href={row.url} target="_blank" rel="noreferrer" className="social-link" title={`前往 ${row.label}`} onClick={(event) => event.stopPropagation()}>
+                          {row.icon}
+                          <Text size="sm" span>{row.count.toLocaleString()}</Text>
+                        </a>
+                      ) : (
+                        <Group key={row.label} gap={4}>
+                          {row.icon}
+                          <Text size="sm">{row.count.toLocaleString()}</Text>
+                        </Group>
+                      )
                     )}
                   </Stack>
                   <Group gap="xs" mt={4}>

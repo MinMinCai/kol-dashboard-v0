@@ -11,12 +11,27 @@ a {
 }
 
 .kol-card {
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 }
 
 .kol-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px light-dark(rgba(15, 23, 42, 0.12), rgba(0, 0, 0, 0.4));
+  background-color: #f0f6ff;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mantine-color-blue-6);
+  text-decoration: underline;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.social-link:hover {
+  color: var(--mantine-color-blue-8);
 }
 
 .io-card {
