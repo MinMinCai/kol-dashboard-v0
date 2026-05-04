@@ -75,7 +75,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const tab = url.searchParams.get("tab") ?? "clients";
   const q = url.searchParams.get("q") ?? "";
 
-  const timeout = <T>(p: Promise<T>) => Promise.race([p, new Promise<T>((r) => setTimeout(() => r([] as any), 8000))]);
+  function timeout<T,>(p: Promise<T>): Promise<T> {
+    return Promise.race([p, new Promise<T>((r) => setTimeout(() => r([] as any), 8000))]);
+  }
   const [kols, tagCatalog, brandCatalog, industryCatalog, platformCatalog, teamMembers] = await Promise.all([
     timeout(listKols()).catch(() => [] as any[]),
     timeout(listTagCatalog()).catch(() => [] as any[]),
