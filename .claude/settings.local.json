@@ -11,7 +11,9 @@
       "PowerShell(cmd /c \"dir /a /b \"\"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\"\" | findstr /i env\")",
       "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\\\\routes\" | Select-Object Name | Where-Object { $_.Name -match \"kol|proposal|insertion\" })",
       "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\\\\routes\" | ForEach-Object { $_.Name })",
-      "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)"
+      "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)",
+      "Bash(node -e \"require\\('@mantine/dates'\\)\")",
+      "Bash(grep 'proposals.$proposalId\\\\|mock-api')"
     ]
   }
 }

@@ -82,13 +82,13 @@ export default function ProposalListPage() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {proposals.map((p) => (
+            {proposals.filter((p): p is NonNullable<typeof p> => p != null).map((p) => (
               <Table.Tr key={p.id}>
                 <Table.Td>
                   <Link to={`/proposals/${p.id}`}>{p.title}</Link>
                 </Table.Td>
                 <Table.Td>{p.clientName}</Table.Td>
-                <Table.Td>{p.stage}</Table.Td>
+                <Table.Td>{{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶" }[p.stage ?? ""] ?? p.stage ?? ""}</Table.Td>
                 <Table.Td>${(p.budget ?? 0).toLocaleString()}</Table.Td>
                 <Table.Td>{p.dueDate}</Table.Td>
                 <Table.Td>
@@ -162,9 +162,9 @@ export default function ProposalListPage() {
                 label="提案階段"
                 defaultValue={editingProposal.stage}
                 data={[
-                  { value: "draft", label: "草稿 (DRAFT)" },
-                  { value: "internal_review", label: "內部審核 (INTERNAL REVIEW)" },
-                  { value: "sent_to_client", label: "已送出給客戶 (SENT TO CLIENT)" },
+                  { value: "draft", label: "草稿" },
+                  { value: "internal_review", label: "內部審核" },
+                  { value: "sent_to_client", label: "已送出給客戶" },
                 ]}
                 required
               />

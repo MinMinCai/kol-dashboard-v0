@@ -6,6 +6,7 @@ import {
   Divider,
   Group,
   Modal,
+  NumberInput,
   ScrollArea,
   Select,
   Stack,
@@ -15,6 +16,8 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import "@mantine/dates/styles.css";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect, useMemo, useState } from "react";
@@ -196,6 +199,9 @@ export default function ProposalCreatePage() {
   const [isEditingCandidates, setIsEditingCandidates] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [manualKolId, setManualKolId] = useState<string | null>(null);
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [budget, setBudget] = useState<number | string>(0);
+  const [dueDate, setDueDate] = useState<Date | null>(null);
   const [manualCandidate, setManualCandidate] = useState<Omit<ImportRow, "kolId" | "kolName">>({
     role: "待定",
     price: 0,
@@ -211,14 +217,28 @@ export default function ProposalCreatePage() {
     recommendation: "",
   });
 
-  useEffect(() => {
-    if (!selectedFolder) {
-      setCandidates([]);
-      return;
-    }
+  // Task 3: Merge folder KOLs with existing candidates instead of replacing
+  const handleFolderChange = (folder: string | null) => {
+    setSelectedFolder(folder);
+    if (!folder) return;
 
-    setCandidates((folderKols[selectedFolder] ?? []).map((kol) => buildCandidateFromKol(kol, selectedFolder)));
-  }, [folderKols, selectedFolder]);
+    const incoming = (folderKols[folder] ?? []).map((kol) => buildCandidateFromKol(kol, folder));
+    setCandidates((prev) => {
+      const existingIds = new Set(prev.map((c) => c.kolId));
+      const newOnes = incoming.filter((c) => !existingIds.has(c.kolId));
+      const duplicateNames = incoming
+        .filter((c) => existingIds.has(c.kolId))
+        .map((c) => c.kolName);
+
+      if (duplicateNames.length > 0) {
+        setDuplicateWarning(`以下 KOL 已在候選名單中，略過不重複匯入：${duplicateNames.join("、")}`);
+      } else {
+        setDuplicateWarning(null);
+      }
+
+      return [...prev, ...newOnes];
+    });
+  };
 
   const manualSelectedKol = useMemo(
     () => allKolOptions.find((option) => option.value === manualKolId) ?? null,
@@ -247,14 +267,28 @@ export default function ProposalCreatePage() {
     setCandidates((prev) =>
       prev.map((candidate, candidateIndex) => {
         if (candidateIndex !== index) return candidate;
-        const next = { ...candidate, ...patch };
-        return next;
+        return { ...candidate, ...patch };
       }),
     );
   };
 
+  // Task 4: Remove a candidate by index
+  const removeCandidate = (index: number) => {
+    setCandidates((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const addManualCandidate = () => {
     if (!manualSelectedKol) return;
+
+    // Task 3: Block duplicate when manually adding
+    const isDuplicate = candidates.some((c) => c.kolId === manualSelectedKol.value);
+    if (isDuplicate) {
+      setDuplicateWarning(`「${manualSelectedKol.label}」已在候選名單中，無法重複加入。`);
+      setAddModalOpen(false);
+      setManualKolId(null);
+      return;
+    }
+
     setCandidates((prev) => [
       ...prev,
       {
@@ -263,11 +297,14 @@ export default function ProposalCreatePage() {
         ...manualCandidate,
       },
     ]);
+    setDuplicateWarning(null);
     setAddModalOpen(false);
     setManualKolId(null);
   };
 
   const tableInputStyle = { width: numericInputWidth };
+
+  const dueDateString = dueDate ? dueDate.toISOString().slice(0, 10) : "";
 
   return (
     <Stack gap="md">
@@ -279,14 +316,33 @@ export default function ProposalCreatePage() {
       <Card withBorder>
         <Form method="post">
           <input type="hidden" name="candidatesJson" value={JSON.stringify(candidates)} />
+          <input type="hidden" name="budget" value={typeof budget === "number" ? budget : toNumber(budget)} />
+          <input type="hidden" name="dueDate" value={dueDateString} />
           <Stack gap="lg">
             <Box>
               <Title order={4} mb="sm">基本資料</Title>
               <Stack gap="sm">
                 <TextInput name="title" label="提案標題" required />
                 <TextInput name="clientName" label="客戶名稱" required />
-                <TextInput name="budget" label="預算" defaultValue="0" />
-                <TextInput name="dueDate" label="截止日" placeholder="2026-03-20" />
+                {/* Task 1: Budget with thousand separator */}
+                <NumberInput
+                  label="預算"
+                  value={budget}
+                  onChange={setBudget}
+                  thousandSeparator=","
+                  prefix="$"
+                  min={0}
+                  allowNegative={false}
+                />
+                {/* Task 2: Date picker with calendar */}
+                <DatePickerInput
+                  label="截止日"
+                  placeholder="請選擇截止日期"
+                  value={dueDate}
+                  onChange={(val) => setDueDate(val as Date | null)}
+                  clearable
+                  valueFormat="YYYY-MM-DD"
+                />
               </Stack>
             </Box>
 
@@ -302,18 +358,22 @@ export default function ProposalCreatePage() {
                     placeholder="選擇收藏資料夾"
                     data={folders.map((folderName) => ({ value: folderName, label: `${folderName} (${folderKols[folderName]?.length ?? 0} 人)` }))}
                     value={selectedFolder}
-                    onChange={setSelectedFolder}
+                    onChange={handleFolderChange}
                     clearable
                   />
-                  {selectedFolder && candidates.length > 0 && (
-                    <Text size="sm" c="dimmed">已匯入 {candidates.length} 位 KOL 作為候選人，可先編輯後再建立提案。</Text>
-                  )}
-                  {selectedFolder && candidates.length === 0 && (
-                    <Text size="sm" c="dimmed">此資料夾尚無 KOL</Text>
+                  {selectedFolder && (
+                    <Text size="sm" c="dimmed">已選擇資料夾「{selectedFolder}」，非重複 KOL 將合併至候選名單。</Text>
                   )}
                 </Stack>
               )}
             </Box>
+
+            {/* Task 3: Duplicate warning */}
+            {duplicateWarning && (
+              <Alert color="yellow" withCloseButton onClose={() => setDuplicateWarning(null)}>
+                {duplicateWarning}
+              </Alert>
+            )}
 
             <Divider />
 
@@ -353,6 +413,7 @@ export default function ProposalCreatePage() {
                         <Table.Th>綜合品質分數</Table.Th>
                         <Table.Th>CPFR</Table.Th>
                         <Table.Th>KOL 選擇建議</Table.Th>
+                        {isEditingCandidates && <Table.Th>操作</Table.Th>}
                       </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
@@ -421,6 +482,20 @@ export default function ProposalCreatePage() {
                               <Text size="sm">{candidate.recommendation}</Text>
                             )}
                           </Table.Td>
+                          {/* Task 4: Delete button in edit mode */}
+                          {isEditingCandidates && (
+                            <Table.Td>
+                              <Button
+                                type="button"
+                                size="xs"
+                                color="red"
+                                variant="light"
+                                onClick={() => removeCandidate(index)}
+                              >
+                                刪除
+                              </Button>
+                            </Table.Td>
+                          )}
                         </Table.Tr>
                       ))}
                     </Table.Tbody>

@@ -762,6 +762,7 @@ export async function updateProposalKolDetails(
   if (data.qualityScore !== undefined) update.qualityScore = data.qualityScore != null ? String(data.qualityScore) : null;
   if (data.cpfr !== undefined) update.cpfr = data.cpfr != null ? String(data.cpfr) : null;
   if (data.recommendation !== undefined) update.recommendation = data.recommendation ?? null;
+  if (data.feedbackText !== undefined) update.feedbackText = data.feedbackText ?? null;
 
   const rows = await db
     .update(proposalKolsTable)

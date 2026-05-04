@@ -24,6 +24,8 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { useMantineColorScheme } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import "@mantine/dates/styles.css";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
@@ -152,6 +154,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       qualityScore: parseOptionalNumber(formData.get("qualityScore")),
       cpfr: parseOptionalNumber(formData.get("cpfr")),
       recommendation: String(formData.get("recommendation") || ""),
+      feedbackText: formData.has("feedbackText") ? String(formData.get("feedbackText") || "") : undefined,
     });
     notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新候選人資料", timestamp: ts });
     return json({ success: true });
@@ -198,7 +201,10 @@ export default function ProposalDetailPage() {
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
   const [editedBudget, setEditedBudget] = useState(proposal.budget);
-  const [editedDueDate, setEditedDueDate] = useState(proposal.dueDate);
+  const [editedDueDate, setEditedDueDate] = useState<Date | null>(() => {
+    const d = new Date(proposal.dueDate);
+    return isNaN(d.getTime()) ? null : d;
+  });
   const [editedStage, setEditedStage] = useState(proposal.stage);
 
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
@@ -530,7 +536,9 @@ export default function ProposalDetailPage() {
               </Button>
               <Button
                 variant="default"
-                onClick={() => alert("提案資料已匯出為 Excel (模擬)")}
+                component="a"
+                href={`/api/proposals/${proposal.id}/export`}
+                download
               >
                 匯出提案
               </Button>
@@ -550,30 +558,23 @@ export default function ProposalDetailPage() {
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>當前階段</Text>
-          <Select
-            mt={5}
-            size="sm"
-            value={isEditing ? editedStage : proposal.stage}
-            disabled={!isEditing}
-            onChange={(val) => {
-              if (val) {
-                if (isEditing) {
-                  setEditedStage(val);
-                } else {
-                  // Legacy auto-save behavior if not in explicit edit mode (optional)
-                  const formData = new FormData();
-                  formData.append("intent", "update_proposal");
-                  formData.append("stage", val);
-                  submit(formData, { method: "post" });
-                }
-              }
-            }}
-            data={[
-              { value: "draft", label: "草稿 (DRAFT)" },
-              { value: "internal_review", label: "內部審核 (INTERNAL REVIEW)" },
-              { value: "sent_to_client", label: "已送出給客戶 (SENT TO CLIENT)" },
-            ]}
-          />
+          {isEditing ? (
+            <Select
+              mt={5}
+              size="sm"
+              value={editedStage}
+              onChange={(val) => { if (val) setEditedStage(val); }}
+              data={[
+                { value: "draft", label: "草稿" },
+                { value: "internal_review", label: "內部審核" },
+                { value: "sent_to_client", label: "已送出給客戶" },
+              ]}
+            />
+          ) : (
+            <Text size="xl" fw={700} mt={5}>
+              {{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶" }[proposal.stage] ?? proposal.stage}
+            </Text>
+          )}
         </Card>
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>總預算</Text>
@@ -592,11 +593,13 @@ export default function ProposalDetailPage() {
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>截止日期</Text>
           {isEditing ? (
-            <TextInput
+            <DatePickerInput
               mt={5}
               value={editedDueDate}
-              onChange={(e) => setEditedDueDate(e.currentTarget.value)}
-              placeholder="YYYY-MM-DD"
+              onChange={(val) => setEditedDueDate(val as Date | null)}
+              clearable
+              valueFormat="YYYY-MM-DD"
+              placeholder="請選擇截止日期"
             />
           ) : (
             <Text size="xl" fw={700} mt={5}>{proposal.dueDate}</Text>
@@ -837,30 +840,57 @@ export default function ProposalDetailPage() {
                         <Text size="xs" lineClamp={2}>{c.recommendation || "-"}</Text>
                       )}
                     </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
+                    <Table.Td style={{ whiteSpace: "nowrap", minWidth: 120 }}>
+                      {isEditing ? (
+                        <Select
+                          size="xs"
+                          style={{ minWidth: 110 }}
+                          value={c.status}
+                          data={[
+                            { value: "pending", label: "待定" },
+                            { value: "accepted", label: "已接受" },
+                            { value: "rejected", label: "已拒絕" },
+                          ]}
+                          onChange={(val) => {
+                            if (!val) return;
+                            const formData = new FormData();
+                            formData.append("intent", "update_status");
+                            formData.append("candidateId", c.id);
+                            formData.append("status", val);
+                            formData.append("feedback", c.feedbackText || "");
+                            submit(formData, { method: "post" });
+                          }}
+                        />
+                      ) : (
+                        <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
+                      )}
                     </Table.Td>
-                    <Table.Td style={{ minWidth: 120 }}>
-                      <Text size="xs" c="dimmed">{c.feedbackText || "-"}</Text>
+                    <Table.Td style={{ minWidth: 150 }}>
+                      {isEditing ? (
+                        <Textarea
+                          form={`candidate-edit-form-${c.id}`}
+                          name="feedbackText"
+                          size="xs"
+                          autosize
+                          minRows={2}
+                          defaultValue={c.feedbackText || ""}
+                          placeholder="輸入客戶反饋"
+                        />
+                      ) : (
+                        <Text size="xs" c="dimmed">{c.feedbackText || "-"}</Text>
+                      )}
                     </Table.Td>
                     {isEditing && (
-                      <Table.Td style={{ whiteSpace: "nowrap" }}>
+                      <Table.Td style={{ whiteSpace: "nowrap", minWidth: 90 }}>
                         <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
-                        <Group gap={5}>
-                          <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
-                          <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
+                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
+                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
+                        <Stack gap={4}>
                           <Button variant="light" color="blue" size="compact-xs" type="submit" form={`candidate-edit-form-${c.id}`}>儲存</Button>
-                          <Form method="post" style={{ display: "inline" }}>
-                            <input type="hidden" name="intent" value="update_status" />
-                            <input type="hidden" name="candidateId" value={c.id} />
-                            <input type="hidden" name="status" value="accepted" />
-                            <Button variant="light" color="green" size="compact-xs" type="submit" disabled={c.status === "accepted"}>接受</Button>
-                          </Form>
-                          <Button variant="light" color="red" size="compact-xs" onClick={() => setFeedbackCandidate({ id: c.id, name: c.kolName })} disabled={c.status === "rejected"}>拒絕</Button>
                           <ActionIcon variant="light" color="gray" size="sm" type="button" onClick={() => requestDeleteSingle(c.id, c.kolName)}>
                             <IconTrash size={14} />
                           </ActionIcon>
-                        </Group>
+                        </Stack>
                       </Table.Td>
                     )}
                   </Table.Tr>
@@ -1200,7 +1230,7 @@ export default function ProposalDetailPage() {
               setEditedTitle(proposal.title);
               setEditedClient(proposal.clientName);
               setEditedBudget(proposal.budget);
-              setEditedDueDate(proposal.dueDate);
+              setEditedDueDate(() => { const d = new Date(proposal.dueDate); return isNaN(d.getTime()) ? null : d; });
               setEditedStage(proposal.stage);
               setIsEditing(false);
             }}
@@ -1216,7 +1246,7 @@ export default function ProposalDetailPage() {
               formData.append("title", editedTitle);
               formData.append("clientName", editedClient);
               formData.append("budget", String(editedBudget));
-              formData.append("dueDate", editedDueDate);
+              formData.append("dueDate", editedDueDate ? editedDueDate.toISOString().slice(0, 10) : "");
               formData.append("stage", editedStage);
               submit(formData, { method: "post" });
               setIsEditing(false);
