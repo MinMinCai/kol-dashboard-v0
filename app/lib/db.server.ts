@@ -43,10 +43,6 @@ const client =
     prepare: false,
     connection: {
       application_name: "kol-db-demo",
-      // Set statement_timeout per-connection instead of via a top-level await,
-      // which was hanging module initialization on slow/cold DB connections.
-      // 0 = no timeout (rely on connect_timeout + query-level try/catch instead)
-      statement_timeout: 0,
     },
   });
 
