@@ -300,16 +300,29 @@ export default function FavoritesPage() {
       </Group>
 
       {rows.length > 0 && (
-        <Group gap="xs">
-          <Checkbox
-            checked={allSelected}
-            indeterminate={selectedIds.length > 0 && !allSelected}
-            onChange={toggleAll}
-            label={allSelected ? "取消全選" : `全選 (${rows.length} 筆)`}
-          />
-          {selectedIds.length > 0 && (
-            <Text size="sm" c="dimmed">已選 {selectedIds.length} 筆</Text>
-          )}
+        <Group gap="xs" justify="space-between">
+          <Group gap="xs">
+            <Checkbox
+              checked={allSelected}
+              indeterminate={selectedIds.length > 0 && !allSelected}
+              onChange={toggleAll}
+              label={allSelected ? "取消全選" : `全選 (${rows.length} 筆)`}
+            />
+            {selectedIds.length > 0 && (
+              <Text size="sm" c="dimmed">已選 {selectedIds.length} 筆</Text>
+            )}
+          </Group>
+          <form method="post" action="/api/kols/export-excel" style={{ margin: 0 }}>
+            <input type="hidden" name="kolIds" value={selectedIds.join(",")} />
+            <Button
+              type="submit"
+              variant="light"
+              size="xs"
+              disabled={selectedIds.length === 0}
+            >
+              📥 匯出 Excel{selectedIds.length > 0 ? `（${selectedIds.length}）` : ""}
+            </Button>
+          </form>
         </Group>
       )}
 
