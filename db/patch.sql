@@ -161,6 +161,18 @@ CREATE TABLE IF NOT EXISTS kol_favorite_folder_shares (
   CONSTRAINT uq_folder_share_group UNIQUE (folder_id, share_type, target_group)
 );
 
+-- ─── 7b. 收藏資料夾共享（demo 模式：以 team_members 為對象） ────
+ALTER TABLE kol_favorite_folders
+  ADD COLUMN IF NOT EXISTS owner_member_id text REFERENCES team_members(id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS kol_favorite_folder_member_shares (
+  id text PRIMARY KEY,
+  folder_id text NOT NULL REFERENCES kol_favorite_folders(id) ON DELETE CASCADE,
+  member_id text NOT NULL REFERENCES team_members(id) ON DELETE CASCADE,
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  CONSTRAINT uq_folder_member_share UNIQUE (folder_id, member_id)
+);
+
 -- ─── 8. 建立新表：提案訂閱與通知 ──────────────────────────────
 
 CREATE TABLE IF NOT EXISTS proposal_watchers (

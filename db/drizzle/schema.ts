@@ -333,9 +333,25 @@ export const kolFavoriteFolders = pgTable("kol_favorite_folders", {
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
   ownerId: text("owner_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  // Demo ownership: references team_members.id. Used by the share/perspective
+  // feature since the BetterAuth users table is unused in demo mode.
+  ownerMemberId: text("owner_member_id").references(() => teamMembers.id, { onDelete: "set null" }),
   createdAt: now,
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const kolFavoriteFolderMemberShares = pgTable(
+  "kol_favorite_folder_member_shares",
+  {
+    id: text("id").primaryKey(),
+    folderId: text("folder_id").references(() => kolFavoriteFolders.id, { onDelete: "cascade" }).notNull(),
+    memberId: text("member_id").references(() => teamMembers.id, { onDelete: "cascade" }).notNull(),
+    createdAt: now,
+  },
+  (table) => ({
+    folderMemberUq: uniqueIndex("uq_folder_member_share").on(table.folderId, table.memberId),
+  }),
+);
 
 export const kolFavoriteFolderItems = pgTable(
   "kol_favorite_folder_items",

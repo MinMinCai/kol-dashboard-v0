@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Badge,
   Box,
@@ -13,23 +14,28 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
+import { getCurrentMember } from "~/lib/demo-identity.server";
 import {
   clearKolFavorites,
   createFavoriteFolder,
   deleteFavoriteFolder,
   listFavoriteFolderDetails,
   listKols,
+  listTeamMembers,
   removeKolFromFavoriteFolder,
   renameFavoriteFolder,
   replaceKolFavoriteFolders,
+  setFavoriteFolderShares,
   type FavoriteFolder,
   type Kol,
+  type TeamMember,
 } from "~/lib/mock-api.server";
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
@@ -54,12 +60,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const sort = (url.searchParams.get("sort") ?? "rating_desc") as SortMode;
   const folder = url.searchParams.get("folder") ?? "全部";
 
-  const [allKols, folderDetails] = await Promise.all([
+  const currentMember = await getCurrentMember(request).catch(() => null);
+  const memberId = currentMember?.id;
+
+  const [allKols, folderDetails, teamMembers] = await Promise.all([
     withTimeout(listKols(), [] as Kol[]),
-    withTimeout(listFavoriteFolderDetails(), [] as FavoriteFolder[]),
+    withTimeout(listFavoriteFolderDetails(memberId), [] as FavoriteFolder[]),
+    withTimeout(listTeamMembers(), [] as TeamMember[]),
   ]);
 
-  const favorites = allKols.filter((k) => k.isFavorite);
+  // Folder names visible to the current member (own + shared + public).
+  const visibleFolderNames = new Set(folderDetails.map((f) => f.name));
+
+  // Favorites are filtered to only include those that belong to a folder the
+  // current member can see — if a KOL only sits in folders that aren't ours
+  // and aren't shared with us, they don't appear in our "我的收藏" view.
+  const favorites = allKols.filter((k) => {
+    if (!k.isFavorite) return false;
+    const folders = k.favoriteFolders ?? [];
+    if (folders.length === 0) return memberId ? false : true; // unfiled favorites only show without a member context
+    return folders.some((f) => visibleFolderNames.has(f));
+  });
+
   const allFolders = ["全部", ...folderDetails.map((item) => item.name)];
   const folderFiltered = folder === "全部"
     ? favorites
@@ -84,13 +106,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return acc;
   }, {});
 
-  return json({ rows, allFolders, folderCounts, folderDetails, search, sort, folder });
+  return json({
+    rows,
+    allFolders,
+    folderCounts,
+    folderDetails,
+    search,
+    sort,
+    folder,
+    currentMember,
+    teamMembers,
+  });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") ?? "");
   const url = new URL(request.url);
+  const currentMember = await getCurrentMember(request).catch(() => null);
+  const memberId = currentMember?.id;
 
   if (intent === "removeFavorite") {
     const kolId = String(formData.get("kolId") ?? "");
@@ -106,7 +140,11 @@ export async function action({ request }: ActionFunctionArgs) {
       .map((name) => name.trim())
       .filter(Boolean);
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    await replaceKolFavoriteFolders(kolId, selectedFolders);
+    try {
+      await replaceKolFavoriteFolders(kolId, selectedFolders, memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "更新失敗" }, { status: 403 });
+    }
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
 
@@ -114,14 +152,18 @@ export async function action({ request }: ActionFunctionArgs) {
     const kolId = String(formData.get("kolId") ?? "");
     const targetFolder = String(formData.get("targetFolder") ?? "");
     if (!kolId || !targetFolder) return json({ error: "Missing folder data" }, { status: 400 });
-    await removeKolFromFavoriteFolder(kolId, targetFolder);
+    try {
+      await removeKolFromFavoriteFolder(kolId, targetFolder, memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
+    }
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
 
   if (intent === "createFolder") {
     const name = String(formData.get("folderName") ?? "").trim();
     if (!name) return json({ error: "資料夾名稱不得為空" }, { status: 400 });
-    await createFavoriteFolder(name);
+    await createFavoriteFolder(name, memberId);
     url.searchParams.set("folder", name);
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
@@ -130,7 +172,11 @@ export async function action({ request }: ActionFunctionArgs) {
     const oldName = String(formData.get("oldFolderName") ?? "").trim();
     const newName = String(formData.get("newFolderName") ?? "").trim();
     if (!oldName || !newName) return json({ error: "資料夾名稱不得為空" }, { status: 400 });
-    await renameFavoriteFolder(oldName, newName);
+    try {
+      await renameFavoriteFolder(oldName, newName, memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
+    }
     url.searchParams.set("folder", newName);
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
@@ -138,9 +184,27 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "deleteFolder") {
     const name = String(formData.get("folderName") ?? "").trim();
     if (!name) return json({ error: "資料夾名稱不得為空" }, { status: 400 });
-    await deleteFavoriteFolder(name);
+    try {
+      await deleteFavoriteFolder(name, memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
+    }
     if (url.searchParams.get("folder") === name) {
       url.searchParams.set("folder", "全部");
+    }
+    return redirect(url.pathname + "?" + url.searchParams.toString());
+  }
+
+  if (intent === "shareFolder") {
+    const folderName = String(formData.get("folderName") ?? "").trim();
+    const memberIdsRaw = String(formData.get("sharedMemberIds") ?? "");
+    const sharedMemberIds = memberIdsRaw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!folderName) return json({ error: "缺少資料夾名稱" }, { status: 400 });
+    if (!memberId) return json({ error: "找不到目前身分" }, { status: 400 });
+    try {
+      await setFavoriteFolderShares(folderName, sharedMemberIds, memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
     }
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
@@ -149,15 +213,26 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function FavoritesPage() {
-  const { rows, allFolders, folderCounts, folderDetails, search, sort, folder } = useLoaderData<typeof loader>();
+  const { rows, folderCounts, folderDetails, search, sort, folder, currentMember, teamMembers } =
+    useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const navigate = useNavigate();
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [managingKol, setManagingKol] = useState<Kol | null>(null);
   const [folderSelection, setFolderSelection] = useState<string[]>([]);
   const [renamingFolder, setRenamingFolder] = useState(folder === "全部" ? "" : folder);
+  const [shareSelection, setShareSelection] = useState<string[]>([]);
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
   const currentFolderDetail = folderDetails.find((item) => item.name === folder) ?? null;
+  const isCurrentFolderOwner = currentFolderDetail?.access === "owner" || currentFolderDetail?.access === "public";
+
+  // Owned + (legacy) public folders the current user can write to.
+  const ownedFolders = folderDetails.filter((f) => f.access === "owner" || f.access === "public");
+  const sharedFolders = folderDetails.filter((f) => f.access === "shared");
+
+  // Folder access lookup for the KOL-card folder picker (disable shared rows).
+  const accessByFolderName = new Map(folderDetails.map((f) => [f.name, f.access]));
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
@@ -185,36 +260,86 @@ export default function FavoritesPage() {
 
   return (
     <Stack gap="md">
-      <Title order={2}>我的收藏 ({rows.length})</Title>
+      <Group justify="space-between" align="flex-end">
+        <Title order={2}>我的收藏 ({rows.length})</Title>
+        {currentMember ? (
+          <Text size="sm" c="dimmed">
+            目前以 <Badge variant="light" color="grape" size="sm">{currentMember.name}</Badge> 身分檢視
+          </Text>
+        ) : (
+          <Text size="sm" c="dimmed">尚未指定身分（請於 系統設定 &gt; 團隊成員 新增成員）</Text>
+        )}
+      </Group>
+
+      {actionData?.error && (
+        <Alert color="red" variant="light" title="操作失敗">{actionData.error}</Alert>
+      )}
 
       {currentFolderDetail && (
         <Card withBorder>
-          <Group justify="space-between" align="end">
+          <Group justify="space-between" align="flex-end" wrap="wrap">
             <Stack gap={4}>
-              <Text fw={600}>管理目前資料夾：{currentFolderDetail.name}</Text>
-              <Text size="sm" c="dimmed">可直接改名或刪除資料夾；刪除後只會移除資料夾關聯，不會刪掉 KOL。</Text>
+              <Group gap={6}>
+                <Text fw={600}>管理目前資料夾：{currentFolderDetail.name}</Text>
+                {currentFolderDetail.access === "owner" && (
+                  <Badge size="sm" variant="light" color="blue">擁有者</Badge>
+                )}
+                {currentFolderDetail.access === "shared" && (
+                  <Badge size="sm" variant="light" color="grape">
+                    共享自 {currentFolderDetail.ownerName ?? "其他成員"}
+                  </Badge>
+                )}
+                {currentFolderDetail.access === "public" && (
+                  <Badge size="sm" variant="light" color="gray">公開</Badge>
+                )}
+                {currentFolderDetail.sharedWithMemberIds && currentFolderDetail.sharedWithMemberIds.length > 0 && (
+                  <Badge size="sm" variant="light" color="cyan">
+                    🔗 已共享給 {currentFolderDetail.sharedWithMemberIds.length} 位成員
+                  </Badge>
+                )}
+              </Group>
+              <Text size="sm" c="dimmed">
+                {currentFolderDetail.access === "shared"
+                  ? "你只能檢視此資料夾的內容，僅擁有者可以編輯、刪除或調整共享。"
+                  : "可直接改名或刪除資料夾，並調整共享對象；刪除後只會移除資料夾關聯，不會刪掉 KOL。"}
+              </Text>
             </Stack>
-            <Group gap="xs">
-              <Form method="post">
-                <input type="hidden" name="intent" value="renameFolder" />
-                <input type="hidden" name="oldFolderName" value={currentFolderDetail.name} />
-                <Group gap="xs">
-                  <TextInput
-                    name="newFolderName"
-                    size="xs"
-                    value={renamingFolder}
-                    onChange={(event) => setRenamingFolder(event.currentTarget.value)}
-                    placeholder="新的資料夾名稱"
-                  />
-                  <Button type="submit" size="xs" variant="light">改名</Button>
-                </Group>
-              </Form>
-              <Form method="post">
-                <input type="hidden" name="intent" value="deleteFolder" />
-                <input type="hidden" name="folderName" value={currentFolderDetail.name} />
-                <Button type="submit" size="xs" color="red" variant="light">刪除資料夾</Button>
-              </Form>
-            </Group>
+            {isCurrentFolderOwner && (
+              <Group gap="xs">
+                <Form method="post">
+                  <input type="hidden" name="intent" value="renameFolder" />
+                  <input type="hidden" name="oldFolderName" value={currentFolderDetail.name} />
+                  <Group gap="xs">
+                    <TextInput
+                      name="newFolderName"
+                      size="xs"
+                      value={renamingFolder}
+                      onChange={(event) => setRenamingFolder(event.currentTarget.value)}
+                      placeholder="新的資料夾名稱"
+                    />
+                    <Button type="submit" size="xs" variant="light">改名</Button>
+                  </Group>
+                </Form>
+                <Button
+                  size="xs"
+                  variant="light"
+                  color="grape"
+                  onClick={() => {
+                    setShareSelection(currentFolderDetail.sharedWithMemberIds ?? []);
+                    const dlg = document.getElementById("share-folder-dialog") as HTMLDialogElement | null;
+                    dlg?.showModal();
+                  }}
+                  disabled={!currentMember}
+                >
+                  🔗 共享設定
+                </Button>
+                <Form method="post">
+                  <input type="hidden" name="intent" value="deleteFolder" />
+                  <input type="hidden" name="folderName" value={currentFolderDetail.name} />
+                  <Button type="submit" size="xs" color="red" variant="light">刪除資料夾</Button>
+                </Form>
+              </Group>
+            )}
           </Group>
         </Card>
       )}
@@ -250,35 +375,72 @@ export default function FavoritesPage() {
             alignItems: "center",
             gap: 4,
           });
-          const myFolderActive = folder !== "全部";
           const buildHref = (f: string) =>
             `/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`;
+          const isOwnedFolderActive = ownedFolders.some((f) => f.name === folder);
+          const isSharedFolderActive = sharedFolders.some((f) => f.name === folder);
           return (
             <>
               <a href={buildHref("全部")} style={filterButtonStyle(folder === "全部")}>
                 全部 ({folderCounts["全部"] ?? 0})
               </a>
-              <Menu shadow="md" width={220} position="bottom-start">
+              <Menu shadow="md" width={260} position="bottom-start">
                 <Menu.Target>
-                  <button type="button" style={filterButtonStyle(myFolderActive)}>
-                    {myFolderActive
+                  <button type="button" style={filterButtonStyle(isOwnedFolderActive)}>
+                    {isOwnedFolderActive
                       ? `我的資料夾：${folder} (${folderCounts[folder] ?? 0})`
                       : "我的資料夾"}
                     <span aria-hidden style={{ marginLeft: 4 }}>▾</span>
                   </button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  {folderDetails.length === 0 ? (
+                  {ownedFolders.length === 0 ? (
                     <Menu.Item disabled>尚未建立資料夾</Menu.Item>
                   ) : (
-                    folderDetails.map((item) => (
+                    ownedFolders.map((item) => (
+                      <Menu.Item
+                        key={item.name}
+                        component="a"
+                        href={buildHref(item.name)}
+                        rightSection={
+                          <Group gap={4}>
+                            {item.sharedWithMemberIds && item.sharedWithMemberIds.length > 0 && (
+                              <Text size="xs" c="grape">🔗{item.sharedWithMemberIds.length}</Text>
+                            )}
+                            <Text size="xs" c="dimmed">{folderCounts[item.name] ?? 0}</Text>
+                          </Group>
+                        }
+                      >
+                        {item.name}
+                      </Menu.Item>
+                    ))
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+              <Menu shadow="md" width={260} position="bottom-start">
+                <Menu.Target>
+                  <button type="button" style={filterButtonStyle(isSharedFolderActive)}>
+                    {isSharedFolderActive
+                      ? `🔗 與我共享：${folder} (${folderCounts[folder] ?? 0})`
+                      : `🔗 與我共享${sharedFolders.length > 0 ? ` (${sharedFolders.length})` : ""}`}
+                    <span aria-hidden style={{ marginLeft: 4 }}>▾</span>
+                  </button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {sharedFolders.length === 0 ? (
+                    <Menu.Item disabled>沒有人共享資料夾給你</Menu.Item>
+                  ) : (
+                    sharedFolders.map((item) => (
                       <Menu.Item
                         key={item.name}
                         component="a"
                         href={buildHref(item.name)}
                         rightSection={<Text size="xs" c="dimmed">{folderCounts[item.name] ?? 0}</Text>}
                       >
-                        {item.name}
+                        <Stack gap={0}>
+                          <Text size="sm">{item.name}</Text>
+                          <Text size="xs" c="dimmed">擁有者：{item.ownerName ?? "未知"}</Text>
+                        </Stack>
                       </Menu.Item>
                     ))
                   )}
@@ -291,6 +453,8 @@ export default function FavoritesPage() {
                   const d = document.getElementById("add-folder-dialog") as HTMLDialogElement | null;
                   d?.showModal();
                 }}
+                disabled={!currentMember}
+                title={currentMember ? undefined : "請先指定目前身分"}
               >
                 + 新增資料夾
               </button>
@@ -402,11 +566,21 @@ export default function FavoritesPage() {
                 <Text size="xs" c="dimmed" mb={4}>收藏資料夾：</Text>
                 <Group gap={6}>
                   {(kol.favoriteFolders ?? []).length > 0 ? (
-                    (kol.favoriteFolders ?? []).map((folderName) => (
-                      <Badge key={folderName} variant="light" color={folderName === folder ? "blue" : "gray"} size="sm">
-                        {folderName}
-                      </Badge>
-                    ))
+                    (kol.favoriteFolders ?? []).map((folderName) => {
+                      const access = accessByFolderName.get(folderName);
+                      const isShared = access === "shared";
+                      return (
+                        <Badge
+                          key={folderName}
+                          variant="light"
+                          color={folderName === folder ? "blue" : isShared ? "grape" : "gray"}
+                          size="sm"
+                          leftSection={isShared ? "🔗" : undefined}
+                        >
+                          {folderName}
+                        </Badge>
+                      );
+                    })
                   ) : (
                     <Badge variant="light" color="gray" size="sm">未分類</Badge>
                   )}
@@ -417,7 +591,9 @@ export default function FavoritesPage() {
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                 <Group gap="xs">
                   <Link to={`/kols/${kol.id}`} style={{ fontSize: 14 }}>查看詳細</Link>
-                  {folder !== "全部" && (kol.favoriteFolders ?? []).includes(folder) && (
+                  {folder !== "全部"
+                    && (kol.favoriteFolders ?? []).includes(folder)
+                    && accessByFolderName.get(folder) !== "shared" && (
                     <Form method="post" style={{ margin: 0 }}>
                       <input type="hidden" name="intent" value="removeFromFolder" />
                       <input type="hidden" name="kolId" value={kol.id} />
@@ -556,20 +732,39 @@ export default function FavoritesPage() {
             {folderDetails.length === 0 ? (
               <Text size="sm" c="dimmed">目前還沒有資料夾，請先建立資料夾。</Text>
             ) : (
-              folderDetails.map((item) => (
-                <Checkbox
-                  key={item.name}
-                  label={item.name}
-                  checked={folderSelection.includes(item.name)}
-                  onChange={(event) => {
-                    if (event.currentTarget.checked) {
-                      setFolderSelection((prev) => [...prev, item.name]);
-                    } else {
-                      setFolderSelection((prev) => prev.filter((name) => name !== item.name));
+              folderDetails.map((item) => {
+                const isShared = item.access === "shared";
+                const checkbox = (
+                  <Checkbox
+                    label={
+                      <Group gap={6}>
+                        <span>{item.name}</span>
+                        {isShared && (
+                          <Badge size="xs" variant="light" color="grape">
+                            🔗 共享自 {item.ownerName ?? "其他成員"}
+                          </Badge>
+                        )}
+                      </Group>
                     }
-                  }}
-                />
-              ))
+                    checked={folderSelection.includes(item.name)}
+                    disabled={isShared}
+                    onChange={(event) => {
+                      if (event.currentTarget.checked) {
+                        setFolderSelection((prev) => [...prev, item.name]);
+                      } else {
+                        setFolderSelection((prev) => prev.filter((name) => name !== item.name));
+                      }
+                    }}
+                  />
+                );
+                return isShared ? (
+                  <Tooltip key={item.name} label="共享資料夾為唯讀，僅擁有者可調整內容" position="right" withArrow>
+                    <div>{checkbox}</div>
+                  </Tooltip>
+                ) : (
+                  <div key={item.name}>{checkbox}</div>
+                );
+              })
             )}
             <Group justify="flex-end" mt="md">
               <Button
@@ -583,6 +778,85 @@ export default function FavoritesPage() {
                 取消
               </Button>
               <Button type="submit">儲存資料夾設定</Button>
+            </Group>
+          </Stack>
+        </Form>
+      </dialog>
+
+      <dialog
+        id="share-folder-dialog"
+        style={{
+          padding: 24,
+          borderRadius: 8,
+          border: "1px solid var(--mantine-color-default-border)",
+          background: "var(--mantine-color-body)",
+          color: "var(--mantine-color-text)",
+          minWidth: 400,
+          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
+        }}
+      >
+        <Group justify="space-between" mb="md">
+          <Title order={4}>共享資料夾</Title>
+          <button
+            type="button"
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            onClick={() => (document.getElementById("share-folder-dialog") as HTMLDialogElement | null)?.close()}
+          >
+            ✕
+          </button>
+        </Group>
+        <Form
+          method="post"
+          onSubmit={() => (document.getElementById("share-folder-dialog") as HTMLDialogElement | null)?.close()}
+        >
+          <input type="hidden" name="intent" value="shareFolder" />
+          <input type="hidden" name="folderName" value={currentFolderDetail?.name ?? ""} />
+          <input type="hidden" name="sharedMemberIds" value={shareSelection.join(",")} />
+          <Stack gap="sm">
+            <Text size="sm" c="dimmed">
+              {currentFolderDetail
+                ? `勾選要共享資料夾「${currentFolderDetail.name}」的團隊成員。被共享的成員只能檢視，無法編輯或刪除。`
+                : "請選擇要共享的資料夾。"}
+            </Text>
+            {teamMembers.filter((m) => m.id !== currentMember?.id).length === 0 ? (
+              <Text size="sm" c="dimmed">沒有其他可共享的成員。請先在 系統設定 &gt; 團隊成員 加入更多成員。</Text>
+            ) : (
+              teamMembers
+                .filter((m) => m.id !== currentMember?.id)
+                .map((m) => (
+                  <Checkbox
+                    key={m.id}
+                    label={
+                      <Group gap={6}>
+                        <Avatar size={20} radius="xl" color={m.role === "admin" ? "blue" : "gray"}>
+                          {m.name.slice(0, 1)}
+                        </Avatar>
+                        <Stack gap={0}>
+                          <Text size="sm" fw={500}>{m.name}</Text>
+                          <Text size="xs" c="dimmed">{m.email} · {m.group}</Text>
+                        </Stack>
+                      </Group>
+                    }
+                    checked={shareSelection.includes(m.id)}
+                    onChange={(event) => {
+                      if (event.currentTarget.checked) {
+                        setShareSelection((prev) => [...prev, m.id]);
+                      } else {
+                        setShareSelection((prev) => prev.filter((x) => x !== m.id));
+                      }
+                    }}
+                  />
+                ))
+            )}
+            <Group justify="flex-end" mt="md">
+              <Button
+                variant="default"
+                type="button"
+                onClick={() => (document.getElementById("share-folder-dialog") as HTMLDialogElement | null)?.close()}
+              >
+                取消
+              </Button>
+              <Button type="submit" color="grape">儲存共享設定</Button>
             </Group>
           </Stack>
         </Form>

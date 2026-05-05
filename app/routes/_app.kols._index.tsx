@@ -22,6 +22,7 @@ import { Form, Link, useFetcher, useLoaderData, useNavigate, useRevalidator, use
 import { useEffect, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, replaceKolFavoriteFolders, type Kol } from "~/lib/mock-api.server";
+import { getCurrentMember } from "~/lib/demo-identity.server";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -86,9 +87,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const withTimeout = <T,>(p: Promise<T>, fallback: T, ms = 8000): Promise<T> =>
     Promise.race([p, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 
+  const currentMember = await getCurrentMember(request).catch(() => null);
+
   const [allKols, folders, tagCatalog] = await Promise.all([
     withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
-    withTimeout(listFavoriteFolders(), [] as string[]).catch(() => [] as string[]),
+    // Only folders the current member can write to (own + legacy public).
+    withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]),
     withTimeout(listTagCatalog(), [] as { name: string }[]).catch(() => [] as { name: string }[]),
   ]);
 
@@ -188,11 +192,17 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
   const kolId = String(formData.get("kolId") ?? "");
+  const currentMember = await getCurrentMember(request).catch(() => null);
+  const memberId = currentMember?.id;
 
   if (intent === "addFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
     const folder = String(formData.get("folder") ?? "").trim() || undefined;
-    await addKolToFavoriteFolder(kolId, folder ?? "");
+    try {
+      await addKolToFavoriteFolder(kolId, folder ?? "", memberId);
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
+    }
     const url = new URL(request.url);
     return redirect(url.pathname + url.search);
   }
@@ -204,10 +214,14 @@ export async function action({ request }: ActionFunctionArgs) {
       .map((name) => name.trim())
       .filter(Boolean);
 
-    if (selectedFolders.length > 0) {
-      await replaceKolFavoriteFolders(kolId, selectedFolders);
-    } else {
-      await addKolToFavoriteFolder(kolId, "");
+    try {
+      if (selectedFolders.length > 0) {
+        await replaceKolFavoriteFolders(kolId, selectedFolders, memberId);
+      } else {
+        await addKolToFavoriteFolder(kolId, "", memberId);
+      }
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
     }
 
     const url = new URL(request.url);

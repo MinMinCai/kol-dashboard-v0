@@ -1,9 +1,10 @@
-import { AppShell, Avatar, Badge, Button, Center, Group, Stack, Text, Title } from "@mantine/core";
+import { AppShell, Avatar, Badge, Button, Center, Group, Menu, Stack, Text, Title } from "@mantine/core";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { isRouteErrorResponse, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { GlobalNotification } from "~/components/GlobalNotification";
 import { DEMO_USER, demoAuthCookie } from "~/lib/demo-auth.server";
+import { listMembersWithCurrent } from "~/lib/demo-identity.server";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -34,7 +35,7 @@ function navLinkStyle(active: boolean) {
 
 export default function AppLayoutRoute() {
   const location = useLocation();
-  const { currentUserName, currentUserRole } = useLoaderData<typeof loader>();
+  const { currentUserName, currentUserRole, viewAs, teamMembers } = useLoaderData<typeof loader>();
   const roleLabel =
     currentUserRole === "admin"
       ? "Admin"
@@ -42,6 +43,9 @@ export default function AppLayoutRoute() {
         ? "Manager"
         : "Member";
   const nameInitial = currentUserName?.slice(0, 1) ?? "?";
+  const viewAsName = viewAs?.name ?? "未指定";
+  const viewAsInitial = viewAsName.slice(0, 1);
+  const currentPath = location.pathname + location.search;
 
   return (
     <>
@@ -120,6 +124,71 @@ export default function AppLayoutRoute() {
               <Title order={4}>KOL DB</Title>
               <Text size="xs" c="dimmed">統一管理 KOL / 提案 / 委刊單</Text>
             </Stack>
+          </Group>
+
+          {/* View-as switcher — lets the demo user simulate different team
+              members for ownership/sharing of favorite folders. */}
+          <Group gap={6} align="center">
+            <Menu shadow="md" width={240} position="bottom-end">
+              <Menu.Target>
+                <button
+                  type="button"
+                  title="切換目前檢視身分"
+                  style={{
+                    background: "transparent",
+                    border: "1px solid var(--mantine-color-default-border)",
+                    borderRadius: 8,
+                    padding: "4px 10px 4px 6px",
+                    cursor: teamMembers.length > 0 ? "pointer" : "not-allowed",
+                    opacity: teamMembers.length > 0 ? 1 : 0.6,
+                    color: "var(--mantine-color-text)",
+                    fontSize: 13,
+                    fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    lineHeight: 1,
+                  }}
+                  disabled={teamMembers.length === 0}
+                >
+                  <Avatar size={20} radius="xl" color="grape">{viewAsInitial}</Avatar>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    以
+                    <strong style={{ fontWeight: 600 }}>{viewAsName}</strong>
+                    身分檢視
+                  </span>
+                  <span aria-hidden style={{ marginLeft: 2 }}>▾</span>
+                </button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Label>切換目前檢視身分</Menu.Label>
+                {teamMembers.length === 0 ? (
+                  <Menu.Item disabled>請先在 系統設定 &gt; 團隊成員 新增成員</Menu.Item>
+                ) : (
+                  teamMembers.map((m) => (
+                    <form key={m.id} method="post" action="/api/view-as" style={{ margin: 0 }}>
+                      <input type="hidden" name="memberId" value={m.id} />
+                      <input type="hidden" name="redirectTo" value={currentPath} />
+                      <Menu.Item
+                        component="button"
+                        type="submit"
+                        rightSection={viewAs?.id === m.id ? <Text size="xs" c="blue">目前</Text> : null}
+                      >
+                        <Group gap={6} wrap="nowrap">
+                          <Avatar size={20} radius="xl" color={m.role === "admin" ? "blue" : "gray"}>
+                            {m.name.slice(0, 1)}
+                          </Avatar>
+                          <Stack gap={0}>
+                            <Text size="sm" fw={500}>{m.name}</Text>
+                            <Text size="xs" c="dimmed">{m.group}</Text>
+                          </Stack>
+                        </Group>
+                      </Menu.Item>
+                    </form>
+                  ))
+                )}
+              </Menu.Dropdown>
+            </Menu>
           </Group>
 
           {/*
@@ -282,9 +351,15 @@ export default function AppLayoutRoute() {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const demoSession = await demoAuthCookie.parse(request.headers.get("Cookie"));
+  const { current, members } = await listMembersWithCurrent(request).catch(() => ({
+    current: null,
+    members: [] as Awaited<ReturnType<typeof listMembersWithCurrent>>["members"],
+  }));
   return json({
     currentUserName: demoSession?.name ?? DEMO_USER.name,
     currentUserRole: demoSession?.role ?? DEMO_USER.role,
+    viewAs: current ? { id: current.id, name: current.name, role: current.role, group: current.group } : null,
+    teamMembers: members.map((m) => ({ id: m.id, name: m.name, role: m.role, group: m.group })),
   });
 }
 

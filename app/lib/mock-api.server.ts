@@ -7,6 +7,7 @@ import {
   insertionOrders as ioTable,
   kolFavoriteFolders as kolFavoriteFoldersTable,
   kolFavoriteFolderItems as kolFavoriteFolderItemsTable,
+  kolFavoriteFolderMemberShares as kolFavoriteFolderMemberSharesTable,
   tagCatalog as tagCatalogTable,
   brandCatalog as brandCatalogTable,
   industryCatalog as industryCatalogTable,
@@ -249,11 +250,20 @@ export type SystemPreferences = {
   favoriteFolders: string[];
 };
 
+export type FolderAccess = "owner" | "shared" | "public";
+
 export type FavoriteFolder = {
   id: string;
   name: string;
   description?: string;
   kolCount: number;
+  // Sharing & ownership (populated when listFavoriteFolderDetails is called
+  // with a memberId). Folders without an ownerMemberId are treated as legacy
+  // public folders that anyone can edit.
+  ownerMemberId?: string | null;
+  ownerName?: string | null;
+  access?: FolderAccess;
+  sharedWithMemberIds?: string[];
 };
 
 export type InsertionOrder = {
@@ -348,9 +358,10 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
 }
 
 async function getFavoriteFolderState() {
-  const [folderRows, itemRows, prefs] = await Promise.all([
+  const [folderRows, itemRows, shareRows, prefs] = await Promise.all([
     db.select().from(kolFavoriteFoldersTable).catch(() => []),
     db.select().from(kolFavoriteFolderItemsTable).catch(() => []),
+    db.select().from(kolFavoriteFolderMemberSharesTable).catch(() => []),
     getSystemPreferences(),
   ]);
 
@@ -370,12 +381,21 @@ async function getFavoriteFolderState() {
     folderNamesByKolId.set(item.kolId, current);
   }
 
+  const memberIdsByFolderId = new Map<string, string[]>();
+  for (const share of shareRows) {
+    const current = memberIdsByFolderId.get(share.folderId) ?? [];
+    if (!current.includes(share.memberId)) current.push(share.memberId);
+    memberIdsByFolderId.set(share.folderId, current);
+  }
+
   return {
     folderRows,
     itemRows,
+    shareRows,
     folderById,
     folderNames: Array.from(folderNames),
     folderNamesByKolId,
+    memberIdsByFolderId,
   };
 }
 
@@ -418,7 +438,7 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
   });
 }
 
-async function getOrCreateFavoriteFolderRow(name: string) {
+async function getOrCreateFavoriteFolderRow(name: string, ownerMemberId?: string | null) {
   const normalized = name.trim();
   if (!normalized) return null;
 
@@ -428,7 +448,20 @@ async function getOrCreateFavoriteFolderRow(name: string) {
     .where(eq(kolFavoriteFoldersTable.name, normalized))
     .limit(1)
     .catch(() => []);
-  if (existing.length > 0) return existing[0];
+  if (existing.length > 0) {
+    // Backfill ownership for legacy folders if a member is provided.
+    const row = existing[0];
+    if (!row.ownerMemberId && ownerMemberId) {
+      const updated = await db
+        .update(kolFavoriteFoldersTable)
+        .set({ ownerMemberId, updatedAt: new Date() })
+        .where(eq(kolFavoriteFoldersTable.id, row.id))
+        .returning()
+        .catch(() => []);
+      return updated[0] ?? row;
+    }
+    return row;
+  }
 
   const created = await db
     .insert(kolFavoriteFoldersTable)
@@ -436,12 +469,49 @@ async function getOrCreateFavoriteFolderRow(name: string) {
       id: crypto.randomUUID(),
       name: normalized,
       ownerId: "user_001",
+      ownerMemberId: ownerMemberId ?? null,
       description: null,
     })
     .returning()
     .catch(() => []);
 
   return created[0];
+}
+
+/**
+ * Resolve a member's access level to a folder. Used by route actions to gate
+ * mutations. Folders without an `ownerMemberId` are treated as legacy public
+ * (full edit by anyone) so existing data continues to work.
+ */
+export async function getFolderAccessForMember(
+  folderName: string,
+  memberId: string | null | undefined,
+): Promise<{ folder: typeof kolFavoriteFoldersTable.$inferSelect | null; access: FolderAccess | "none" }> {
+  const normalized = folderName.trim();
+  if (!normalized) return { folder: null, access: "none" };
+
+  const rows = await db
+    .select()
+    .from(kolFavoriteFoldersTable)
+    .where(eq(kolFavoriteFoldersTable.name, normalized))
+    .limit(1)
+    .catch(() => []);
+  const folder = rows[0] ?? null;
+  if (!folder) return { folder: null, access: "public" };
+  if (!folder.ownerMemberId) return { folder, access: "public" };
+  if (memberId && folder.ownerMemberId === memberId) return { folder, access: "owner" };
+
+  if (memberId) {
+    const shares = await db
+      .select()
+      .from(kolFavoriteFolderMemberSharesTable)
+      .where(eq(kolFavoriteFolderMemberSharesTable.folderId, folder.id))
+      .catch(() => []);
+    if (shares.some((s) => s.memberId === memberId)) {
+      return { folder, access: "shared" };
+    }
+  }
+  return { folder, access: "none" };
 }
 
 function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
@@ -1135,56 +1205,133 @@ export async function updateSystemPreferences(
   return getSystemPreferences();
 }
 
-export async function listFavoriteFolders(): Promise<string[]> {
+/**
+ * List folder names. When `memberId` is provided, results are filtered to
+ * folders the member can write to (owned + legacy public folders without an
+ * owner). Without a memberId, returns every folder name globally (used by
+ * back-office / admin code paths).
+ */
+export async function listFavoriteFolders(memberId?: string): Promise<string[]> {
   const state = await getFavoriteFolderState();
   const kols = await db.select({ favoriteFolder: kolsTable.favoriteFolder }).from(kolsTable).catch(() => []);
   for (const row of kols) {
     if (row.favoriteFolder) state.folderNames.push(row.favoriteFolder);
   }
-  return Array.from(new Set(state.folderNames)).sort((a, b) => a.localeCompare(b, "zh-TW"));
+
+  if (!memberId) {
+    return Array.from(new Set(state.folderNames)).sort((a, b) => a.localeCompare(b, "zh-TW"));
+  }
+
+  const writable = new Set<string>();
+  for (const name of state.folderNames) {
+    // Names from system preferences without a folder row are legacy public.
+    const row = state.folderRows.find((r) => r.name === name);
+    if (!row || !row.ownerMemberId || row.ownerMemberId === memberId) {
+      writable.add(name);
+    }
+  }
+  return Array.from(writable).sort((a, b) => a.localeCompare(b, "zh-TW"));
 }
 
-export async function createFavoriteFolder(name: string): Promise<string[]> {
+export async function createFavoriteFolder(name: string, ownerMemberId?: string | null): Promise<string[]> {
   const normalized = name.trim();
   if (!normalized) return listFavoriteFolders();
   const prefs = await getSystemPreferences();
   if (!prefs.favoriteFolders.includes(normalized)) {
     await updateSystemPreferences({ favoriteFolders: [...prefs.favoriteFolders, normalized] });
   }
-  await getOrCreateFavoriteFolderRow(normalized);
+  await getOrCreateFavoriteFolderRow(normalized, ownerMemberId);
   return listFavoriteFolders();
 }
 
-export async function listFavoriteFolderDetails(): Promise<FavoriteFolder[]> {
-  const { folderRows, itemRows } = await getFavoriteFolderState();
+/**
+ * Detailed folder list. When `memberId` is provided:
+ *  - results are filtered to folders the member owns OR has been shared with
+ *    OR legacy folders without an owner (public)
+ *  - each folder is annotated with `access` ("owner" | "shared" | "public")
+ *    and (for owners) the list of `sharedWithMemberIds`.
+ *
+ * Without `memberId`, returns every folder ungated (admin / migration use).
+ */
+export async function listFavoriteFolderDetails(memberId?: string): Promise<FavoriteFolder[]> {
+  const { folderRows, itemRows, memberIdsByFolderId } = await getFavoriteFolderState();
   const counts = itemRows.reduce<Record<string, number>>((acc, item) => {
     acc[item.folderId] = (acc[item.folderId] ?? 0) + 1;
     return acc;
   }, {});
 
+  // Always pull the unfiltered name list — we filter ourselves below by access.
   const savedNames = await listFavoriteFolders();
-  const detailsFromRows = folderRows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    description: row.description ?? undefined,
-    kolCount: counts[row.id] ?? 0,
-  }));
+
+  // Lookup helper for owner's display name.
+  const memberLookup = await listTeamMembers().catch(() => [] as TeamMember[]);
+  const memberById = new Map(memberLookup.map((m) => [m.id, m]));
+
+  // We track an internal "no access" state so we can correctly drop folders
+  // owned by someone else and not shared with the current member. The public
+  // FolderAccess type only covers visible levels.
+  type InternalAccess = FolderAccess | "none";
+  const detailsFromRows = folderRows.map((row) => {
+    const sharedWith = memberIdsByFolderId.get(row.id) ?? [];
+    let internalAccess: InternalAccess;
+    if (!row.ownerMemberId) internalAccess = "public";
+    else if (memberId && row.ownerMemberId === memberId) internalAccess = "owner";
+    else if (memberId && sharedWith.includes(memberId)) internalAccess = "shared";
+    else if (!memberId) internalAccess = "public"; // admin / no-member context: see all
+    else internalAccess = "none";
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description ?? undefined,
+      kolCount: counts[row.id] ?? 0,
+      ownerMemberId: row.ownerMemberId ?? null,
+      ownerName: row.ownerMemberId ? memberById.get(row.ownerMemberId)?.name ?? null : null,
+      access: internalAccess,
+      sharedWithMemberIds: sharedWith,
+    };
+  });
+
   const existingNames = new Set(detailsFromRows.map((folder) => folder.name));
-  const virtualFolders = savedNames
+  const virtualFolders: FavoriteFolder[] = savedNames
     .filter((name) => !existingNames.has(name))
     .map((name) => ({
       id: `virtual_${name}`,
       name,
       kolCount: 0,
+      ownerMemberId: null,
+      ownerName: null,
+      access: "public" as FolderAccess,
+      sharedWithMemberIds: [],
     }));
 
-  return [...detailsFromRows, ...virtualFolders].sort((a, b) => a.name.localeCompare(b.name, "zh-TW"));
+  // Drop "none" before publishing the list, then narrow the type back to
+  // the public FolderAccess union (owner | shared | public).
+  const visible: FavoriteFolder[] = [...detailsFromRows, ...virtualFolders]
+    .filter((folder) => folder.access !== "none")
+    .map((folder) => ({ ...folder, access: folder.access as FolderAccess }));
+
+  return visible.sort((a, b) => a.name.localeCompare(b.name, "zh-TW"));
 }
 
-export async function renameFavoriteFolder(oldName: string, newName: string): Promise<string[]> {
+/**
+ * Rename. If `memberId` is provided, only the owner (or anyone for legacy
+ * unowned folders) can rename — otherwise throws.
+ */
+export async function renameFavoriteFolder(
+  oldName: string,
+  newName: string,
+  memberId?: string | null,
+): Promise<string[]> {
   const from = oldName.trim();
   const to = newName.trim();
   if (!from || !to || from === to) return listFavoriteFolders();
+
+  if (memberId !== undefined) {
+    const access = await getFolderAccessForMember(from, memberId);
+    if (access.access !== "owner" && access.access !== "public") {
+      throw new Error("只有資料夾擁有者可以變更名稱");
+    }
+  }
 
   const prefs = await getSystemPreferences();
   const updatedNames = prefs.favoriteFolders.map((name) => (name === from ? to : name));
@@ -1202,9 +1349,16 @@ export async function renameFavoriteFolder(oldName: string, newName: string): Pr
   return listFavoriteFolders();
 }
 
-export async function deleteFavoriteFolder(name: string): Promise<string[]> {
+export async function deleteFavoriteFolder(name: string, memberId?: string | null): Promise<string[]> {
   const normalized = name.trim();
   if (!normalized) return listFavoriteFolders();
+
+  if (memberId !== undefined) {
+    const access = await getFolderAccessForMember(normalized, memberId);
+    if (access.access !== "owner" && access.access !== "public") {
+      throw new Error("只有資料夾擁有者可以刪除");
+    }
+  }
 
   const prefs = await getSystemPreferences();
   await updateSystemPreferences({ favoriteFolders: prefs.favoriteFolders.filter((folder) => folder !== normalized) });
@@ -1220,14 +1374,87 @@ export async function deleteFavoriteFolder(name: string): Promise<string[]> {
   return listFavoriteFolders();
 }
 
-export async function addKolToFavoriteFolder(kolId: string, folderName: string): Promise<Kol> {
+/**
+ * Replace the set of members a folder is shared with. Only the owner may share.
+ */
+export async function setFavoriteFolderShares(
+  folderName: string,
+  sharedWithMemberIds: string[],
+  ownerMemberId: string,
+): Promise<void> {
+  const normalized = folderName.trim();
+  if (!normalized) return;
+
+  const access = await getFolderAccessForMember(normalized, ownerMemberId);
+  if (access.access !== "owner" && access.access !== "public") {
+    throw new Error("只有資料夾擁有者可以共享");
+  }
+
+  // Lazily upgrade legacy public folders to be owned by the current member
+  // when they first share — otherwise the share has no recognised owner.
+  const folder = await getOrCreateFavoriteFolderRow(normalized, ownerMemberId);
+  if (!folder) return;
+
+  const desired = Array.from(new Set(sharedWithMemberIds.map((id) => id.trim()).filter(Boolean)))
+    .filter((id) => id !== ownerMemberId);
+
+  const existing = await db
+    .select()
+    .from(kolFavoriteFolderMemberSharesTable)
+    .where(eq(kolFavoriteFolderMemberSharesTable.folderId, folder.id))
+    .catch(() => []);
+
+  const existingIds = new Set(existing.map((r) => r.memberId));
+  const desiredSet = new Set(desired);
+
+  // Remove shares that are no longer desired.
+  await Promise.all(
+    existing
+      .filter((r) => !desiredSet.has(r.memberId))
+      .map((r) =>
+        db.delete(kolFavoriteFolderMemberSharesTable)
+          .where(eq(kolFavoriteFolderMemberSharesTable.id, r.id))
+          .catch(() => null),
+      ),
+  );
+
+  // Insert new shares.
+  await Promise.all(
+    desired
+      .filter((id) => !existingIds.has(id))
+      .map((id) =>
+        db.insert(kolFavoriteFolderMemberSharesTable).values({
+          id: crypto.randomUUID(),
+          folderId: folder.id,
+          memberId: id,
+        }).catch(() => null),
+      ),
+  );
+}
+
+export async function addKolToFavoriteFolder(
+  kolId: string,
+  folderName: string,
+  memberId?: string | null,
+): Promise<Kol> {
   const normalized = folderName.trim();
   if (!normalized) {
     return updateKol(kolId, { isFavorite: true });
   }
 
-  await createFavoriteFolder(normalized);
-  const folder = await getOrCreateFavoriteFolderRow(normalized);
+  if (memberId !== undefined) {
+    const access = await getFolderAccessForMember(normalized, memberId);
+    // "shared" is read-only for the recipient.
+    if (access.folder && access.access === "shared") {
+      throw new Error("此資料夾是別人共享給你的，無法新增 KOL");
+    }
+    if (access.folder && access.access === "none") {
+      throw new Error("沒有權限存取此資料夾");
+    }
+  }
+
+  await createFavoriteFolder(normalized, memberId ?? undefined);
+  const folder = await getOrCreateFavoriteFolderRow(normalized, memberId ?? undefined);
   if (folder) {
     const existing = await db
       .select()
@@ -1248,12 +1475,26 @@ export async function addKolToFavoriteFolder(kolId: string, folderName: string):
   return updateKol(kolId, { isFavorite: true, favoriteFolder: normalized });
 }
 
-export async function removeKolFromFavoriteFolder(kolId: string, folderName: string): Promise<Kol> {
+export async function removeKolFromFavoriteFolder(
+  kolId: string,
+  folderName: string,
+  memberId?: string | null,
+): Promise<Kol> {
   const normalized = folderName.trim();
   if (!normalized) return getKol(kolId).then((kol) => {
     if (!kol) throw new Error("KOL not found");
     return kol;
   });
+
+  if (memberId !== undefined) {
+    const access = await getFolderAccessForMember(normalized, memberId);
+    if (access.folder && access.access === "shared") {
+      throw new Error("此資料夾是別人共享給你的，無法移除 KOL");
+    }
+    if (access.folder && access.access === "none") {
+      throw new Error("沒有權限存取此資料夾");
+    }
+  }
 
   const folders = await db.select().from(kolFavoriteFoldersTable).where(eq(kolFavoriteFoldersTable.name, normalized)).limit(1).catch(() => []);
   if (folders.length > 0) {
@@ -1274,25 +1515,54 @@ export async function removeKolFromFavoriteFolder(kolId: string, folderName: str
   });
 }
 
-export async function replaceKolFavoriteFolders(kolId: string, folderNames: string[]): Promise<Kol> {
+export async function replaceKolFavoriteFolders(
+  kolId: string,
+  folderNames: string[],
+  memberId?: string | null,
+): Promise<Kol> {
   const normalizedFolders = Array.from(new Set(folderNames.map((name) => name.trim()).filter(Boolean)));
   const current = await getKol(kolId);
   if (!current) throw new Error("KOL not found");
 
   const currentFolders = current.favoriteFolders ?? [];
-  const toAdd = normalizedFolders.filter((name) => !currentFolders.includes(name));
-  const toRemove = currentFolders.filter((name) => !normalizedFolders.includes(name));
+
+  // Diffing must respect: shared folders the user can't modify should be left
+  // untouched (neither added nor removed). We only add folders the user can
+  // write to, and only remove folders the user can write to.
+  const toAddRaw = normalizedFolders.filter((name) => !currentFolders.includes(name));
+  const toRemoveRaw = currentFolders.filter((name) => !normalizedFolders.includes(name));
+
+  let toAdd = toAddRaw;
+  let toRemove = toRemoveRaw;
+  if (memberId !== undefined) {
+    const accesses = await Promise.all(
+      [...toAddRaw, ...toRemoveRaw].map(async (name) => [name, await getFolderAccessForMember(name, memberId)] as const),
+    );
+    const writable = new Set(
+      accesses
+        .filter(([, a]) => a.access === "owner" || a.access === "public")
+        .map(([name]) => name),
+    );
+    toAdd = toAddRaw.filter((n) => writable.has(n));
+    toRemove = toRemoveRaw.filter((n) => writable.has(n));
+  }
 
   for (const folder of toAdd) {
-    await addKolToFavoriteFolder(kolId, folder);
+    await addKolToFavoriteFolder(kolId, folder, memberId);
   }
   for (const folder of toRemove) {
-    await removeKolFromFavoriteFolder(kolId, folder);
+    await removeKolFromFavoriteFolder(kolId, folder, memberId);
   }
 
+  // Final favorites list reflects added + retained shared folders.
+  const finalFolders = Array.from(new Set([
+    ...currentFolders.filter((n) => !toRemove.includes(n)),
+    ...toAdd,
+  ]));
+
   return updateKol(kolId, {
-    isFavorite: normalizedFolders.length > 0 || current.isFavorite,
-    favoriteFolder: normalizedFolders[0] ?? null,
+    isFavorite: finalFolders.length > 0 || current.isFavorite,
+    favoriteFolder: finalFolders[0] ?? null,
   });
 }
 
