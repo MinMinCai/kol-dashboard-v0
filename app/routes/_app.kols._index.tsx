@@ -18,8 +18,8 @@ import {
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
-import { useState } from "react";
+import { Form, Link, useFetcher, useLoaderData, useNavigate, useRevalidator, useSubmit, useNavigation } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, replaceKolFavoriteFolders, type Kol } from "~/lib/mock-api.server";
 
@@ -265,11 +265,23 @@ export default function KolListPage() {
   const submit = useSubmit();
   const navigation = useNavigation();
   const navigate = useNavigate();
+  const revalidator = useRevalidator();
+  const batchImportFetcher = useFetcher<{ result?: { total: number; success: number; failed: number; errors: string[] }; error?: string }>();
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
   const [favoritePickerKolId, setFavoritePickerKolId] = useState<string | null>(null);
   const [favoritePickerSelection, setFavoritePickerSelection] = useState<string[]>([]);
   const [favoritePickerIsFavorite, setFavoritePickerIsFavorite] = useState(false);
+
+  const batchImportState = batchImportFetcher.state;
+  const batchImportData = batchImportFetcher.data;
+  const batchImporting = batchImportState !== "idle";
+
+  useEffect(() => {
+    if (batchImportState === "idle" && batchImportData?.result && batchImportData.result.success > 0) {
+      revalidator.revalidate();
+    }
+  }, [batchImportState, batchImportData, revalidator]);
 
   // Current params object for URL building
   const current: Record<string, string | string[]> = {
@@ -996,7 +1008,7 @@ export default function KolListPage() {
           </button>
         </Group>
         <Text size="sm" c="dimmed" mb="lg">
-          請上傳包含 KOL 名稱、平台連結、粉絲數等資訊的 Excel 檔案。系統會自動解析並建檔。（功能展示版）
+          上傳依照範本格式的 Excel 檔，第一列為欄位標題、第二列起為每位 KOL 的資料。系統會逐列建檔，KOL名稱為必填欄位。
         </Text>
 
         <label
@@ -1009,55 +1021,104 @@ export default function KolListPage() {
             border: "2px dashed var(--mantine-color-blue-4)",
             borderRadius: "8px",
             backgroundColor: "var(--mantine-color-blue-light)",
-            cursor: "pointer",
-            transition: "background-color 0.2s"
+            cursor: batchImporting ? "wait" : "pointer",
+            opacity: batchImporting ? 0.6 : 1,
+            transition: "background-color 0.2s, opacity 0.2s",
           }}
           onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-1)"; }}
           onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-light)"; }}
           onDrop={(e) => {
             e.preventDefault();
             e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-light)";
+            if (batchImporting) return;
             const fileInput = document.getElementById('kol-batch-excel-input') as HTMLInputElement;
             if (fileInput && e.dataTransfer.files.length > 0) {
               fileInput.files = e.dataTransfer.files;
-              fileInput.dispatchEvent(new Event('change'));
+              fileInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
           }}
         >
           <div style={{ fontSize: 36, marginBottom: 12 }}>📤</div>
-          <Text fw={600} color="var(--mantine-color-blue-filled)">點擊或拖曳 Excel 檔案至此</Text>
-          <Text size="sm" c="dimmed" mt={4}>支援 .xlsx, .csv</Text>
+          <Text fw={600} color="var(--mantine-color-blue-filled)">
+            {batchImporting ? "正在處理中…" : "點擊或拖曳 Excel 檔案至此"}
+          </Text>
+          <Text size="sm" c="dimmed" mt={4}>支援 .xlsx, .xls, .csv</Text>
           <input
             id="kol-batch-excel-input"
             type="file"
             accept=".xlsx, .xls, .csv"
+            disabled={batchImporting}
             style={{ display: "none" }}
             onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                // Simulate processing
-                const dlg = e.target.closest('dialog');
-                const label = e.target.closest('label');
-                if (label) (label as HTMLElement).style.opacity = '0.5';
-
-                setTimeout(() => {
-                  alert("✅ 發送至後端處理中...成功建立 23 筆 KOL 資料！");
-                  if (label) (label as HTMLElement).style.opacity = '1';
-                  if (dlg) (dlg as HTMLDialogElement).close();
-                  e.target.value = '';
-                }, 800);
-              }
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const fd = new FormData();
+              fd.append("excelFile", file);
+              batchImportFetcher.submit(fd, {
+                method: "post",
+                action: "/api/kols/batch-import",
+                encType: "multipart/form-data",
+              });
+              e.target.value = "";
             }}
           />
         </label>
 
+        {batchImportData?.error && (
+          <Alert color="red" mt="md" title="匯入失敗">
+            {batchImportData.error}
+          </Alert>
+        )}
+
+        {batchImportData?.result && (() => {
+          const r = batchImportData.result;
+          const tone: "green" | "yellow" | "red" =
+            r.failed === 0 && r.success > 0 ? "green"
+              : r.success > 0 ? "yellow"
+                : "red";
+          return (
+            <Alert color={tone} mt="md" title="匯入結果">
+              <Stack gap={4}>
+                <Text size="sm">
+                  共讀取 {r.total} 列，成功 {r.success} 筆、失敗 {r.failed} 筆。
+                </Text>
+                {r.errors.length > 0 && (
+                  <Box
+                    style={{
+                      maxHeight: 140,
+                      overflow: "auto",
+                      fontSize: 12,
+                      lineHeight: 1.5,
+                      paddingTop: 4,
+                    }}
+                  >
+                    {r.errors.slice(0, 30).map((msg, i) => (
+                      <div key={i}>• {msg}</div>
+                    ))}
+                    {r.errors.length > 30 && (
+                      <div>… 共 {r.errors.length} 條錯誤，僅顯示前 30 條</div>
+                    )}
+                  </Box>
+                )}
+              </Stack>
+            </Alert>
+          );
+        })()}
+
         <Group justify="space-between" mt="xl">
-          <a href="#" style={{ fontSize: 13, color: "var(--mantine-color-blue-filled)", textDecoration: "none" }}>下載 Excel 建檔範本</a>
+          <a
+            href="/api/kols/batch-import-template"
+            download
+            style={{ fontSize: 13, color: "var(--mantine-color-blue-filled)", textDecoration: "none" }}
+          >
+            下載 Excel 建檔範本
+          </a>
           <button
             type="button"
             style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
             onClick={(e) => { (e.currentTarget.closest('dialog') as HTMLDialogElement).close(); }}
           >
-            取消
+            關閉
           </button>
         </Group>
       </dialog>
