@@ -7,6 +7,7 @@ import {
   Divider,
   Group,
   Radio,
+  Select,
   SimpleGrid,
   Stack,
   Text,
@@ -26,6 +27,14 @@ function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T
   ]);
 }
 
+function parseHandle(url: string): string {
+  const raw = url.trim();
+  if (!raw) return "";
+  const parts = raw.split("/").filter(Boolean);
+  const handle = parts[parts.length - 1] ?? "";
+  return handle.replace("@", "");
+}
+
 export async function loader({ params }: LoaderFunctionArgs) {
   const kolId = params.kolId;
   if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
@@ -40,10 +49,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const formData = await request.formData();
   const displayName = String(formData.get("displayName") ?? "").trim();
-  const instagramHandle = String(formData.get("instagramHandle") ?? "").trim();
-  const industry = String(formData.get("industry") ?? "").trim();
   const tagsRaw = String(formData.get("tagsInput") ?? "");
-  
+
   const kol = await getKol(kolId);
   const history = kol?.collaborationHistory ?? [];
   const rating = history.length > 0 ? history.reduce((s, r) => s + r.rating, 0) / history.length : 0;
@@ -54,6 +61,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const email = String(formData.get("email") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const paymentMethod = formData.get("paymentMethod") as "勞報" | "發票" | null;
+  const genderRaw = String(formData.get("gender") ?? "").trim();
+  const gender = genderRaw === "男" || genderRaw === "女" || genderRaw === "其他" ? genderRaw : undefined;
+  const ageRaw = formData.get("age");
+  const ageNum = ageRaw != null && String(ageRaw).trim() !== "" ? Number(ageRaw) : NaN;
+  const age = Number.isFinite(ageNum) && ageNum > 0 ? ageNum : undefined;
   const engagementRate = Number(formData.get("engagementRate") ?? 0);
   const exposureRate = Number(formData.get("exposureRate") ?? 0);
   const audienceMale = Number(formData.get("audienceMale") ?? 0);
@@ -93,10 +105,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return acc;
   }, {} as Record<string, number>);
 
+  const igEntry = socials.find((s) => s.platform.toLowerCase() === "instagram");
+  const igHandle = igEntry?.url ? parseHandle(igEntry.url) : "";
+
   await updateKol(kolId, {
     displayName,
-    instagramHandle: instagramHandle || undefined,
-    industry: industry || undefined,
+    instagramHandle: igHandle,
     tags,
     categories: tags.length > 0 ? tags : undefined,
     followers: socials[0]?.followers ?? 0,
@@ -106,6 +120,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     contact: { phone, email },
     notes: notes || undefined,
     paymentMethod: paymentMethod || undefined,
+    gender,
+    age,
     engagementRate: effectiveEngagementRate,
     exposureRate: effectiveExposureRate,
     audienceGender: effectiveAudienceGender,
@@ -133,7 +149,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return redirect(`/kols/${kolId}`);
 }
 
-const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook"] as const;
+const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
 type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 
 type PlatformAudienceState = {
@@ -143,12 +159,10 @@ type PlatformAudienceState = {
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
-  avgRating: string;
 };
 
 function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienceState> {
   const stored = kol.platformMetrics?.audienceMetrics ?? {};
-  const storedRatings = kol.platformMetrics?.avgRating ?? {};
   return Object.fromEntries(
     AUDIENCE_PLATFORMS.map((p) => {
       const m = stored[p] ?? (p === "Instagram" ? {
@@ -164,7 +178,6 @@ function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienc
         audienceMale: m.audienceGender?.male != null ? String(m.audienceGender.male) : "",
         audienceFemale: m.audienceGender?.female != null ? String(m.audienceGender.female) : "",
         audienceAge: m.audienceAge ?? "",
-        avgRating: storedRatings[p] != null ? String(storedRatings[p]) : (p === "Instagram" && kol.rating != null ? String(kol.rating) : ""),
       }];
     })
   ) as Record<AudiencePlatform, PlatformAudienceState>;
@@ -208,10 +221,6 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
     avgEngagementRate: Object.fromEntries(
       AUDIENCE_PLATFORMS.filter(p => metrics[p].engagementRate)
         .map(p => [p, Number(metrics[p].engagementRate)])
-    ),
-    avgRating: Object.fromEntries(
-      AUDIENCE_PLATFORMS.filter(p => metrics[p].avgRating)
-        .map(p => [p, Number(metrics[p].avgRating)])
     ),
   };
 
@@ -290,16 +299,6 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
           value={current.audienceAge}
           onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
         />
-        <TextInput
-          label="平均評分 (0-5)"
-          type="number"
-          step="0.1"
-          min={0}
-          max={5}
-          placeholder="例如：4.5"
-          value={current.avgRating}
-          onChange={(e) => updateField("avgRating", e.currentTarget.value)}
-        />
       </SimpleGrid>
     </Box>
   );
@@ -312,20 +311,32 @@ export default function KolEditPage() {
   const navigation = useNavigation();
   const submitting = navigation.state === "submitting";
 
-  const initialSocials = [
-    { id: "s-ig", platform: "Instagram", url: `https://instagram.com/${kol.instagramHandle || ""}`, followers: kol.social?.instagram ?? kol.followers ?? 0 },
-    { id: "s-yt", platform: "YouTube", url: "", followers: kol.social?.youtube ?? 0 },
-    { id: "s-tt", platform: "TikTok", url: "", followers: kol.social?.tiktok ?? 0 },
-  ].filter(s => s.followers > 0 || (s.platform === "Instagram" && kol.instagramHandle));
+  type SocialRow = { id: string; platform: string; url: string; followers: number | null };
+  const platformSeeds: Array<{ platform: string; urlKey: keyof NonNullable<Kol["socialLinks"]>; followersKey: keyof NonNullable<Kol["social"]> }> = [
+    { platform: "Instagram", urlKey: "instagram", followersKey: "instagram" },
+    { platform: "YouTube", urlKey: "youtube", followersKey: "youtube" },
+    { platform: "TikTok", urlKey: "tiktok", followersKey: "tiktok" },
+    { platform: "Facebook", urlKey: "facebook", followersKey: "facebook" },
+  ];
+  const initialSocials: SocialRow[] = platformSeeds
+    .map((seed, idx): SocialRow | null => {
+      const url = kol.socialLinks?.[seed.urlKey]
+        ?? (seed.platform === "Instagram" && kol.instagramHandle ? `https://instagram.com/${kol.instagramHandle}` : "");
+      const followers = kol.social?.[seed.followersKey] ?? 0;
+      if (!url && !followers) return null;
+      return { id: `s-${idx}-${seed.platform}`, platform: seed.platform, url, followers };
+    })
+    .filter((s): s is SocialRow => s !== null);
 
   if (initialSocials.length === 0) {
-     initialSocials.push({ id: "s0", platform: "Instagram", url: "", followers: 0 });
+    initialSocials.push({ id: "s0", platform: "Instagram", url: "", followers: null });
   }
 
-  const [socials, setSocials] = useState(initialSocials);
+  const [socials, setSocials] = useState<SocialRow[]>(initialSocials);
 
   const addSocial = () => {
-    setSocials([...socials, { id: "s" + Date.now(), platform: "Instagram", url: "", followers: 0 }]);
+    if (socials.length >= 8) return;
+    setSocials([...socials, { id: "s" + Date.now(), platform: "Instagram", url: "", followers: null }]);
   };
 
   const removeSocial = (id: string) => {
@@ -335,6 +346,24 @@ export default function KolEditPage() {
 
   const updateSocial = (id: string, key: string, value: any) => {
     setSocials(socials.map((s) => (s.id === id ? { ...s, [key]: value } : s)));
+  };
+
+  const fetchFollowers = async (id: string, platform: string, url: string) => {
+    if (!url) {
+      alert("請先輸入社群帳號 URL");
+      return;
+    }
+    try {
+      const r = await fetch(`/api/social-followers?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}`);
+      const data = await r.json();
+      if (r.ok && data.followers) {
+        updateSocial(id, "followers", data.followers);
+      } else {
+        alert(data.error || "取得追蹤數失敗");
+      }
+    } catch (e) {
+      alert("取得失敗，請稍後再試");
+    }
   };
 
   return (
@@ -357,80 +386,133 @@ export default function KolEditPage() {
                   <Avatar src={kol.avatarUrl} radius={999} size={96} />
                   <Text size="xs" c="dimmed">頭像預覽</Text>
                 </Stack>
-                <Stack gap="md" style={{ flex: 1, minWidth: 260 }}>
-                  <TextInput
-                    label="KOL 名稱 *"
-                    name="displayName"
-                    defaultValue={kol.displayName}
-                    required
-                  />
-                  <TextInput
-                    label="Instagram 帳號"
-                    name="instagramHandle"
-                    defaultValue={kol.instagramHandle ?? ""}
-                    placeholder="@username"
-                  />
-                  <TextInput
-                    label="產業"
-                    name="industry"
-                    defaultValue={kol.industry ?? ""}
-                    placeholder="例如：母嬰 / 美妝"
-                  />
-                  <TextInput
-                    label="標籤（逗號分隔）"
-                    name="tagsInput"
-                    defaultValue={(kol.tags ?? kol.categories ?? []).join(", ")}
-                    placeholder="母嬰, 親子"
-                  />
-                  <Box>
-                    <Text size="sm" fw={500} mb={6}>請款方式</Text>
-                    <Radio.Group name="paymentMethod" defaultValue={kol.paymentMethod}>
-                      <Group mt="xs">
-                        <Radio value="勞報" label="勞報" />
-                        <Radio value="發票" label="發票" />
-                      </Group>
-                    </Radio.Group>
+                <Box style={{ flex: 1, minWidth: 260 }}>
+                  <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                    <TextInput
+                      label="KOL 名稱 *"
+                      name="displayName"
+                      defaultValue={kol.displayName}
+                      required
+                    />
+
+                    <Box>
+                      <Text size="sm" fw={500} mb={6}>性別</Text>
+                      <Radio.Group name="gender" defaultValue={kol.gender ?? ""}>
+                        <Group mt="xs">
+                          <Radio value="男" label="男" />
+                          <Radio value="女" label="女" />
+                          <Radio value="其他" label="其他" />
+                        </Group>
+                      </Radio.Group>
+                    </Box>
+
+                    <TextInput
+                      label="年齡"
+                      name="age"
+                      type="number"
+                      min={0}
+                      max={100}
+                      defaultValue={kol.age ?? ""}
+                    />
+                    <TextInput
+                      label="聯絡方式"
+                      name="contactPhone"
+                      defaultValue={kol.contact?.phone ?? ""}
+                      placeholder="09xx-xxx-xxx"
+                    />
+                    <TextInput
+                      label="Email"
+                      name="email"
+                      type="email"
+                      defaultValue={kol.contact?.email ?? ""}
+                      placeholder="manager@example.com"
+                    />
+
+                    <Box>
+                      <Text size="sm" fw={500} mb={6}>請款方式</Text>
+                      <Radio.Group name="paymentMethod" defaultValue={kol.paymentMethod}>
+                        <Group mt="xs">
+                          <Radio value="勞報" label="勞報" />
+                          <Radio value="發票" label="發票" />
+                        </Group>
+                      </Radio.Group>
+                    </Box>
+                  </SimpleGrid>
+
+                  <Box mt="md">
+                    <Text size="sm" fw={500} mb={4}>KOL 標籤（逗號分隔）</Text>
+                    <TextInput
+                      name="tagsInput"
+                      defaultValue={(kol.tags ?? kol.categories ?? []).join(", ")}
+                      placeholder="例如：母嬰, 親子, 旅遊"
+                    />
+                    <Text size="xs" c="dimmed" mt={4}>用逗號分隔多個標籤，例如：美妝, 旅遊, 科技</Text>
                   </Box>
-                </Stack>
+                </Box>
               </Group>
             </Box>
 
             <Divider />
 
             <Box>
-              <Title order={3} mb="md">社群平台</Title>
-              <Stack gap="sm">
+              <Title order={3} mb="md">經營的社群平台</Title>
+              <div id="social-rows">
                 {socials.map((item, idx) => (
-                  <Group key={item.id} align="flex-end">
-                    <TextInput
-                      label="平台"
-                      value={item.platform}
-                      onChange={(e) => updateSocial(item.id, "platform", e.target.value)}
-                      style={{ flex: 1 }}
-                    />
-                    <TextInput
-                      label="URL / 帳號"
-                      value={item.url}
-                      onChange={(e) => updateSocial(item.id, "url", e.target.value)}
-                      style={{ flex: 2 }}
-                    />
-                    <TextInput
-                      label="粉絲數"
-                      type="number"
-                      value={item.followers || 0}
-                      onChange={(e) => updateSocial(item.id, "followers", Number(e.target.value))}
-                      style={{ flex: 1 }}
-                    />
-                    {idx !== 0 && (
-                      <Button color="red" variant="light" onClick={() => removeSocial(item.id)}>×</Button>
-                    )}
-                  </Group>
+                  <div key={item.id} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }}>
+                      <Select
+                        label="平台"
+                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
+                        value={item.platform}
+                        onChange={(val) => updateSocial(item.id, "platform", val)}
+                        size="sm"
+                      />
+                      <TextInput
+                        label="帳號 URL"
+                        value={item.url}
+                        onChange={(e) => updateSocial(item.id, "url", e.target.value)}
+                        placeholder="https://instagram.com/username"
+                        size="sm"
+                      />
+                      <Box style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => fetchFollowers(item.id, item.platform, item.url)}
+                          disabled={!item.url}
+                        >
+                          取得追蹤數
+                        </Button>
+                      </Box>
+                      <TextInput
+                        label="追蹤數"
+                        readOnly
+                        value={item.followers ? item.followers.toLocaleString() : "-"}
+                        size="sm"
+                        c="dimmed"
+                      />
+                      <Box style={{ display: "flex", alignItems: "flex-end", paddingBottom: "2px" }}>
+                        {idx !== 0 && (
+                          <Button
+                            color="red"
+                            variant="light"
+                            onClick={() => removeSocial(item.id)}
+                            style={{ width: 36, height: 36, padding: 0 }}
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </Box>
+                    </div>
+                  </div>
                 ))}
-                <Button variant="default" onClick={addSocial} size="xs" style={{ width: "fit-content" }}>
+              </div>
+              <input type="hidden" name="socialsJson" value={JSON.stringify(socials.map(s => ({ platform: s.platform, url: s.url, followers: s.followers })))} />
+              <Group mt="md">
+                <Button variant="default" onClick={addSocial} disabled={socials.length >= 8}>
                   + 新增社群平台
                 </Button>
-                <input type="hidden" name="socialsJson" value={JSON.stringify(socials)} />
-              </Stack>
+              </Group>
             </Box>
 
             <Divider />
@@ -454,22 +536,8 @@ export default function KolEditPage() {
             <Divider />
 
             <Box>
-              <Title order={3} mb="md">聯絡與備註</Title>
-              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-                <TextInput
-                  label="聯絡電話"
-                  name="contactPhone"
-                  defaultValue={kol.contact?.phone ?? ""}
-                />
-                <TextInput
-                  label="Email"
-                  name="email"
-                  type="email"
-                  defaultValue={kol.contact?.email ?? ""}
-                />
-              </SimpleGrid>
+              <Title order={3} mb="md">介紹與備註</Title>
               <TextInput
-                mt="md"
                 label="頭像網址"
                 name="avatarUrl"
                 defaultValue={kol.avatarUrl ?? ""}

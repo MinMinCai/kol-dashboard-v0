@@ -16,7 +16,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandX, IconBrandYoutube } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate, useSubmit, useNavigation } from "@remix-run/react";
 import { useState } from "react";
@@ -690,18 +690,6 @@ export default function KolListPage() {
                     ) : null}
                   </Group>
                   <Group gap={6} mt="sm" wrap="wrap">
-                    {(kol.platforms ?? [kol.platform]).filter(Boolean).map((p) => {
-                      const platformColor: Record<string, string> = {
-                        Instagram: "pink", YouTube: "red", TikTok: "violet", Facebook: "blue", Twitter: "cyan",
-                      };
-                      return (
-                        <Badge key={p} variant="light" radius="xl" size="xs" color={platformColor[p] ?? "gray"}>
-                          {p}
-                        </Badge>
-                      );
-                    })}
-                  </Group>
-                  <Group gap={6} mt={4} wrap="wrap">
                     {kolTags.map((tag) => (
                       <Badge key={tag} variant="light" radius="xl" size="sm">{tag}</Badge>
                     ))}
@@ -771,13 +759,36 @@ export default function KolListPage() {
                     <Table.Td><Avatar src={kol.avatarUrl} size={32} radius="xl" /></Table.Td>
                     <Table.Td><Link to={`/kols/${kol.id}`}>{kol.displayName}</Link></Table.Td>
                     <Table.Td>
-                      <Group gap={4}>
-                        {(kol.platforms ?? [kol.platform]).filter(Boolean).map((p) => {
-                          const platformColor: Record<string, string> = {
-                            Instagram: "pink", YouTube: "red", TikTok: "violet", Facebook: "blue", Twitter: "cyan",
-                          };
-                          return <Badge key={p} size="xs" variant="light" color={platformColor[p] ?? "gray"}>{p}</Badge>;
-                        })}
+                      <Group gap={8}>
+                        {[
+                          { icon: <IconBrandInstagram size={18} />, label: "Instagram", url: buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle), count: kol.social?.instagram ?? 0 },
+                          { icon: <IconBrandYoutube size={18} />, label: "YouTube", url: buildSocialProfileUrl("youtube", kol.socialLinks?.youtube), count: kol.social?.youtube ?? 0 },
+                          { icon: <IconBrandTiktok size={18} />, label: "TikTok", url: buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok), count: kol.social?.tiktok ?? 0 },
+                          { icon: <IconBrandFacebook size={18} />, label: "Facebook", url: buildSocialProfileUrl("facebook", kol.socialLinks?.facebook), count: kol.social?.facebook ?? 0 },
+                        ]
+                          .filter((row) => row.count > 0 || row.url)
+                          .map((row) =>
+                            row.url ? (
+                              <a
+                                key={row.label}
+                                href={row.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="social-link"
+                                title={`前往 ${row.label}`}
+                              >
+                                {row.icon}
+                              </a>
+                            ) : (
+                              <span
+                                key={row.label}
+                                title={row.label}
+                                style={{ display: "inline-flex", color: "var(--mantine-color-gray-6)" }}
+                              >
+                                {row.icon}
+                              </span>
+                            )
+                          )}
                       </Group>
                     </Table.Td>
                     <Table.Td>{(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Table.Td>

@@ -18,6 +18,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useMemo, useState } from "react";
@@ -591,50 +592,25 @@ export default function KolDetailPage() {
   const primaryInstagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
   const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
   const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
+  const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
+  const socialRows: { icon: React.ReactNode; label: string; detail: string; url: string | null }[] = [
+    { icon: <IconBrandInstagram size={16} />, label: "Instagram", detail: `@${kol.instagramHandle ?? "-"} · ${formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲`, url: primaryInstagramUrl },
+    { icon: <IconBrandYoutube size={16} />, label: "YouTube", detail: `${formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱`, url: youtubeUrl },
+    { icon: <IconBrandTiktok size={16} />, label: "TikTok", detail: `${formatNumber(kol.social?.tiktok)} 粉絲`, url: tiktokUrl },
+    { icon: <IconBrandFacebook size={16} />, label: "Facebook", detail: `${formatNumber(kol.social?.facebook)} 粉絲`, url: facebookUrl },
+  ].filter((row) => {
+    if (row.label === "Instagram") return (kol.social?.instagram ?? kol.followers ?? 0) > 0 || kol.instagramHandle;
+    if (row.label === "YouTube") return (kol.social?.youtube ?? kol.youtubeSubscribers ?? 0) > 0;
+    if (row.label === "TikTok") return (kol.social?.tiktok ?? 0) > 0;
+    if (row.label === "Facebook") return (kol.social?.facebook ?? 0) > 0 || facebookUrl;
+    return false;
+  });
   const activePlatformMetrics = kol.platformMetrics?.audienceMetrics?.[selectedPlatform];
   const activeRealFollowerRatio =
     activePlatformMetrics?.realFollowerRatio
     ?? (selectedPlatform === "Instagram" ? kol.realFollowerRatio : undefined);
   const favoriteActionLabel = isKolFavorited(kol) ? "管理收藏" : "加入收藏";
-  const socialLinkStyle = {
-    color: "inherit",
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    width: "fit-content",
-  } as const;
 
-  const handleDownloadReport = () => {
-    const report = {
-      generatedAt: new Date().toISOString(),
-      kol: {
-        id: kol.id,
-        displayName: kol.displayName,
-        instagramHandle: kol.instagramHandle ?? null,
-        industry: kol.industry ?? null,
-        followers: kol.social?.instagram ?? kol.followers ?? null,
-        youtubeSubscribers: kol.social?.youtube ?? kol.youtubeSubscribers ?? null,
-        tags: kol.tags ?? kol.categories ?? [],
-      },
-      summary: {
-        avgPrice,
-        avgRating,
-        collaborations: collabCount,
-      },
-      recentCollaborations: visibleHistory,
-      performanceStats: stats,
-    };
-
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `KOL-Report-${kol.displayName}-${kol.id}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
 
   const tabStyle = (value: string): React.CSSProperties => ({
     padding: "8px 16px",
@@ -663,35 +639,18 @@ export default function KolDetailPage() {
                 <Avatar src={kol.avatarUrl} size={96} radius={999} />
                 <Stack gap={6}>
                   <Title order={2}>{kol.displayName}</Title>
-                  <Text>
-                    {primaryInstagramUrl ? (
-                      <a href={primaryInstagramUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 Instagram">
-                        📷 Instagram @{kol.instagramHandle ?? "-"}
+                  {socialRows.map((row) =>
+                    row.url ? (
+                      <a key={row.label} href={row.url} target="_blank" rel="noreferrer" className="social-link" title={`前往 ${row.label}`}>
+                        {row.icon}
+                        <Text size="sm" span>{row.label} {row.detail}</Text>
                       </a>
                     ) : (
-                      <>📷 Instagram @{kol.instagramHandle ?? "-"}</>
-                    )}
-                    {" "}| {formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲
-                  </Text>
-                  <Text>
-                    {youtubeUrl ? (
-                      <a href={youtubeUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 YouTube">
-                        ▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱
-                      </a>
-                    ) : (
-                      <>▶ YouTube {formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱</>
-                    )}
-                  </Text>
-                  {(kol.social?.tiktok ?? 0) > 0 && (
-                    <Text>
-                      {tiktokUrl ? (
-                        <a href={tiktokUrl} target="_blank" rel="noreferrer" style={socialLinkStyle} title="前往 TikTok">
-                          ♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲
-                        </a>
-                      ) : (
-                        <>♪ TikTok {formatNumber(kol.social?.tiktok)} 粉絲</>
-                      )}
-                    </Text>
+                      <Group key={row.label} gap={4}>
+                        {row.icon}
+                        <Text size="sm">{row.label} {row.detail}</Text>
+                      </Group>
+                    )
                   )}
                   <Group gap={6}>
                     {(kol.tags ?? kol.categories).map((tag) => (
@@ -740,11 +699,8 @@ export default function KolDetailPage() {
               >
                 📞 查看聯絡方式
               </Button>
-              <Button type="button" variant="link" size="xs" component={Link} to={`/kols/${kol.id}/edit`}>
+              <Button type="button" variant="default" size="xs" component={Link} to={`/kols/${kol.id}/edit`}>
                 ✏️ 編輯
-              </Button>
-              <Button type="button" variant="default" size="xs" onClick={handleDownloadReport}>
-                📊 下載 KOL 報告
               </Button>
             </Group>
           </Card>

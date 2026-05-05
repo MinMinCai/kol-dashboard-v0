@@ -149,6 +149,8 @@ export type Kol = {
   city: string;
   notes?: string;
   paymentMethod?: "勞報" | "發票";
+  gender?: "男" | "女" | "其他";
+  age?: number;
   realFollowerRatio?: number;
   platformMetrics?: PlatformMetrics;
   socialLinks?: {
@@ -337,6 +339,8 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
     notes: row.notes ?? undefined,
     instagramHandle: row.instagramHandle ?? undefined,
     paymentMethod: (row.paymentMethod as Kol["paymentMethod"]) ?? undefined,
+    gender: (row.gender as Kol["gender"]) ?? undefined,
+    age: row.age ?? undefined,
     realFollowerRatio: derivedRealFollowerRatio,
     platformMetrics,
     socialLinks: (row.socialLinks as Kol["socialLinks"]) ?? undefined,
@@ -577,6 +581,8 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.notes !== undefined) update.notes = data.notes;
   if (data.instagramHandle !== undefined) update.instagramHandle = data.instagramHandle;
   if (data.paymentMethod !== undefined) update.paymentMethod = data.paymentMethod;
+  if (data.gender !== undefined) update.gender = data.gender ?? null;
+  if (data.age !== undefined) update.age = data.age ?? null;
   if (data.platformMetrics !== undefined) update.platformMetrics = data.platformMetrics;
   if (data.socialLinks !== undefined) update.socialLinks = data.socialLinks;
   update.updatedAt = new Date();
@@ -613,6 +619,8 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       instagramHandle: data.instagramHandle ?? null,
       notes: data.notes ?? null,
       paymentMethod: data.paymentMethod ?? null,
+      gender: data.gender ?? null,
+      age: data.age ?? null,
       social: data.social ?? {},
       contact: data.contact ?? {},
       collaborationHistory: data.collaborationHistory ?? [],

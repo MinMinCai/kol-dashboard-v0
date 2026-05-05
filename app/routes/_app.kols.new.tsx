@@ -84,11 +84,12 @@ export async function action({ request }: ActionFunctionArgs) {
   const effectiveAudienceGender = igMetrics?.audienceGender ?? { male: audienceMale, female: audienceFemale };
   const effectiveAudienceAge = igMetrics?.audienceAge ?? audienceAge;
 
+  const igEntry = socials.find((s) => s.platform.toLowerCase() === "instagram");
+  const igHandle = igEntry?.url ? parseHandle(igEntry.url) : undefined;
+
   const payload = {
     displayName,
-    instagramHandle: parseHandle(
-      socials.find((s) => s.platform.toLowerCase() === "instagram")?.url ?? primarySocial.url ?? ""
-    ),
+    instagramHandle: igHandle,
     industry: "待分類",
     tags,
     categories: tags.length > 0 ? tags : ["待分類"],
@@ -122,7 +123,8 @@ export async function action({ request }: ActionFunctionArgs) {
       facebook: socialMap.facebook ?? 0,
     },
     contact: { phone, email, manager: "" },
-    profile: { gender, age },
+    gender: gender as "男" | "女" | "其他",
+    age: Number.isFinite(age) && age > 0 ? age : undefined,
     city: "Taipei",
     notes: [description, internalComments && `internal:${internalComments}`].filter(Boolean).join("\n"),
     status: intent === "draft" ? "draft" : "active",
@@ -133,7 +135,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/kols/${created.id}`);
 }
 
-const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook"] as const;
+const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
 type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 
 type PlatformAudienceState = {
@@ -143,11 +145,10 @@ type PlatformAudienceState = {
   audienceMale: string;
   audienceFemale: string;
   audienceAge: string;
-  avgRating: string;
 };
 
 function emptyPlatformAudience(): PlatformAudienceState {
-  return { engagementRate: "", exposureRate: "", realFollowerRatio: "", audienceMale: "", audienceFemale: "", audienceAge: "", avgRating: "" };
+  return { engagementRate: "", exposureRate: "", realFollowerRatio: "", audienceMale: "", audienceFemale: "", audienceAge: "" };
 }
 
 function PlatformAudienceMetricsSection() {
@@ -157,6 +158,7 @@ function PlatformAudienceMetricsSection() {
     YouTube: emptyPlatformAudience(),
     TikTok: emptyPlatformAudience(),
     Facebook: emptyPlatformAudience(),
+    Twitter: emptyPlatformAudience(),
   });
 
   const updateField = (field: keyof PlatformAudienceState, value: string) => {
@@ -191,10 +193,6 @@ function PlatformAudienceMetricsSection() {
     avgEngagementRate: Object.fromEntries(
       AUDIENCE_PLATFORMS.filter(p => metrics[p].engagementRate)
         .map(p => [p, Number(metrics[p].engagementRate)])
-    ),
-    avgRating: Object.fromEntries(
-      AUDIENCE_PLATFORMS.filter(p => metrics[p].avgRating)
-        .map(p => [p, Number(metrics[p].avgRating)])
     ),
   };
 
@@ -272,16 +270,6 @@ function PlatformAudienceMetricsSection() {
           placeholder="例如：18-24, 25-34"
           value={current.audienceAge}
           onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
-        />
-        <TextInput
-          label="平均評分 (0-5)"
-          type="number"
-          step="0.1"
-          min={0}
-          max={5}
-          placeholder="例如：4.5"
-          value={current.avgRating}
-          onChange={(e) => updateField("avgRating", e.currentTarget.value)}
         />
       </SimpleGrid>
     </Box>
@@ -416,8 +404,7 @@ export default function KolCreatePage() {
                 <Text size="sm" fw={500} mb={4}>KOL 標籤（逗號分隔）</Text>
                 <TextInput
                   name="tagsInput"
-                  defaultValue="母嬰,親子,旅遊"
-                  placeholder="例如：美妝, 旅遊, 科技"
+                  placeholder="例如：母嬰, 親子, 旅遊"
                 />
                 <Text size="xs" c="dimmed" mt={4}>用逗號分隔多個標籤，例如：美妝, 旅遊, 科技</Text>
               </Box>
@@ -434,7 +421,7 @@ export default function KolCreatePage() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }}>
                       <Select
                         label="平台"
-                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter", "LINE"]}
+                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
                         value={item.platform}
                         onChange={(val) => updateSocial(item.id, "platform", val)}
                         size="sm"

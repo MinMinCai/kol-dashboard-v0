@@ -29,7 +29,9 @@ ALTER TABLE kols
   ADD COLUMN IF NOT EXISTS price_trend jsonb DEFAULT '[]',
   ADD COLUMN IF NOT EXISTS performance_stats jsonb,
   ADD COLUMN IF NOT EXISTS platform_metrics jsonb,
-  ADD COLUMN IF NOT EXISTS social_links jsonb;
+  ADD COLUMN IF NOT EXISTS social_links jsonb,
+  ADD COLUMN IF NOT EXISTS gender varchar(10),
+  ADD COLUMN IF NOT EXISTS age integer;
 
 -- ─── 2. 修改 proposals ────────────────────────────────────────
 -- client_id 原本是 NOT NULL，改為可 null

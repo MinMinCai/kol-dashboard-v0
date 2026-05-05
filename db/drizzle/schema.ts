@@ -50,6 +50,8 @@ export const kols = pgTable(
     introduction: text("introduction"),
     instagramHandle: varchar("instagram_handle", { length: 120 }),
     paymentMethod: varchar("payment_method", { length: 10 }),
+    gender: varchar("gender", { length: 10 }),
+    age: integer("age"),
     social: jsonb("social").$type<{ instagram?: number; youtube?: number; tiktok?: number; facebook?: number }>().default({}),
     contact: jsonb("contact").$type<{ phone?: string; email?: string; manager?: string }>().default({}),
     collaborationHistory: jsonb("collaboration_history").$type<any[]>().default([]),
