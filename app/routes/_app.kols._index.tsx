@@ -33,7 +33,7 @@ const FOLLOWER_RANGES = [
   { key: "100000", label: "100K+", min: 100000 },
 ];
 
-type SortKey = "name" | "followers" | "rating" | "collaborations";
+type SortKey = "name" | "followers" | "engagement" | "rating" | "collaborations";
 type SortOrder = "asc" | "desc";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -44,7 +44,14 @@ function getPrimaryTags(kol: Kol): string[] {
 }
 
 function getFollowerBase(kol: Kol): number {
-  return kol.social?.instagram ?? kol.followers ?? 0;
+  const counts = [
+    kol.social?.instagram ?? 0,
+    kol.social?.youtube ?? 0,
+    kol.social?.tiktok ?? 0,
+    kol.social?.facebook ?? 0,
+    kol.followers ?? 0,
+  ];
+  return Math.max(...counts, 0);
 }
 
 function isKolFavorited(kol: Kol): boolean {
@@ -135,6 +142,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   kols.sort((a, b) => {
     if (sortKey === "name") return a.displayName.localeCompare(b.displayName) * m;
     if (sortKey === "followers") return (getFollowerBase(a) - getFollowerBase(b)) * m;
+    if (sortKey === "engagement") return ((a.engagementRate ?? 0) - (b.engagementRate ?? 0)) * m;
     if (sortKey === "rating") return ((a.rating ?? 0) - (b.rating ?? 0)) * m;
     return ((a.collaborations ?? 0) - (b.collaborations ?? 0)) * m;
   });
@@ -755,13 +763,13 @@ export default function KolListPage() {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Photo</Table.Th>
-                  <Table.Th>名稱{sortLabel("name")}</Table.Th>
+                  <Table.Th><a href={sortUrl("name")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>名稱{sortLabel("name")}</a></Table.Th>
                   <Table.Th>社群平台</Table.Th>
-                  <Table.Th>粉絲數{sortLabel("followers")}</Table.Th>
-                  <Table.Th>互動/曝光</Table.Th>
+                  <Table.Th><a href={sortUrl("followers")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>平台最高粉絲數{sortLabel("followers")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("engagement")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>互動/曝光{sortLabel("engagement")}</a></Table.Th>
                   <Table.Th>標籤</Table.Th>
-                  <Table.Th>評分{sortLabel("rating")}</Table.Th>
-                  <Table.Th><a href={sortUrl("collaborations")} style={{ textDecoration: "none", color: "inherit" }}>合作次數{sortLabel("collaborations")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("rating")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>評分{sortLabel("rating")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("collaborations")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>合作次數{sortLabel("collaborations")}</a></Table.Th>
                   <Table.Th>操作</Table.Th>
                 </Table.Tr>
               </Table.Thead>
@@ -803,7 +811,7 @@ export default function KolListPage() {
                           )}
                       </Group>
                     </Table.Td>
-                    <Table.Td>{(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Table.Td>
+                    <Table.Td>{getFollowerBase(kol).toLocaleString()}</Table.Td>
                     <Table.Td>
                       <Text size="xs">{kol.engagementRate ? `${kol.engagementRate.toFixed(1)}%` : "-"}</Text>
                       <Text size="xs" c="dimmed">{kol.exposureRate ? `${kol.exposureRate.toFixed(1)}%` : "-"}</Text>
