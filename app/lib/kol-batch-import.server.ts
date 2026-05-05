@@ -419,12 +419,40 @@ function injectExtras(buffer: Buffer): Buffer {
     },
   ]);
 
-  // dataValidations must appear before pageMargins per ECMA-376.
+  // dataValidations must appear before any later element per the ECMA-376
+  // CT_Worksheet schema order. xlsx CE may emit <ignoredErrors>, which the
+  // schema places after dataValidations — so we insert before the first
+  // candidate found.
   if (validationsXml) {
-    if (xml.includes("<pageMargins")) {
-      xml = xml.replace("<pageMargins", validationsXml + "<pageMargins");
-    } else {
-      xml = xml.replace("</worksheet>", validationsXml + "</worksheet>");
+    const successors = [
+      "<hyperlinks",
+      "<printOptions",
+      "<pageMargins",
+      "<pageSetup",
+      "<headerFooter",
+      "<rowBreaks",
+      "<colBreaks",
+      "<customProperties",
+      "<cellWatches",
+      "<ignoredErrors",
+      "<smartTags",
+      "<drawing",
+      "<legacyDrawing",
+      "<picture",
+      "<oleObjects",
+      "<controls",
+      "<webPublishItems",
+      "<tableParts",
+      "<extLst",
+    ];
+    let insertAt = -1;
+    for (const tag of successors) {
+      const idx = xml.indexOf(tag);
+      if (idx !== -1 && (insertAt === -1 || idx < insertAt)) insertAt = idx;
+    }
+    if (insertAt === -1) insertAt = xml.indexOf("</worksheet>");
+    if (insertAt !== -1) {
+      xml = xml.slice(0, insertAt) + validationsXml + xml.slice(insertAt);
     }
   }
 
