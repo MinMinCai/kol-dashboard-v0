@@ -77,3 +77,22 @@ a {
   background: light-dark(#ffffff, var(--mantine-color-dark-7));
   box-shadow: 0 10px 30px light-dark(rgba(15, 23, 42, 0.14), rgba(0, 0, 0, 0.5));
 }
+
+.template-download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--mantine-color-blue-filled);
+  text-decoration: none;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.template-download-link:hover {
+  background-color: light-dark(var(--mantine-color-blue-light), rgba(34, 139, 230, 0.15));
+  color: light-dark(var(--mantine-color-blue-7), var(--mantine-color-blue-3));
+  text-decoration: underline;
+  transform: translateY(-1px);
+}

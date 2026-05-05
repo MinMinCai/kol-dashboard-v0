@@ -1117,9 +1117,9 @@ export default function KolListPage() {
           <a
             href="/api/kols/batch-import-template"
             download
-            style={{ fontSize: 13, color: "var(--mantine-color-blue-filled)", textDecoration: "none" }}
+            className="template-download-link"
           >
-            下載 Excel 建檔範本
+            📄 下載 Excel 建檔範本
           </a>
           <button
             type="button"

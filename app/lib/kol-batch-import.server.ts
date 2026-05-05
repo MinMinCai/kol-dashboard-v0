@@ -1,7 +1,19 @@
 import * as XLSX from "xlsx";
+import AdmZip from "adm-zip";
 import { createKol } from "./mock-api.server";
 
+// ─── dropdown options (mirrors the new-KOL form) ─────────────────────────────
+
+const GENDER_OPTIONS = ["男", "女", "其他"] as const;
+const PAYMENT_METHOD_OPTIONS = ["勞報", "發票"] as const;
+const PLATFORM_OPTIONS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
+const AUDIENCE_AGE_OPTIONS = ["0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
+
+// ─── columns ─────────────────────────────────────────────────────────────────
+// Reorganized into 3 logical groups so the section header row above can label them.
+
 export const BATCH_IMPORT_COLUMNS = [
+  // 基本資料 (cols A-G, index 0-6)
   "KOL名稱",
   "性別",
   "年齡",
@@ -9,6 +21,7 @@ export const BATCH_IMPORT_COLUMNS = [
   "Email",
   "請款方式",
   "標籤",
+  // 社群平台 (cols H-O, index 7-14)
   "Instagram URL",
   "Instagram 粉絲數",
   "YouTube URL",
@@ -17,9 +30,26 @@ export const BATCH_IMPORT_COLUMNS = [
   "TikTok 粉絲數",
   "Facebook URL",
   "Facebook 粉絲數",
+  // 受眾與其他資訊 (cols P-T, index 15-19)
+  "主要受眾年齡層",
+  "受眾性別比 男(%)",
+  "受眾性別比 女(%)",
   "人選介紹",
   "備註",
 ] as const;
+
+const SECTION_HEADERS: Array<{ label: string; startCol: number; endCol: number }> = [
+  { label: "基本資料", startCol: 0, endCol: 6 },
+  { label: "社群平台 (各平台填寫網址與粉絲數，未經營者留空)", startCol: 7, endCol: 14 },
+  { label: "受眾與其他資訊", startCol: 15, endCol: 19 },
+];
+
+// Indexes into BATCH_IMPORT_COLUMNS for fields backed by Excel dropdowns
+const COL_INDEX = {
+  gender: BATCH_IMPORT_COLUMNS.indexOf("性別"),
+  paymentMethod: BATCH_IMPORT_COLUMNS.indexOf("請款方式"),
+  audienceAge: BATCH_IMPORT_COLUMNS.indexOf("主要受眾年齡層"),
+} as const;
 
 const EXAMPLE_ROWS: Record<string, string | number>[] = [
   {
@@ -38,6 +68,9 @@ const EXAMPLE_ROWS: Record<string, string | number>[] = [
     "TikTok 粉絲數": 54000,
     "Facebook URL": "",
     "Facebook 粉絲數": 0,
+    "主要受眾年齡層": "18-24,25-34",
+    "受眾性別比 男(%)": 30,
+    "受眾性別比 女(%)": 70,
     "人選介紹": "美妝保養領域代表 KOL，擅長產品評測與教學。",
     "備註": "報價偏高，但成效穩定。",
   },
@@ -57,10 +90,15 @@ const EXAMPLE_ROWS: Record<string, string | number>[] = [
     "TikTok 粉絲數": 0,
     "Facebook URL": "https://www.facebook.com/marcfoodlab",
     "Facebook 粉絲數": 35000,
+    "主要受眾年齡層": "25-34,35-44",
+    "受眾性別比 男(%)": 55,
+    "受眾性別比 女(%)": 45,
     "人選介紹": "美食頻道主，擅長家常料理與餐廳開箱。",
     "備註": "",
   },
 ];
+
+// ─── parser helpers ──────────────────────────────────────────────────────────
 
 function parseHandle(url: string): string {
   const raw = url.trim();
@@ -118,6 +156,19 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
   const introduction = String(row["人選介紹"] ?? "").trim();
   const notes = String(row["備註"] ?? "").trim();
 
+  // Audience metrics — accept the new columns; fall back to undefined if blank.
+  const audienceAgeRaw = String(row["主要受眾年齡層"] ?? "").trim();
+  const audienceAge = audienceAgeRaw || undefined;
+
+  const audienceMaleNum = toNumber(row["受眾性別比 男(%)"]);
+  const audienceFemaleNum = toNumber(row["受眾性別比 女(%)"]);
+  const hasAudienceGender =
+    String(row["受眾性別比 男(%)"] ?? "").trim() !== "" ||
+    String(row["受眾性別比 女(%)"] ?? "").trim() !== "";
+  const audienceGender = hasAudienceGender
+    ? { male: audienceMaleNum, female: audienceFemaleNum }
+    : undefined;
+
   const primaryPlatform = platforms[0] ?? "Instagram";
   const primaryFollowers =
     primaryPlatform === "Instagram" ? igFollowers
@@ -134,6 +185,8 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
     platform: primaryPlatform,
     followers: primaryFollowers,
     engagementRate: 0,
+    audienceGender,
+    audienceAge,
     introduction: introduction || undefined,
     platformMetrics: {
       platforms,
@@ -173,19 +226,41 @@ export type BatchImportResult = {
 export async function processBatchImportFile(file: File): Promise<BatchImportResult> {
   const buffer = Buffer.from(await file.arrayBuffer());
   const wb = XLSX.read(buffer, { type: "buffer" });
-  const firstSheetName = wb.SheetNames[0];
-  if (!firstSheetName) {
+  const sheetName =
+    wb.SheetNames.find((n) => n.includes("KOL")) ?? wb.SheetNames[0];
+  if (!sheetName) {
     return { total: 0, success: 0, failed: 0, errors: ["Excel 檔案內沒有工作表"] };
   }
-  const sheet = wb.Sheets[firstSheetName];
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
+  const sheet = wb.Sheets[sheetName];
+
+  // The new template has a section-header row above the column-header row.
+  // We detect that by checking whether row 1 contains the column-header sentinel "KOL名稱".
+  // If it does, headers are at row 1 (legacy template). Otherwise headers are at row 2.
+  const aoa: unknown[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+  const headerRowIdx = aoa.findIndex(
+    (r) => Array.isArray(r) && r.some((c) => String(c).trim() === "KOL名稱"),
+  );
+  if (headerRowIdx < 0) {
+    return { total: 0, success: 0, failed: 0, errors: ["範本格式錯誤：找不到「KOL名稱」欄位"] };
+  }
+
+  const headers = (aoa[headerRowIdx] as unknown[]).map((h) => String(h ?? "").trim());
+  const dataRows = aoa.slice(headerRowIdx + 1).filter((r) =>
+    Array.isArray(r) && r.some((c) => String(c ?? "").trim() !== ""),
+  );
 
   let success = 0;
   let failed = 0;
   const errors: string[] = [];
 
-  for (const [idx, row] of rows.entries()) {
-    const lineNumber = idx + 2;
+  for (const [idx, rawRow] of dataRows.entries()) {
+    // Excel line number = section header rows + column header row + data offset
+    const lineNumber = headerRowIdx + 2 + idx;
+    const row: Record<string, unknown> = {};
+    headers.forEach((h, i) => {
+      if (h) row[h] = (rawRow as unknown[])[i] ?? "";
+    });
+
     try {
       const payload = buildPayloadFromRow(row);
       if (!payload.displayName) {
@@ -193,7 +268,6 @@ export async function processBatchImportFile(file: File): Promise<BatchImportRes
         errors.push(`第 ${lineNumber} 列：KOL名稱為必填，已略過`);
         continue;
       }
-      // createKol expects Omit<Kol, "id">; we cast since payload object literal matches required shape
       await createKol(payload as Parameters<typeof createKol>[0]);
       success++;
     } catch (e) {
@@ -203,18 +277,166 @@ export async function processBatchImportFile(file: File): Promise<BatchImportRes
     }
   }
 
-  return { total: rows.length, success, failed, errors };
+  return { total: dataRows.length, success, failed, errors };
+}
+
+// ─── template builder ────────────────────────────────────────────────────────
+// xlsx CE doesn't write data validations or freeze panes; we post-process the
+// generated file with adm-zip to inject these into the worksheet XML.
+
+function buildDataSheet(): XLSX.WorkSheet {
+  const headerCount = BATCH_IMPORT_COLUMNS.length;
+
+  // Row 1: section banners — values only at the start of each merge range.
+  const sectionRow: string[] = new Array(headerCount).fill("");
+  for (const s of SECTION_HEADERS) sectionRow[s.startCol] = s.label;
+
+  // Row 2: column headers.
+  const headerRow = [...BATCH_IMPORT_COLUMNS] as string[];
+
+  // Rows 3+: example rows mapped into the column order.
+  const exampleArr = EXAMPLE_ROWS.map((row) =>
+    BATCH_IMPORT_COLUMNS.map((col) => row[col] ?? ""),
+  );
+
+  const ws = XLSX.utils.aoa_to_sheet([sectionRow, headerRow, ...exampleArr]);
+
+  // Merge the section banners across their column ranges.
+  ws["!merges"] = SECTION_HEADERS.map((s) => ({
+    s: { r: 0, c: s.startCol },
+    e: { r: 0, c: s.endCol },
+  }));
+
+  // Sensible column widths so headers fit and content isn't cramped.
+  ws["!cols"] = BATCH_IMPORT_COLUMNS.map((header) => {
+    if (header.includes("URL")) return { wch: 32 };
+    if (header === "人選介紹" || header === "備註") return { wch: 28 };
+    if (header === "標籤" || header === "主要受眾年齡層") return { wch: 18 };
+    if (header === "Email") return { wch: 22 };
+    return { wch: Math.max(12, header.length + 4) };
+  });
+
+  return ws;
+}
+
+function buildInstructionsSheet(): XLSX.WorkSheet {
+  const rows: (string | number)[][] = [
+    ["KOL 批量匯入範本 — 填寫說明"],
+    [""],
+    ["1. 資料填寫位置：請於「KOL 資料」分頁，從第 3 列開始填寫，每位 KOL 一列。前 2 列為範例，可保留參考或直接覆寫。"],
+    ["2. 必填欄位：「KOL名稱」為必填，未填寫的列會被略過。"],
+    ["3. 下拉選單：「性別」、「請款方式」、「主要受眾年齡層」欄位已內建下拉清單，建議直接從清單選取。"],
+    ["4. 多選欄位：「主要受眾年齡層」可填寫多個區間，以半形逗號分隔（例：18-24,25-34）。"],
+    ["5. 標籤格式：可使用半形逗號、全形逗號或頓號分隔多個標籤（例：美妝, 保養、旅遊）。"],
+    ["6. 社群平台：未經營的平台可留空，URL 與粉絲數成對填寫。"],
+    [""],
+    ["欄位", "可選值 / 格式"],
+    ["性別", GENDER_OPTIONS.join(" / ")],
+    ["請款方式", PAYMENT_METHOD_OPTIONS.join(" / ")],
+    ["平台 (社群平台欄組)", PLATFORM_OPTIONS.join(" / ") + "（範本內建 IG / YT / TT / FB 四欄組）"],
+    ["主要受眾年齡層", AUDIENCE_AGE_OPTIONS.join(" / ") + "（可多選，逗號分隔）"],
+    ["年齡", "0–120 之間的整數"],
+    ["受眾性別比 男(%) / 女(%)", "0–100 的整數，建議男+女=100"],
+    ["Instagram / YouTube / TikTok / Facebook URL", "完整網址，例：https://www.instagram.com/username"],
+    ["粉絲數 / 訂閱數", "正整數，未經營者填 0 或留空"],
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{ wch: 32 }, { wch: 60 }];
+  ws["!merges"] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
+    ...rows.slice(1, 9).map((_, i) => ({
+      s: { r: i + 1, c: 0 },
+      e: { r: i + 1, c: 1 },
+    })),
+  ];
+  return ws;
+}
+
+function buildFreezePaneXml(freezeRows: number): string {
+  const topLeft = `A${freezeRows + 1}`;
+  return (
+    `<sheetViews><sheetView tabSelected="1" workbookViewId="0">` +
+    `<pane ySplit="${freezeRows}" topLeftCell="${topLeft}" activePane="bottomLeft" state="frozen"/>` +
+    `<selection pane="bottomLeft" activeCell="${topLeft}" sqref="${topLeft}"/>` +
+    `</sheetView></sheetViews>`
+  );
+}
+
+function buildDataValidationsXml(
+  validations: Array<{ sqref: string; allowed: readonly string[] }>,
+): string {
+  if (validations.length === 0) return "";
+  const inner = validations
+    .map((v) => {
+      // Escape XML special chars in option list (defensive — values are ASCII/CJK).
+      const list = v.allowed
+        .map((x) =>
+          x
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;"),
+        )
+        .join(",");
+      return (
+        `<dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" ` +
+        `errorTitle="無效的選項" error="請從下拉選單中選擇有效的值。" sqref="${v.sqref}">` +
+        `<formula1>"${list}"</formula1>` +
+        `</dataValidation>`
+      );
+    })
+    .join("");
+  return `<dataValidations count="${validations.length}">${inner}</dataValidations>`;
+}
+
+function injectExtras(buffer: Buffer): Buffer {
+  const zip = new AdmZip(buffer);
+  const entryName = "xl/worksheets/sheet1.xml";
+  const entry = zip.getEntry(entryName);
+  if (!entry) return buffer;
+
+  let xml = entry.getData().toString("utf8");
+
+  // Replace the default sheetViews with one that has frozen rows 1-2.
+  const freezeXml = buildFreezePaneXml(2);
+  xml = xml.replace(/<sheetViews>[\s\S]*?<\/sheetViews>/, freezeXml);
+
+  // Build dropdown validations. Data starts at row 3; cap at row 1000.
+  const colLetter = (i: number) => XLSX.utils.encode_col(i);
+  const validationsXml = buildDataValidationsXml([
+    {
+      sqref: `${colLetter(COL_INDEX.gender)}3:${colLetter(COL_INDEX.gender)}1000`,
+      allowed: GENDER_OPTIONS,
+    },
+    {
+      sqref: `${colLetter(COL_INDEX.paymentMethod)}3:${colLetter(COL_INDEX.paymentMethod)}1000`,
+      allowed: PAYMENT_METHOD_OPTIONS,
+    },
+    {
+      sqref: `${colLetter(COL_INDEX.audienceAge)}3:${colLetter(COL_INDEX.audienceAge)}1000`,
+      allowed: AUDIENCE_AGE_OPTIONS,
+    },
+  ]);
+
+  // dataValidations must appear before pageMargins per ECMA-376.
+  if (validationsXml) {
+    if (xml.includes("<pageMargins")) {
+      xml = xml.replace("<pageMargins", validationsXml + "<pageMargins");
+    } else {
+      xml = xml.replace("</worksheet>", validationsXml + "</worksheet>");
+    }
+  }
+
+  zip.updateFile(entryName, Buffer.from(xml, "utf8"));
+  return zip.toBuffer();
 }
 
 export function buildTemplateBuffer(): Buffer {
-  const ws = XLSX.utils.json_to_sheet(EXAMPLE_ROWS, {
-    header: [...BATCH_IMPORT_COLUMNS],
-  });
-  // Set reasonable column widths
-  ws["!cols"] = BATCH_IMPORT_COLUMNS.map((header) => ({
-    wch: header.length >= 8 ? header.length + 4 : 14,
-  }));
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "KOL");
-  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+  XLSX.utils.book_append_sheet(wb, buildDataSheet(), "KOL 資料");
+  XLSX.utils.book_append_sheet(wb, buildInstructionsSheet(), "填寫說明");
+
+  const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+  return injectExtras(buffer);
 }
