@@ -5,16 +5,20 @@ import {
   Button,
   Card,
   Checkbox,
+  Divider,
   Group,
+  Menu,
   SimpleGrid,
   Stack,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
+import { buildSocialProfileUrl } from "~/lib/social-links";
 import {
   clearKolFavorites,
   createFavoriteFolder,
@@ -181,18 +185,7 @@ export default function FavoritesPage() {
 
   return (
     <Stack gap="md">
-      <Group justify="space-between" align="end">
-        <Title order={2}>我的收藏 ({rows.length})</Title>
-        <Group gap="xs">
-          <button
-            type="button"
-            style={{ ...inputStyle, cursor: "pointer", fontWeight: 500 }}
-            onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement | null; d?.showModal(); }}
-          >
-            + 新增資料夾
-          </button>
-        </Group>
-      </Group>
+      <Title order={2}>我的收藏 ({rows.length})</Title>
 
       {currentFolderDetail && (
         <Card withBorder>
@@ -242,24 +235,68 @@ export default function FavoritesPage() {
       </form>
 
       <Group>
-        {allFolders.map((f) => (
-          <a
-            key={f}
-            href={`/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`}
-            style={{
-              padding: "6px 14px",
-              borderRadius: 4,
-              border: "1px solid var(--mantine-color-default-border)",
-              textDecoration: "none",
-              background: folder === f ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
-              color: folder === f ? "#fff" : "var(--mantine-color-text)",
-              fontWeight: folder === f ? 600 : 400,
-              fontSize: 14,
-            }}
-          >
-            {f} ({folderCounts[f] ?? 0})
-          </a>
-        ))}
+        {(() => {
+          const filterButtonStyle = (active: boolean): React.CSSProperties => ({
+            padding: "6px 14px",
+            borderRadius: 4,
+            border: "1px solid var(--mantine-color-default-border)",
+            textDecoration: "none",
+            background: active ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
+            color: active ? "#fff" : "var(--mantine-color-text)",
+            fontWeight: active ? 600 : 400,
+            fontSize: 14,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+          });
+          const myFolderActive = folder !== "全部";
+          const buildHref = (f: string) =>
+            `/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`;
+          return (
+            <>
+              <a href={buildHref("全部")} style={filterButtonStyle(folder === "全部")}>
+                全部 ({folderCounts["全部"] ?? 0})
+              </a>
+              <Menu shadow="md" width={220} position="bottom-start">
+                <Menu.Target>
+                  <button type="button" style={filterButtonStyle(myFolderActive)}>
+                    {myFolderActive
+                      ? `我的資料夾：${folder} (${folderCounts[folder] ?? 0})`
+                      : "我的資料夾"}
+                    <span aria-hidden style={{ marginLeft: 4 }}>▾</span>
+                  </button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {folderDetails.length === 0 ? (
+                    <Menu.Item disabled>尚未建立資料夾</Menu.Item>
+                  ) : (
+                    folderDetails.map((item) => (
+                      <Menu.Item
+                        key={item.name}
+                        component="a"
+                        href={buildHref(item.name)}
+                        rightSection={<Text size="xs" c="dimmed">{folderCounts[item.name] ?? 0}</Text>}
+                      >
+                        {item.name}
+                      </Menu.Item>
+                    ))
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+              <button
+                type="button"
+                style={filterButtonStyle(false)}
+                onClick={() => {
+                  const d = document.getElementById("add-folder-dialog") as HTMLDialogElement | null;
+                  d?.showModal();
+                }}
+              >
+                + 新增資料夾
+              </button>
+            </>
+          );
+        })()}
       </Group>
 
       {rows.length > 0 && (
@@ -285,7 +322,18 @@ export default function FavoritesPage() {
         </Card>
       ) : (
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={24}>
-          {rows.map((kol) => (
+          {rows.map((kol) => {
+            const instagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
+            const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
+            const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
+            const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
+            const socialRows: { icon: React.ReactNode; label: string; count: number; url: string | null }[] = [
+              { icon: <IconBrandInstagram size={16} />, label: "Instagram", count: kol.social?.instagram ?? 0, url: instagramUrl },
+              { icon: <IconBrandYoutube size={16} />, label: "YouTube", count: kol.social?.youtube ?? 0, url: youtubeUrl },
+              { icon: <IconBrandTiktok size={16} />, label: "TikTok", count: kol.social?.tiktok ?? 0, url: tiktokUrl },
+              { icon: <IconBrandFacebook size={16} />, label: "Facebook", count: kol.social?.facebook ?? 0, url: facebookUrl },
+            ].filter((row) => row.count > 0 || row.url);
+            return (
             <Card
               key={kol.id}
               withBorder
@@ -299,13 +347,35 @@ export default function FavoritesPage() {
               <Stack align="center" gap={6} mt="xs">
                 <Avatar src={kol.avatarUrl} size={72} radius={999} />
                 <Text fw={600}>{kol.displayName}</Text>
-                <Text size="sm" c="dimmed">@{kol.instagramHandle ?? "-"}</Text>
+                <Text size="sm" c="dimmed">
+                  @{kol.instagramHandle ?? kol.displayName.toLowerCase().replaceAll(" ", "")}
+                </Text>
               </Stack>
 
-              <Stack mt="sm" gap={4}>
-                <Text size="sm">IG {(kol.social?.instagram ?? kol.followers ?? 0).toLocaleString()}</Text>
-                <Text size="sm">YT {(kol.social?.youtube ?? 0).toLocaleString()}</Text>
-                <Text size="sm">TT {(kol.social?.tiktok ?? 0).toLocaleString()}</Text>
+              <Divider my="sm" />
+
+              <Stack gap={4}>
+                {socialRows.map((row) =>
+                  row.url ? (
+                    <a
+                      key={row.label}
+                      href={row.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="social-link"
+                      title={`前往 ${row.label}`}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      {row.icon}
+                      <Text size="sm" span>{row.count.toLocaleString()}</Text>
+                    </a>
+                  ) : (
+                    <Group key={row.label} gap={4}>
+                      {row.icon}
+                      <Text size="sm">{row.count.toLocaleString()}</Text>
+                    </Group>
+                  )
+                )}
               </Stack>
 
               <Group gap={6} mt="sm">
@@ -390,7 +460,8 @@ export default function FavoritesPage() {
                 </Group>
               </Group>
             </Card>
-          ))}
+            );
+          })}
         </SimpleGrid>
       )}
 
@@ -474,7 +545,7 @@ export default function FavoritesPage() {
               folderDetails.map((item) => (
                 <Checkbox
                   key={item.name}
-                  label={`${item.name} (${item.kolCount} 位)`}
+                  label={item.name}
                   checked={folderSelection.includes(item.name)}
                   onChange={(event) => {
                     if (event.currentTarget.checked) {
