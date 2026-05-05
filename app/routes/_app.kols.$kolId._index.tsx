@@ -594,15 +594,15 @@ export default function KolDetailPage() {
   const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
   const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
   const socialRows: { icon: React.ReactNode; label: string; detail: string; url: string | null }[] = [
-    { icon: <IconBrandInstagram size={16} />, label: "Instagram", detail: `@${kol.instagramHandle ?? "-"} · ${formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲`, url: primaryInstagramUrl },
+    { icon: <IconBrandInstagram size={16} />, label: "Instagram", detail: `${formatNumber(kol.social?.instagram ?? kol.followers)} 粉絲`, url: primaryInstagramUrl },
     { icon: <IconBrandYoutube size={16} />, label: "YouTube", detail: `${formatNumber(kol.social?.youtube ?? kol.youtubeSubscribers)} 訂閱`, url: youtubeUrl },
     { icon: <IconBrandTiktok size={16} />, label: "TikTok", detail: `${formatNumber(kol.social?.tiktok)} 粉絲`, url: tiktokUrl },
     { icon: <IconBrandFacebook size={16} />, label: "Facebook", detail: `${formatNumber(kol.social?.facebook)} 粉絲`, url: facebookUrl },
   ].filter((row) => {
-    if (row.label === "Instagram") return (kol.social?.instagram ?? kol.followers ?? 0) > 0 || kol.instagramHandle;
-    if (row.label === "YouTube") return (kol.social?.youtube ?? kol.youtubeSubscribers ?? 0) > 0;
-    if (row.label === "TikTok") return (kol.social?.tiktok ?? 0) > 0;
-    if (row.label === "Facebook") return (kol.social?.facebook ?? 0) > 0 || facebookUrl;
+    if (row.label === "Instagram") return (kol.social?.instagram ?? kol.followers ?? 0) > 0 || Boolean(primaryInstagramUrl);
+    if (row.label === "YouTube") return (kol.social?.youtube ?? kol.youtubeSubscribers ?? 0) > 0 || Boolean(youtubeUrl);
+    if (row.label === "TikTok") return (kol.social?.tiktok ?? 0) > 0 || Boolean(tiktokUrl);
+    if (row.label === "Facebook") return (kol.social?.facebook ?? 0) > 0 || Boolean(facebookUrl);
     return false;
   });
   const activePlatformMetrics = kol.platformMetrics?.audienceMetrics?.[selectedPlatform];
@@ -670,27 +670,25 @@ export default function KolDetailPage() {
                 </Group>
               </Stack>
             </Group>
-            <Group mt="md">
-              <button
+            <Group mt="md" gap="xs">
+              <Button
                 type="button"
-                style={{
-                  padding: "6px 14px",
-                  borderRadius: 4,
-                  border: "1px solid var(--mantine-color-default-border)",
-                  background: "transparent",
-                  cursor: "pointer",
-                  fontSize: 14,
-                  color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-text)",
-                }}
+                variant="default"
+                size="xs"
                 onClick={() => {
                   setFolderSelection(getFavoriteSelection(kol));
                   setFolderPickerOpen(true);
                   const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement;
                   d?.showModal();
                 }}
+                styles={{
+                  root: {
+                    color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : undefined,
+                  },
+                }}
               >
                 {isKolFavorited(kol) ? "♥" : "♡"} {favoriteActionLabel}
-              </button>
+              </Button>
               <Button
                 type="button"
                 variant="default"
@@ -708,7 +706,7 @@ export default function KolDetailPage() {
           {/* Introduction section */}
           {kol.introduction && (
             <Card withBorder mt="md">
-              <Title order={4} mb="sm">人選介紹 (用於提案撰寫)</Title>
+              <Title order={4} mb="sm">人選介紹</Title>
               <Text size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                 {kol.introduction}
               </Text>
@@ -756,7 +754,7 @@ export default function KolDetailPage() {
             <div style={{ borderBottom: "1px solid var(--mantine-color-default-border)", marginBottom: 16 }}>
               <Link to={`/kols/${kol.id}?tab=projects&limit=${limit}`} style={tabStyle("projects")}>合作案件</Link>
               <Link to={`/kols/${kol.id}?tab=price&limit=${limit}`} style={tabStyle("price")}>價格趨勢</Link>
-              <Link to={`/kols/${kol.id}?tab=performance&limit=${limit}`} style={tabStyle("performance")}>成效統計</Link>
+              <Link to={`/kols/${kol.id}?tab=performance&limit=${limit}`} style={tabStyle("performance")}>受眾數據與指標</Link>
             </div>
 
             {/* Projects tab */}

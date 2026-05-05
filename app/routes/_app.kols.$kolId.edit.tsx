@@ -6,6 +6,7 @@ import {
   Card,
   Divider,
   Group,
+  MultiSelect,
   Radio,
   Select,
   SimpleGrid,
@@ -17,7 +18,7 @@ import {
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getKol, updateKol, type Kol, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
@@ -152,6 +153,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
 type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 
+const AUDIENCE_AGE_OPTIONS = ["0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
+
 type PlatformAudienceState = {
   engagementRate: string;
   exposureRate: string;
@@ -183,11 +186,23 @@ function initPlatformMetrics(kol: Kol): Record<AudiencePlatform, PlatformAudienc
   ) as Record<AudiencePlatform, PlatformAudienceState>;
 }
 
-function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
+function PlatformAudienceMetricsEdit({ kol, enabledPlatforms }: { kol: Kol; enabledPlatforms: string[] }) {
+  const enabledSet = new Set(enabledPlatforms.filter((p): p is AudiencePlatform =>
+    (AUDIENCE_PLATFORMS as readonly string[]).includes(p)
+  ) as AudiencePlatform[]);
   const [activePlatform, setActivePlatform] = useState<AudiencePlatform>("Instagram");
   const [metrics, setMetrics] = useState<Record<AudiencePlatform, PlatformAudienceState>>(
     () => initPlatformMetrics(kol)
   );
+
+  useEffect(() => {
+    if (enabledSet.size === 0) return;
+    if (!enabledSet.has(activePlatform)) {
+      const firstEnabled = AUDIENCE_PLATFORMS.find((p) => enabledSet.has(p));
+      if (firstEnabled) setActivePlatform(firstEnabled);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledPlatforms.join(",")]);
 
   const updateField = (field: keyof PlatformAudienceState, value: string) => {
     setMetrics((prev) => {
@@ -226,28 +241,45 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
 
   const current = metrics[activePlatform];
 
-  const tabStyle = (platform: AudiencePlatform): React.CSSProperties => ({
-    padding: "6px 14px",
-    borderRadius: 6,
-    border: "1px solid var(--mantine-color-default-border)",
-    background: activePlatform === platform ? "var(--mantine-color-blue-filled)" : "transparent",
-    color: activePlatform === platform ? "#fff" : "var(--mantine-color-text)",
-    cursor: "pointer",
-    fontSize: 13,
-    fontWeight: activePlatform === platform ? 600 : 400,
-    marginRight: 6,
-  });
+  const isPlatformEnabled = (platform: AudiencePlatform) =>
+    enabledSet.size === 0 || enabledSet.has(platform);
+
+  const tabStyle = (platform: AudiencePlatform): React.CSSProperties => {
+    const enabled = isPlatformEnabled(platform);
+    const active = activePlatform === platform && enabled;
+    return {
+      padding: "6px 14px",
+      borderRadius: 6,
+      border: "1px solid var(--mantine-color-default-border)",
+      background: active ? "var(--mantine-color-blue-filled)" : "transparent",
+      color: active ? "#fff" : enabled ? "var(--mantine-color-text)" : "var(--mantine-color-gray-5)",
+      cursor: enabled ? "pointer" : "not-allowed",
+      opacity: enabled ? 1 : 0.55,
+      fontSize: 13,
+      fontWeight: active ? 600 : 400,
+      marginRight: 6,
+    };
+  };
 
   return (
     <Box>
       <Title order={3} mb="sm">受眾數據與指標</Title>
-      <Text size="sm" c="dimmed" mb="md">各社群平台的受眾指標可分開設定</Text>
+      <Text size="sm" c="dimmed" mb="md">各社群平台的受眾指標可分開設定（僅可編輯已新增於上方「社群平台」的平台）</Text>
       <Group mb="md" gap={0}>
-        {AUDIENCE_PLATFORMS.map((p) => (
-          <button key={p} type="button" style={tabStyle(p)} onClick={() => setActivePlatform(p)}>
-            {p}
-          </button>
-        ))}
+        {AUDIENCE_PLATFORMS.map((p) => {
+          const enabled = isPlatformEnabled(p);
+          return (
+            <button
+              key={p}
+              type="button"
+              style={tabStyle(p)}
+              disabled={!enabled}
+              onClick={() => enabled && setActivePlatform(p)}
+            >
+              {p}
+            </button>
+          );
+        })}
       </Group>
       <input type="hidden" name="platformMetricsJson" value={JSON.stringify(serialized)} />
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
@@ -293,11 +325,13 @@ function PlatformAudienceMetricsEdit({ kol }: { kol: Kol }) {
             onChange={(e) => updateField("audienceFemale", e.currentTarget.value)}
           />
         </Box>
-        <TextInput
+        <MultiSelect
           label="主要受眾年齡層"
-          placeholder="例如：18-24, 25-34"
-          value={current.audienceAge}
-          onChange={(e) => updateField("audienceAge", e.currentTarget.value)}
+          placeholder="可複選年齡層"
+          data={[...AUDIENCE_AGE_OPTIONS]}
+          value={current.audienceAge ? current.audienceAge.split(",").map((s) => s.trim()).filter(Boolean) : []}
+          onChange={(values) => updateField("audienceAge", values.join(","))}
+          clearable
         />
       </SimpleGrid>
     </Box>
@@ -455,7 +489,7 @@ export default function KolEditPage() {
             <Divider />
 
             <Box>
-              <Title order={3} mb="md">經營的社群平台</Title>
+              <Title order={3} mb="md">社群平台</Title>
               <div id="social-rows">
                 {socials.map((item, idx) => (
                   <div key={item.id} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }}>
@@ -517,7 +551,10 @@ export default function KolEditPage() {
 
             <Divider />
 
-            <PlatformAudienceMetricsEdit kol={kol} />
+            <PlatformAudienceMetricsEdit
+              kol={kol}
+              enabledPlatforms={socials.map((s) => s.platform).filter(Boolean)}
+            />
 
             <Box>
               <Title order={3} mb="md">成效指標 (自動計算)</Title>

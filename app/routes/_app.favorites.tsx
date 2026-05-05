@@ -337,6 +337,7 @@ export default function FavoritesPage() {
             <Card
               key={kol.id}
               withBorder
+              className="kol-card"
               style={{ cursor: "pointer", outline: selectedIds.includes(kol.id) ? "2px solid var(--mantine-color-blue-filled)" : undefined }}
               onClick={() => navigate(`/kols/${kol.id}`)}
             >
