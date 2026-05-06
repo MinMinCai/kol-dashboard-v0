@@ -21,8 +21,8 @@ import {
   Title,
   Checkbox,
 } from "@mantine/core";
-import { useMantineColorScheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import styles from "./_app.proposals.$proposalId.module.css";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -191,9 +191,6 @@ export default function ProposalDetailPage() {
   const navigation = useNavigation();
   const submit = useSubmit();
   const statusFetcher = useFetcher<{ success?: boolean }>();
-  const { colorScheme } = useMantineColorScheme();
-  const [domColorScheme, setDomColorScheme] = useState<"light" | "dark" | null>(null);
-  const isDark = (domColorScheme ?? colorScheme) === "dark";
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
@@ -274,31 +271,6 @@ export default function ProposalDetailPage() {
     accepted: "已接受",
     rejected: "已拒絕",
   };
-
-  useEffect(() => {
-    const html = document.documentElement;
-    const readScheme = () => {
-      const scheme = html.getAttribute("data-mantine-color-scheme");
-      setDomColorScheme(scheme === "dark" ? "dark" : "light");
-    };
-    readScheme();
-    const observer = new MutationObserver(readScheme);
-    observer.observe(html, { attributes: true, attributeFilter: ["data-mantine-color-scheme"] });
-    return () => observer.disconnect();
-  }, []);
-
-  const aiSearchCardStyle = isDark
-    ? {
-        background: "linear-gradient(135deg, rgba(16, 24, 40, 0.98) 0%, rgba(14, 20, 34, 0.98) 100%)",
-        border: "1px solid rgba(51, 154, 240, 0.28)",
-      }
-    : {
-        background: "linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)",
-        border: "1px solid #cce3ff",
-      };
-
-  const aiAvatarBg = isDark ? "rgba(148, 163, 184, 0.18)" : "#eee";
-  const aiReasonBg = isDark ? "rgba(51, 154, 240, 0.18)" : "rgba(51, 154, 240, 0.1)";
 
   const AI_ANALYSIS_STEPS = [
     { label: "解析需求關鍵字", icon: "🔍" },
@@ -475,7 +447,7 @@ export default function ProposalDetailPage() {
     <Stack gap="lg">
       {/* ── Real-time update notifications ── */}
       {updateNotices.length > 0 && (
-        <Card withBorder p="xs" style={{ borderColor: "var(--mantine-color-blue-4)", background: "var(--mantine-color-blue-0)" }}>
+        <Card withBorder p="xs" className={styles.notificationCard}>
           <Group gap="xs" mb={4}>
             <IconBell size={16} color="var(--mantine-color-blue-6)" />
             <Text size="sm" fw={600} c="blue.7">有同事更新了此提案</Text>
@@ -491,7 +463,7 @@ export default function ProposalDetailPage() {
         </Card>
       )}
       <Group justify="space-between" align="flex-start">
-        <Group align="center" gap="md" style={{ flex: 1 }}>
+        <Group align="center" gap="md" flex={1}>
           <ActionIcon 
             variant="subtle" 
             color="gray" 
@@ -501,7 +473,7 @@ export default function ProposalDetailPage() {
           >
             <IconArrowLeft size={24} />
           </ActionIcon>
-          <Stack gap="xs" style={{ flex: 1 }}>
+          <Stack gap="xs" flex={1}>
             {isEditing ? (
             <Stack gap="xs">
               <TextInput
@@ -608,11 +580,11 @@ export default function ProposalDetailPage() {
 
       {/* AI Search Section - Only visible in Edit Mode */}
       {isEditing && (
-        <Card withBorder padding="lg" radius="md" style={aiSearchCardStyle}>
+        <Card withBorder padding="lg" radius="md" className={styles.aiSearchCard}>
         <Stack gap="xs">
           <Group gap={8}>
-            <Text size="lg" fw={700} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 20 }}>🤖</span> AI KOL 智能搜尋
+            <Text size="lg" fw={700} className={styles.aiHeader}>
+              <span className={styles.aiHeaderEmoji}>🤖</span> AI KOL 智能搜尋
             </Text>
             <Badge variant="dot" color="blue">Beta</Badge>
           </Group>
@@ -621,7 +593,7 @@ export default function ProposalDetailPage() {
             <TextInput
               id="ai-search-input"
               placeholder="請輸入搜尋指令..."
-              style={{ flex: 1 }}
+              flex={1}
               value={aiQuery}
               onChange={(e) => setAiQuery(e.currentTarget.value)}
               onKeyDown={(e) => {
@@ -723,10 +695,10 @@ export default function ProposalDetailPage() {
           ) : (
             <Stack gap="md">
               {sortedCandidates.map((c) => (
-                <Card key={c.id} withBorder padding={0} radius="md" style={{ overflow: "hidden" }}>
+                <Card key={c.id} withBorder padding={0} radius="md" className={styles.candidateCard}>
                   {isEditing && (
                     <>
-                      <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
+                      <form id={`candidate-edit-form-${c.id}`} method="post" hidden />
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
@@ -737,10 +709,7 @@ export default function ProposalDetailPage() {
                   <Box
                     px="md"
                     py="sm"
-                    style={{
-                      background: "var(--mantine-color-default-hover)",
-                      borderBottom: "1px solid var(--mantine-color-default-border)",
-                    }}
+                    className={styles.candidateHeader}
                   >
                     <Group justify="space-between" align="center" wrap="nowrap">
                       <Group gap="sm" align="center" wrap="nowrap">
@@ -755,7 +724,7 @@ export default function ProposalDetailPage() {
                         {isEditing ? (
                           <Select
                             size="xs"
-                            style={{ width: 120 }}
+                            w={120}
                             value={
                               statusFetcher.state !== "idle" && statusFetcher.formData?.get("candidateId") === c.id
                                 ? String(statusFetcher.formData.get("status") ?? c.status)
@@ -791,8 +760,8 @@ export default function ProposalDetailPage() {
 
                   <Stack gap={0} px="md" pt="md" pb="md">
                     {/* ── 合作條件 ── */}
-                    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing={0} style={{ borderBottom: "1px solid var(--mantine-color-default-border)", paddingBottom: 12, marginBottom: 12 }}>
-                      <Box pr="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+                    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing={0} className={styles.terms3Cols}>
+                      <Box pr="md" className={styles.colDivider}>
                         <Text size="xs" c="dimmed" fw={600} mb={2}>合作項目</Text>
                         {isEditing ? (
                           <TextInput form={`candidate-edit-form-${c.id}`} name="role" size="xs" defaultValue={c.role || ""} />
@@ -800,7 +769,7 @@ export default function ProposalDetailPage() {
                           <Text size="sm" fw={500}>{c.role || "-"}</Text>
                         )}
                       </Box>
-                      <Box px="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+                      <Box px="md" className={styles.colDivider}>
                         <Text size="xs" c="dimmed" fw={600} mb={2}>預估報價</Text>
                         {isEditing ? (
                           <TextInput form={`candidate-edit-form-${c.id}`} name="price" size="xs" defaultValue={c.price != null ? String(c.price) : "0"} />
@@ -824,12 +793,9 @@ export default function ProposalDetailPage() {
                     <Box
                       p="sm"
                       mb="sm"
-                      style={{
-                        background: "var(--mantine-color-default-hover)",
-                        borderRadius: 6,
-                      }}
+                      className={styles.metricsBlock}
                     >
-                      <Text size="xs" fw={700} c="dimmed" mb={8} style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>數據指標</Text>
+                      <Text size="xs" fw={700} c="dimmed" mb={8} className={styles.metricsLabel}>數據指標</Text>
                       <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
                         <div>
                           <Text size="xs" c="dimmed" mb={2}>真粉比例</Text>
@@ -897,13 +863,13 @@ export default function ProposalDetailPage() {
                     </Box>
 
                     {/* ── 建議與反饋 ── */}
-                    <Box style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: "1px solid var(--mantine-color-default-border)", paddingTop: 12, gap: 0 }}>
-                      <Box pr="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+                    <Box className={styles.feedbackGrid}>
+                      <Box pr="md" className={styles.colDivider}>
                         <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 選擇建議</Text>
                         {isEditing ? (
                           <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
                         ) : (
-                          <Text size="sm" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.6 }}>
+                          <Text size="sm" className={styles.feedbackText}>
                             {c.recommendation || "-"}
                           </Text>
                         )}
@@ -921,7 +887,7 @@ export default function ProposalDetailPage() {
                             placeholder="輸入客戶反饋"
                           />
                         ) : (
-                          <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.6 }}>
+                          <Text size="sm" c="dimmed" className={styles.feedbackText}>
                             {c.feedbackText && c.feedbackText !== "null" ? c.feedbackText : "-"}
                           </Text>
                         )}
@@ -951,14 +917,14 @@ export default function ProposalDetailPage() {
           {/* ── Analysis / Recognition Screen ── */}
           {aiSearching && (
             <Stack align="center" py="xl" gap="lg">
-              <Box style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <Box className={styles.ringWrap}>
                 <RingProgress
                   size={100}
                   thickness={6}
                   roundCaps
                   sections={[{ value: (aiAnalysisStep / AI_ANALYSIS_STEPS.length) * 100, color: "blue" }]}
                 />
-                <Box style={{ position: "absolute", fontSize: 30 }}>🤖</Box>
+                <Box className={styles.ringEmoji}>🤖</Box>
               </Box>
               <Stack gap={0} ta="center">
                 <Text fw={700} size="md">AI 正在分析中...</Text>
@@ -970,13 +936,13 @@ export default function ProposalDetailPage() {
                   const active = i === aiAnalysisStep;
                   return (
                     <Group key={i} gap="sm" wrap="nowrap">
-                      <Box w={24} style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Box w={24} className={styles.stepIcon}>
                         {done ? (
                           <ThemeIcon size={20} radius="xl" color="green" variant="filled"><IconCheck size={12} /></ThemeIcon>
                         ) : active ? (
                           <Loader size={18} color="blue" type="oval" />
                         ) : (
-                          <Box w={20} h={20} style={{ borderRadius: "50%", border: "2px solid var(--mantine-color-default-border)" }} />
+                          <Box w={20} h={20} className={styles.stepCircle} />
                         )}
                       </Box>
                       <Text size="sm" c={done ? "green" : active ? "blue" : "dimmed"} fw={active ? 600 : 400}>
@@ -1019,20 +985,11 @@ export default function ProposalDetailPage() {
               <Card key={res.id} withBorder shadow="xs">
                 <Group justify="space-between" align="flex-start">
                   <Group gap="sm">
-                    <div
-                      style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: "50%",
-                        background: aiAvatarBg,
-                        overflow: "hidden",
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div className={styles.aiAvatar}>
                       <img
                         src={res.avatarUrl}
                         alt=""
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        className={styles.aiAvatarImg}
                       />
                     </div>
                     <div>
@@ -1051,11 +1008,7 @@ export default function ProposalDetailPage() {
                   size="xs"
                   mt="sm"
                   p="xs"
-                  style={{
-                    background: aiReasonBg,
-                    borderRadius: 4,
-                    borderLeft: "3px solid #339af0",
-                  }}
+                  className={styles.aiReason}
                 >
                   <Text span fw={700} c="blue">
                     AI 推薦理由：
