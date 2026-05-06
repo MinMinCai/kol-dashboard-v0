@@ -1,0 +1,19 @@
+.socialRow {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 80px 36px;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}

@@ -1,0 +1,53 @@
+.avatarDropzone {
+  width: 220px;
+  border: 1px dashed #94a3b8;
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.socialRow {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 80px 36px;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: transparent;
+  color: var(--mantine-color-text);
+  cursor: pointer;
+  opacity: 1;
+  font-size: 13px;
+  font-weight: 400;
+  margin-right: 6px;
+}
+
+.tab:disabled {
+  cursor: not-allowed;
+  color: var(--mantine-color-gray-5);
+  opacity: 0.55;
+}
+
+.tabActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}

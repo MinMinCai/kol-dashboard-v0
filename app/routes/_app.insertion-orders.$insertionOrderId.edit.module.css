@@ -1,0 +1,72 @@
+.kolSelectedDisplay {
+  min-height: 40px;
+}
+
+.kolSelectedPlaceholder {
+  font-size: 14px;
+  color: var(--mantine-color-dimmed);
+  margin: 8px 0;
+}
+
+.dialog {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dialogTitle {
+  font-size: 18px;
+}
+
+.dialogClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.dialogSearch {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  box-sizing: border-box;
+}
+
+.dialogList {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 12px;
+  padding-right: 4px;
+}
+
+.dialogFooter {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.dialogConfirm {
+  padding: 8px 20px;
+  border-radius: 4px;
+  border: none;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}

@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Divider,
+  Flex,
   Group,
   MultiSelect,
   Radio,
@@ -20,6 +21,7 @@ import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { getKol, updateKol, type Kol, type PlatformMetrics } from "~/lib/mock-api.server";
+import styles from "./_app.kols.$kolId.edit.module.css";
 
 function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
   return Promise.race([
@@ -420,7 +422,7 @@ export default function KolEditPage() {
                   <Avatar src={kol.avatarUrl} radius={999} size={96} />
                   <Text size="xs" c="dimmed">頭像預覽</Text>
                 </Stack>
-                <Box style={{ flex: 1, minWidth: 260 }}>
+                <Box flex={1} miw={260}>
                   <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
                     <TextInput
                       label="KOL 名稱 *"
@@ -492,8 +494,8 @@ export default function KolEditPage() {
               <Title order={3} mb="md">社群平台</Title>
               <div id="social-rows">
                 {socials.map((item, idx) => (
-                  <div key={item.id} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }}>
+                  <div key={item.id} className={styles.socialRow}>
+                    <div className={styles.socialGrid}>
                       <Select
                         label="平台"
                         data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
@@ -508,7 +510,7 @@ export default function KolEditPage() {
                         placeholder="https://instagram.com/username"
                         size="sm"
                       />
-                      <Box style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                      <Flex direction="column" justify="flex-end">
                         <Button
                           variant="default"
                           size="sm"
@@ -517,7 +519,7 @@ export default function KolEditPage() {
                         >
                           取得追蹤數
                         </Button>
-                      </Box>
+                      </Flex>
                       <TextInput
                         label="追蹤數"
                         readOnly
@@ -525,18 +527,18 @@ export default function KolEditPage() {
                         size="sm"
                         c="dimmed"
                       />
-                      <Box style={{ display: "flex", alignItems: "flex-end", paddingBottom: "2px" }}>
+                      <Flex align="flex-end" pb={2}>
                         {idx !== 0 && (
                           <Button
                             color="red"
                             variant="light"
                             onClick={() => removeSocial(item.id)}
-                            style={{ width: 36, height: 36, padding: 0 }}
+                            className={styles.iconButton}
                           >
                             ×
                           </Button>
                         )}
-                      </Box>
+                      </Flex>
                     </div>
                   </div>
                 ))}

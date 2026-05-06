@@ -19,6 +19,7 @@ import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { IconChevronDown } from "@tabler/icons-react";
+import styles from "./_app.insertion-orders.$insertionOrderId.edit.module.css";
 import {
   addBrandCatalog,
   addIndustryCatalog,
@@ -583,8 +584,8 @@ export default function InsertionOrderEditPage() {
                 </Button>
               </Group>
 
-              <div id="kol-selected-display" style={{ minHeight: 40 }}>
-                <p style={{ fontSize: 14, color: "var(--mantine-color-dimmed)", margin: "8px 0" }}>
+              <div id="kol-selected-display" className={styles.kolSelectedDisplay}>
+                <p className={styles.kolSelectedPlaceholder}>
                   尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。
                 </p>
               </div>
@@ -593,7 +594,7 @@ export default function InsertionOrderEditPage() {
                 id="kol-selected-json"
                 name="selectedKolsJson"
                 aria-hidden="true"
-                style={{ display: "none" }}
+                hidden
                 defaultValue={JSON.stringify(initialCollabs)}
                 readOnly
               />
@@ -637,26 +638,17 @@ export default function InsertionOrderEditPage() {
       {/* ── KOL Selection Dialog (native <dialog> element) ── */}
       <dialog
         id="kol-select-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          width: "100%",
-          maxWidth: 600,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={styles.dialog}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <strong style={{ fontSize: 18 }}>選擇合作 KOL</strong>
+        <div className={styles.dialogHeader}>
+          <strong className={styles.dialogTitle}>選擇合作 KOL</strong>
           <button
             type="button"
             onClick={() => {
               // @ts-ignore
               if (typeof window.kolDialogClose === "function") window.kolDialogClose();
             }}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}
+            className={styles.dialogClose}
           >✕</button>
         </div>
         <input
@@ -668,29 +660,20 @@ export default function InsertionOrderEditPage() {
             // @ts-ignore
             if (typeof window.kolDialogSearch === "function") window.kolDialogSearch(e.target.value);
           }}
-          style={{
-            width: "100%",
-            padding: "8px 12px",
-            border: "1px solid var(--mantine-color-default-border)",
-            borderRadius: 4,
-            fontSize: 14,
-            background: "var(--mantine-color-body)",
-            color: "var(--mantine-color-text)",
-            boxSizing: "border-box",
-          }}
+          className={styles.dialogSearch}
         />
         <div
           id="kol-dialog-list"
-          style={{ maxHeight: 400, overflowY: "auto", marginTop: 12, paddingRight: 4 }}
+          className={styles.dialogList}
         />
-        <div style={{ marginTop: 16, textAlign: "right" }}>
+        <div className={styles.dialogFooter}>
           <button
             type="button"
             onClick={() => {
               // @ts-ignore
               if (typeof window.kolDialogClose === "function") window.kolDialogClose();
             }}
-            style={{ padding: "8px 20px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+            className={styles.dialogConfirm}
           >
             完成選擇
           </button>

@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Divider,
+  Flex,
   Group,
   MultiSelect,
   Radio,
@@ -20,6 +21,7 @@ import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { createKol, type PlatformMetrics } from "~/lib/mock-api.server";
+import styles from "./_app.kols.new.module.css";
 
 function parseHandle(url: string): string {
   const raw = url.trim();
@@ -216,21 +218,9 @@ function PlatformAudienceMetricsSection({ enabledPlatforms }: { enabledPlatforms
   const isPlatformEnabled = (platform: AudiencePlatform) =>
     enabledSet.size === 0 || enabledSet.has(platform);
 
-  const tabStyle = (platform: AudiencePlatform): React.CSSProperties => {
-    const enabled = isPlatformEnabled(platform);
-    const active = activePlatform === platform && enabled;
-    return {
-      padding: "6px 14px",
-      borderRadius: 6,
-      border: "1px solid var(--mantine-color-default-border)",
-      background: active ? "var(--mantine-color-blue-filled)" : "transparent",
-      color: active ? "#fff" : enabled ? "var(--mantine-color-text)" : "var(--mantine-color-gray-5)",
-      cursor: enabled ? "pointer" : "not-allowed",
-      opacity: enabled ? 1 : 0.55,
-      fontSize: 13,
-      fontWeight: active ? 600 : 400,
-      marginRight: 6,
-    };
+  const tabClassName = (platform: AudiencePlatform): string => {
+    const active = activePlatform === platform && isPlatformEnabled(platform);
+    return active ? `${styles.tab} ${styles.tabActive}` : styles.tab;
   };
 
   return (
@@ -244,7 +234,7 @@ function PlatformAudienceMetricsSection({ enabledPlatforms }: { enabledPlatforms
             <button
               key={p}
               type="button"
-              style={tabStyle(p)}
+              className={tabClassName(p)}
               disabled={!enabled}
               onClick={() => enabled && setActivePlatform(p)}
             >
@@ -387,12 +377,12 @@ export default function KolCreatePage() {
                   type="file"
                   accept="image/*"
                   aria-label="上傳頭像圖片"
-                  style={{ display: "none" }}
+                  hidden
                   onChange={handleAvatarChange}
                 />
                 <input type="hidden" name="avatarUrl" value={avatarPreview || ""} />
                 <div
-                  style={{ width: 220, border: "1px dashed #94a3b8", borderRadius: 16, padding: 20, cursor: "pointer", textAlign: "center" }}
+                  className={styles.avatarDropzone}
                   onClick={() => document.getElementById("avatar-file-input")?.click()}
                   onDragOver={(e) => e.preventDefault()}
                 >
@@ -451,8 +441,8 @@ export default function KolCreatePage() {
               <Title order={3} mb="md">社群平台</Title>
               <div id="social-rows">
                 {socials.map((item, idx) => (
-                  <div key={item.id} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: "8px", padding: "12px", marginTop: "10px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 80px 36px", gap: "8px", alignItems: "flex-end" }}>
+                  <div key={item.id} className={styles.socialRow}>
+                    <div className={styles.socialGrid}>
                       <Select
                         label="平台"
                         data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
@@ -467,7 +457,7 @@ export default function KolCreatePage() {
                         placeholder="https://instagram.com/username"
                         size="sm"
                       />
-                      <Box style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                      <Flex direction="column" justify="flex-end">
                         <Button
                           variant="default"
                           size="sm"
@@ -476,7 +466,7 @@ export default function KolCreatePage() {
                         >
                           取得追蹤數
                         </Button>
-                      </Box>
+                      </Flex>
                       <TextInput
                         label="追蹤數"
                         readOnly
@@ -484,18 +474,18 @@ export default function KolCreatePage() {
                         size="sm"
                         c="dimmed"
                       />
-                      <Box style={{ display: "flex", alignItems: "flex-end", paddingBottom: "2px" }}>
+                      <Flex align="flex-end" pb={2}>
                         {idx !== 0 && (
                           <Button
                             color="red"
                             variant="light"
                             onClick={() => removeSocial(item.id)}
-                            style={{ width: 36, height: 36, padding: 0 }}
+                            className={styles.iconButton}
                           >
                             ×
                           </Button>
                         )}
-                      </Box>
+                      </Flex>
                     </div>
                   </div>
                 ))}

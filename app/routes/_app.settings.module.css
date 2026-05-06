@@ -1,0 +1,65 @@
+.cardOverflowHidden {
+  overflow: hidden;
+}
+
+.tabNav {
+  display: flex;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  padding: 0 16px;
+}
+
+.tab {
+  padding: 10px 16px;
+  border-bottom: 2px solid transparent;
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-block;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.tabActive {
+  border-bottom-color: var(--mantine-color-blue-filled);
+  color: var(--mantine-color-blue-filled);
+  font-weight: 600;
+}
+
+.searchForm {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.emptyCell {
+  padding: 32px 0;
+  color: var(--mantine-color-dimmed);
+}
+
+.groupCard {
+  cursor: pointer;
+  background: var(--mantine-color-body);
+}
+
+.groupCardActive {
+  background: var(--mantine-color-blue-light);
+}
+
+.tagEditBox {
+  border: 1px dashed var(--mantine-color-blue-4);
+  border-radius: 8px;
+}
+
+.filterSelect {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+}
+
+.formSelect {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}

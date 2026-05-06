@@ -21,8 +21,9 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { IconPencil, IconPlus, IconTrash, IconX, IconCheck } from "@tabler/icons-react";
+import styles from "./_app.settings.module.css";
 import {
   addBrandCatalog,
   addIndustryCatalog,
@@ -348,17 +349,8 @@ export default function SettingsRoute() {
       return a.name.localeCompare(b.name, "zh-Hant");
     });
 
-  const tabStyle = (value: string): React.CSSProperties => ({
-    padding: "10px 16px",
-    borderBottom:
-      tab === value ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
-    color: tab === value ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-text)",
-    textDecoration: "none",
-    fontWeight: tab === value ? 600 : 500,
-    fontSize: 14,
-    display: "inline-block",
-    transition: "border-color 150ms ease, color 150ms ease",
-  });
+  const tabClassName = (value: string): string =>
+    tab === value ? `${styles.tab} ${styles.tabActive}` : styles.tab;
 
   return (
     <Stack gap="lg">
@@ -369,22 +361,15 @@ export default function SettingsRoute() {
         </Text>
       </Stack>
 
-      <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-        <div
-          style={{
-            display: "flex",
-            borderBottom: "1px solid var(--mantine-color-default-border)",
-            background: "var(--mantine-color-body)",
-            padding: "0 16px",
-          }}
-        >
-          <a href="/settings?tab=clients" style={tabStyle("clients")}>
+      <Card withBorder radius="lg" p={0} className={styles.cardOverflowHidden}>
+        <div className={styles.tabNav}>
+          <a href="/settings?tab=clients" className={tabClassName("clients")}>
             品牌管理
           </a>
-          <a href="/settings?tab=tags" style={tabStyle("tags")}>
+          <a href="/settings?tab=tags" className={tabClassName("tags")}>
             標籤管理
           </a>
-          <a href="/settings?tab=roles" style={tabStyle("roles")}>
+          <a href="/settings?tab=roles" className={tabClassName("roles")}>
             權限管理
           </a>
         </div>
@@ -411,13 +396,13 @@ export default function SettingsRoute() {
               </Group>
 
               <Group mt="md" align="center" justify="space-between" wrap="nowrap">
-                <Form method="get" action="/settings" style={{ flex: 1, display: "flex", gap: 8 }}>
+                <Form method="get" action="/settings" className={styles.searchForm}>
                   <input type="hidden" name="tab" value="clients" />
                   <TextInput
                     name="q"
                     defaultValue={q}
                     placeholder="搜尋品牌名稱（按 Enter 搜尋）"
-                    style={{ flex: 1 }}
+                    flex={1}
                   />
                   <Button type="submit">搜尋</Button>
                 </Form>
@@ -477,7 +462,7 @@ export default function SettingsRoute() {
                     ))}
                     {filteredBrands.length === 0 && (
                       <Table.Tr>
-                        <Table.Td colSpan={4} align="center" style={{ padding: "32px 0", color: "var(--mantine-color-dimmed)" }}>
+                        <Table.Td colSpan={4} align="center" className={styles.emptyCell}>
                           找不到符合條件的品牌
                         </Table.Td>
                       </Table.Tr>
@@ -538,10 +523,7 @@ export default function SettingsRoute() {
                           radius="md"
                           p="sm"
                           onClick={() => setSelectedGroupId(group.id)}
-                          style={{
-                            cursor: "pointer",
-                            background: active ? "var(--mantine-color-blue-light)" : "var(--mantine-color-body)",
-                          }}
+                          className={active ? `${styles.groupCard} ${styles.groupCardActive}` : styles.groupCard}
                         >
                           <Text fw={600}>{group.name}</Text>
                           <Text size="xs" c="dimmed">
@@ -592,7 +574,7 @@ export default function SettingsRoute() {
                       ))}
                     </Group>
                     {isEditingTags && (
-                      <Box mt="md" p="md" style={{ border: '1px dashed var(--mantine-color-blue-4)', borderRadius: '8px' }}>
+                      <Box mt="md" p="md" className={styles.tagEditBox}>
                         <Text size="sm" fw={600} mb="xs">新增新標籤：</Text>
                         <Group gap="xs">
                           <TextInput
@@ -609,7 +591,7 @@ export default function SettingsRoute() {
                                 setNewTagValue("");
                               }
                             }}
-                            style={{ flex: 1 }}
+                            flex={1}
                           />
                           <Button
                             onClick={() => {
@@ -707,12 +689,7 @@ export default function SettingsRoute() {
                     aria-label="組別篩選"
                     value={groupFilter}
                     onChange={(e) => setGroupFilter(e.target.value)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: 6,
-                      border: "1px solid var(--mantine-color-default-border)",
-                      background: "var(--mantine-color-body)",
-                    }}
+                    className={styles.filterSelect}
                   >
                     <option value="all">全部</option>
                     {GROUP_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt} 組</option>)}
@@ -784,7 +761,7 @@ export default function SettingsRoute() {
                         name="group"
                         aria-label="組別"
                         defaultValue={activeMember?.group || "AE"}
-                        style={{ padding: "8px", borderRadius: 4, border: "1px solid #ccc" }}
+                        className={styles.formSelect}
                       >
                         {GROUP_OPTIONS.map(opt => <option key={opt} value={opt}>{opt} 組</option>)}
                       </select>
@@ -795,7 +772,7 @@ export default function SettingsRoute() {
                         name="role"
                         aria-label="角色"
                         defaultValue={activeMember?.role || "member"}
-                        style={{ padding: "8px", borderRadius: 4, border: "1px solid #ccc" }}
+                        className={styles.formSelect}
                       >
                         <option value="admin">Admin</option>
                         <option value="manager">Manager</option>
