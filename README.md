@@ -760,6 +760,7 @@ API 設計：parent 只負責 `opened` / `onClose` / `order`，外加可選 `onC
 
 - [KOLDB-PRD.md](KOLDB-PRD.md) — 產品需求文件（功能、流程、AI 輔助規格）
 - [docs/ERD.md](docs/ERD.md) — 資料表 ERD 圖示與欄位說明
+- [docs/REUSABLE.md](docs/REUSABLE.md) — **可遷移清單**：給新專案 cherry-pick 用，分「直接抄 / 抄了改 / 不要抄」三層
 - [db/drizzle/schema.ts](db/drizzle/schema.ts) — Drizzle schema 真相來源
 - [db/drizzle/migrations/](db/drizzle/migrations/) — 歷次 SQL migration（0000 ~ 0002）
 
