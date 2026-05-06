@@ -1,0 +1,124 @@
+.formContents {
+  display: contents;
+}
+
+.formInput {
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+}
+
+.formSubmitButton {
+  cursor: pointer;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+}
+
+.filterButton {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--mantine-color-default-border);
+  text-decoration: none;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  font-weight: 400;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filterButtonActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}
+
+.dropdownArrow {
+  margin-left: 4px;
+}
+
+.menuForm {
+  margin: 0;
+}
+
+.kolCard {
+  cursor: pointer;
+}
+
+.kolCardSelected {
+  outline: 2px solid var(--mantine-color-blue-filled);
+}
+
+.checkboxOverlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.viewLink {
+  font-size: 14px;
+}
+
+.actionButton {
+  background: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.actionButtonYellow {
+  border: 1px solid var(--mantine-color-yellow-light);
+  color: var(--mantine-color-yellow-filled);
+}
+
+.actionButtonBlue {
+  border: 1px solid var(--mantine-color-blue-light);
+  color: var(--mantine-color-blue-filled);
+}
+
+.actionButtonRed {
+  border: 1px solid var(--mantine-color-red-light);
+  color: var(--mantine-color-red-filled);
+}
+
+.dialog {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.addFolderDialog {
+  min-width: 320px;
+}
+
+.manageDialog {
+  min-width: 360px;
+}
+
+.shareDialog {
+  min-width: 400px;
+}
+
+.dialogClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--mantine-color-text);
+}

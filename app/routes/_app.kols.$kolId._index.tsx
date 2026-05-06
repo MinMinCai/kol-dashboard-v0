@@ -23,6 +23,7 @@ import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-r
 import { Form, Link, useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useMemo, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
+import styles from "./_app.kols.$kolId._index.module.css";
 import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, replaceKolFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
 function formatNumber(value: number | undefined): string {
@@ -194,27 +195,11 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
     URL.revokeObjectURL(url);
   };
 
-  const btnStyle = (active: boolean): React.CSSProperties => ({
-    padding: "6px 14px",
-    borderRadius: 6,
-    border: "1px solid var(--mantine-color-default-border)",
-    background: active ? "var(--mantine-color-blue-filled)" : "transparent",
-    color: active ? "#fff" : "var(--mantine-color-text)",
-    cursor: "pointer",
-    fontSize: 13,
-    fontWeight: active ? 600 : 400,
-  });
+  const btnClassName = (active: boolean): string =>
+    active ? `${styles.modalBtn} ${styles.modalBtnActive}` : styles.modalBtn;
 
-  const tabBtnStyle = (active: boolean): React.CSSProperties => ({
-    padding: "6px 16px",
-    borderRadius: 6,
-    border: "1px solid var(--mantine-color-default-border)",
-    background: active ? "var(--mantine-color-default-hover)" : "transparent",
-    color: "var(--mantine-color-text)",
-    cursor: "pointer",
-    fontSize: 13,
-    fontWeight: active ? 600 : 400,
-  });
+  const tabBtnClassName = (active: boolean): string =>
+    active ? `${styles.modalTabBtn} ${styles.modalTabBtnActive}` : styles.modalTabBtn;
 
   return (
     <Modal
@@ -233,24 +218,24 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
         {/* Controls row */}
         <Group justify="space-between" mb="md" wrap="wrap" gap="xs">
           <Group gap={8}>
-            <button style={tabBtnStyle(groupBy === "kol")} onClick={() => setGroupBy("kol")}>依 KOL 分組</button>
-            <button style={tabBtnStyle(groupBy === "placement")} onClick={() => setGroupBy("placement")}>依版位分組</button>
+            <button className={tabBtnClassName(groupBy === "kol")} onClick={() => setGroupBy("kol")}>依 KOL 分組</button>
+            <button className={tabBtnClassName(groupBy === "placement")} onClick={() => setGroupBy("placement")}>依版位分組</button>
           </Group>
           <Group gap={8} wrap="wrap">
             {groupBy === "kol" && kolNames.length > 1 && (
               <>
-                <button style={btnStyle(activeKol === null)} onClick={() => setActiveKol(null)}>
+                <button className={btnClassName(activeKol === null)} onClick={() => setActiveKol(null)}>
                   全部{activeKol === null ? " ✓" : ""}
                 </button>
                 {kolNames.map(name => (
-                  <button key={name} style={btnStyle(activeKol === name)} onClick={() => setActiveKol(name)}>
+                  <button key={name} className={btnClassName(activeKol === name)} onClick={() => setActiveKol(name)}>
                     {name}{activeKol === name ? " ✓" : ""}
                   </button>
                 ))}
               </>
             )}
             {groupBy === "placement" && PLATFORMS.map(p => (
-              <button key={p} style={btnStyle(activePlatform === p)} onClick={() => setActivePlatform(p)}>
+              <button key={p} className={btnClassName(activePlatform === p)} onClick={() => setActivePlatform(p)}>
                 {p}{activePlatform === p ? " ✓" : ""}
               </button>
             ))}
@@ -283,7 +268,7 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
                   if (items.length === 0) {
                     return (
                       <Table.Tr key={kol.id}>
-                        <Table.Td rowSpan={1} style={{ verticalAlign: "middle", fontWeight: 600, background: "var(--mantine-color-violet-light)" }}>{kol.name}</Table.Td>
+                        <Table.Td rowSpan={1} className={styles.kolNameCell}>{kol.name}</Table.Td>
                         <Table.Td colSpan={9}><Text size="sm" c="dimmed">尚無成效資料</Text></Table.Td>
                       </Table.Tr>
                     );
@@ -293,7 +278,7 @@ function PerformanceOverviewModal({ opened, onClose, order }: {
                     return (
                       <Table.Tr key={`${kol.id}-${item.id}`}>
                         {idx === 0 && (
-                          <Table.Td rowSpan={items.length} style={{ verticalAlign: "middle", fontWeight: 600, background: "var(--mantine-color-violet-light)" }}>{kol.name}</Table.Td>
+                          <Table.Td rowSpan={items.length} className={styles.kolNameCell}>{kol.name}</Table.Td>
                         )}
                         <Table.Td>{item.title}</Table.Td>
                         <Table.Td>{kol.executionDate ?? kol.uploadDate ?? "-"}</Table.Td>
@@ -381,22 +366,13 @@ function PlatformTabSelector({
   selected: string;
   onSelect: (p: string) => void;
 }) {
-  const btnStyle = (active: boolean): React.CSSProperties => ({
-    padding: "5px 12px",
-    borderRadius: 6,
-    border: "1px solid var(--mantine-color-default-border)",
-    background: active ? "var(--mantine-color-blue-filled)" : "transparent",
-    color: active ? "#fff" : "var(--mantine-color-text)",
-    cursor: "pointer",
-    fontSize: 13,
-    fontWeight: active ? 600 : 400,
-    marginRight: 6,
-  });
+  const platformBtnClassName = (active: boolean): string =>
+    active ? `${styles.platformBtn} ${styles.platformBtnActive}` : styles.platformBtn;
 
   return (
     <div>
       {platforms.map((p) => (
-        <button key={p} type="button" style={btnStyle(selected === p)} onClick={() => onSelect(p)}>
+        <button key={p} type="button" className={platformBtnClassName(selected === p)} onClick={() => onSelect(p)}>
           {p}
         </button>
       ))}
@@ -543,7 +519,7 @@ ${extraClause || "（無）"}
         <Divider label="合約預覽" />
 
         <ScrollArea h={320}>
-          <Box style={{ fontFamily: "monospace", fontSize: 13, whiteSpace: "pre-wrap", padding: "12px", background: "var(--mantine-color-default-hover)", borderRadius: 4 }}>
+          <Box className={styles.contractText}>
             {contractText}
           </Box>
         </ScrollArea>
@@ -624,15 +600,8 @@ export default function KolDetailPage() {
   const favoriteActionLabel = optimisticFavorited ? "管理收藏" : "加入收藏";
 
 
-  const tabStyle = (value: string): React.CSSProperties => ({
-    padding: "8px 16px",
-    borderBottom: tab === value ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
-    color: tab === value ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-text)",
-    textDecoration: "none",
-    fontWeight: tab === value ? 600 : 400,
-    fontSize: 14,
-    display: "inline-block",
-  });
+  const tabClassName = (value: string): string =>
+    tab === value ? `${styles.tab} ${styles.tabActive}` : styles.tab;
 
   return (
     <Stack gap="md">
@@ -719,7 +688,7 @@ export default function KolDetailPage() {
           {kol.introduction && (
             <Card withBorder mt="md">
               <Title order={4} mb="sm">人選介紹</Title>
-              <Text size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+              <Text size="sm" className={styles.introText}>
                 {kol.introduction}
               </Text>
             </Card>
@@ -763,26 +732,26 @@ export default function KolDetailPage() {
 
           {/* ── Tabs: URL-driven ── */}
           <Card withBorder mt="md">
-            <div style={{ borderBottom: "1px solid var(--mantine-color-default-border)", marginBottom: 16 }}>
-              <Link to={`/kols/${kol.id}?tab=projects&limit=${limit}`} style={tabStyle("projects")}>合作案件</Link>
-              <Link to={`/kols/${kol.id}?tab=price&limit=${limit}`} style={tabStyle("price")}>價格趨勢</Link>
-              <Link to={`/kols/${kol.id}?tab=performance&limit=${limit}`} style={tabStyle("performance")}>受眾數據與指標</Link>
+            <div className={styles.tabNav}>
+              <Link to={`/kols/${kol.id}?tab=projects&limit=${limit}`} className={tabClassName("projects")}>合作案件</Link>
+              <Link to={`/kols/${kol.id}?tab=price&limit=${limit}`} className={tabClassName("price")}>價格趨勢</Link>
+              <Link to={`/kols/${kol.id}?tab=performance&limit=${limit}`} className={tabClassName("performance")}>受眾數據與指標</Link>
             </div>
 
             {/* Projects tab */}
             {tab === "projects" && (
               <Stack gap="md">
                 {visibleHistory.map((item: KolCollabRecord, idx) => (
-                  <div key={item.id} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--mantine-color-blue-filled)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
+                  <div key={item.id} className={styles.timelineRow}>
+                    <div className={styles.timelineMarkerCol}>
+                      <div className={styles.timelineMarker}>
                         {idx + 1}
                       </div>
                       {idx < visibleHistory.length - 1 && (
-                        <div style={{ width: 2, flex: 1, minHeight: 16, background: "var(--mantine-color-default-border)", marginTop: 4 }} />
+                        <div className={styles.timelineConnector} />
                       )}
                     </div>
-                    <Card withBorder style={{ flex: 1, marginBottom: 8 }}>
+                    <Card withBorder className={styles.timelineCard}>
                       <Stack gap={8}>
                         <Group justify="space-between" align="flex-start">
                           <Stack gap={2}>
@@ -809,7 +778,7 @@ export default function KolDetailPage() {
                             <button
                               type="button"
                               onClick={() => openPerfModal(item.orderId!)}
-                              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--mantine-color-blue-filled)", fontSize: 14, padding: 0 }}
+                              className={styles.detailLink}
                             >
                               查看詳細成效 →
                             </button>
@@ -826,14 +795,7 @@ export default function KolDetailPage() {
                   <Group justify="center" mt="md">
                     <Link
                       to={`/kols/${kol.id}?tab=projects&limit=${limit + 3}`}
-                      style={{
-                        padding: "8px 20px",
-                        border: "1px solid var(--mantine-color-default-border)",
-                        borderRadius: 4,
-                        textDecoration: "none",
-                        fontSize: 14,
-                        color: "var(--mantine-color-text)",
-                      }}
+                      className={styles.loadMore}
                     >
                       載入更多
                     </Link>
@@ -885,31 +847,31 @@ export default function KolDetailPage() {
                     <>
                       <Grid>
                         <Grid.Col span={{ base: 12, md: 6 }}>
-                          <Card withBorder style={{ height: "100%" }}>
+                          <Card withBorder h="100%">
                             <Text c="dimmed" size="sm">平均觸及 ({selectedPlatform})</Text>
                             <Title order={3}>{formatNumber(stats.averageReach)}</Title>
                           </Card>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, md: 6 }}>
-                          <Card withBorder style={{ height: "100%" }}>
+                          <Card withBorder h="100%">
                             <Text c="dimmed" size="sm">曝光率 (%) — {selectedPlatform}</Text>
                             <Title order={3}>{expRate.toFixed(1)}%</Title>
                           </Card>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, md: 6 }}>
-                          <Card withBorder style={{ height: "100%" }}>
+                          <Card withBorder h="100%">
                             <Text c="dimmed" size="sm">平均互動率 — {selectedPlatform}</Text>
                             <Title order={3}>{engRate.toFixed(1)}%</Title>
                           </Card>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, md: 6 }}>
-                          <Card withBorder style={{ height: "100%" }}>
+                          <Card withBorder h="100%">
                             <Text c="dimmed" size="sm">平均評分 — {selectedPlatform}</Text>
                             <Title order={3}>{displayRating != null ? `⭐ ${displayRating.toFixed(1)}` : "-"}</Title>
                           </Card>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, md: 6 }}>
-                          <Card withBorder style={{ height: "100%" }}>
+                          <Card withBorder h="100%">
                             <Text c="dimmed" size="sm">真粉比例 — {selectedPlatform}</Text>
                             <Title order={3}>{realFollowerRatio != null ? `${realFollowerRatio.toFixed(1)}%` : "-"}</Title>
                           </Card>
@@ -1014,22 +976,14 @@ export default function KolDetailPage() {
       {/* ── Folder Picker Dialog ── */}
       <dialog
         id="folder-picker-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          minWidth: 320,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={styles.dialog}
         onClose={() => setFolderPickerOpen(false)}
       >
         <Group justify="space-between" mb="md">
           <Title order={4}>選擇收藏資料夾</Title>
           <button
             type="button"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            className={styles.dialogClose}
             onClick={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
           >
             ✕
@@ -1042,14 +996,7 @@ export default function KolDetailPage() {
           <input type="hidden" name="selectedFolders" value={folderSelection.join(",")} />
           <Stack gap="md">
             <Text size="sm" c="dimmed">可多選資料夾；若暫時不分類，也可以直接儲存為收藏。</Text>
-            <Stack
-              gap="xs"
-              style={{
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 4,
-                padding: "10px 12px",
-              }}
-            >
+            <Stack gap="xs" className={styles.folderList}>
               {folders.length === 0 ? (
                 <Text size="sm" c="dimmed">尚未建立任何資料夾，儲存後會先加入收藏但不分類。</Text>
               ) : (
@@ -1075,14 +1022,14 @@ export default function KolDetailPage() {
                   type="submit"
                   name="intent"
                   value="remove_favorite"
-                  style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-red-light)", background: "var(--mantine-color-red-light)", color: "var(--mantine-color-red-filled)", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+                  className={`${styles.dialogBtn} ${styles.dialogBtnRed}`}
                 >
                   取消收藏
                 </button>
               ) : null}
               <button
                 type="button"
-                style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
+                className={`${styles.dialogBtn} ${styles.dialogBtnDefault}`}
                 onClick={() => { setFolderPickerOpen(false); setFolderSelection(getFavoriteSelection(kol)); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
               >
                 取消
@@ -1091,7 +1038,7 @@ export default function KolDetailPage() {
                 type="submit"
                 name="intent"
                 value="update_favorite_folders"
-                style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: "var(--mantine-color-blue-filled)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+                className={`${styles.dialogBtn} ${styles.dialogBtnPrimary}`}
               >
                 儲存收藏
               </button>

@@ -22,6 +22,7 @@ import { Form, Link, useActionData, useLoaderData, useNavigate } from "@remix-ru
 import { useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import { getCurrentMember } from "~/lib/demo-identity.server";
+import styles from "./_app.favorites.module.css";
 import {
   clearKolFavorites,
   createFavoriteFolder,
@@ -249,15 +250,6 @@ export default function FavoritesPage() {
     dialog?.showModal();
   };
 
-  const inputStyle = {
-    padding: "8px 12px",
-    border: "1px solid var(--mantine-color-default-border)",
-    borderRadius: 4,
-    fontSize: 14,
-    background: "var(--mantine-color-body)",
-    color: "var(--mantine-color-text)",
-  } as const;
-
   return (
     <Stack gap="md">
       <Group justify="space-between" align="flex-end">
@@ -344,16 +336,16 @@ export default function FavoritesPage() {
         </Card>
       )}
 
-      <form method="get" style={{ display: "contents" }}>
+      <form method="get" className={styles.formContents}>
         <input type="hidden" name="folder" value={folder} />
         <Group>
-          <input name="search" defaultValue={search} placeholder="搜尋收藏 KOL" style={{ ...inputStyle, flex: 1, minWidth: 200 }} />
-          <select name="sort" defaultValue={sort} style={inputStyle} aria-label="排序方式">
+          <input name="search" defaultValue={search} placeholder="搜尋收藏 KOL" className={`${styles.formInput} ${styles.searchInput}`} />
+          <select name="sort" defaultValue={sort} className={styles.formInput} aria-label="排序方式">
             <option value="rating_desc">評分由高到低</option>
             <option value="followers_desc">粉絲由高到低</option>
             <option value="name_asc">名稱 A-Z</option>
           </select>
-          <button type="submit" style={{ ...inputStyle, cursor: "pointer", background: "var(--mantine-color-blue-filled)", color: "#fff", border: "none", fontWeight: 600 }}>
+          <button type="submit" className={`${styles.formInput} ${styles.formSubmitButton}`}>
             套用
           </button>
         </Group>
@@ -361,36 +353,24 @@ export default function FavoritesPage() {
 
       <Group>
         {(() => {
-          const filterButtonStyle = (active: boolean): React.CSSProperties => ({
-            padding: "6px 14px",
-            borderRadius: 4,
-            border: "1px solid var(--mantine-color-default-border)",
-            textDecoration: "none",
-            background: active ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
-            color: active ? "#fff" : "var(--mantine-color-text)",
-            fontWeight: active ? 600 : 400,
-            fontSize: 14,
-            cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-          });
+          const filterButtonClassName = (active: boolean): string =>
+            active ? `${styles.filterButton} ${styles.filterButtonActive}` : styles.filterButton;
           const buildHref = (f: string) =>
             `/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`;
           const isOwnedFolderActive = ownedFolders.some((f) => f.name === folder);
           const isSharedFolderActive = sharedFolders.some((f) => f.name === folder);
           return (
             <>
-              <a href={buildHref("全部")} style={filterButtonStyle(folder === "全部")}>
+              <a href={buildHref("全部")} className={filterButtonClassName(folder === "全部")}>
                 全部 ({folderCounts["全部"] ?? 0})
               </a>
               <Menu shadow="md" width={260} position="bottom-start">
                 <Menu.Target>
-                  <button type="button" style={filterButtonStyle(isOwnedFolderActive)}>
+                  <button type="button" className={filterButtonClassName(isOwnedFolderActive)}>
                     {isOwnedFolderActive
                       ? `我的資料夾：${folder} (${folderCounts[folder] ?? 0})`
                       : "我的資料夾"}
-                    <span aria-hidden style={{ marginLeft: 4 }}>▾</span>
+                    <span aria-hidden className={styles.dropdownArrow}>▾</span>
                   </button>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -419,11 +399,11 @@ export default function FavoritesPage() {
               </Menu>
               <Menu shadow="md" width={260} position="bottom-start">
                 <Menu.Target>
-                  <button type="button" style={filterButtonStyle(isSharedFolderActive)}>
+                  <button type="button" className={filterButtonClassName(isSharedFolderActive)}>
                     {isSharedFolderActive
                       ? `🔗 與我共享：${folder} (${folderCounts[folder] ?? 0})`
                       : `🔗 與我共享${sharedFolders.length > 0 ? ` (${sharedFolders.length})` : ""}`}
-                    <span aria-hidden style={{ marginLeft: 4 }}>▾</span>
+                    <span aria-hidden className={styles.dropdownArrow}>▾</span>
                   </button>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -448,7 +428,7 @@ export default function FavoritesPage() {
               </Menu>
               <button
                 type="button"
-                style={filterButtonStyle(false)}
+                className={filterButtonClassName(false)}
                 onClick={() => {
                   const d = document.getElementById("add-folder-dialog") as HTMLDialogElement | null;
                   d?.showModal();
@@ -476,7 +456,7 @@ export default function FavoritesPage() {
               <Text size="sm" c="dimmed">已選 {selectedIds.length} 筆</Text>
             )}
           </Group>
-          <form method="post" action="/api/kols/export-excel" style={{ margin: 0 }}>
+          <form method="post" action="/api/kols/export-excel" className={styles.menuForm}>
             <input type="hidden" name="kolIds" value={selectedIds.join(",")} />
             <Button
               type="submit"
@@ -491,7 +471,7 @@ export default function FavoritesPage() {
       )}
 
       {rows.length === 0 ? (
-        <Card withBorder p="xl" style={{ textAlign: "center" }}>
+        <Card withBorder p="xl" ta="center">
           <Text size="48px">📂</Text>
           <Title order={3}>此資料夾尚無 KOL</Title>
           <Text c="dimmed" mb="md">請切換資料夾，或前往 KOL 頁面加入收藏</Text>
@@ -514,11 +494,10 @@ export default function FavoritesPage() {
             <Card
               key={kol.id}
               withBorder
-              className="kol-card"
-              style={{ cursor: "pointer", outline: selectedIds.includes(kol.id) ? "2px solid var(--mantine-color-blue-filled)" : undefined }}
+              className={`kol-card ${styles.kolCard} ${selectedIds.includes(kol.id) ? styles.kolCardSelected : ""}`}
               onClick={() => navigate(`/kols/${kol.id}`)}
             >
-              <Box style={{ position: "absolute", top: 10, left: 10 }} onClick={(e) => e.stopPropagation()}>
+              <Box className={styles.checkboxOverlay} onClick={(e) => e.stopPropagation()}>
                 <Checkbox checked={selectedIds.includes(kol.id)} onChange={() => toggleSelect(kol.id)} />
               </Box>
 
@@ -590,25 +569,17 @@ export default function FavoritesPage() {
               <Group justify="space-between" mt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                 <Group gap="xs">
-                  <Link to={`/kols/${kol.id}`} style={{ fontSize: 14 }}>查看詳細</Link>
+                  <Link to={`/kols/${kol.id}`} className={styles.viewLink}>查看詳細</Link>
                   {folder !== "全部"
                     && (kol.favoriteFolders ?? []).includes(folder)
                     && accessByFolderName.get(folder) !== "shared" && (
-                    <Form method="post" style={{ margin: 0 }}>
+                    <Form method="post" className={styles.menuForm}>
                       <input type="hidden" name="intent" value="removeFromFolder" />
                       <input type="hidden" name="kolId" value={kol.id} />
                       <input type="hidden" name="targetFolder" value={folder} />
                       <button
                         type="submit"
-                        style={{
-                          background: "none",
-                          border: "1px solid var(--mantine-color-yellow-light)",
-                          color: "var(--mantine-color-yellow-filled)",
-                          padding: "2px 8px",
-                          borderRadius: 4,
-                          fontSize: 12,
-                          cursor: "pointer",
-                        }}
+                        className={`${styles.actionButton} ${styles.actionButtonYellow}`}
                       >
                         移出本資料夾
                       </button>
@@ -617,32 +588,16 @@ export default function FavoritesPage() {
                   <button
                     type="button"
                     onClick={() => openManageFolders(kol)}
-                    style={{
-                      background: "none",
-                      border: "1px solid var(--mantine-color-blue-light)",
-                      color: "var(--mantine-color-blue-filled)",
-                      padding: "2px 8px",
-                      borderRadius: 4,
-                      fontSize: 12,
-                      cursor: "pointer",
-                    }}
+                    className={`${styles.actionButton} ${styles.actionButtonBlue}`}
                   >
                     管理資料夾
                   </button>
-                  <Form method="post" style={{ margin: 0 }}>
+                  <Form method="post" className={styles.menuForm}>
                     <input type="hidden" name="intent" value="removeFavorite" />
                     <input type="hidden" name="kolId" value={kol.id} />
                     <button
                       type="submit"
-                      style={{
-                        background: "none",
-                        border: "1px solid var(--mantine-color-red-light)",
-                        color: "var(--mantine-color-red-filled)",
-                        padding: "2px 8px",
-                        borderRadius: 4,
-                        fontSize: 12,
-                        cursor: "pointer",
-                      }}
+                      className={`${styles.actionButton} ${styles.actionButtonRed}`}
                     >
                       取消收藏
                     </button>
@@ -657,21 +612,13 @@ export default function FavoritesPage() {
 
       <dialog
         id="add-folder-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          minWidth: 320,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={`${styles.dialog} ${styles.addFolderDialog}`}
       >
         <Group justify="space-between" mb="md">
           <Title order={4}>新增資料夾</Title>
           <button
             type="button"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            className={styles.dialogClose}
             onClick={() => { const d = document.getElementById("add-folder-dialog") as HTMLDialogElement | null; d?.close(); }}
           >
             ✕
@@ -691,22 +638,14 @@ export default function FavoritesPage() {
 
       <dialog
         id="manage-kol-folders-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          minWidth: 360,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={`${styles.dialog} ${styles.manageDialog}`}
         onClose={() => setManagingKol(null)}
       >
         <Group justify="space-between" mb="md">
           <Title order={4}>管理收藏資料夾</Title>
           <button
             type="button"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            className={styles.dialogClose}
             onClick={() => {
               setManagingKol(null);
               (document.getElementById("manage-kol-folders-dialog") as HTMLDialogElement | null)?.close();
@@ -785,21 +724,13 @@ export default function FavoritesPage() {
 
       <dialog
         id="share-folder-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          minWidth: 400,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={`${styles.dialog} ${styles.shareDialog}`}
       >
         <Group justify="space-between" mb="md">
           <Title order={4}>共享資料夾</Title>
           <button
             type="button"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            className={styles.dialogClose}
             onClick={() => (document.getElementById("share-folder-dialog") as HTMLDialogElement | null)?.close()}
           >
             ✕

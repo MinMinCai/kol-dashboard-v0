@@ -1,0 +1,87 @@
+.formContents {
+  display: contents;
+}
+
+.formInput {
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 240px;
+}
+
+.budgetInput {
+  width: 90px;
+}
+
+.formSubmitButton {
+  cursor: pointer;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+}
+
+.linkButton {
+  text-decoration: none;
+}
+
+.filterToggle {
+  cursor: pointer;
+  background: transparent;
+  color: var(--mantine-color-text);
+  font-weight: 500;
+}
+
+.filterToggleActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+}
+
+.thLink {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pageButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: transparent;
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.pageButtonActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pageButtonDisabled {
+  color: var(--mantine-color-gray-4);
+  pointer-events: none;
+  cursor: default;
+}
