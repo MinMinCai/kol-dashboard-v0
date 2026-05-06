@@ -40,6 +40,7 @@ import { DemoGenerateReportModal } from "~/components/DemoGenerateReportModal";
 import {
   getInsertionOrder,
   upsertIOReviewByAuthor,
+  deleteIOReviewsByAuthor,
   updateIOPerformance,
   updatePerformanceItem,
   deletePerformanceItem,
@@ -113,6 +114,7 @@ function KolCollabCard({
   onOpenUploadAndPerf,
   onOpenReview,
   onEditReview,
+  onDeleteReview,
   onEditPerformance,
   onDeletePerformance,
 }: {
@@ -121,6 +123,7 @@ function KolCollabCard({
   onOpenUploadAndPerf: (k: { id: string; name: string }) => void;
   onOpenReview: (k: { id: string; name: string }) => void;
   onEditReview: (k: { id: string; name: string }, group: ReviewGroup) => void;
+  onDeleteReview: (k: { id: string; name: string }, group: ReviewGroup) => void;
   onEditPerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
   onDeletePerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
 }) {
@@ -310,11 +313,11 @@ function KolCollabCard({
                             </Stack>
                           </Group>
                           <Group gap="xs" wrap="nowrap">
-                            <Rating value={g.rating} readOnly size="xs" />
+                            <Rating value={g.rating} readOnly size="xs" fractions={2} />
                             {isOwn && (
                               <Menu position="bottom-end" withinPortal shadow="md" width={120}>
                                 <Menu.Target>
-                                  <ActionIcon variant="subtle" color="gray" size="sm" aria-label="編輯評價">
+                                  <ActionIcon variant="subtle" color="gray" size="sm" aria-label="評價操作">
                                     <IconDotsVertical size={14} />
                                   </ActionIcon>
                                 </Menu.Target>
@@ -324,6 +327,13 @@ function KolCollabCard({
                                     onClick={() => onEditReview({ id: kol.kolId ?? kol.id, name: kol.name }, g)}
                                   >
                                     編輯
+                                  </Menu.Item>
+                                  <Menu.Item
+                                    leftSection={<IconTrash size={14} />}
+                                    color="red"
+                                    onClick={() => onDeleteReview({ id: kol.kolId ?? kol.id, name: kol.name }, g)}
+                                  >
+                                    刪除
                                   </Menu.Item>
                                 </Menu.Dropdown>
                               </Menu>
@@ -469,6 +479,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ success: true });
   }
 
+  if (intent === "reviewDelete") {
+    const kolId = formData.get("kolId") as string;
+    const currentMember = await getCurrentMember(request);
+    const author = currentMember?.name ?? "Demo User";
+    await deleteIOReviewsByAuthor(orderId, kolId, author);
+    return json({ success: true });
+  }
+
   if (intent === "performance") {
     const kolId = formData.get("kolId") as string;
     const title = formData.get("title") as string;
@@ -565,6 +583,8 @@ export default function InsertionOrderDetailPage() {
 
   const [reviewOpened, { open: openReview, close: closeReview }] =
     useDisclosure(false);
+  const [reviewDeleteOpened, { open: openReviewDelete, close: closeReviewDelete }] =
+    useDisclosure(false);
   const [perfModalOpened, { open: openPerfModal, close: closePerfModal }] =
     useDisclosure(false);
   const [perfDeleteOpened, { open: openPerfDelete, close: closePerfDelete }] =
@@ -620,6 +640,11 @@ export default function InsertionOrderDetailPage() {
       externalComment: group.external?.comment ?? "",
     });
     openReview();
+  };
+
+  const handleDeleteReview = (kol: { id: string; name: string }) => {
+    setSelectedKol(kol);
+    openReviewDelete();
   };
 
   const handleEditPerformance = (
@@ -872,6 +897,7 @@ export default function InsertionOrderDetailPage() {
               onOpenUploadAndPerf={handleOpenUploadAndPerf}
               onOpenReview={handleOpenReview}
               onEditReview={handleEditReview}
+              onDeleteReview={handleDeleteReview}
               onEditPerformance={handleEditPerformance}
               onDeletePerformance={handleDeletePerformance}
             />
@@ -911,6 +937,29 @@ export default function InsertionOrderDetailPage() {
               <input type="hidden" name="kolId" value={selectedKol?.id ?? ""} />
               <input type="hidden" name="performanceId" value={deletingPerformance?.id ?? ""} />
               <Button type="submit" color="red" loading={fetcher.state !== "idle"}>
+                確認刪除
+              </Button>
+            </fetcher.Form>
+          </Group>
+        </Stack>
+      </Modal>
+
+      <Modal
+        opened={reviewDeleteOpened}
+        onClose={closeReviewDelete}
+        title="確認刪除評價"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            確定要刪除您對「{selectedKol?.name}」留下的評價嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={closeReviewDelete}>取消</Button>
+            <fetcher.Form method="post" onSubmit={closeReviewDelete}>
+              <input type="hidden" name="intent" value="reviewDelete" />
+              <input type="hidden" name="kolId" value={selectedKol?.id ?? ""} />
+              <Button type="submit" color="red" loading={isSubmitting}>
                 確認刪除
               </Button>
             </fetcher.Form>

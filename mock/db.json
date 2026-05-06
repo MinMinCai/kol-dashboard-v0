@@ -1413,22 +1413,6 @@
               "comment": "貼文質感佳，品牌訊息露出自然。",
               "rating": 4.6,
               "type": "external"
-            },
-            {
-              "author": "System User",
-              "comment": "external ok 1773304140266",
-              "rating": 4.5,
-              "type": "external",
-              "id": "rv_1773304140676",
-              "date": "2026-03-12"
-            },
-            {
-              "author": "System User",
-              "comment": "internal ok 1773304140266",
-              "rating": 4.5,
-              "type": "internal",
-              "id": "rv_1773304140853",
-              "date": "2026-03-12"
             }
           ]
         },

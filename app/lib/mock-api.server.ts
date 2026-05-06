@@ -1036,6 +1036,22 @@ export async function upsertIOReviewByAuthor(
   return updateInsertionOrder(orderId, { collaborations: updated });
 }
 
+export async function deleteIOReviewsByAuthor(
+  orderId: string,
+  kolId: string,
+  author: string,
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const remaining = (collabs[idx].reviews ?? []).filter((r) => r.author !== author);
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], reviews: remaining };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
 export async function updateIOPerformance(
   orderId: string,
   kolId: string,
