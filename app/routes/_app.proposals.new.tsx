@@ -300,8 +300,6 @@ export default function ProposalCreatePage() {
     setManualKolId(null);
   };
 
-  const tableInputStyle = { width: numericInputWidth };
-
   const dueDateString = dueDate;
 
   return (
@@ -392,7 +390,7 @@ export default function ProposalCreatePage() {
                 </Card>
               ) : (
                 <ScrollArea>
-                  <Table withColumnBorders withRowBorders striped style={{ minWidth: 2200 }}>
+                  <Table withColumnBorders withRowBorders striped miw={2200}>
                     <Table.Thead>
                       <Table.Tr>
                         <Table.Th>KOL 名稱</Table.Th>
@@ -422,55 +420,55 @@ export default function ProposalCreatePage() {
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.price} onChange={(event) => updateCandidate(index, { price: toNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.price} onChange={(event) => updateCandidate(index, { price: toNumber(event.currentTarget.value) })} />
                             ) : `$${candidate.price.toLocaleString("zh-TW")}`}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.actualPrice ?? ""} onChange={(event) => updateCandidate(index, { actualPrice: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.actualPrice ?? ""} onChange={(event) => updateCandidate(index, { actualPrice: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.actualPrice != null ? `$${candidate.actualPrice.toLocaleString("zh-TW")}` : "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.realFollowerRatio ?? ""} onChange={(event) => updateCandidate(index, { realFollowerRatio: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.realFollowerRatio ?? ""} onChange={(event) => updateCandidate(index, { realFollowerRatio: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.realFollowerRatio != null ? `${candidate.realFollowerRatio}%` : "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.reputationScore ?? ""} onChange={(event) => updateCandidate(index, { reputationScore: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.reputationScore ?? ""} onChange={(event) => updateCandidate(index, { reputationScore: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.reputationScore ?? "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.avgEngagementRate ?? ""} onChange={(event) => updateCandidate(index, { avgEngagementRate: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.avgEngagementRate ?? ""} onChange={(event) => updateCandidate(index, { avgEngagementRate: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.avgEngagementRate != null ? `${candidate.avgEngagementRate}%` : "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.engagementIndex ?? ""} onChange={(event) => updateCandidate(index, { engagementIndex: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.engagementIndex ?? ""} onChange={(event) => updateCandidate(index, { engagementIndex: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.engagementIndex ?? "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.engagementScore ?? ""} onChange={(event) => updateCandidate(index, { engagementScore: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.engagementScore ?? ""} onChange={(event) => updateCandidate(index, { engagementScore: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.engagementScore ?? "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.brandFitScore ?? ""} onChange={(event) => updateCandidate(index, { brandFitScore: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.brandFitScore ?? ""} onChange={(event) => updateCandidate(index, { brandFitScore: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.brandFitScore ?? "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.qualityScore ?? ""} onChange={(event) => updateCandidate(index, { qualityScore: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.qualityScore ?? ""} onChange={(event) => updateCandidate(index, { qualityScore: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.qualityScore ?? "-"}
                           </Table.Td>
                           <Table.Td>
                             {isEditingCandidates ? (
-                              <TextInput style={tableInputStyle} value={candidate.cpfr ?? ""} onChange={(event) => updateCandidate(index, { cpfr: toOptionalNumber(event.currentTarget.value) })} />
+                              <TextInput w={numericInputWidth} value={candidate.cpfr ?? ""} onChange={(event) => updateCandidate(index, { cpfr: toOptionalNumber(event.currentTarget.value) })} />
                             ) : candidate.cpfr ?? "-"}
                           </Table.Td>
-                          <Table.Td style={{ minWidth: 240 }}>
+                          <Table.Td miw={240}>
                             {isEditingCandidates ? (
                               <Textarea autosize minRows={2} value={candidate.recommendation} onChange={(event) => updateCandidate(index, { recommendation: event.currentTarget.value })} />
                             ) : (

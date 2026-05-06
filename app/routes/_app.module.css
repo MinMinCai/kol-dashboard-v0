@@ -1,0 +1,147 @@
+.sidebarToggle {
+  background: transparent;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mantine-color-text);
+}
+
+.viewAsButton {
+  background: transparent;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 8px;
+  padding: 4px 10px 4px 6px;
+  cursor: pointer;
+  opacity: 1;
+  color: var(--mantine-color-text);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.viewAsButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.viewAsLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.viewAsName {
+  font-weight: 600;
+}
+
+.dropdownArrow {
+  margin-left: 2px;
+}
+
+.menuForm {
+  margin: 0;
+}
+
+.themeToggle {
+  background: transparent;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--mantine-color-dimmed);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.navbar {
+  z-index: 90;
+  pointer-events: auto;
+}
+
+.navLink {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--mantine-color-text);
+  font-weight: 500;
+  border: 1px solid transparent;
+  text-decoration: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  transition: color 150ms;
+}
+
+.navLinkActive {
+  color: var(--mantine-color-blue-filled);
+  font-weight: 600;
+}
+
+.navIcon {
+  margin-right: 8px;
+}
+
+.bottomNavIcon {
+  margin-right: 12px;
+}
+
+.bottomSection {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.userInfoBlock {
+  padding: 9px 12px;
+  margin-bottom: 6px;
+}
+
+.userAvatar {
+  flex-shrink: 0;
+}
+
+.bottomNavLink {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+}
+
+.logoutLink {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: var(--mantine-color-dimmed);
+  text-decoration: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.errorStatus {
+  font-size: 120px;
+  line-height: 1;
+  color: var(--mantine-color-blue-filled);
+}

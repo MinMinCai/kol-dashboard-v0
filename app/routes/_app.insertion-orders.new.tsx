@@ -21,6 +21,7 @@ import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useState } from "react";
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
+import styles from "./_app.insertion-orders.new.module.css";
 import {
   addBrandCatalog,
   addIndustryCatalog,
@@ -324,14 +325,7 @@ export default function InsertionOrderCreatePage() {
             {/* ── Proposal source banner ── */}
             {proposalData && (
               <>
-                <Box
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: 6,
-                    border: "1px solid var(--mantine-color-blue-3)",
-                    background: "var(--mantine-color-blue-light)",
-                  }}
-                >
+                <Box className={styles.proposalBanner}>
                   <Text size="sm" c="blue" fw={500}>
                     已從提案「{proposalData.title}」帶入基本資訊與已接受的 KOL 名單（共 {proposalData.acceptedKols.length} 位）
                   </Text>
@@ -490,12 +484,7 @@ export default function InsertionOrderCreatePage() {
               />
 
               {selectedKols.length === 0 ? (
-                <Box
-                  style={{
-                    minHeight: 40,
-                    padding: "12px 0",
-                  }}
-                >
+                <Box mih={40} py={12}>
                   <Text size="sm" c="dimmed">
                     尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。
                   </Text>

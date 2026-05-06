@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { GlobalNotification } from "~/components/GlobalNotification";
 import { DEMO_USER, demoAuthCookie } from "~/lib/demo-auth.server";
 import { listMembersWithCurrent } from "~/lib/demo-identity.server";
+import styles from "./_app.module.css";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -15,22 +16,8 @@ const navItems = [
   { to: "/reports/generate", label: "結案報告產生", icon: "📈" },
 ];
 
-function navLinkStyle(active: boolean) {
-  return {
-    display: "block",
-    width: "100%",
-    textAlign: "left" as const,
-    padding: "9px 12px",
-    borderRadius: 10,
-    background: "transparent",
-    color: active ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-text)",
-    fontWeight: active ? 600 : 500,
-    border: "1px solid transparent",
-    textDecoration: "none",
-    boxSizing: "border-box" as const,
-    fontSize: 14,
-    transition: "color 150ms",
-  };
+function navLinkClassName(active: boolean): string {
+  return active ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink;
 }
 
 export default function AppLayoutRoute() {
@@ -105,18 +92,7 @@ export default function AppLayoutRoute() {
               id="kol-sidebar-toggle-btn"
               type="button"
               onClick={() => document.body.classList.toggle('sidebar-collapsed')}
-              style={{
-                background: "transparent",
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 6,
-                padding: "4px 8px",
-                cursor: "pointer",
-                fontSize: 16,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--mantine-color-text)",
-              }}
+              className={styles.sidebarToggle}
             >
               ☰
             </button>
@@ -134,30 +110,16 @@ export default function AppLayoutRoute() {
                 <button
                   type="button"
                   title="切換目前檢視身分"
-                  style={{
-                    background: "transparent",
-                    border: "1px solid var(--mantine-color-default-border)",
-                    borderRadius: 8,
-                    padding: "4px 10px 4px 6px",
-                    cursor: teamMembers.length > 0 ? "pointer" : "not-allowed",
-                    opacity: teamMembers.length > 0 ? 1 : 0.6,
-                    color: "var(--mantine-color-text)",
-                    fontSize: 13,
-                    fontWeight: 500,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    lineHeight: 1,
-                  }}
+                  className={styles.viewAsButton}
                   disabled={teamMembers.length === 0}
                 >
                   <Avatar size={20} radius="xl" color="grape">{viewAsInitial}</Avatar>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <span className={styles.viewAsLabel}>
                     以
-                    <strong style={{ fontWeight: 600 }}>{viewAsName}</strong>
+                    <strong className={styles.viewAsName}>{viewAsName}</strong>
                     身分檢視
                   </span>
-                  <span aria-hidden style={{ marginLeft: 2 }}>▾</span>
+                  <span aria-hidden className={styles.dropdownArrow}>▾</span>
                 </button>
               </Menu.Target>
               <Menu.Dropdown>
@@ -166,7 +128,7 @@ export default function AppLayoutRoute() {
                   <Menu.Item disabled>請先在 系統設定 &gt; 團隊成員 新增成員</Menu.Item>
                 ) : (
                   teamMembers.map((m) => (
-                    <form key={m.id} method="post" action="/api/view-as" style={{ margin: 0 }}>
+                    <form key={m.id} method="post" action="/api/view-as" className={styles.menuForm}>
                       <input type="hidden" name="memberId" value={m.id} />
                       <input type="hidden" name="redirectTo" value={currentPath} />
                       <Menu.Item
@@ -214,20 +176,7 @@ export default function AppLayoutRoute() {
               if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
               if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
             }}
-            style={{
-              background: "transparent",
-              border: "1px solid var(--mantine-color-default-border)",
-              borderRadius: 8,
-              padding: "6px 12px",
-              cursor: "pointer",
-              color: "var(--mantine-color-dimmed)",
-              fontSize: 13,
-              fontWeight: 500,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              lineHeight: 1,
-            }}
+            className={styles.themeToggle}
           >
             <span id="kol-theme-icon">🌙</span>
             <span id="kol-theme-label">Dark</span>
@@ -265,34 +214,29 @@ export default function AppLayoutRoute() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="sm" style={{ zIndex: 90, pointerEvents: "auto" }}>
-        <Stack gap="xs" style={{ flex: 1 }}>
+      <AppShell.Navbar p="sm" className={styles.navbar}>
+        <Stack gap="xs" flex={1}>
           {navItems.map((item) => {
             const active =
               location.pathname === item.to ||
               location.pathname.startsWith(`${item.to}/`);
             return (
-              <a key={item.to} href={item.to} style={navLinkStyle(active)}>
-                <span className="nav-icon" style={{ marginRight: 8 }}>{item.icon}</span>
+              <a key={item.to} href={item.to} className={navLinkClassName(active)}>
+                <span className={`nav-icon ${styles.navIcon}`}>{item.icon}</span>
                 <span className="nav-label">{item.label}</span>
               </a>
             );
           })}
         </Stack>
 
-        <div style={{ marginTop: "auto", paddingTop: 12 }}>
-          <div
-            style={{
-              padding: "9px 12px",
-              marginBottom: 6,
-            }}
-          >
+        <div className={styles.bottomSection}>
+          <div className={styles.userInfoBlock}>
             <Group gap="sm" wrap="nowrap">
-              <Avatar size={24} radius="xl" color="blue" style={{ flexShrink: 0 }}>
+              <Avatar size={24} radius="xl" color="blue" className={styles.userAvatar}>
                 {nameInitial}
               </Avatar>
-              <Group gap={6} wrap="nowrap" style={{ minWidth: 0, alignItems: "center" }}>
-                <Text size="sm" fw={600} className="nav-label" style={{ lineHeight: 1.2 }}>
+              <Group gap={6} wrap="nowrap" miw={0} align="center">
+                <Text size="sm" fw={600} className="nav-label" lh={1.2}>
                   {currentUserName}
                 </Text>
                 <Badge size="xs" variant="light" color="gray" className="nav-label">
@@ -301,41 +245,12 @@ export default function AppLayoutRoute() {
               </Group>
             </Group>
           </div>
-          <a
-            href="/settings"
-            style={{
-              display: "block",
-              width: "100%",
-              textAlign: "left",
-              padding: "9px 12px",
-              borderRadius: 10,
-              color: "var(--mantine-color-text)",
-              textDecoration: "none",
-              boxSizing: "border-box",
-              fontSize: 14,
-              border: "1px solid transparent",
-              marginBottom: 4,
-            }}
-          >
-            <span className="nav-icon" style={{ marginRight: 12 }}>⚙️</span>
+          <a href="/settings" className={styles.bottomNavLink}>
+            <span className={`nav-icon ${styles.bottomNavIcon}`}>⚙️</span>
             <span className="nav-label">系統設定</span>
           </a>
-          <a
-            href="/login"
-            style={{
-              display: "block",
-              width: "100%",
-              textAlign: "left",
-              padding: "9px 12px",
-              borderRadius: 10,
-              color: "var(--mantine-color-dimmed)",
-              textDecoration: "none",
-              boxSizing: "border-box",
-              fontSize: 14,
-              border: "1px solid transparent",
-            }}
-          >
-            <span className="nav-icon" style={{ marginRight: 12 }}>🚪</span>
+          <a href="/login" className={styles.logoutLink}>
+            <span className={`nav-icon ${styles.bottomNavIcon}`}>🚪</span>
             <span className="nav-label">登出（回登入頁）</span>
           </a>
         </div>
@@ -406,7 +321,7 @@ export function ErrorBoundary() {
   return (
     <Center h="100vh">
       <Stack align="center" gap="md">
-        <Title style={{ fontSize: 120, lineHeight: 1, color: "var(--mantine-color-blue-filled)" }}>{status}</Title>
+        <Title className={styles.errorStatus}>{status}</Title>
         <Title order={2}>{title}</Title>
         <Text c="dimmed" size="lg" ta="center" maw={500}>
           {message}
