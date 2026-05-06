@@ -26,7 +26,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
-import { updateInsertionOrder, getInsertionOrder } from "~/lib/mock-api.server";
+import { updateInsertionOrder, getInsertionOrder, type Report } from "~/lib/mock-api.server";
 import { useNotificationStore } from "~/store/notification";
 import { useState, useEffect } from "react";
 import { listInsertionOrders } from "~/lib/mock-api.server";
@@ -168,6 +168,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
+type ReportActionResult =
+  | { ok: true; report?: Report; downloadUrl?: string }
+  | { ok: false; error?: string };
+
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
@@ -177,7 +181,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const reportId = String(formData.get("reportId"));
 
     const io = await getInsertionOrder(orderId);
-    if (!io) return json({ ok: false }, { status: 404 });
+    if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
 
     const updatedReports = (io.reports ?? []).filter((r) => r.id !== reportId);
     const stillHasDraft = updatedReports.some((r) => r.type === "draft");
@@ -189,7 +193,7 @@ export async function action({ request }: ActionFunctionArgs) {
       hasOfficial: stillHasOfficial,
     });
 
-    return json({ ok: true });
+    return json<ReportActionResult>({ ok: true });
   }
 
   if (intent === "uploadReport") {
@@ -199,7 +203,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const isOfficial = formData.get("isOfficial") === "true";
 
     const io = await getInsertionOrder(orderId);
-    if (!io) return json({ ok: false }, { status: 404 });
+    if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
     const newReport = {
       id: `rep_${Date.now()}`,
       name: fileName,
@@ -215,7 +219,7 @@ export async function action({ request }: ActionFunctionArgs) {
       reports: [...(io.reports ?? []), newReport],
     });
 
-    return json({ ok: true });
+    return json<ReportActionResult>({ ok: true });
   }
 
   if (intent === "generateReport") {
@@ -225,7 +229,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const rawSelectedKolIds = String(formData.get("selectedKolIds") ?? "[]");
 
     const io = await getInsertionOrder(orderId);
-    if (!io) return json({ ok: false }, { status: 404 });
+    if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
     const parsedKolIds = (() => {
       try {
         const parsed = JSON.parse(rawSelectedKolIds);
@@ -262,18 +266,18 @@ export async function action({ request }: ActionFunctionArgs) {
         reports: [...(io.reports ?? []), reportWithFile],
       });
 
-      return json({
+      return json<ReportActionResult>({
         ok: true,
         report: reportWithFile,
         downloadUrl: buildReportDownloadPath(orderId, reportWithFile.id),
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "結案報告生成失敗";
-      return json({ ok: false, error: message }, { status: 500 });
+      return json<ReportActionResult>({ ok: false, error: message }, { status: 500 });
     }
   }
 
-  return json({ ok: false }, { status: 400 });
+  return json<ReportActionResult>({ ok: false }, { status: 400 });
 }
 
 export default function ReportManagementPage() {

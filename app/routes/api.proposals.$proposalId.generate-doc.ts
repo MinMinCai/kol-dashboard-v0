@@ -366,7 +366,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       ? `KOL合約_${safeProposalTitle}_${safeKolName}.docx`
       : `KOL委刊單_${safeProposalTitle}_${safeKolName}.docx`;
 
-  return new Response(buffer, {
+  return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
