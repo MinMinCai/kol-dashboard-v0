@@ -11,11 +11,9 @@ import {
   NumberInput,
   Progress,
   RingProgress,
-  ScrollArea,
   Select,
   SimpleGrid,
   Stack,
-  Table,
   Text,
   TextInput,
   Textarea,
@@ -317,6 +315,12 @@ export default function ProposalDetailPage() {
     () => allKolOptions.find((option) => option.value === manualKolId) ?? null,
     [allKolOptions, manualKolId],
   );
+  const sortedCandidates = useMemo(() => {
+    const order: Record<string, number> = { accepted: 0, pending: 1, rejected: 2 };
+    return [...candidates].sort(
+      (a, b) => (order[a.status] ?? 99) - (order[b.status] ?? 99),
+    );
+  }, [candidates]);
   const selectedCandidates = useMemo(
     () => candidates.filter((candidate) => selectedCandidateIds.includes(candidate.id)),
     [candidates, selectedCandidateIds],
@@ -698,200 +702,208 @@ export default function ProposalDetailPage() {
             </Group>
           </Group>
 
-          <ScrollArea>
-          <Table striped withTableBorder style={{ minWidth: 1400 }}>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th style={{ width: 40 }}>
-                  <Checkbox
-                    checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
-                    indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
-                    onChange={(e) => {
-                      if (e.currentTarget.checked) setSelectedCandidateIds(candidates.map(c => c.id));
-                      else setSelectedCandidateIds([]);
-                    }}
-                  />
-                </Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>KOL 名稱</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>合作項目</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>預估報價</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>實際報價</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>真粉比例</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>KOL 名聲</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>平均互動率</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>互動率 index</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>互動率評分</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>品牌適配度</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>綜合品質分數</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>CPFR</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap", minWidth: 160 }}>KOL 選擇建議</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap" }}>狀態</Table.Th>
-                <Table.Th style={{ whiteSpace: "nowrap", minWidth: 120 }}>客戶反饋</Table.Th>
-                {isEditing && <Table.Th style={{ whiteSpace: "nowrap" }}>操作</Table.Th>}
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {candidates.length === 0 ? (
-                <Table.Tr>
-                  <Table.Td colSpan={isEditing ? 17 : 16} align="center">尚未加入任何候選人</Table.Td>
-                </Table.Tr>
-              ) : (
-                candidates.map((c) => (
-                  <Table.Tr key={c.id}>
-                    <Table.Td>
-                      <Checkbox
-                        checked={selectedCandidateIds.includes(c.id)}
-                        onChange={(e) => {
-                          if (e.currentTarget.checked) setSelectedCandidateIds([...selectedCandidateIds, c.id]);
-                          else setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
-                        }}
-                      />
-                    </Table.Td>
-                    <Table.Td fw={500} style={{ whiteSpace: "nowrap" }}>{c.kolName}</Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="role" size="xs" defaultValue={c.role || ""} />
-                      ) : (
-                        c.role || "-"
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="price" size="xs" style={{ width: 90 }} defaultValue={c.price != null ? String(c.price) : "0"} />
-                      ) : (
-                        `$${(c.price ?? 0).toLocaleString("zh-TW")}`
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="actualPrice" size="xs" style={{ width: 90 }} defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
-                      ) : (
-                        c.actualPrice != null ? `$${c.actualPrice.toLocaleString("zh-TW")}` : <Text size="xs" c="dimmed">-</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing && (
-                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
-                      )}
-                      <Text size="sm" c={isEditing ? "dimmed" : undefined}>{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="reputationScore" size="xs" style={{ width: 80 }} defaultValue={c.reputationScore != null ? String(c.reputationScore) : ""} />
-                      ) : (
-                        <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="avgEngagementRate" size="xs" style={{ width: 80 }} defaultValue={c.avgEngagementRate != null ? String(c.avgEngagementRate) : ""} />
-                      ) : (
-                        <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="engagementIndex" size="xs" style={{ width: 80 }} defaultValue={c.engagementIndex != null ? String(c.engagementIndex) : ""} />
-                      ) : (
-                        <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="engagementScore" size="xs" style={{ width: 80 }} defaultValue={c.engagementScore != null ? String(c.engagementScore) : ""} />
-                      ) : (
-                        <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="brandFitScore" size="xs" style={{ width: 80 }} defaultValue={c.brandFitScore != null ? String(c.brandFitScore) : ""} />
-                      ) : (
-                        <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="qualityScore" size="xs" style={{ width: 80 }} defaultValue={c.qualityScore != null ? String(c.qualityScore) : ""} />
-                      ) : (
-                        <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
-                          {c.qualityScore != null ? c.qualityScore : "-"}
-                        </Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap" }}>
-                      {isEditing ? (
-                        <TextInput form={`candidate-edit-form-${c.id}`} name="cpfr" size="xs" style={{ width: 90 }} defaultValue={c.cpfr != null ? String(c.cpfr) : ""} />
-                      ) : (
-                        <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ minWidth: 160 }}>
-                      {isEditing ? (
-                        <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
-                      ) : (
-                        <Text size="xs" lineClamp={2}>{c.recommendation || "-"}</Text>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ whiteSpace: "nowrap", minWidth: 120 }}>
-                      {isEditing ? (
-                        <Select
-                          size="xs"
-                          style={{ minWidth: 110 }}
-                          value={c.status}
-                          data={[
-                            { value: "pending", label: "待定" },
-                            { value: "accepted", label: "已接受" },
-                            { value: "rejected", label: "已拒絕" },
-                          ]}
-                          onChange={(val) => {
-                            if (!val) return;
-                            const formData = new FormData();
-                            formData.append("intent", "update_status");
-                            formData.append("candidateId", c.id);
-                            formData.append("status", val);
-                            formData.append("feedback", c.feedbackText || "");
-                            submit(formData, { method: "post" });
+          {candidates.length > 0 && (
+            <Group gap="sm">
+              <Checkbox
+                label={`全選（${candidates.length}）`}
+                checked={selectedCandidateIds.length === candidates.length && candidates.length > 0}
+                indeterminate={selectedCandidateIds.length > 0 && selectedCandidateIds.length < candidates.length}
+                onChange={(e) => {
+                  if (e.currentTarget.checked) setSelectedCandidateIds(candidates.map(c => c.id));
+                  else setSelectedCandidateIds([]);
+                }}
+              />
+            </Group>
+          )}
+
+          {candidates.length === 0 ? (
+            <Text ta="center" c="dimmed" py="xl">尚未加入任何候選人</Text>
+          ) : (
+            <Stack gap="md">
+              {sortedCandidates.map((c) => (
+                <Card key={c.id} withBorder padding="md" radius="md">
+                  {isEditing && (
+                    <>
+                      <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
+                      <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
+                      <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
+                      <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
+                    </>
+                  )}
+                  <Stack gap="md">
+                    {/* Header: checkbox, name, status, actions */}
+                    <Group justify="space-between" align="center" wrap="nowrap">
+                      <Group gap="sm" align="center" wrap="nowrap">
+                        <Checkbox
+                          checked={selectedCandidateIds.includes(c.id)}
+                          onChange={(e) => {
+                            if (e.currentTarget.checked) setSelectedCandidateIds([...selectedCandidateIds, c.id]);
+                            else setSelectedCandidateIds(selectedCandidateIds.filter(id => id !== c.id));
                           }}
                         />
-                      ) : (
-                        <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ minWidth: 150 }}>
-                      {isEditing ? (
-                        <Textarea
-                          form={`candidate-edit-form-${c.id}`}
-                          name="feedbackText"
-                          size="xs"
-                          autosize
-                          minRows={2}
-                          defaultValue={c.feedbackText || ""}
-                          placeholder="輸入客戶反饋"
-                        />
-                      ) : (
-                        <Text size="xs" c="dimmed">{c.feedbackText || "-"}</Text>
-                      )}
-                    </Table.Td>
-                    {isEditing && (
-                      <Table.Td style={{ whiteSpace: "nowrap", minWidth: 90 }}>
-                        <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
-                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
-                        <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
-                        <Stack gap={4}>
+                        <Text fw={700} size="md">{c.kolName}</Text>
+                        {isEditing ? (
+                          <Select
+                            size="xs"
+                            style={{ width: 120 }}
+                            value={c.status}
+                            data={[
+                              { value: "pending", label: "待定" },
+                              { value: "accepted", label: "已接受" },
+                              { value: "rejected", label: "已拒絕" },
+                            ]}
+                            onChange={(val) => {
+                              if (!val) return;
+                              const formData = new FormData();
+                              formData.append("intent", "update_status");
+                              formData.append("candidateId", c.id);
+                              formData.append("status", val);
+                              formData.append("feedback", c.feedbackText || "");
+                              submit(formData, { method: "post" });
+                            }}
+                          />
+                        ) : (
+                          <Badge color={statusColor[c.status]}>{statusLabel[c.status]}</Badge>
+                        )}
+                      </Group>
+                      {isEditing && (
+                        <Group gap="xs" wrap="nowrap">
                           <Button variant="light" color="blue" size="compact-xs" type="submit" form={`candidate-edit-form-${c.id}`}>儲存</Button>
-                          <ActionIcon variant="light" color="gray" size="sm" type="button" onClick={() => requestDeleteSingle(c.id, c.kolName)}>
-                            <IconTrash size={14} />
-                          </ActionIcon>
-                        </Stack>
-                      </Table.Td>
-                    )}
-                  </Table.Tr>
-                ))
-              )}
-            </Table.Tbody>
-          </Table>
-          </ScrollArea>
+                          <Button variant="light" color="red" size="compact-xs" type="button" onClick={() => requestDeleteSingle(c.id, c.kolName)}>刪除</Button>
+                        </Group>
+                      )}
+                    </Group>
+
+                    <Divider />
+
+                    {/* Cooperation info */}
+                    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>合作項目</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="role" size="xs" defaultValue={c.role || ""} />
+                        ) : (
+                          <Text size="sm">{c.role || "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>預估報價</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="price" size="xs" defaultValue={c.price != null ? String(c.price) : "0"} />
+                        ) : (
+                          <Text size="sm">${(c.price ?? 0).toLocaleString("zh-TW")}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>實際報價</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="actualPrice" size="xs" defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
+                        ) : (
+                          <Text size="sm" c={c.actualPrice == null ? "dimmed" : undefined}>
+                            {c.actualPrice != null ? `$${c.actualPrice.toLocaleString("zh-TW")}` : "-"}
+                          </Text>
+                        )}
+                      </div>
+                    </SimpleGrid>
+
+                    {/* Metrics grid */}
+                    <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>真粉比例</Text>
+                        <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 名聲</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="reputationScore" size="xs" defaultValue={c.reputationScore != null ? String(c.reputationScore) : ""} />
+                        ) : (
+                          <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>平均互動率</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="avgEngagementRate" size="xs" defaultValue={c.avgEngagementRate != null ? String(c.avgEngagementRate) : ""} />
+                        ) : (
+                          <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>互動率 index</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="engagementIndex" size="xs" defaultValue={c.engagementIndex != null ? String(c.engagementIndex) : ""} />
+                        ) : (
+                          <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>互動率評分</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="engagementScore" size="xs" defaultValue={c.engagementScore != null ? String(c.engagementScore) : ""} />
+                        ) : (
+                          <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>品牌適配度</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="brandFitScore" size="xs" defaultValue={c.brandFitScore != null ? String(c.brandFitScore) : ""} />
+                        ) : (
+                          <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>綜合品質分數</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="qualityScore" size="xs" defaultValue={c.qualityScore != null ? String(c.qualityScore) : ""} />
+                        ) : (
+                          <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
+                            {c.qualityScore != null ? c.qualityScore : "-"}
+                          </Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>CPFR</Text>
+                        {isEditing ? (
+                          <TextInput form={`candidate-edit-form-${c.id}`} name="cpfr" size="xs" defaultValue={c.cpfr != null ? String(c.cpfr) : ""} />
+                        ) : (
+                          <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
+                        )}
+                      </div>
+                    </SimpleGrid>
+
+                    {/* Recommendation & feedback */}
+                    <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 選擇建議</Text>
+                        {isEditing ? (
+                          <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
+                        ) : (
+                          <Text size="sm">{c.recommendation || "-"}</Text>
+                        )}
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed" fw={600} mb={4}>客戶反饋</Text>
+                        {isEditing ? (
+                          <Textarea
+                            form={`candidate-edit-form-${c.id}`}
+                            name="feedbackText"
+                            size="xs"
+                            autosize
+                            minRows={2}
+                            defaultValue={c.feedbackText || ""}
+                            placeholder="輸入客戶反饋"
+                          />
+                        ) : (
+                          <Text size="sm" c="dimmed">{c.feedbackText || "-"}</Text>
+                        )}
+                      </div>
+                    </SimpleGrid>
+                  </Stack>
+                </Card>
+              ))}
+            </Stack>
+          )}
         </Stack>
       </Card>
 
