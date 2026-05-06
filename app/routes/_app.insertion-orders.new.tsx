@@ -147,6 +147,13 @@ export async function action({ request }: ActionFunctionArgs) {
   let selectedKols: SelectedKolRow[] = [];
   try { selectedKols = JSON.parse(selectedKolsJson); } catch { selectedKols = []; }
 
+  // Resolve each selected KOL's avatar from the KOL DB. The client form may
+  // omit avatarUrl when rows are pre-filled from a proposal (proposal
+  // candidates do not persist `kolAvatarUrl`), so we look it up by kolId here
+  // to ensure the new order always carries the correct avatar.
+  const allKolsForAvatar = await listKols();
+  const avatarByKolId = new Map(allKolsForAvatar.map((k) => [k.id, k.avatarUrl ?? ""]));
+
   // Keep the manual project quote entered by the user
   const docFile = formData.get("documentUrl") as File;
   const documentUrl = docFile && docFile.name ? docFile.name : "";
@@ -181,7 +188,7 @@ export async function action({ request }: ActionFunctionArgs) {
       id: `ioc_${Math.random().toString(36).slice(2, 9)}`,
       kolId: row.kolId,
       name: row.name,
-      avatarUrl: row.avatarUrl,
+      avatarUrl: avatarByKolId.get(row.kolId) || row.avatarUrl || "",
       price: row.price,
       services: row.services.join(" + "),
       uploadDate: row.uploadDate,
@@ -232,19 +239,20 @@ export default function InsertionOrderCreatePage() {
   /* ── KOL modal state ── */
   const [kolModalOpen, setKolModalOpen] = useState(false);
   const [kolSearch, setKolSearch] = useState("");
-  const [selectedKols, setSelectedKols] = useState<SelectedKolRow[]>(() =>
-    (proposalData?.acceptedKols ?? []).map((pk) => ({
+  const [selectedKols, setSelectedKols] = useState<SelectedKolRow[]>(() => {
+    const kolAvatarById = new Map(kols.map((k) => [k.id, k.avatarUrl ?? ""]));
+    return (proposalData?.acceptedKols ?? []).map((pk) => ({
       id: `row_${pk.kolId || Math.random().toString(36).slice(2, 9)}`,
       kolId: pk.kolId,
       name: pk.kolName,
-      avatarUrl: pk.kolAvatarUrl ?? "",
+      avatarUrl: pk.kolAvatarUrl || kolAvatarById.get(pk.kolId) || "",
       services: pk.role ? [pk.role] : ["待定"],
       uploadDate: "",
       executionDate: "",
       authorization: "",
       price: pk.actualPrice ?? pk.price ?? 0,
-    }))
-  );
+    }));
+  });
 
   const kolOptions = kols.map((k) => ({
     id: k.id,
