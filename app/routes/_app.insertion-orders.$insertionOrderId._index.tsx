@@ -108,6 +108,12 @@ function authorInitial(name: string): string {
   return trimmed.charAt(0).toUpperCase();
 }
 
+// Reviews are constrained to 0.5-star increments at input. Snap on display so
+// legacy data (e.g. 4.2) lines up with the visual stars rendered by `<Rating fractions={2} />`.
+function snapToHalf(value: number): number {
+  return Math.round(value * 2) / 2;
+}
+
 function KolCollabCard({
   kol,
   currentUserName,
@@ -130,7 +136,7 @@ function KolCollabCard({
   const [expanded, { toggle }] = useDisclosure(false);
   const reviewGroups = groupReviewsByAuthor(kol.reviews);
   const displayRating = reviewGroups.length > 0
-    ? reviewGroups.reduce((sum, g) => sum + g.rating, 0) / reviewGroups.length
+    ? reviewGroups.reduce((sum, g) => sum + snapToHalf(g.rating), 0) / reviewGroups.length
     : (kol.rating ?? 0);
 
   return (
@@ -313,7 +319,7 @@ function KolCollabCard({
                             </Stack>
                           </Group>
                           <Group gap="xs" wrap="nowrap">
-                            <Rating value={g.rating} readOnly size="xs" fractions={2} />
+                            <Rating value={snapToHalf(g.rating)} readOnly size="xs" fractions={2} />
                             {isOwn && (
                               <Menu position="bottom-end" withinPortal shadow="md" width={120}>
                                 <Menu.Target>
@@ -465,7 +471,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (intent === "review") {
     const kolId = formData.get("kolId") as string;
-    const rating = Number(formData.get("rating"));
+    const rating = Math.round(Number(formData.get("rating")) * 2) / 2;
     const internalComment = formData.get("internalComment") as string;
     const externalComment = formData.get("externalComment") as string;
     const currentMember = await getCurrentMember(request);
