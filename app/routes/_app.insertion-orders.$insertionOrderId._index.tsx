@@ -34,20 +34,23 @@ import {
 } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
 import { useState, useMemo, useEffect } from "react";
-import { ThemeIcon, Checkbox, Tooltip } from "@mantine/core";
-import { IconRobot, IconBulb, IconClockHour4, IconTemplate, IconFileDescription, IconFile, IconPencil, IconCheck, IconX, IconChevronDown, IconTrash } from "@tabler/icons-react";
+import { ThemeIcon, Checkbox, Tooltip, Menu, ActionIcon } from "@mantine/core";
+import { IconRobot, IconBulb, IconClockHour4, IconTemplate, IconFileDescription, IconFile, IconPencil, IconCheck, IconX, IconChevronDown, IconTrash, IconDotsVertical } from "@tabler/icons-react";
 import { useNotificationStore } from "~/store/notification";
 import { ClientOnly } from "~/components/ClientOnly";
 import {
   getInsertionOrder,
   addIOReview,
   updateIOPerformance,
+  updatePerformanceItem,
+  deletePerformanceItem,
   listBrandCatalog,
   listIndustryCatalog,
   listTeamMembers,
   updateInsertionOrder,
   deleteInsertionOrder,
   type OrderKolCollaboration,
+  type OrderPerformanceItem,
 } from "~/lib/mock-api.server";
 
 function n(value: number | undefined): string {
@@ -63,10 +66,14 @@ function KolCollabCard({
   kol,
   onOpenUploadAndPerf,
   onOpenReview,
+  onEditPerformance,
+  onDeletePerformance,
 }: {
   kol: OrderKolCollaboration;
   onOpenUploadAndPerf: (k: { id: string; name: string }) => void;
   onOpenReview: (k: { id: string; name: string }) => void;
+  onEditPerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
+  onDeletePerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
 }) {
   const [expanded, { toggle }] = useDisclosure(false);
 
@@ -165,9 +172,33 @@ function KolCollabCard({
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
                   {kol.performanceItems?.map((perf) => (
                     <Card key={perf.id} withBorder p="sm" radius="md">
-                      <Group justify="space-between" mb="xs">
+                      <Group justify="space-between" mb="xs" wrap="nowrap">
                         <Text size="sm" fw={700}>{perf.title}</Text>
-                        <Badge size="xs">已追蹤</Badge>
+                        <Group gap={4} wrap="nowrap">
+                          <Badge size="xs">已追蹤</Badge>
+                          <Menu position="bottom-end" withinPortal shadow="md" width={140}>
+                            <Menu.Target>
+                              <ActionIcon variant="subtle" color="gray" size="sm" aria-label="操作">
+                                <IconDotsVertical size={14} />
+                              </ActionIcon>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                              <Menu.Item
+                                leftSection={<IconPencil size={14} />}
+                                onClick={() => onEditPerformance({ id: kol.kolId ?? kol.id, name: kol.name }, perf)}
+                              >
+                                編輯
+                              </Menu.Item>
+                              <Menu.Item
+                                leftSection={<IconTrash size={14} />}
+                                color="red"
+                                onClick={() => onDeletePerformance({ id: kol.kolId ?? kol.id, name: kol.name }, perf)}
+                              >
+                                刪除
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
+                        </Group>
                       </Group>
                       <SimpleGrid cols={4}>
                         <Stack gap={0}>
@@ -382,6 +413,36 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ success: true });
   }
 
+  if (intent === "performanceUpdate") {
+    const kolId = formData.get("kolId") as string;
+    const performanceId = formData.get("performanceId") as string;
+    const title = formData.get("title") as string;
+    const impressions = Number(formData.get("impressions"));
+    const reach = Number(formData.get("reach"));
+    const likes = Number(formData.get("likes"));
+    const comments = Number(formData.get("comments"));
+
+    await updatePerformanceItem(orderId, kolId, performanceId, {
+      title,
+      metrics: {
+        impressions,
+        reach,
+        likes,
+        comments,
+        engagementRate:
+          impressions > 0 ? ((likes + comments) / impressions) * 100 : 0,
+      },
+    });
+    return json({ success: true });
+  }
+
+  if (intent === "performanceDelete") {
+    const kolId = formData.get("kolId") as string;
+    const performanceId = formData.get("performanceId") as string;
+    await deletePerformanceItem(orderId, kolId, performanceId);
+    return json({ success: true });
+  }
+
   return json({ success: false });
 }
 
@@ -488,11 +549,15 @@ export default function InsertionOrderDetailPage() {
     useDisclosure(false);
   const [perfModalOpened, { open: openPerfModal, close: closePerfModal }] =
     useDisclosure(false);
+  const [perfDeleteOpened, { open: openPerfDelete, close: closePerfDelete }] =
+    useDisclosure(false);
 
   const [selectedKol, setSelectedKol] = useState<{
     id: string;
     name: string;
   } | null>(null);
+  const [editingPerformance, setEditingPerformance] = useState<OrderPerformanceItem | null>(null);
+  const [deletingPerformance, setDeletingPerformance] = useState<OrderPerformanceItem | null>(null);
 
   const totalReach =
     insertionOrder.totalReach ??
@@ -520,8 +585,27 @@ export default function InsertionOrderDetailPage() {
     openReview();
   };
 
+  const handleEditPerformance = (
+    kol: { id: string; name: string },
+    item: OrderPerformanceItem,
+  ) => {
+    setSelectedKol(kol);
+    setEditingPerformance(item);
+    openPerfModal();
+  };
+
+  const handleDeletePerformance = (
+    kol: { id: string; name: string },
+    item: OrderPerformanceItem,
+  ) => {
+    setSelectedKol(kol);
+    setDeletingPerformance(item);
+    openPerfDelete();
+  };
+
   const handleOpenUploadAndPerf = (kol: { id: string; name: string }) => {
     setSelectedKol(kol);
+    setEditingPerformance(null);
     openPerfModal();
   };
 
@@ -753,6 +837,8 @@ export default function InsertionOrderDetailPage() {
               kol={kol}
               onOpenUploadAndPerf={handleOpenUploadAndPerf}
               onOpenReview={handleOpenReview}
+              onEditPerformance={handleEditPerformance}
+              onDeletePerformance={handleDeletePerformance}
             />
           ))}
         </Stack>
@@ -761,11 +847,41 @@ export default function InsertionOrderDetailPage() {
       {/* ── Modals ── */}
       <PerformanceModal
         opened={perfModalOpened}
-        onClose={closePerfModal}
+        onClose={() => { closePerfModal(); setEditingPerformance(null); }}
         insertionOrder={insertionOrder}
         selectedKol={selectedKol}
         fetcher={fetcher}
+        editingItem={editingPerformance}
       />
+
+      <Modal
+        opened={perfDeleteOpened}
+        onClose={() => { closePerfDelete(); setDeletingPerformance(null); }}
+        title="確認刪除成效資料"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            確定要刪除「{deletingPerformance?.title ?? ""}」這筆成效資料嗎？此動作無法復原。
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => { closePerfDelete(); setDeletingPerformance(null); }}>
+              取消
+            </Button>
+            <fetcher.Form
+              method="post"
+              onSubmit={() => { closePerfDelete(); setDeletingPerformance(null); }}
+            >
+              <input type="hidden" name="intent" value="performanceDelete" />
+              <input type="hidden" name="kolId" value={selectedKol?.id ?? ""} />
+              <input type="hidden" name="performanceId" value={deletingPerformance?.id ?? ""} />
+              <Button type="submit" color="red" loading={fetcher.state !== "idle"}>
+                確認刪除
+              </Button>
+            </fetcher.Form>
+          </Group>
+        </Stack>
+      </Modal>
 
       <Modal
         id="review-modal"
@@ -1114,9 +1230,11 @@ export default function InsertionOrderDetailPage() {
   );
 }
 
-function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher }: any) {
+function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher, editingItem }: any) {
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === "dark";
+
+  const isEditing = Boolean(editingItem);
 
   const [activeTab, setActiveTab] = useState<"post" | "performance">("performance");
 
@@ -1126,24 +1244,84 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
   const [perfUploadState, setPerfUploadState] = useState<"idle" | "uploading" | "recognizing" | "success">("idle");
   const [perfImages, setPerfImages] = useState<string[]>([]);
 
+  type MetricKey = "impressions" | "reach" | "likes" | "comments" | "shares" | "saves" | "views";
+  const ZERO_METRICS: Record<MetricKey, number> = {
+    impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0, views: 0,
+  };
+
   // Simulated form state
-  const [metrics, setMetrics] = useState({
-    impressions: 0,
-    reach: 0,
-    likes: 0,
-    comments: 0,
-    shares: 0,
-    saves: 0,
-    views: 0,
-  });
+  const [metrics, setMetrics] = useState<Record<MetricKey, number>>(ZERO_METRICS);
+  // Fields the user has manually edited — AI will not overwrite these
+  const [lockedFields, setLockedFields] = useState<Set<MetricKey>>(new Set());
+  // How many screenshots have been processed (cycles mock extraction patterns)
+  const [extractionCount, setExtractionCount] = useState(0);
+
+  // Mock partial extraction per screenshot — simulates that real screenshots
+  // typically only contain a subset of metrics (IG post stats vs reels stats vs etc.)
+  const MOCK_EXTRACTION_PATTERNS: Array<Partial<Record<MetricKey, number>>> = [
+    { impressions: 12500, reach: 8400, likes: 1200 },          // 1st: post insights top
+    { comments: 45, shares: 20, saves: 150 },                  // 2nd: engagement breakdown
+    { views: 9500, likes: 1280 },                              // 3rd: reels/video stats
+  ];
+
+  // Prefill when editing an existing item
+  useEffect(() => {
+    if (!opened) return;
+    if (editingItem) {
+      const m = editingItem.metrics ?? {};
+      setMetrics({
+        impressions: m.impressions ?? 0,
+        reach: m.reach ?? 0,
+        likes: m.likes ?? 0,
+        comments: m.comments ?? 0,
+        shares: m.shares ?? 0,
+        saves: m.saves ?? 0,
+        views: m.views ?? 0,
+      });
+      setPerfImages(editingItem.performanceScreenshots ?? []);
+      setPostImages(editingItem.postScreenshots ?? []);
+      setPerfUploadState((editingItem.performanceScreenshots ?? []).length > 0 ? "success" : "idle");
+      setPostUploadState((editingItem.postScreenshots ?? []).length > 0 ? "success" : "idle");
+      // In edit mode, treat all existing values as user-confirmed (locked) so re-uploads don't clobber
+      const filled = new Set<MetricKey>();
+      (Object.keys(ZERO_METRICS) as MetricKey[]).forEach((k) => {
+        if ((m as any)[k] != null && (m as any)[k] !== 0) filled.add(k);
+      });
+      setLockedFields(filled);
+    }
+  }, [opened, editingItem]);
+
+  // Non-empty wins merge: skip locked fields, only overwrite with non-null/non-zero values
+  const mergeNonEmptyWins = (
+    prev: Record<MetricKey, number>,
+    incoming: Partial<Record<MetricKey, number>>,
+    locked: Set<MetricKey>,
+  ): Record<MetricKey, number> => {
+    const next = { ...prev };
+    (Object.keys(incoming) as MetricKey[]).forEach((k) => {
+      if (locked.has(k)) return;
+      const v = incoming[k];
+      if (v != null && v !== 0) next[k] = v;
+    });
+    return next;
+  };
+
+  // Wrap setMetrics for user-driven field changes — also marks the field as locked
+  const handleMetricChange = (field: MetricKey, value: number) => {
+    setMetrics((m) => ({ ...m, [field]: value }));
+    setLockedFields((prev) => {
+      const next = new Set(prev);
+      next.add(field);
+      return next;
+    });
+  };
 
   const handlePostFileChange = (files: File[]) => {
     if (files.length === 0) return;
     setPostUploadState("uploading");
 
-    // Simulate converting files to object URLs for preview
     const urls = files.map(f => URL.createObjectURL(f));
-    setPostImages(urls);
+    setPostImages((prev) => [...prev, ...urls]);
 
     setTimeout(() => {
       setPostUploadState("success");
@@ -1155,21 +1333,18 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
     setPerfUploadState("uploading");
 
     const urls = files.map(f => URL.createObjectURL(f));
-    setPerfImages(urls);
+    setPerfImages((prev) => [...prev, ...urls]);
 
     setTimeout(() => {
       setPerfUploadState("recognizing");
       setTimeout(() => {
         setPerfUploadState("success");
-        setMetrics({
-          impressions: 12500,
-          reach: 8400,
-          likes: 1200,
-          comments: 45,
-          shares: 20,
-          saves: 150,
-          views: 9500,
+        // Each uploaded file simulates one screenshot extraction; cycle through mock patterns
+        files.forEach((_, i) => {
+          const pattern = MOCK_EXTRACTION_PATTERNS[(extractionCount + i) % MOCK_EXTRACTION_PATTERNS.length];
+          setMetrics((prev) => mergeNonEmptyWins(prev, pattern, lockedFields));
         });
+        setExtractionCount((c) => c + files.length);
       }, 2000);
     }, 1000);
   };
@@ -1186,15 +1361,9 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
       setPostImages([]);
       setPerfUploadState("idle");
       setPerfImages([]);
-      setMetrics({
-        impressions: 0,
-        reach: 0,
-        likes: 0,
-        comments: 0,
-        shares: 0,
-        saves: 0,
-        views: 0,
-      });
+      setMetrics(ZERO_METRICS);
+      setLockedFields(new Set());
+      setExtractionCount(0);
     }, 300);
   };
 
@@ -1202,12 +1371,13 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
     <Modal
       opened={opened}
       onClose={closeAndReset}
-      title={<Text fw={600} size="lg">新增成效數據</Text>}
+      title={<Text fw={600} size="lg">{isEditing ? "編輯成效數據" : "新增成效數據"}</Text>}
       size="700px"
     >
       <fetcher.Form method="post" onSubmit={closeAndReset}>
-        <input type="hidden" name="intent" value="performance" />
+        <input type="hidden" name="intent" value={isEditing ? "performanceUpdate" : "performance"} />
         <input type="hidden" name="kolId" value={selectedKol?.id} />
+        {isEditing && <input type="hidden" name="performanceId" value={editingItem?.id} />}
 
         <Stack gap="xl">
           {/* Section 1: Context */}
@@ -1396,43 +1566,45 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
 
                 {/* Section 4: Data fields (Visible only under Performance Tab for AI connection) */}
                 <Stack gap="xs" mt="sm">
+                  <Text size="xs" c="dimmed">
+                    💡 AI 辨識結果僅供參考，請人工確認各欄位數值是否正確；可繼續上傳其他截圖補齊缺漏欄位（已修改的欄位不會被覆蓋）
+                  </Text>
                   <SimpleGrid cols={2} spacing="md">
-                    <NumberInput label="上線日期 (選填)" placeholder="YYYY / MM / DD" disabled={perfUploadState === 'recognizing'} />
-                    <NumberInput label="觸及人數" name="reach" value={metrics.reach} onChange={(v) => setMetrics(m => ({ ...m, reach: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="曝光數" name="impressions" value={metrics.impressions} onChange={(v) => setMetrics(m => ({ ...m, impressions: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="按讚數" name="likes" value={metrics.likes} onChange={(v) => setMetrics(m => ({ ...m, likes: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="留言數" name="comments" value={metrics.comments} onChange={(v) => setMetrics(m => ({ ...m, comments: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="分享數" value={metrics.shares} onChange={(v) => setMetrics(m => ({ ...m, shares: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="收藏數" value={metrics.saves} onChange={(v) => setMetrics(m => ({ ...m, saves: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
-                    <NumberInput label="觀看次數" value={metrics.views} onChange={(v) => setMetrics(m => ({ ...m, views: Number(v) }))}
-                      disabled={perfUploadState === 'recognizing'}
-                      rightSection={perfUploadState === 'success' ? <Text size="xs" c="blue">✨</Text> : null}
-                      styles={{ input: { borderColor: perfUploadState === 'success' ? 'var(--mantine-color-blue-filled)' : undefined } }}
-                    />
+                    {(() => {
+                      const fieldHint = (field: MetricKey) => {
+                        if (lockedFields.has(field)) return <Text size="xs" c="orange">✏️</Text>;
+                        if (perfUploadState === "success" && metrics[field] > 0) return <Text size="xs" c="blue">✨</Text>;
+                        return null;
+                      };
+                      const fieldStyles = (field: MetricKey) => ({
+                        input: {
+                          borderColor: lockedFields.has(field)
+                            ? 'var(--mantine-color-orange-filled)'
+                            : (perfUploadState === 'success' && metrics[field] > 0)
+                              ? 'var(--mantine-color-blue-filled)'
+                              : undefined,
+                        },
+                      });
+                      const numberInputProps = (field: MetricKey) => ({
+                        value: metrics[field],
+                        onChange: (v: string | number) => handleMetricChange(field, Number(v)),
+                        disabled: perfUploadState === 'recognizing',
+                        rightSection: fieldHint(field),
+                        styles: fieldStyles(field),
+                      });
+                      return (
+                        <>
+                          <NumberInput label="上線日期 (選填)" placeholder="YYYY / MM / DD" disabled={perfUploadState === 'recognizing'} />
+                          <NumberInput label="觸及人數" name="reach" {...numberInputProps("reach")} />
+                          <NumberInput label="曝光數" name="impressions" {...numberInputProps("impressions")} />
+                          <NumberInput label="按讚數" name="likes" {...numberInputProps("likes")} />
+                          <NumberInput label="留言數" name="comments" {...numberInputProps("comments")} />
+                          <NumberInput label="分享數" {...numberInputProps("shares")} />
+                          <NumberInput label="收藏數" {...numberInputProps("saves")} />
+                          <NumberInput label="觀看次數" {...numberInputProps("views")} />
+                        </>
+                      );
+                    })()}
 
                     <TextInput
                       label="互動率 (系統運算)"

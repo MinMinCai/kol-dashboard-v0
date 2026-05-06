@@ -897,8 +897,8 @@ export default function ProposalDetailPage() {
                     </Box>
 
                     {/* ── 建議與反饋 ── */}
-                    <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md" style={{ alignItems: "start" }}>
-                      <div>
+                    <Box style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: "1px solid var(--mantine-color-default-border)", paddingTop: 12, gap: 0 }}>
+                      <Box pr="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
                         <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 選擇建議</Text>
                         {isEditing ? (
                           <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
@@ -907,8 +907,8 @@ export default function ProposalDetailPage() {
                             {c.recommendation || "-"}
                           </Text>
                         )}
-                      </div>
-                      <div>
+                      </Box>
+                      <Box pl="md">
                         <Text size="xs" c="dimmed" fw={600} mb={4}>客戶反饋</Text>
                         {isEditing ? (
                           <Textarea
@@ -925,8 +925,8 @@ export default function ProposalDetailPage() {
                             {c.feedbackText && c.feedbackText !== "null" ? c.feedbackText : "-"}
                           </Text>
                         )}
-                      </div>
-                    </SimpleGrid>
+                      </Box>
+                    </Box>
                   </Stack>
                 </Card>
               ))}

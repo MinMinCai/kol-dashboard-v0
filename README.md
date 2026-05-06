@@ -14,13 +14,15 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 1. [整體技術與架構](#整體技術與架構)  
 2. [專案結構](#專案結構)  
 3. [核心功能模組](#核心功能模組)  
-4. [資料模型與關聯](#資料模型與關聯)  
+4. [資料模型與關聯](#資料模型與關聯-data-models)  
 5. [開發環境與指令](#開發環境與指令)  
    - [部署（Vercel）](#部署vercel)  
 6. [開發流程與優先級](#開發流程與優先級)  
 7. [測試與驗收標準](#測試與驗收標準)  
-8. [Hydration 與 UI 穩定性備忘](#hydration-與-ui-穩定性備忘)  
-9. [補充資源](#補充資源)  
+8. [正式部署技術規劃（成效截圖 / 貼文截圖）](#正式部署技術規劃成效截圖--貼文截圖功能)  
+9. [Hydration 與 UI 穩定性備忘](#hydration-與-ui-穩定性備忘)  
+10. [資料庫穩定性與超時策略](#資料庫穩定性與超時策略)  
+11. [補充資源](#補充資源)  
 
 ---
 
@@ -30,13 +32,18 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 
 | 層級 | 技術方案 | 版本 | 核心優勢 |
 |------|--------|------|--------|
-| **前端框架** | React Router v7 (Remix) | 2.16.1 | 伺服端渲染 + 最佳化資料載入 |
-| **UI 元件庫** | Mantine | 7.17.8 | 專業級元件，適合管理後台 |
-| **狀態管理** | Zustand | 5.0.8 | 輕量級、TypeScript 友善 |
+| **前端框架** | Remix (`@remix-run/*`) | 2.16.7 | 伺服端渲染 + 最佳化資料載入；與 `@vercel/remix` 整合 |
+| **UI 元件庫** | Mantine（`core`/`hooks`/`dates`/`charts`） | 7.17.8 | 專業級元件，適合管理後台 |
+| **圖表** | Recharts + `@mantine/charts` | 2.15.4 | KOL 趨勢圖、儀表板 SparkLine |
+| **圖示** | `@tabler/icons-react` | 3.40.0 | 與 Mantine 整合度高 |
+| **狀態管理** | Zustand | 5.0.8 | 輕量級、TypeScript 友善（用於全域 toast/notification） |
 | **執行時環境** | Node.js | ≥20 | 穩定、高效能 |
 | **資料庫** | PostgreSQL (Supabase) | - | 關聯式、強大查詢功能，雲端託管 |
-| **ORM 框架** | Drizzle ORM | - | 型別安全、schema 即代碼 |
-| **認證系統** | BetterAuth | - | Google OAuth + RBAC 集成 |
+| **ORM 框架** | Drizzle ORM + `postgres` | 0.45 / 3.4 | 型別安全、schema 即代碼；走 pgBouncer 連線池 |
+| **認證系統** | Demo Cookie Auth（現行）／ BetterAuth + Google OAuth（未來） | 1.5.5 | Demo 階段以 Cookie 模擬登入；正式版切回 BetterAuth |
+| **檔案處理** | `xlsx` / `docx` / `adm-zip` | 0.18 / 9.6 / 0.5 | Excel 批量匯入匯出、Word 提案文件、PPT zip 操作 |
+| **資料驗證** | Zod | 3.25 | API / 表單輸入型別檢核 |
+| **日期處理** | Day.js | 1.11 | 統一在地化格式化（避免 SSR locale 漂移） |
 | **部署平台** | [Vercel](https://vercel.com) | - | Remix（`@vercel/remix`）、與 Git 整合自動部署 |
 | **語言** | TypeScript | 5.9.2 | 型別安全、開發效率提升 |
 
@@ -81,52 +88,77 @@ kol-db-demo/
 ├── app/                              # Remix 應用程式核心
 │   ├── entry.client.tsx              # 客戶端入口
 │   ├── entry.server.tsx              # 伺服端入口
-│   ├── root.tsx                      # 根元件 (布局 + 全域 ErrorBoundary)
+│   ├── root.tsx                      # 根元件 (布局 + 全域 ErrorBoundary + process polyfill)
 │   ├── styles.css                    # 全局樣式
 │   ├── components/                   # 可複用 UI 元件
 │   │   ├── ClientOnly.tsx            # 僅客戶端渲染包裝（避免 SSR 不相容）
 │   │   └── GlobalNotification.tsx    # 全域通知／Toast 容器
 │   ├── store/
-│   │   └── notification.ts          # Zustand 全域通知狀態
+│   │   └── notification.ts           # Zustand 全域通知狀態
 │   ├── lib/
-│   │   ├── auth.server.ts           # Better Auth 設定（含 Google OAuth）
-│   │   ├── db.server.ts             # Drizzle + postgres.js 連線（singleton）
-│   │   └── mock-api.server.ts       # 資料存取層（業務 API / Drizzle）
+│   │   ├── auth.server.ts            # BetterAuth 設定（正式版用，含 Google OAuth）
+│   │   ├── demo-auth.server.ts       # Demo 階段：Cookie-based 登入（暫代 BetterAuth）
+│   │   ├── demo-identity.server.ts   # Demo 階段：使用者身份切換（搭配 view-as）
+│   │   ├── db.server.ts              # Drizzle + postgres.js 連線（singleton + 連線池調整）
+│   │   ├── mock-api.server.ts        # 資料存取層（業務 API / Drizzle）
+│   │   ├── kol-batch-import.server.ts # KOL Excel 批量匯入：欄位驗證 + xlsx 解析
+│   │   ├── notifications.server.ts   # 提案異動通知：寫入 notifications + watcher 派送
+│   │   ├── report-ppt.server.ts      # 結案 PPT 生成（pptx / docx 組裝）
+│   │   └── social-links.ts           # 社群連結正規化共用函式
 │   └── routes/                       # 路由模組
-│       ├── $.tsx                     # 404 全域捕捉路由 (Splat Route)
-│       ├── _index.tsx                # 根路徑 `/` → redirect `/login`
-│       ├── login.tsx                 # 登入頁
-│       ├── _app.tsx                  # 主應用佈局 (側邊欄、導覽)
-│       ├── _app.dashboard.tsx        # 儀表板
-│       ├── _app.settings.tsx         # 系統設定 (URL-driven Tabs)
-│       ├── _app.kols._index.tsx      # KOL 列表 (含批量匯入等)
-│       ├── _app.kols.new.tsx         # 新增 KOL
-│       ├── _app.kols.$kolId._index.tsx    # KOL 詳情
-│       ├── _app.kols.$kolId.edit.tsx      # KOL 編輯
-│       ├── _app.proposals._index.tsx      # 提案列表
-│       ├── _app.proposals.new.tsx         # 新提案
-│       ├── _app.proposals.$proposalId.tsx # 提案詳情
-│       ├── _app.insertion-orders._index.tsx              # 委刊單列表
-│       ├── _app.insertion-orders.new.tsx                 # 新增委刊單 (含 Excel 智慧帶入)
-│       ├── _app.insertion-orders.$insertionOrderId._index.tsx  # 委刊單詳情
-│       ├── _app.insertion-orders.$insertionOrderId.edit.tsx    # 委刊單編輯
-│       ├── _app.favorites.tsx        # 我的收藏
-│       ├── _app.reports.generate.tsx # 結案報告管理／生成
-│       ├── api.social-followers.ts   # API：社群粉絲數
-│       ├── api.ai-parse-order.ts     # API：AI 訂單解析
-│       └── api.insertion-orders.$id.ts   # API：單筆委刊單 JSON（供外部或除錯）
+│       ├── $.tsx                              # 404 全域捕捉路由 (Splat Route)
+│       ├── _index.tsx                         # 根路徑 `/` → redirect `/login`
+│       ├── login.tsx                          # 登入頁（demo cookie auth）
+│       ├── _app.tsx                           # 主應用佈局 (側邊欄、導覽、view-as)
+│       ├── _app.dashboard.tsx                 # 儀表板（KOL/提案/委刊單統計 + SparkLine）
+│       ├── _app.settings.tsx                  # 系統設定 (URL-driven Tabs)
+│       ├── _app.kols._index.tsx               # KOL 列表（搜尋／篩選／批量匯入／engagement 排序）
+│       ├── _app.kols.new.tsx                  # 新增 KOL
+│       ├── _app.kols.$kolId._index.tsx        # KOL 詳情（多平台 metrics、合作歷史）
+│       ├── _app.kols.$kolId.edit.tsx          # KOL 編輯（含 audience metrics、性別年齡）
+│       ├── _app.proposals._index.tsx          # 提案列表（filter / sort / pagination）
+│       ├── _app.proposals.new.tsx             # 新提案（預算欄位、預填收藏 KOL）
+│       ├── _app.proposals.$proposalId.tsx     # 提案詳情（候選人排序、AI 分析、上傳報告）
+│       ├── _app.insertion-orders._index.tsx              # 委刊單列表（單號排序 / AI 報告生成入口）
+│       ├── _app.insertion-orders.new.tsx                 # 新增委刊單（Excel 智慧帶入 + KOL 選擇 modal）
+│       ├── _app.insertion-orders.$insertionOrderId._index.tsx  # 委刊單詳情（成效 / 評價 / 截圖上傳）
+│       ├── _app.insertion-orders.$insertionOrderId.edit.tsx    # 委刊單編輯（services / authorization）
+│       ├── _app.favorites.tsx                 # 收藏資料夾（建立 / 改名 / 刪除 / 共享 / Excel 匯出）
+│       ├── _app.reports.generate.tsx          # 結案報告管理（生成 / 下載 / 刪除）
+│       ├── api.db-health.ts                   # API：DB 健康檢查（Vercel function 探活用）
+│       ├── api.social-followers.ts            # API：社群粉絲數（Apify 介接點）
+│       ├── api.ai-parse-order.ts              # API：AI 訂單解析（Mock）
+│       ├── api.kols.batch-import.ts           # API：KOL Excel 批量匯入處理
+│       ├── api.kols.batch-import-template.ts  # API：批量匯入 Excel 範本下載
+│       ├── api.kols.export-excel.ts           # API：選定 KOL 匯出為 Excel
+│       ├── api.proposals.$proposalId.events.ts    # API：提案異動事件流
+│       ├── api.proposals.$proposalId.export.ts    # API：提案匯出 (Excel / Word)
+│       ├── api.proposals.$proposalId.generate-doc.ts # API：提案文件生成（docx）
+│       ├── api.reports.$orderId.$reportId.download.ts # API：結案報告下載（含檔名）
+│       ├── api.insertion-orders.$id.ts        # API：單筆委刊單 JSON（除錯 / 外部）
+│       └── api.view-as.ts                     # API：Demo 階段使用者身份切換
 │
 ├── db/                               # 資料庫設定
+│   ├── schema.sql                    # 完整 SQL schema（直接執行用）
+│   ├── patch.sql                     # 對既有環境的補丁腳本
 │   └── drizzle/
-│       ├── schema.ts                 # Drizzle ORM schema (TypeScript)
-│       ├── migrations/               # SQL migration 檔案
-│       └── meta/                     # Drizzle migration metadata
+│       ├── schema.ts                 # Drizzle ORM schema (TypeScript，唯一真相來源)
+│       ├── relations.ts              # Drizzle 關聯定義
+│       └── migrations/               # SQL migration 檔案 (0000~0002)
+│           ├── 0000_simple_gwen_stacy.sql
+│           ├── 0001_add_actual_fee_platform_metrics.sql
+│           └── 0002_add_favorite_folders.sql
+│
+├── docs/
+│   └── ERD.md                        # Entity Relationship Diagram 與資料表說明
 │
 ├── scripts/
-│   ├── seed.ts                       # 初始資料 seed
-│   ├── migrate.mjs                   # migration 輔助腳本（見 package.json）
-│   ├── backfill-handles.mjs          # 資料回填
-│   └── ui-smoke-io_001.mjs           # smoke 腳本（選用）
+│   ├── seed.ts                       # 初始資料 seed（npm run seed）
+│   ├── migrate.mjs                   # SQL migration 執行（npm run migrate）
+│   ├── backfill-handles.mjs          # Instagram handle 等舊資料回填
+│   ├── sync-sample-data.mjs          # mock/db.json ↔ DB 同步（npm run sync:sample-data）
+│   ├── sample-data-utils.mjs         # 樣本資料共用工具
+│   └── ui-smoke-io_001.mjs           # 委刊單 smoke 腳本（Playwright，選用）
 │
 ├── mock/                             # 本地 json-server 用假資料（`npm run dev:mock`）
 │   └── db.json
@@ -141,6 +173,7 @@ kol-db-demo/
 ├── api/                              # Vercel Remix 建置產出（`@vercel/remix`，勿手動編輯）
 ├── tsconfig.json                     # TypeScript 編譯配置
 ├── package.json                      # 相依套件與腳本
+├── KOLDB-PRD.md                      # 產品需求文件
 └── README.md                         # 專案說明（本文件）
 ```
 
@@ -153,93 +186,120 @@ kol-db-demo/
 ### 1. KOL 管理模組 (KOL Management)
 
 - **KOL 列表與搜尋**
-  - 關鍵字搜尋（姓名、ID）。
-  - 多維度篩選（平台、標籤、粉絲數區間、報價區間）。
+  - 關鍵字搜尋（姓名、ID、Instagram handle）。
+  - 多維度篩選（平台、標籤、粉絲數區間、報價區間、性別、年齡層）。
+  - **Engagement 排序**：以平台平均互動率排序，輔助選人。
+  - 卡片 / 表格視圖切換（原生 `<a>` + SSR 控制）；URL 驅動的搜尋與右側篩選 (URL search params)。
+  - 卡片懸停顯示社群連結（IG / YT / FB / TikTok / Threads）。
 - **KOL 詳細資訊**
-  - 顯示基本資料、社群數據統計、合作歷史記錄、評價、價格趨勢圖。
+  - 顯示基本資料、**多平台社群數據（含 avgRating、avgEngagementRate、realFollowerRatio）**、合作歷史記錄、評價、價格趨勢圖（Recharts SparkLine）。
+  - 內含 KOL 個別頁的成效資料匯出。
 - **KOL 建檔與編輯**
-  - 支援手動新增/編輯 KOL 資料。
-  - 整合 Apify API，自動同步 Instagram / YouTube / Facebook 粉絲數。
-- **標籤管理**
-  - 以自定義標籤（美妝、美食、母嬰等）分類 KOL。
-- **已完成 UI / 互動**
-  - 卡片 / 表格視圖切換（原生 `<a>` + SSR 控制）。
-  - URL 驅動的搜尋與右側篩選（使用 URL search params）。
-  - 收藏與取消收藏（Remix `Form` + Mock API 即時更新）。
-  - Excel 模擬批量匯入（原生 `<dialog>` + Drag & Drop）。
-  - 詳細頁 Modal 查看聯絡方式、下載 JSON 報告草稿。
+  - 支援手動新增 / 編輯 KOL 資料；audience metrics 含性別比例、年齡層分佈、真實粉絲比例。
+  - 預留 Apify API 整合（同步 IG / YT / FB 粉絲數）— 介接點為 `api.social-followers.ts`。
+- **批量匯入 / 匯出（Excel）**
+  - **真實 Excel 批量匯入**（`xlsx` + `adm-zip`）：[api.kols.batch-import.ts](app/routes/api.kols.batch-import.ts)。
+  - 範本下載 API：[api.kols.batch-import-template.ts](app/routes/api.kols.batch-import-template.ts)，內含 audience metrics 欄位與 data validation。
+  - 收藏頁可選擇 KOL 匯出 Excel：[api.kols.export-excel.ts](app/routes/api.kols.export-excel.ts)。
+- **收藏與資料夾共享**
+  - 個人收藏資料夾：建立 / 改名 / 刪除 / 多選加入，支援收藏到多個資料夾。
+  - **共享機制**：可分享給特定同事或整組（AE / KOL / Tech / Media），權限分 view / edit。
+  - 樂觀更新（optimistic UI）：收藏切換立即反映，背景送 action。
+- **標籤管理**：以自定義標籤（美妝、美食、母嬰等）分類 KOL，於系統設定統一維護。
 
 ### 2. 提案專案模組 (Proposal System)
 
-- **專案建立**
-  - 設定專案名稱、客戶、品牌、內容、預算等。
+- **專案建立與管理**
+  - 設定專案名稱、客戶、品牌、內容、**預算**、到期日；新建提案可預填收藏資料夾中的 KOL。
+  - **列表頁支援 filter / sort / pagination**（依狀態、客戶、品牌、日期）。
 - **候選人管理**
-  - 管理 KOL 候選名單與狀態（已提案 / 被接受 / 被拒絕）。
-- **AI 智能搜尋（進階）**
-  - 使用自然語言（NL2SQL）搜尋符合特定條件的 KOL。
-- **提案匯出**
-  - 生成並匯出 Excel / PDF 提案文件（目前以前端模擬為主）。
-- **已完成 UI / 互動**
-  - 提案詳細頁支援 Mock AI 搜尋並加入候選名單。
-  - 手動新增 KOL 候選人（Modal + 表單送出）。
+  - 管理 KOL 候選名單與狀態（已提案 / 被接受 / 被拒絕）；候選人列表支援多欄位排序。
+  - 候選人卡片顯示 KOL 多平台 metrics、real follower ratio、合作次數（collaboration count）。
+  - Stage 工作流（草稿 → 內審 → 送客 → 反饋 → 修訂 → 成功 / 失敗），UI 內可即時切換階段。
+- **AI 輔助**
+  - **AI 分析步驟**：在提案詳細頁啟動分析流程，依候選人組合給出評估摘要（目前為 Mock）。
+  - 自然語言搜尋（NL2SQL）— 規劃中。
+- **提案匯出與文件**
+  - 提案匯出 API：[api.proposals.$proposalId.export.ts](app/routes/api.proposals.$proposalId.export.ts)（Excel）。
+  - 提案文件生成（docx）：[api.proposals.$proposalId.generate-doc.ts](app/routes/api.proposals.$proposalId.generate-doc.ts)。
+  - 上傳客戶報告檔案於提案頁。
+- **異動事件流**
+  - [api.proposals.$proposalId.events.ts](app/routes/api.proposals.$proposalId.events.ts) 提供事件查詢，作為異動通知的資料來源。
 
 ### 3. 委刊單管理模組 (Insertion Order Management)
 
 - **委刊單一覽**
-  - 以卡片或列表形式呈現所有執行中的案件。
+  - 卡片 / 列表呈現；支援 **單號 / 日期 / 預算等多欄位排序** 與篩選。
+  - 列表頁可直接點選「AI 報告生成」進入結案流程。
 - **AI 智能解析匯入**
-  - 上傳 Excel 版委刊單，AI 自動辨識欄位並建立關聯（目前為 Mock 行為）。
+  - 新增委刊單頁：Excel 拖拉上傳，AI 解析後智慧帶入專案欄位、財務總計、KOL 明細（目前 Mock，介接點 `api.ai-parse-order.ts`）。
+  - **KOL 選擇 modal**：可從現有 KOL 庫搜尋並指派至委刊單，自動帶入正確 avatar 與 metrics。
 - **執行進度追蹤**
-  - 三層式摺疊結構（案件 → 合作品牌 → KOL）。
+  - 三層式摺疊結構（案件 → 合作品牌 → KOL）；展開可見成效明細與合作評價。
+  - 編輯頁支援 services（合作項目）、authorization（授權內容）等欄位。
 - **成效數據管理**
-  - 上傳成效截圖，利用 AI OCR 提取曝光、觸及、按讚等數據（規格已定義，實作中）。
+  - 上傳貼文截圖 / 成效截圖 + 手動輸入 metrics（觸及 / 曝光 / 互動）。
+  - **AI OCR 辨識**（規格已定義，demo 階段先以 mock 模擬，正式版接 Claude Haiku 4.5；詳見「正式部署技術規劃」）。
+  - 案件層級的「成效總覽 modal」：依 KOL 篩選聚合查看，可匯出整份案件成效資料。
+  - actualPrice / actualFee 欄位記錄實際結算金額。
 - **合作評價**
-  - 記錄每次合作的星級評分與評語（內部＋外部）。
-- **已完成 UI / 互動**
-  - 委刊單列表、分頁與批量匯入彈窗。
-  - 新增委刊單頁：Excel 拖拉上傳與智慧帶入表單欄位（含財務總計與 KOL 明細）。
-  - 委刊單詳細頁：合作 KOL 列表、Tab、Modal 正常互動，可送出成效 / 評價（Remix action）。
+  - 記錄每次合作的星級評分與評語（內部＋外部），於案件詳情頁分區顯示。
 
 ### 4. 報告生成模組 (Report Generation)
 
-- **AI 結案報告（進階）**
-  - 根據案件數據與成效截圖，自動生成 PPT 結案報告草稿。
+- **結案報告生成**
+  - [report-ppt.server.ts](app/lib/report-ppt.server.ts) 已實作 PPT 草稿生成（前述貼文 / 成效截圖嵌入規劃見正式部署章節）。
+  - 報告管理頁：[_app.reports.generate.tsx](app/routes/_app.reports.generate.tsx) 列出已生成報告，支援下載 / 刪除。
+  - 下載 API：[api.reports.$orderId.$reportId.download.ts](app/routes/api.reports.$orderId.$reportId.download.ts) 自動帶上案件名稱作為檔名。
+  - 報告生成時顯示估算頁數與進度訊息。
 - **版本管理**
-  - 記錄並管理不同版本的報告文件。
+  - 同一委刊單可保留多版本報告；刪除有確認 modal 防誤刪。
 
-### 5. 收藏資料夾共享 (Favorite Folders & Sharing)
+### 5. 儀表板 (Dashboard)
+
+- [_app.dashboard.tsx](app/routes/_app.dashboard.tsx) 提供 KOL / 提案 / 委刊單三大模組的數量總覽與近期趨勢。
+- SparkLine 圖表（Recharts + `@mantine/charts`），含 Y 軸 ticks、grid lines、無資料訊息。
+- Loader 含 timeout / DB 連線 fallback，避免儀表板因資料庫慢查詢卡住整頁。
+
+### 6. 收藏資料夾共享 (Favorite Folders & Sharing)
 
 - **資料夾管理**
-  - 建立個人 KOL 收藏資料夾，加入 KOL 並附上備註。
+  - 建立個人 KOL 收藏資料夾，加入 KOL 並附上備註；支援單一 KOL 加入多個資料夾。
+  - 樂觀更新：加入 / 移除動作即時反映，背景送 Remix action。
 - **共享機制**
   - 可將資料夾共享給**特定同事**或**整個組別**（AE / KOL / Tech / Media）。
   - 支援 `view`（唯讀）與 `edit`（可新增 KOL）兩種權限層級。
+- **批量匯出**：選擇多位 KOL 後匯出 Excel，欄位含社群帳號、報價、audience metrics。
 - **資料表**
   - `kol_favorite_folders` — 資料夾本體
   - `kol_favorite_folder_items` — 資料夾 ↔ KOL 中間表
   - `kol_favorite_folder_shares` — 資料夾 ↔ 共享對象中間表
 
-### 6. 提案異動通知 (Proposal Change Notifications)
+### 7. 提案異動通知 (Proposal Change Notifications)
 
 - **訂閱機制**
   - 提案負責人自動訂閱（`watchType = 'owner'`）；被 @ 的人自動加入（`'mentioned'`）；亦可手動追蹤（`'manual'`）。
 - **通知觸發**
   - 當跨組同事更新 stage、加入 KOL、新增 feedback 時，所有訂閱者收到通知。
+  - 由 [notifications.server.ts](app/lib/notifications.server.ts) 統一處理寫入 + 派送。
 - **通知管理**
   - 支援已讀 / 未讀狀態管理，`payload` 記錄異動前後內容供訊息顯示。
 - **資料表**
   - `proposal_watchers` — 訂閱中間表
   - `notifications` — 通知本體
 
-### 7. 個人化與系統設定 (Personalization & Settings)
+### 8. 個人化與系統設定 (Personalization & Settings)
 
 - **系統設定**
-  - 客戶資料維護、品牌資料維護、標籤定義管理。
+  - 客戶資料維護、品牌資料維護、標籤定義管理（[_app.settings.tsx](app/routes/_app.settings.tsx)）。
+- **使用者身份切換 (Demo)**
+  - [api.view-as.ts](app/routes/api.view-as.ts) 支援 demo 階段切換為不同角色（AE / KOL / Tech / Media）以驗證共享 / 通知行為。
 - **全域操作**
   - 行動版友善的側邊欄收合。
   - 不依賴 React Hook 的日夜主題切換 (Dark Mode)。
-  - 全域 404/Error Boundary 與未知路由捕獲 (`$.tsx`)。
+  - 全域 404/Error Boundary 與未知路由捕獲 (`$.tsx`)；錯誤頁含倒數自動轉跳。
   - Modal 遮罩層級調整，確保可覆蓋左側選單。
+  - 全域 Toast 通知（Zustand store）。
 
 ---
 
@@ -298,44 +358,36 @@ npm install
 在專案根目錄建立 `.env`（**部署到 Vercel 時，請在專案 Settings → Environment Variables 同步設定**）：
 
 ```env
-# 必填：PostgreSQL（例如 Supabase）
+# 必填：PostgreSQL（例如 Supabase；走 pgBouncer 須加 ?pgbouncer=true）
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 
-# Google OAuth（登入／Better Auth 使用時）
+# Google OAuth（正式版 BetterAuth 啟用時）
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+
+# （正式版規劃，目前 demo 不需要）
+# ANTHROPIC_API_KEY=                # 成效截圖 OCR（Claude Haiku 4.5）
+# GCS_BUCKET_NAME=                  # GCP Cloud Storage bucket
+# GOOGLE_APPLICATION_CREDENTIALS=   # 或使用 Workload Identity
 ```
 
 > `DATABASE_URL` 可從 Supabase Dashboard → Project Settings → Database → Connection String 取得。
+>
+> **Demo 階段認證說明**：當前登入採 [demo-auth.server.ts](app/lib/demo-auth.server.ts) 的 cookie 模擬，無需設定 OAuth。BetterAuth 配置已預留於 [auth.server.ts](app/lib/auth.server.ts)，正式上線時切換即可。
 
 ### 常用開發指令
 
-**1. 開發伺服器**
-
-```bash
-npm run dev
-```
-
-前端應用：`http://localhost:3000`
-
-**2. 資料庫 Schema 同步（初次或 schema 有異動時）**
-
-```bash
-npx drizzle-kit push
-```
-
-**3. 載入初始 Seed 資料**
-
-```bash
-npx tsx scripts/seed.ts
-```
-
-**4. 構建與生產伺服器**
-
-```bash
-npm run build
-npm start
-```
+| 指令 | 用途 |
+|------|------|
+| `npm run dev` | Remix 開發伺服器（`http://localhost:3000`） |
+| `npm run dev:mock` | json-server mock API（port 4000，本機開發備援） |
+| `npm run dev:all` | 同時啟動上述兩者 |
+| `npm run build` | 生產建置 |
+| `npm start` | 啟動生產伺服器（讀取 `.env`） |
+| `npm run migrate` | 執行 SQL migration + Instagram handle 回填（`scripts/migrate.mjs` + `backfill-handles.mjs`） |
+| `npm run seed` | 載入初始 seed 資料 |
+| `npm run sync:sample-data` | 將 `mock/db.json` 樣本資料同步至 Supabase（demo 用） |
+| `npx drizzle-kit push` | 直接以 schema.ts 推送 schema（開發時快速使用，正式請走 migration） |
 
 ### 建議開發工作流
 
@@ -421,9 +473,10 @@ npm start
    - 各模組資料匯出。
 
 6. **AI 輔助功能（進階）**
-   - 智能 KOL 搜尋。
-   - 成效辨識演算法。
-   - 自動報告生成。
+   - 智能 KOL 搜尋（NL2SQL）。
+   - **成效截圖辨識（Claude Haiku 4.5 + Tool Use 結構化輸出）** — 詳見〈正式部署技術規劃〉。
+   - 自動結案報告生成（PPT，含截圖嵌入；`report-ppt.server.ts` 已具雛形）。
+   - 提案 AI 分析步驟（候選人組合評估，目前 Mock）。
 
 ### 開發優先級列表說明
 
@@ -484,6 +537,53 @@ npm start
 
 ---
 
+## 正式部署技術規劃（成效截圖 / 貼文截圖功能）
+
+以下項目屬於 demo 階段不實作、待正式網站（GCP）部署時再導入的技術規劃，記錄背景與建議實作方式以利後續銜接。
+
+### 1. AI 成效截圖辨識（Claude Haiku 4.5）
+
+- **模型選用**：Anthropic `claude-haiku-4-5`（pricing：input $1 / 1M tokens、output $5 / 1M tokens；vision 支援 base64 與 URL 兩種輸入）。
+- **預估費用**：以平均 1080×1920 螢幕截圖估算，每張約 2,500–6,500 input tokens + 150 output tokens；1,000 張 / 月約 **US$4–8（≈ NT$120–250）**。長截圖（IG Insights 完整滾動）會落在區間上限。
+- **結構化輸出**：使用 Anthropic Tool Use（`tool_choice` 指定 `extract_metrics`）強制回傳 JSON schema，欄位包含 `platform`、`reach`、`impressions`、`likes`、`comments`、`shares`、`saves`、`views`，未出現於截圖的欄位回傳 `null`，禁止模型推測。
+- **多張截圖合併策略**：採 **non-empty wins**（後到的非 null 值才覆寫前值；已被使用者手動修改的欄位保留優先權）。
+- **錯誤容忍**：截圖中常見的千分位逗號、K/M 縮寫、跨語系欄位需在 prompt 強調統一輸出整數；`engagementRate` 不交由 AI 計算，由前端以 `(likes+comments+shares)/reach` 自行運算以維持一致。
+- **API 端點規劃**：`app/routes/api.performance.extract.ts`（POST，接收 base64 圖片，回傳 `Partial<OrderPerformanceMetrics>`）。
+
+### 2. 圖片儲存（GCP Cloud Storage）
+
+- **建議方案**：Google Cloud Storage（GCS）+ V4 Signed URL；deployment 同 region 部署可省 egress。
+- **上傳路徑**：前端 → 後端取得 signed PUT URL → 前端直傳 GCS（避免 server 流量瓶頸）。
+- **Bucket 結構建議**：
+  - `kol-db/performance-screenshots/{insertionOrderId}/{kolCollabId}/{performanceItemId}/{uuid}.png`
+  - `kol-db/post-screenshots/{insertionOrderId}/{kolCollabId}/{uuid}.png`
+- **存取控制**：bucket 設 uniform bucket-level access；對外存取一律走 signed URL（預設 7 天 TTL，到期前端重取）。
+- **生命週期**：建議結案後 90 天自動轉 Nearline、1 年後轉 Coldline，降低長期儲存費。
+- **替代評估**：Firebase Storage（底層即 GCS，整合 Auth 較快）— 若未來改用 Firebase Auth 可考慮；其餘第三方（R2、Cloudinary）在 GCP 部署情境下不建議。
+
+### 3. 結案 PPT 圖片嵌入
+
+- **流程**：`report-ppt.server.ts` 生成 PPT 時，從 GCS signed URL fetch 圖片 → server-side 用 `sharp` 縮放至合理尺寸（建議寬度 ≤ 1280px、品質 80）→ 以 base64 方式 `slide.addImage({ data })` 嵌入。
+- **理由**：直接使用原始長截圖會讓 PPT 檔案膨脹至數十 MB，且部分 PPT 檢視器對超大圖渲染不穩。
+- **版面建議**：每個 KOL 一頁，左側貼文截圖、右側成效截圖 + 數據表，與業務既有結案報告慣用版型一致。
+
+### 4. 資料模型擴充（須與 demo 階段同步）
+
+`OrderPerformanceItem` 在正式版需擴充：
+
+- `performanceScreenshots: { url, extractedAt, rawExtraction }[]` — 保留每張圖的原始 AI 辨識結果，供日後人工修正對照。
+- `postScreenshots: { url }[]` — 新增貼文截圖欄位。
+- `metricsSource: Record<keyof OrderPerformanceMetrics, "ai" | "manual">` — 紀錄每個欄位是 AI 辨識還是人工輸入；編輯時 UI 用以提示。
+- `createdBy / updatedBy / updatedAt` — 同事修正時的稽核欄位。
+
+### 5. 環境變數（部署清單）
+
+- `ANTHROPIC_API_KEY`
+- `GCP_PROJECT_ID`、`GCS_BUCKET_NAME`、`GOOGLE_APPLICATION_CREDENTIALS`（或 Workload Identity）
+- `IMAGE_SIGNED_URL_TTL_DAYS`（預設 7）
+
+---
+
 ## Hydration 與 UI 穩定性備忘
 
 在 Remix SSR 環境下，只要伺服端與瀏覽器渲染結果不一致，就可能造成 Hydration 失敗並導致按鈕、Modal 等互動失效。專案採用以下防禦策略：
@@ -511,4 +611,35 @@ npm start
    - 在 `root.tsx` 的 `<head>` 中注入 `window.process.env.NODE_ENV` polyfill，避免第三方套件在瀏覽器端引用 Node globals 導致初始化崩潰。
 
 ---
-**更新時間**：2026 年 4 月 13 日  
+
+## 資料庫穩定性與超時策略
+
+由於 Supabase 走 pgBouncer + Vercel serverless cold start，DB 慢查詢容易拖累整頁渲染。專案採以下策略：
+
+1. **Loader 通用 timeout**
+   - 多數 loader 以 `withTimeout(promise, fallback, ms)` 包裝；超時退回安全的 fallback（空陣列 / 預設物件），確保頁面不會白屏。
+   - 委刊單詳情、提案列表、儀表板等資料密集頁皆已套用。
+
+2. **Statement timeout**
+   - 連線時設定 `statement_timeout=0`，避免 pgBouncer / Supabase 端短超時殺掉 migration 等長查詢。
+
+3. **連線池**
+   - 提高 postgres.js 連線數上限以支援 Vercel 高並發；冷啟時的連線重建有重試機制。
+
+4. **Health check**
+   - [api.db-health.ts](app/routes/api.db-health.ts) 提供 DB 連線 + `kols` 表存在性檢查，給 Vercel function probe / 部署驗收使用。
+
+5. **Patch / 資料缺失韌性**
+   - `_app.tsx` loader 對缺表情境降級處理，避免新部署環境尚未跑 migration 時整站炸開（搭配 [db/patch.sql](db/patch.sql)）。
+
+---
+
+## 補充資源
+
+- [KOLDB-PRD.md](KOLDB-PRD.md) — 產品需求文件（功能、流程、AI 輔助規格）
+- [docs/ERD.md](docs/ERD.md) — 資料表 ERD 圖示與欄位說明
+- [db/drizzle/schema.ts](db/drizzle/schema.ts) — Drizzle schema 真相來源
+- [db/drizzle/migrations/](db/drizzle/migrations/) — 歷次 SQL migration（0000 ~ 0002）
+
+---
+**更新時間**：2026 年 5 月 6 日  

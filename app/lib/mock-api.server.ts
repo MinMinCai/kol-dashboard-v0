@@ -64,15 +64,22 @@ export type OrderPerformanceMetrics = {
   comments?: number;
   shares?: number;
   saves?: number;
+  views?: number;
   engagementRate?: number;
 };
+
+export type MetricSource = "ai" | "manual";
 
 export type OrderPerformanceItem = {
   id: string;
   title: string;
   thumbnails?: string[];
   performanceScreenshots?: string[];
+  postScreenshots?: string[];
   metrics?: OrderPerformanceMetrics;
+  metricsSource?: Partial<Record<keyof OrderPerformanceMetrics, MetricSource>>;
+  updatedAt?: string;
+  updatedBy?: string;
 };
 
 export type OrderReview = {
@@ -995,6 +1002,52 @@ export async function updateIOPerformance(
   const newItem: OrderPerformanceItem = { ...performance, id: `perf_${Date.now()}` };
   const updated = [...collabs];
   updated[idx] = { ...updated[idx], performanceItems: [...(updated[idx].performanceItems ?? []), newItem] };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
+export async function updatePerformanceItem(
+  orderId: string,
+  kolId: string,
+  performanceId: string,
+  patch: Partial<Omit<OrderPerformanceItem, "id">>,
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const items = collabs[idx].performanceItems ?? [];
+  const itemIdx = items.findIndex((p) => p.id === performanceId);
+  if (itemIdx === -1) throw new Error("Performance item not found");
+  const merged: OrderPerformanceItem = {
+    ...items[itemIdx],
+    ...patch,
+    id: items[itemIdx].id,
+    metrics: { ...(items[itemIdx].metrics ?? {}), ...(patch.metrics ?? {}) },
+    updatedAt: new Date().toISOString(),
+  };
+  const nextItems = [...items];
+  nextItems[itemIdx] = merged;
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], performanceItems: nextItems };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
+export async function deletePerformanceItem(
+  orderId: string,
+  kolId: string,
+  performanceId: string,
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const items = collabs[idx].performanceItems ?? [];
+  const nextItems = items.filter((p) => p.id !== performanceId);
+  if (nextItems.length === items.length) throw new Error("Performance item not found");
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], performanceItems: nextItems };
   return updateInsertionOrder(orderId, { collaborations: updated });
 }
 
