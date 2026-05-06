@@ -23,13 +23,15 @@ function navLinkClassName(active: boolean): string {
 export default function AppLayoutRoute() {
   const location = useLocation();
   const { currentUserName, currentUserRole, viewAs, teamMembers } = useLoaderData<typeof loader>();
+  const displayName = viewAs?.name ?? currentUserName;
+  const displayRole = viewAs?.role ?? currentUserRole;
   const roleLabel =
-    currentUserRole === "admin"
+    displayRole === "admin"
       ? "Admin"
-      : currentUserRole === "manager"
+      : displayRole === "manager"
         ? "Manager"
         : "Member";
-  const nameInitial = currentUserName?.slice(0, 1) ?? "?";
+  const nameInitial = displayName?.slice(0, 1) ?? "?";
   const viewAsName = viewAs?.name ?? "未指定";
   const viewAsInitial = viewAsName.slice(0, 1);
   const currentPath = location.pathname + location.search;
@@ -237,7 +239,7 @@ export default function AppLayoutRoute() {
               </Avatar>
               <Group gap={6} wrap="nowrap" miw={0} align="center">
                 <Text size="sm" fw={600} className="nav-label" lh={1.2}>
-                  {currentUserName}
+                  {displayName}
                 </Text>
                 <Badge size="xs" variant="light" color="gray" className="nav-label">
                   {roleLabel}
