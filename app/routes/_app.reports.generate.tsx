@@ -48,6 +48,7 @@ import {
   IconUpload,
   IconCloudUpload
 } from "@tabler/icons-react";
+import styles from "./_app.reports.generate.module.css";
 
 function formatShortDate(date: string): string {
   return date.slice(0, 7);
@@ -523,7 +524,7 @@ export default function ReportManagementPage() {
               defaultValue={clientFilter}
               data={["", ...allClients].map(c => ({ value: c, label: c || "全部" }))}
               allowDeselect={false}
-              style={{ width: 200 }}
+              w={200}
             />
             <Select
               label="時間範圍"
@@ -535,7 +536,7 @@ export default function ReportManagementPage() {
                 { value: "2024_10", label: "2024-10" },
               ]}
               allowDeselect={false}
-              style={{ width: 140 }}
+              w={140}
             />
             <Select
               label="狀態"
@@ -548,7 +549,7 @@ export default function ReportManagementPage() {
                 { value: "none", label: "無報告" },
               ]}
               allowDeselect={false}
-              style={{ width: 140 }}
+              w={140}
             />
             <Select
               label="排序"
@@ -579,7 +580,7 @@ export default function ReportManagementPage() {
                 { value: "budget_asc", label: "總預算（低→高）" },
               ]}
               allowDeselect={false}
-              style={{ width: 200 }}
+              w={200}
             />
             <Button type="submit" variant="light">套用篩選</Button>
             {(clientFilter || timeFilter !== "all") && (
@@ -603,7 +604,7 @@ export default function ReportManagementPage() {
             return (
               <Card key={order.id} withBorder shadow="sm" radius="md" p={0}>
                 {/* 1. Campaign Header - All action buttons consolidated here */}
-                <Box p="md" style={{ borderBottom: hasDraft || hasOfficial ? "1px solid #eee" : "none" }}>
+                <Box p="md" className={(hasDraft || hasOfficial) ? styles.headerBarSeparated : undefined}>
                   <Group justify="space-between" align="flex-start">
                     <Box>
                       <Text fw={700} size="lg">📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
@@ -643,18 +644,18 @@ export default function ReportManagementPage() {
                           <Text size="sm" fw={600} mb="sm" c="dimmed">系統生成（草稿）</Text>
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-default-border)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
-                                <Group wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                                  <ThemeIcon size="lg" variant="light" color="gray" style={{ flexShrink: 0 }}><IconFileTypePpt size={20} /></ThemeIcon>
-                                  <Box style={{ minWidth: 0 }}>
+                              <Group key={report.id} justify="space-between" wrap="nowrap" className={styles.reportRow}>
+                                <Group wrap="nowrap" className={styles.flex1MinW0}>
+                                  <ThemeIcon size="lg" variant="light" color="gray" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box miw={0}>
                                     <Group gap="xs" wrap="nowrap">
-                                      <Text fw={500} truncate="end" style={{ minWidth: 0 }}>{report.name}</Text>
-                                      <Badge color="gray" variant="filled" size="xs" style={{ flexShrink: 0 }}>草稿</Badge>
+                                      <Text fw={500} truncate="end" miw={0}>{report.name}</Text>
+                                      <Badge color="gray" variant="filled" size="xs" className={styles.flexShrink0}>草稿</Badge>
                                     </Group>
                                     <Text size="xs" c="dimmed">生成時間: {report.createdAt} | 生成者: {report.createdBy}</Text>
                                   </Box>
                                 </Group>
-                                <Group gap="xs" style={{ flexShrink: 0 }}>
+                                <Group gap="xs" className={styles.flexShrink0}>
                                   <ActionIcon
                                     component="a"
                                     href={buildReportDownloadPath(order.id, report.id)}
@@ -678,19 +679,19 @@ export default function ReportManagementPage() {
                           <Text size="sm" fw={600} mb="sm" c="green">正式版本</Text>
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "official").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" style={{ border: '1px solid var(--mantine-color-green-outline)', background: 'var(--mantine-color-body)', padding: 12, borderRadius: 8 }}>
-                                <Group wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                                  <ThemeIcon size="lg" variant="light" color="green" style={{ flexShrink: 0 }}><IconFileTypePpt size={20} /></ThemeIcon>
-                                  <Box style={{ minWidth: 0 }}>
+                              <Group key={report.id} justify="space-between" wrap="nowrap" className={`${styles.reportRow} ${styles.reportRowOfficial}`}>
+                                <Group wrap="nowrap" className={styles.flex1MinW0}>
+                                  <ThemeIcon size="lg" variant="light" color="green" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box miw={0}>
                                     <Group gap="xs" wrap="nowrap">
-                                      <Text fw={500} truncate="end" style={{ minWidth: 0 }}>{report.name}</Text>
-                                      <Badge color="green" variant="filled" size="xs" style={{ flexShrink: 0 }}>⭐ 正式版</Badge>
+                                      <Text fw={500} truncate="end" miw={0}>{report.name}</Text>
+                                      <Badge color="green" variant="filled" size="xs" className={styles.flexShrink0}>⭐ 正式版</Badge>
                                     </Group>
                                     <Text size="xs" c="dimmed">上傳時間: {report.createdAt} | 上傳者: {report.createdBy}</Text>
                                     {report.note && <Text size="xs" c="dimmed" mt={2}>說明: {report.note}</Text>}
                                   </Box>
                                 </Group>
-                                <Group gap="xs" style={{ flexShrink: 0 }}>
+                                <Group gap="xs" className={styles.flexShrink0}>
                                   <ActionIcon
                                     component="a"
                                     href={buildReportDownloadPath(order.id, report.id)}
@@ -715,10 +716,10 @@ export default function ReportManagementPage() {
         </Stack>
 
         {/* ── Pagination ── */}
-        <Group justify="space-between" align="center" mt="xl" py="md" style={{ borderTop: "1px solid var(--mantine-color-default-border)" }}>
+        <Group justify="space-between" align="center" mt="xl" py="md" className={styles.paginationBorder}>
           <Group>
             <Text size="sm" c="dimmed">每頁筆數</Text>
-            <form method="get" style={{ display: "inline" }}>
+            <form method="get" className={styles.inlineForm}>
               <input type="hidden" name="client" value={clientFilter} />
               <input type="hidden" name="time" value={timeFilter} />
               <input type="hidden" name="status" value={statusFilter} />
@@ -729,14 +730,7 @@ export default function ReportManagementPage() {
                 name="pageSize"
                 defaultValue={pageSize}
                 onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
-                style={{
-                  padding: "6px 10px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                }}
+                className={styles.pageSizeSelect}
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -750,14 +744,7 @@ export default function ReportManagementPage() {
             {currentPage > 1 && (
               <Link
                 to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${currentPage - 1}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  color: "var(--mantine-color-text)",
-                  fontSize: 14,
-                }}
+                className={styles.pageNavLink}
               >
                 ‹ 上一頁
               </Link>
@@ -767,16 +754,7 @@ export default function ReportManagementPage() {
               <Link
                 key={p}
                 to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${p}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 10px",
-                  border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  background: p === currentPage ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
-                  color: p === currentPage ? "#fff" : "var(--mantine-color-text)",
-                  fontSize: 14,
-                  fontWeight: p === currentPage ? 600 : 400,
-                }}
+                className={p === currentPage ? `${styles.pageNumberLink} ${styles.pageNumberLinkActive}` : styles.pageNumberLink}
               >
                 {p}
               </Link>
@@ -785,14 +763,7 @@ export default function ReportManagementPage() {
             {currentPage < totalPages && (
               <Link
                 to={`/reports/generate?client=${encodeURIComponent(clientFilter)}&time=${timeFilter}&status=${statusFilter}&sort=${sort}&page=${currentPage + 1}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  color: "var(--mantine-color-text)",
-                  fontSize: 14,
-                }}
+                className={styles.pageNavLink}
               >
                 下一頁 ›
               </Link>
@@ -816,7 +787,7 @@ export default function ReportManagementPage() {
             value={orderSearch}
             onChange={(e) => setOrderSearch(e.currentTarget.value)}
           />
-          <Box style={{ maxHeight: 400, overflowY: 'auto' }}>
+          <Box className={styles.scrollableList}>
             <Stack gap="xs">
               {allOrders
                 .filter((order: any) => {
@@ -829,19 +800,16 @@ export default function ReportManagementPage() {
                   );
                 })
                 .map((order: any) => (
-                <Card 
-                  key={order.id} 
-                  withBorder 
-                  p="sm" 
-                  radius="md" 
-                  style={{ cursor: 'pointer' }}
+                <Card
+                  key={order.id}
+                  withBorder
+                  p="sm"
+                  radius="md"
+                  className={styles.orderPickerCard}
                   onClick={() => {
                     handleOpenGenModal(order);
                     closeSelectOrderModal();
                   }}
-                  className="hover:bg-blue-50"
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-0)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <Group justify="space-between">
                     <Box>
@@ -872,11 +840,11 @@ export default function ReportManagementPage() {
         radius="md"
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
         closeButtonProps={{
-          style: { border: "1px solid var(--mantine-color-blue-filled)" },
+          className: styles.modalCloseButtonOutline,
         }}
       >
         <Stack gap="lg">
-          <Text size="sm" style={{ lineHeight: 1.6 }}>
+          <Text size="sm" className={styles.lineHeight16}>
             確定要刪除「{reportDeleteTarget?.name ?? ""}」嗎？此動作無法復原。
           </Text>
           <Group justify="flex-end" gap="sm">
@@ -947,10 +915,9 @@ export default function ReportManagementPage() {
                       <Card 
                         key={kol.id || idx} 
                         withBorder 
-                        p="sm" 
-                        radius="md" 
-                        style={{ transition: 'all 0.2s', cursor: 'pointer' }} 
-                        className="hover:shadow-sm"
+                        p="sm"
+                        radius="md"
+                        className={`hover:shadow-sm ${styles.kolCardClickable}`}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -960,7 +927,7 @@ export default function ReportManagementPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Avatar src={kol.avatarUrl} radius="xl" size="md" />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Box className={styles.flexGrow}>
                             <Text fw={600}>{kol.name || kol.kolName || "(未知 KOL)"}</Text>
                             <Group gap={4} mt={4} wrap="wrap">
                               {servicesList.length > 0 ? servicesList.map((svc: string, si: number) => (
@@ -972,7 +939,7 @@ export default function ReportManagementPage() {
                               )}
                             </Group>
                           </Box>
-                          <Box style={{ textAlign: 'right' }}>
+                          <Box ta="right">
                             <Badge variant="dot" color="blue">總觸及 {reachLabel}</Badge>
                             <Text size="xs" c="dimmed" mt={4}>互動率 {engRate}%</Text>
                           </Box>
@@ -996,8 +963,8 @@ export default function ReportManagementPage() {
                         withBorder 
                         p="sm" 
                         radius="md" 
-                        bg="orange.0" 
-                        style={{ opacity: 0.8, cursor: 'pointer' }}
+                        bg="orange.0"
+                        className={styles.kolCardDisabled}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -1006,13 +973,13 @@ export default function ReportManagementPage() {
                             onChange={() => toggleKolSelection(kol.id)}
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <Avatar src={kol.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Avatar src={kol.avatarUrl} radius="xl" size="md" className={styles.kolAvatarGrayscale} />
+                          <Box className={styles.flexGrow}>
                             <Text fw={600} c="dimmed">{kol.name || kol.kolName || "(未知 KOL)"}</Text>
                             <Group gap="xs" mt={4}>
                               <Text size="xs" c="dimmed">{kol.services || ""}</Text>
                             </Group>
-                            <Text size="xs" c="red.7" mt={2}><IconX size={12} style={{display:'inline'}}/> 尚未上傳成效資料</Text>
+                            <Text size="xs" c="red.7" mt={2}><IconX size={12} className={styles.iconInline}/> 尚未上傳成效資料</Text>
                           </Box>
                           <Button
                             component="a"
@@ -1033,7 +1000,7 @@ export default function ReportManagementPage() {
                 <Card bg="blue.0" p="sm" radius="md" mt="xs">
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
-                    <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                    <Text size="sm" c="blue.9" lh={1.4}>
                       未勾選的 KOL 將不會出現在報告中。系統目前會依模板自動擴充頁面，單次報告最多可帶入 10 位 KOL；建議先上傳所有 KOL 的成效資料後再生成報告。
                     </Text>
                   </Group>
@@ -1058,19 +1025,19 @@ export default function ReportManagementPage() {
                 <Box>
                   <Text size="sm" fw={500} mb="xs">PowerPoint 模板</Text>
                   <Group grow>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} style={{ borderColor: selectedTemplate === "standard" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} className={selectedTemplate === "standard" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "standard" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "standard" ? "" : "dimmed"}>公司標準模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} style={{ borderColor: selectedTemplate === "simple" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} className={selectedTemplate === "simple" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "simple" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "simple" ? "" : "dimmed"}>簡約模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} style={{ borderColor: selectedTemplate === "none" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} className={selectedTemplate === "none" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "none" ? "blue" : "gray"}><IconFile /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "none" ? "" : "dimmed"}>不套用模板</Text>
@@ -1133,7 +1100,7 @@ export default function ReportManagementPage() {
           </Stack>
         ) : (
           <Stack align="center" ta="center" gap="md" py="md">
-            <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
+            <ThemeIcon size={64} radius="100%" variant="light" color="blue" className={styles.pulseIcon}>
               <IconRobot size={40} />
             </ThemeIcon>
             <Box>
@@ -1223,7 +1190,7 @@ export default function ReportManagementPage() {
           </Stack>
         ) : uploadProgress !== null ? (
           <Stack align="center" ta="center" py="xl" gap="md">
-            <ThemeIcon size={64} radius="md" color="blue" variant="light" style={{ animation: 'pulse 2s infinite' }}>
+            <ThemeIcon size={64} radius="md" color="blue" variant="light" className={styles.pulseIcon}>
               <IconCloudUpload size={40} />
             </ThemeIcon>
             <Box w="100%">
@@ -1248,22 +1215,7 @@ export default function ReportManagementPage() {
                       withBorder
                       radius="md"
                       p="xl"
-                      style={{ 
-                        borderStyle: 'dashed', 
-                        borderWidth: 2, 
-                        borderColor: 'var(--mantine-color-default-border)', 
-                        cursor: 'pointer', 
-                        textAlign: 'center', 
-                        transition: 'border-color 0.2s, background-color 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--mantine-color-blue-filled)';
-                        e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-light)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--mantine-color-default-border)';
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
+                      className={styles.uploadDropzone}
                     >
                       <Stack align="center" gap="xs">
                         <ThemeIcon size={48} variant="light" color="blue" radius="md">
@@ -1318,7 +1270,7 @@ export default function ReportManagementPage() {
             <Card bg="blue.0" p="sm" radius="md" mt="xs">
               <Group wrap="nowrap" align="flex-start">
                 <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
-                <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                <Text size="sm" c="blue.9" lh={1.4}>
                   上傳正式版後，系統草稿仍會保留。您可以隨時查看或下載任一版本。
                 </Text>
               </Group>
@@ -1332,13 +1284,6 @@ export default function ReportManagementPage() {
         )}
       </Modal>
 
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
     </Box>
   );
 }

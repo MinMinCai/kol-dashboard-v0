@@ -1,0 +1,147 @@
+.headerBarSeparated {
+  border-bottom: 1px solid #eee;
+}
+
+.reportRow {
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.reportRowOfficial {
+  border-color: var(--mantine-color-green-outline);
+}
+
+.flex1MinW0 {
+  flex: 1;
+  min-width: 0;
+}
+
+.flexShrink0 {
+  flex-shrink: 0;
+}
+
+.minW0 {
+  min-width: 0;
+}
+
+.paginationBorder {
+  border-top: 1px solid var(--mantine-color-default-border);
+}
+
+.inlineForm {
+  display: inline;
+}
+
+.pageSizeSelect {
+  padding: 6px 10px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNavLink {
+  padding: 6px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNumberLink {
+  padding: 6px 10px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNumberLinkActive {
+  border-color: var(--mantine-color-blue-filled);
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}
+
+.scrollableList {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.orderPickerCard {
+  cursor: pointer;
+  background: transparent;
+  transition: background-color 0.2s;
+}
+
+.orderPickerCard:hover {
+  background: var(--mantine-color-blue-0);
+}
+
+.modalCloseButtonOutline {
+  border: 1px solid var(--mantine-color-blue-filled);
+}
+
+.lineHeight16 {
+  line-height: 1.6;
+}
+
+.kolCardClickable {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.kolCardDisabled {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.kolAvatarGrayscale {
+  filter: grayscale(100%);
+}
+
+.flexGrow {
+  flex-grow: 1;
+}
+
+.iconInline {
+  display: inline;
+}
+
+.templateCard {
+  border-color: var(--mantine-color-default-border);
+  cursor: pointer;
+}
+
+.templateCardActive {
+  border-color: var(--mantine-color-blue-filled);
+}
+
+.pulseIcon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.uploadDropzone {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: var(--mantine-color-default-border);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.uploadDropzone:hover {
+  border-color: var(--mantine-color-blue-filled);
+  background-color: var(--mantine-color-blue-light);
+}
