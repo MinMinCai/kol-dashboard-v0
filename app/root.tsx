@@ -10,11 +10,10 @@ import {
 } from "@remix-run/react";
 import { ColorSchemeScript, MantineProvider, Container, Title, Text, Button, Center, Stack } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { cssBundleHref } from "@remix-run/css-bundle";
 import mantineStylesHref from "@mantine/core/styles.css";
 import mantineChartsStylesHref from "@mantine/charts/styles.css";
 import stylesHref from "./styles.css";
-
-const cssBundleHref: string | undefined = undefined;
 
 export const links = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),

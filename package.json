@@ -22,6 +22,7 @@
     "@mantine/core": "^7.17.8",
     "@mantine/dates": "^7.17.8",
     "@mantine/hooks": "^7.17.8",
+    "@remix-run/css-bundle": "^2.16.7",
     "@remix-run/node": "2.16.7",
     "@remix-run/react": "2.16.7",
     "@remix-run/serve": "2.16.7",

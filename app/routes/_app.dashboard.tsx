@@ -1,7 +1,6 @@
 import { Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import type { MouseEvent } from "react";
 import { sql } from "drizzle-orm";
 import {
   IconUsers,
@@ -12,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { db } from "~/lib/db.server";
 import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
+import styles from "./_app.dashboard.module.css";
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return Promise.race([
@@ -106,21 +106,9 @@ function ModuleCard({
       radius="md"
       component="a"
       href={mod.to}
-      style={{
-        textDecoration: "none",
-        transition: "transform 200ms ease, box-shadow 200ms ease",
-        height: "100%",
-        minHeight: 130,
-        display: "block",
-      }}
-      onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)";
-      }}
-      onMouseLeave={(e: MouseEvent<HTMLAnchorElement>) => {
-        e.currentTarget.style.transform = "none";
-        e.currentTarget.style.boxShadow = "none";
-      }}
+      h="100%"
+      mih={130}
+      className={styles.moduleCard}
     >
       <Group align="flex-start" wrap="nowrap">
         <ThemeIcon size={52} radius="md" color={mod.color} variant="light">
@@ -130,7 +118,7 @@ function ModuleCard({
           <Text fw={600} size="lg" mb={5}>
             {mod.title}
           </Text>
-          <Text size="sm" c="dimmed" style={{ lineHeight: 1.45 }}>
+          <Text size="sm" c="dimmed" lh={1.45}>
             {mod.description}
           </Text>
         </div>
