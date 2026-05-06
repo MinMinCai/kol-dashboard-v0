@@ -1,0 +1,275 @@
+.alertCloseLink {
+  margin-left: 12px;
+  color: var(--mantine-color-green-filled);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.viewToggle {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.viewOption {
+  padding: 7px 18px;
+  background: transparent;
+  color: var(--mantine-color-text);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.viewOption:not(:last-child) {
+  border-right: 1px solid var(--mantine-color-default-border);
+}
+
+.viewOptionActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+}
+
+.searchForm {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.searchSubmit {
+  padding: 8px 16px;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.searchClear {
+  padding: 8px 14px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.filterToggle {
+  padding: 8px 16px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filterToggleActive {
+  color: #fff;
+  background: var(--mantine-color-blue-filled);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tagLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--mantine-color-text);
+  transition: all 120ms;
+}
+
+.tagLabelActive {
+  border-color: var(--mantine-color-blue-filled);
+  background: var(--mantine-color-blue-light);
+  font-weight: 600;
+  color: var(--mantine-color-blue-filled);
+}
+
+.applyFilterSubmit {
+  padding: 8px 20px;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.clearFilter {
+  padding: 8px 20px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.kolCardItem {
+  position: relative;
+  cursor: pointer;
+}
+
+.favoriteOverlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.favoriteCardBtn,
+.favoriteTableBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: var(--mantine-color-gray-4);
+}
+
+.favoriteCardBtn {
+  font-size: 18px;
+}
+
+.favoriteTableBtn {
+  font-size: 16px;
+}
+
+.favoriteCardBtnActive,
+.favoriteTableBtnActive {
+  color: var(--mantine-color-red-filled);
+}
+
+.favoriteCardBtnActive {
+  text-shadow: 0 0 2px rgba(250, 82, 82, 0.4);
+}
+
+.sortLink {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.iconMuted {
+  display: inline-flex;
+  color: var(--mantine-color-gray-6);
+}
+
+.pageButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: transparent;
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.pageButtonActive {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}
+
+.batchImportDialog {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.dialogClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--mantine-color-text);
+}
+
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  border: 2px dashed var(--mantine-color-blue-4);
+  border-radius: 8px;
+  background-color: var(--mantine-color-blue-light);
+  cursor: pointer;
+  opacity: 1;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.uploadLabelDisabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.uploadEmoji {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.errorsBox {
+  max-height: 140px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+.favoriteFolderList {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+}
+
+.dialogCloseBtn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+  cursor: pointer;
+  font-size: 14px;
+}

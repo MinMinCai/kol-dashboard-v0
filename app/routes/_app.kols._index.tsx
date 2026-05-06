@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, replaceKolFavoriteFolders, type Kol } from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
+import styles from "./_app.kols._index.module.css";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -339,17 +340,6 @@ export default function KolListPage() {
     return isKolFavorited(kol);
   }
 
-  const favoriteInputStyle = {
-    width: "100%",
-    padding: "8px 12px",
-    border: "1px solid var(--mantine-color-default-border)",
-    borderRadius: 4,
-    fontSize: 14,
-    background: "var(--mantine-color-body)",
-    color: "var(--mantine-color-text)",
-  } as const;
-
-
   function sortLabel(key: string) {
     if (key !== sortKey) return "";
     return sortOrder === "asc" ? " ↑" : " ↓";
@@ -379,7 +369,7 @@ export default function KolListPage() {
           KOL 已刪除成功。
           <a
             href={buildUrl(current, { deleted: null })}
-            style={{ marginLeft: 12, color: "var(--mantine-color-green-filled)", textDecoration: "none", fontWeight: 600 }}
+            className={styles.alertCloseLink}
           >
             關閉
           </a>
@@ -393,27 +383,14 @@ export default function KolListPage() {
         </Box>
 
         <Group gap="md" align="flex-end">
-          <Group gap={0} style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 6, overflow: "hidden" }}>
+          <Group gap={0} className={styles.viewToggle}>
             <a
               href={buildUrl(current, { view: "card" })}
-              style={{
-                padding: "7px 18px",
-                background: view === "card" ? "var(--mantine-color-blue-filled)" : "transparent",
-                color: view === "card" ? "#fff" : "var(--mantine-color-text)",
-                fontWeight: 500, fontSize: 14, textDecoration: "none",
-                display: "inline-block",
-                borderRight: "1px solid var(--mantine-color-default-border)",
-              }}
+              className={view === "card" ? `${styles.viewOption} ${styles.viewOptionActive}` : styles.viewOption}
             >卡片</a>
             <a
               href={buildUrl(current, { view: "table" })}
-              style={{
-                padding: "7px 18px",
-                background: view === "table" ? "var(--mantine-color-blue-filled)" : "transparent",
-                color: view === "table" ? "#fff" : "var(--mantine-color-text)",
-                fontWeight: 500, fontSize: 14, textDecoration: "none",
-                display: "inline-block",
-              }}
+              className={view === "table" ? `${styles.viewOption} ${styles.viewOptionActive}` : styles.viewOption}
             >表格</a>
           </Group>
 
@@ -435,7 +412,7 @@ export default function KolListPage() {
           Search: a real HTML form. Submits by pressing Enter or clicking the button.
           Works entirely via browser native GET request.
         */}
-        <form method="get" action="/kols" style={{ flex: 1, display: "flex", gap: 8 }}>
+        <form method="get" action="/kols" className={styles.searchForm}>
           {/* preserve other params */}
           {view !== "card" && <input type="hidden" name="view" value={view} />}
           {sortKey !== "followers" && <input type="hidden" name="sort" value={sortKey} />}
@@ -451,40 +428,16 @@ export default function KolListPage() {
             name="q"
             defaultValue={q}
             placeholder="搜尋 KOL 名稱、@帳號、產業或標籤（按 Enter 搜尋）"
-            style={{
-              flex: 1,
-              padding: "8px 12px",
-              border: "1px solid var(--mantine-color-default-border)",
-              borderRadius: 6,
-              background: "var(--mantine-color-body)",
-              color: "var(--mantine-color-text)",
-              fontSize: 14,
-            }}
+            className={styles.searchInput}
           />
           <button
             type="submit"
-            style={{
-              padding: "8px 16px",
-              background: "var(--mantine-color-blue-filled)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontSize: 14,
-              fontWeight: 500,
-            }}
+            className={styles.searchSubmit}
           >搜尋</button>
           {q && (
             <a
               href={buildUrl(current, { q: null })}
-              style={{
-                padding: "8px 14px",
-                border: "1px solid var(--mantine-color-default-border)",
-                borderRadius: 6,
-                textDecoration: "none",
-                color: "var(--mantine-color-text)",
-                fontSize: 14,
-              }}
+              className={styles.searchClear}
             >✕</a>
           )}
         </form>
@@ -492,17 +445,7 @@ export default function KolListPage() {
         {/* filter panel toggle */}
         <a
           href={buildUrl(current, { panel: showFilters ? null : "filters" })}
-          style={{
-            padding: "8px 16px",
-            border: "1px solid var(--mantine-color-default-border)",
-            borderRadius: 6,
-            textDecoration: "none",
-            color: activeFilterCount > 0 ? "#fff" : "var(--mantine-color-text)",
-            background: activeFilterCount > 0 ? "var(--mantine-color-blue-filled)" : "transparent",
-            fontSize: 14,
-            fontWeight: 500,
-            whiteSpace: "nowrap",
-          }}
+          className={activeFilterCount > 0 ? `${styles.filterToggle} ${styles.filterToggleActive}` : styles.filterToggle}
         >
           ⚙ 篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
         </a>
@@ -523,11 +466,11 @@ export default function KolListPage() {
 
               <Group align="flex-start" gap="xl" wrap="wrap">
                 {/* follower ranges */}
-                <Box style={{ minWidth: 160 }}>
+                <Box miw={160}>
                   <Text size="sm" fw={600} mb={6}>粉絲數</Text>
                   <Stack gap={4}>
                     {FOLLOWER_RANGES.map((r) => (
-                      <label key={r.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14 }}>
+                      <label key={r.key} className={styles.checkboxLabel}>
                         <input
                           type="checkbox"
                           name="fr"
@@ -543,11 +486,11 @@ export default function KolListPage() {
                 <Divider orientation="vertical" />
 
                 {/* industries */}
-                <Box style={{ minWidth: 160 }}>
+                <Box miw={160}>
                   <Text size="sm" fw={600} mb={6}>產業別</Text>
                   <Stack gap={4}>
                     {allIndustries.map((ind) => (
-                      <label key={ind} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14 }}>
+                      <label key={ind} className={styles.checkboxLabel}>
                         <input
                           type="checkbox"
                           name="ind"
@@ -563,7 +506,7 @@ export default function KolListPage() {
                 <Divider orientation="vertical" />
 
                 {/* tags */}
-                <Box style={{ minWidth: 200 }}>
+                <Box miw={200}>
                   <Text size="sm" fw={600} mb={6}>標籤</Text>
                   {/* Script for instant visual feedback — fires before page reload */}
                   <script dangerouslySetInnerHTML={{
@@ -573,12 +516,11 @@ export default function KolListPage() {
                     if (!cb || cb.name !== 'tag') return;
                     var label = cb.closest('label[data-tag-label]');
                     if (!label) return;
-                    
-                    var isChecked = cb.checked;
-                    label.style.background = isChecked ? 'var(--mantine-color-blue-light, #dbe4ff)' : 'transparent';
-                    label.style.border = isChecked ? '1px solid var(--mantine-color-blue-filled, #228be6)' : '1px solid var(--mantine-color-default-border, #ced4da)';
-                    label.style.color = isChecked ? 'var(--mantine-color-blue-filled, #228be6)' : 'var(--mantine-color-text)';
-                    label.style.fontWeight = isChecked ? '600' : '400';
+                    if (cb.checked) {
+                      label.classList.add('${styles.tagLabelActive}');
+                    } else {
+                      label.classList.remove('${styles.tagLabelActive}');
+                    }
                   });
                 `}} />
                   <Group gap={6} wrap="wrap">
@@ -586,29 +528,14 @@ export default function KolListPage() {
                       <label
                         key={tag}
                         data-tag-label="1"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                          padding: "3px 10px",
-                          borderRadius: 20,
-                          border: tags.includes(tag)
-                            ? "1px solid var(--mantine-color-blue-filled)"
-                            : "1px solid var(--mantine-color-default-border)",
-                          background: tags.includes(tag) ? "var(--mantine-color-blue-light)" : "transparent",
-                          cursor: "pointer",
-                          fontSize: 13,
-                          fontWeight: tags.includes(tag) ? 600 : 400,
-                          color: tags.includes(tag) ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-text)",
-                          transition: "all 120ms",
-                        }}
+                        className={tags.includes(tag) ? `${styles.tagLabel} ${styles.tagLabelActive}` : styles.tagLabel}
                       >
                         <input
                           type="checkbox"
                           name="tag"
                           value={tag}
                           defaultChecked={tags.includes(tag)}
-                          style={{ display: "none" }}
+                          hidden
                         />
                         {tag}
                       </label>
@@ -621,27 +548,11 @@ export default function KolListPage() {
               <Group mt="md" gap="sm">
                 <button
                   type="submit"
-                  style={{
-                    padding: "8px 20px",
-                    background: "var(--mantine-color-blue-filled)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    cursor: "pointer",
-                    fontWeight: 500,
-                    fontSize: 14,
-                  }}
+                  className={styles.applyFilterSubmit}
                 >套用篩選</button>
                 <a
                   href={buildUrl({ view, sort: sortKey, order: sortOrder, panel: "filters" }, {})}
-                  style={{
-                    padding: "8px 20px",
-                    border: "1px solid var(--mantine-color-default-border)",
-                    borderRadius: 6,
-                    textDecoration: "none",
-                    color: "var(--mantine-color-text)",
-                    fontSize: 14,
-                  }}
+                  className={styles.clearFilter}
                 >清除篩選</a>
               </Group>
             </form>
@@ -675,23 +586,13 @@ export default function KolListPage() {
                   withBorder
                   radius="md"
                   p="lg"
-                  className="kol-card"
-                  style={{ position: "relative", cursor: "pointer" }}
+                  className={`kol-card ${styles.kolCardItem}`}
                   onClick={() => navigate(`/kols/${kol.id}`)}
                 >
-                  <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.favoriteOverlay} onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: 18,
-                        padding: 0,
-                        lineHeight: 1,
-                        color: isFavorited ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
-                        textShadow: isFavorited ? "0 0 2px rgba(250,82,82,0.4)" : undefined,
-                      }}
+                      className={isFavorited ? `${styles.favoriteCardBtn} ${styles.favoriteCardBtnActive}` : styles.favoriteCardBtn}
                       title={isFavorited ? "管理收藏資料夾" : "加入收藏"}
                       onClick={() => openFavoritePicker(kol)}
                     >
@@ -780,13 +681,13 @@ export default function KolListPage() {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Photo</Table.Th>
-                  <Table.Th><a href={sortUrl("name")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>名稱{sortLabel("name")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("name")} className={styles.sortLink}>名稱{sortLabel("name")}</a></Table.Th>
                   <Table.Th>社群平台</Table.Th>
-                  <Table.Th><a href={sortUrl("followers")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>平台最高粉絲數{sortLabel("followers")}</a></Table.Th>
-                  <Table.Th><a href={sortUrl("engagement")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>互動/曝光{sortLabel("engagement")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("followers")} className={styles.sortLink}>平台最高粉絲數{sortLabel("followers")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("engagement")} className={styles.sortLink}>互動/曝光{sortLabel("engagement")}</a></Table.Th>
                   <Table.Th>標籤</Table.Th>
-                  <Table.Th><a href={sortUrl("rating")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>評分{sortLabel("rating")}</a></Table.Th>
-                  <Table.Th><a href={sortUrl("collaborations")} style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>合作次數{sortLabel("collaborations")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("rating")} className={styles.sortLink}>評分{sortLabel("rating")}</a></Table.Th>
+                  <Table.Th><a href={sortUrl("collaborations")} className={styles.sortLink}>合作次數{sortLabel("collaborations")}</a></Table.Th>
                   <Table.Th>操作</Table.Th>
                 </Table.Tr>
               </Table.Thead>
@@ -820,7 +721,7 @@ export default function KolListPage() {
                               <span
                                 key={row.label}
                                 title={row.label}
-                                style={{ display: "inline-flex", color: "var(--mantine-color-gray-6)" }}
+                                className={styles.iconMuted}
                               >
                                 {row.icon}
                               </span>
@@ -846,15 +747,7 @@ export default function KolListPage() {
                       <Group gap="xs">
                         <button
                           type="button"
-                          style={{
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            fontSize: 16,
-                            padding: 0,
-                            lineHeight: 1,
-                            color: getOptimisticFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
-                          }}
+                          className={getOptimisticFavorited(kol) ? `${styles.favoriteTableBtn} ${styles.favoriteTableBtnActive}` : styles.favoriteTableBtn}
                           title={getOptimisticFavorited(kol) ? "管理收藏資料夾" : "加入收藏"}
                           onClick={() => openFavoritePicker(kol)}
                         >
@@ -890,20 +783,7 @@ export default function KolListPage() {
                 <a
                   key={p}
                   href={`?${new URLSearchParams({ ...Object.fromEntries(Object.entries(current).filter(([, v]) => !Array.isArray(v))), page: String(p) }).toString()}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 32,
-                    height: 32,
-                    borderRadius: 6,
-                    border: "1px solid var(--mantine-color-default-border)",
-                    background: p === page ? "var(--mantine-color-blue-filled)" : "transparent",
-                    color: p === page ? "#fff" : "var(--mantine-color-text)",
-                    textDecoration: "none",
-                    fontSize: 14,
-                    fontWeight: p === page ? 600 : 400,
-                  }}
+                  className={p === page ? `${styles.pageButton} ${styles.pageButtonActive}` : styles.pageButton}
                 >
                   {p}
                 </a>
@@ -967,7 +847,7 @@ export default function KolListPage() {
           <input type="hidden" name="selectedFolders" value={favoritePickerSelection.join(",")} />
           <Stack gap="md">
             <Text size="sm" c="dimmed">可多選資料夾；若先收藏但暫時不分類，也可以直接儲存。</Text>
-            <Stack gap="xs" style={favoriteInputStyle}>
+            <Stack gap="xs" className={styles.favoriteFolderList}>
               {folders.length === 0 ? (
                 <Text size="sm" c="dimmed">尚未建立任何收藏資料夾，儲存後會先加入收藏但不分類。</Text>
               ) : (
@@ -1011,22 +891,13 @@ export default function KolListPage() {
       {/* ── Batch Import Dialog ── */}
       <dialog
         id="kol-batch-import-dialog"
-        style={{
-          padding: 24,
-          borderRadius: 8,
-          border: "1px solid var(--mantine-color-default-border)",
-          background: "var(--mantine-color-body)",
-          color: "var(--mantine-color-text)",
-          width: "100%",
-          maxWidth: 500,
-          boxShadow: "0 10px 24px rgba(0,0,0,0.15)",
-        }}
+        className={styles.batchImportDialog}
       >
         <Group justify="space-between" mb="md">
           <Title order={4}>批量匯入 KOL (Excel)</Title>
           <button
             type="button"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--mantine-color-text)" }}
+            className={styles.dialogClose}
             onClick={(e) => { (e.currentTarget.closest('dialog') as HTMLDialogElement).close(); }}
           >
             ✕
@@ -1037,19 +908,7 @@ export default function KolListPage() {
         </Text>
 
         <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "32px",
-            border: "2px dashed var(--mantine-color-blue-4)",
-            borderRadius: "8px",
-            backgroundColor: "var(--mantine-color-blue-light)",
-            cursor: batchImporting ? "wait" : "pointer",
-            opacity: batchImporting ? 0.6 : 1,
-            transition: "background-color 0.2s, opacity 0.2s",
-          }}
+          className={batchImporting ? `${styles.uploadLabel} ${styles.uploadLabelDisabled}` : styles.uploadLabel}
           onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-1)"; }}
           onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.backgroundColor = "var(--mantine-color-blue-light)"; }}
           onDrop={(e) => {
@@ -1063,7 +922,7 @@ export default function KolListPage() {
             }
           }}
         >
-          <div style={{ fontSize: 36, marginBottom: 12 }}>📤</div>
+          <div className={styles.uploadEmoji}>📤</div>
           <Text fw={600} color="var(--mantine-color-blue-filled)">
             {batchImporting ? "正在處理中…" : "點擊或拖曳 Excel 檔案至此"}
           </Text>
@@ -1073,7 +932,7 @@ export default function KolListPage() {
             type="file"
             accept=".xlsx, .xls, .csv"
             disabled={batchImporting}
-            style={{ display: "none" }}
+            hidden
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (!file) return;
@@ -1108,15 +967,7 @@ export default function KolListPage() {
                   共讀取 {r.total} 列，成功 {r.success} 筆、失敗 {r.failed} 筆。
                 </Text>
                 {r.errors.length > 0 && (
-                  <Box
-                    style={{
-                      maxHeight: 140,
-                      overflow: "auto",
-                      fontSize: 12,
-                      lineHeight: 1.5,
-                      paddingTop: 4,
-                    }}
-                  >
+                  <Box className={styles.errorsBox}>
                     {r.errors.slice(0, 30).map((msg, i) => (
                       <div key={i}>• {msg}</div>
                     ))}
@@ -1140,7 +991,7 @@ export default function KolListPage() {
           </a>
           <button
             type="button"
-            style={{ padding: "8px 16px", borderRadius: 4, border: "1px solid var(--mantine-color-default-border)", background: "var(--mantine-color-body)", cursor: "pointer", fontSize: 14 }}
+            className={styles.dialogCloseBtn}
             onClick={(e) => { (e.currentTarget.closest('dialog') as HTMLDialogElement).close(); }}
           >
             關閉

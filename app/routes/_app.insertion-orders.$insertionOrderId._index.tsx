@@ -22,7 +22,6 @@ import {
   Progress,
   Image,
   Collapse,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 // import { BarChart } from "@mantine/charts"; // 暫不開發
@@ -54,6 +53,7 @@ import {
   type OrderReview,
 } from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
+import styles from "./_app.insertion-orders.$insertionOrderId._index.module.css";
 
 function n(value: number | undefined): string {
   // Use a stable locale to prevent hydration mismatch
@@ -149,11 +149,7 @@ function KolCollabCard({
                 >
                   <IconChevronDown
                     size={18}
-                    style={{
-                      transform: expanded ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.2s',
-                      display: 'block'
-                    }}
+                    className={expanded ? `${styles.chevron} ${styles.chevronExpanded}` : styles.chevron}
                   />
                 </Button>
               </Group>
@@ -283,7 +279,7 @@ function KolCollabCard({
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text size="sm" c="dimmed" p="md" ta="center" style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: '8px' }}>
+                <Text size="sm" c="dimmed" p="md" ta="center" className={styles.emptyBox}>
                   尚無成效數據
                 </Text>
               )}
@@ -338,13 +334,13 @@ function KolCollabCard({
                           {g.external && (
                             <Group gap="xs" align="flex-start" wrap="nowrap">
                               <Badge size="xs" color="blue" mt={2}>外評</Badge>
-                              <Text size="sm" style={{ flex: 1 }}>{g.external.comment}</Text>
+                              <Text size="sm" flex={1}>{g.external.comment}</Text>
                             </Group>
                           )}
                           {g.internal && (
                             <Group gap="xs" align="flex-start" wrap="nowrap">
                               <Badge size="xs" color="red" mt={2}>內評</Badge>
-                              <Text size="sm" c="dimmed" style={{ flex: 1 }}>{g.internal.comment}</Text>
+                              <Text size="sm" c="dimmed" flex={1}>{g.internal.comment}</Text>
                             </Group>
                           )}
                         </Stack>
@@ -353,7 +349,7 @@ function KolCollabCard({
                   })}
                 </Stack>
               ) : (
-                <Text size="sm" c="dimmed" p="md" ta="center" style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: '8px' }}>
+                <Text size="sm" c="dimmed" p="md" ta="center" className={styles.emptyBox}>
                   尚無評價內容
                 </Text>
               )}
@@ -804,21 +800,17 @@ export default function InsertionOrderDetailPage() {
               {description && (
                 <Box mt="xs">
                   <Text size="xs" fw={700} c="dimmed" mb={4}>專案說明</Text>
-                  <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>{description}</Text>
+                  <Text size="sm" className={styles.preWrapText}>{description}</Text>
                 </Box>
               )}
               {internalNotes && (
                 <Box
                   mt="xs"
                   p="sm"
-                  style={{
-                    background: "var(--mantine-color-gray-0)",
-                    border: "1px solid var(--mantine-color-gray-3)",
-                    borderRadius: 6,
-                  }}
+                  className={styles.internalNotesBlock}
                 >
                   <Text size="xs" fw={700} c="dimmed" mb={4}>🔒 內部備註</Text>
-                  <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap" }}>{internalNotes}</Text>
+                  <Text size="sm" c="dimmed" className={styles.preWrapText}>{internalNotes}</Text>
                 </Box>
               )}
             </Stack>
@@ -889,7 +881,7 @@ export default function InsertionOrderDetailPage() {
         <Title order={3} mb="lg">
           📈 成效數據對比
         </Title>
-        <ClientOnly fallback={<Box h={250} style={{ background: "#f8f9fa" }} />}>
+        <ClientOnly fallback={<Box h={250} className={styles.chartFallback} />}>
           {() => (
             <Grid>
               <Grid.Col span={{ base: 12, md: 6 }}>
@@ -1072,8 +1064,7 @@ export default function InsertionOrderDetailPage() {
                         withBorder
                         p="sm"
                         radius="md"
-                        style={{ transition: 'all 0.2s', cursor: 'pointer' }}
-                        className="hover:shadow-sm"
+                        className={`hover:shadow-sm ${styles.kolCardClickable}`}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -1083,13 +1074,13 @@ export default function InsertionOrderDetailPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Avatar src={kol.avatarUrl} radius="xl" size="md" />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Box className={styles.flexGrow}>
                             <Text fw={600}>{kol.name || "KOL Name"}</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /> | IG限動 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /></Text>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} color="green" className={styles.iconInline} /> | IG限動 <IconCheck size={12} color="green" className={styles.iconInline} /></Text>
                             </Group>
                           </Box>
-                          <Box style={{ textAlign: 'right' }}>
+                          <Box ta="right">
                             <Badge variant="dot" color="blue">總觸及 80K</Badge>
                             <Text size="xs" c="dimmed" mt={4}>互動率 7.8%</Text>
                           </Box>
@@ -1098,7 +1089,7 @@ export default function InsertionOrderDetailPage() {
                     ))}
                     {/* Mock empty check context */}
                     {(activeOrder.collaborations || []).filter((k: any) => (k.performanceItems || []).length > 0).length === 0 && (
-                      <Card withBorder p="sm" radius="md" style={{ cursor: 'pointer' }} onClick={() => toggleKolSelection("demo-gina")}>
+                      <Card withBorder p="sm" radius="md" className={styles.kolCardClickable} onClick={() => toggleKolSelection("demo-gina")}>
                         <Group wrap="nowrap">
                           <Checkbox
                             checked={selectedKolIds.includes("demo-gina")}
@@ -1106,10 +1097,10 @@ export default function InsertionOrderDetailPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Avatar color="blue" radius="xl" size="md">G</Avatar>
-                          <Box style={{ flexGrow: 1 }}>
+                          <Box className={styles.flexGrow}>
                             <Text fw={600}>Gina (Demo)</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /> | IG限動 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /></Text>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} color="green" className={styles.iconInline} /> | IG限動 <IconCheck size={12} color="green" className={styles.iconInline} /></Text>
                             </Group>
                           </Box>
                         </Group>
@@ -1129,7 +1120,7 @@ export default function InsertionOrderDetailPage() {
                         p="sm"
                         radius="md"
                         bg="light-dark(var(--mantine-color-orange-0), rgba(253, 126, 20, 0.15))"
-                        style={{ opacity: 0.8, cursor: 'pointer' }}
+                        className={styles.kolCardDisabled}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -1138,11 +1129,11 @@ export default function InsertionOrderDetailPage() {
                             onChange={() => toggleKolSelection(kol.id)}
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <Avatar src={kol.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Avatar src={kol.avatarUrl} radius="xl" size="md" className={styles.kolAvatarGrayscale} />
+                          <Box className={styles.flexGrow}>
                             <Text fw={600} c="dimmed">{kol.name || "KOL Name"}</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="red.7"><IconX size={12} style={{ display: 'inline' }} /> 無成效資料</Text>
+                              <Text size="xs" c="red.7"><IconX size={12} className={styles.iconInline} /> 無成效資料</Text>
                             </Group>
                           </Box>
                           <Button variant="subtle" size="xs" color="blue" rightSection="→">前往上傳成效</Button>
@@ -1156,7 +1147,7 @@ export default function InsertionOrderDetailPage() {
                 <Card bg="light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.15))" p="sm" radius="md" mt="xs">
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
-                    <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                    <Text size="sm" c="blue.9" lh={1.4}>
                       未勾選的 KOL 將不會出現在報告中。建議先上傳所有 KOL 的成效資料後再生成報告。
                     </Text>
                   </Group>
@@ -1180,19 +1171,19 @@ export default function InsertionOrderDetailPage() {
                 <Box>
                   <Text size="sm" fw={500} mb="xs">PowerPoint 模板</Text>
                   <Group grow>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} style={{ borderColor: selectedTemplate === "standard" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} className={selectedTemplate === "standard" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "standard" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "standard" ? "" : "dimmed"}>公司標準模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} style={{ borderColor: selectedTemplate === "simple" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} className={selectedTemplate === "simple" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "simple" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "simple" ? "" : "dimmed"}>簡約模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} style={{ borderColor: selectedTemplate === "none" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} className={selectedTemplate === "none" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "none" ? "blue" : "gray"}><IconFile /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "none" ? "" : "dimmed"}>不套用模板</Text>
@@ -1235,7 +1226,7 @@ export default function InsertionOrderDetailPage() {
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
       >
         <Stack align="center" ta="center" gap="md" py="md">
-          <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
+          <ThemeIcon size={64} radius="100%" variant="light" color="blue" className={styles.pulseIcon}>
             <IconRobot size={40} />
           </ThemeIcon>
           <Box>
@@ -1325,21 +1316,11 @@ export default function InsertionOrderDetailPage() {
         </Stack>
       </Modal>
 
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
     </Stack >
   );
 }
 
 function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher, editingItem }: any) {
-  const { colorScheme } = useMantineColorScheme();
-  const isDark = colorScheme === "dark";
-
   const isEditing = Boolean(editingItem);
 
   const [activeTab, setActiveTab] = useState<"post" | "performance">("performance");
@@ -1509,41 +1490,19 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
 
           {/* Sections: Tabs */}
           <Box>
-            <Box style={{ borderBottom: "1px solid var(--mantine-color-default-border)", marginBottom: "16px" }}>
+            <Box className={styles.tabNav}>
               <Group gap={0}>
                 <button
                   type="button"
                   onClick={() => setActiveTab("post")}
-                  style={{
-                    padding: "8px 16px",
-                    border: "none",
-                    borderBottom: activeTab === "post" ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
-                    background: "none",
-                    cursor: "pointer",
-                    color: activeTab === "post" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-dimmed)",
-                    fontWeight: activeTab === "post" ? 600 : 400,
-                    fontSize: "var(--mantine-font-size-sm)",
-                    fontFamily: "inherit",
-                    transition: "color 0.1s, border-color 0.1s",
-                  }}
+                  className={activeTab === "post" ? `${styles.tab} ${styles.tabActive}` : styles.tab}
                 >
                   貼文圖片
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("performance")}
-                  style={{
-                    padding: "8px 16px",
-                    border: "none",
-                    borderBottom: activeTab === "performance" ? "2px solid var(--mantine-color-blue-filled)" : "2px solid transparent",
-                    background: "none",
-                    cursor: "pointer",
-                    color: activeTab === "performance" ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-dimmed)",
-                    fontWeight: activeTab === "performance" ? 600 : 400,
-                    fontSize: "var(--mantine-font-size-sm)",
-                    fontFamily: "inherit",
-                    transition: "color 0.1s, border-color 0.1s",
-                  }}
+                  className={activeTab === "performance" ? `${styles.tab} ${styles.tabActive}` : styles.tab}
                 >
                   成效截圖
                 </button>
@@ -1554,13 +1513,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
             {activeTab === "post" && (
               <Stack gap="md">
                 {postUploadState === "idle" && (
-                  <Box
-                    style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
-                  >
+                  <Box className={styles.uploadDropzone}>
                     <FileInput
                       multiple
                       accept="image/*"
-                      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                      className={styles.fileInputOverlay}
                       onChange={handlePostFileChange}
                     />
                     <Text size="md" fw={500} c="dimmed">
@@ -1581,13 +1538,13 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 {postUploadState === "success" && (
                   <Group gap="sm">
                     {postImages.map((src, i) => (
-                      <Image key={i} src={src} w={100} h={100} radius="md" style={{ objectFit: 'cover' }} />
+                      <Image key={i} src={src} w={100} h={100} radius="md" className={styles.imageCover} />
                     ))}
-                    <Box style={{ width: 100, height: 100, border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+                    <Box className={styles.uploadAddMore}>
                       <FileInput
                         multiple
                         accept="image/*"
-                        style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                        className={styles.fileInputOverlay}
                         onChange={handlePostFileChange}
                       />
                       <Text size="xl" c="dimmed">+</Text>
@@ -1601,13 +1558,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
             {activeTab === "performance" && (
               <Stack gap="md">
                 {perfUploadState === "idle" && (
-                  <Box
-                    style={{ border: "2px dashed var(--mantine-color-gray-4)", borderRadius: 8, padding: 40, textAlign: "center", cursor: "pointer", position: "relative" }}
-                  >
+                  <Box className={styles.uploadDropzone}>
                     <FileInput
                       multiple
                       accept="image/*"
-                      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", height: "100%" }}
+                      className={styles.fileInputOverlay}
                       onChange={handlePerfFileChange}
                     />
                     <Text size="md" fw={500} c="dimmed">
@@ -1628,7 +1583,7 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                 {['recognizing', 'success'].includes(perfUploadState) && (
                   <Group gap="sm" mb="sm">
                     {perfImages.map((src, i) => (
-                      <Image key={i} src={src} w={100} h={100} radius="md" style={{ objectFit: 'cover' }} />
+                      <Image key={i} src={src} w={100} h={100} radius="md" className={styles.imageCover} />
                     ))}
                   </Group>
                 )}
@@ -1637,14 +1592,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   <Card
                     p="md"
                     radius="md"
-                    style={{
-                      background: isDark ? "rgba(51, 154, 240, 0.18)" : "var(--mantine-color-blue-0)",
-                      border: isDark ? "1px solid rgba(51, 154, 240, 0.35)" : undefined,
-                    }}
+                    className={styles.aiRecognizingCard}
                   >
                     <Group gap="sm">
                       <Loader color="blue" size="sm" />
-                      <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                      <Text size="sm" fw={600} className={styles.aiCardText}>
                         ✨ 🤖 AI 正在辨識中...
                       </Text>
                     </Group>
@@ -1655,15 +1607,11 @@ function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetche
                   <Card
                     p="md"
                     radius="md"
-                    style={{
-                      background: isDark ? "rgba(51, 154, 240, 0.16)" : "var(--mantine-color-blue-0)",
-                      border: isDark ? "1px solid rgba(51, 154, 240, 0.35)" : undefined,
-                      opacity: 0.8,
-                    }}
+                    className={styles.aiSuccessCard}
                   >
                     <Group gap="sm">
                       <IconCheck size={20} color="var(--mantine-color-blue-filled)" />
-                      <Text size="sm" fw={600} c={isDark ? "blue.3" : "blue.9"}>
+                      <Text size="sm" fw={600} className={styles.aiCardText}>
                         ✨ 🤖 AI 辨識完成，請確認以下數據
                       </Text>
                     </Group>

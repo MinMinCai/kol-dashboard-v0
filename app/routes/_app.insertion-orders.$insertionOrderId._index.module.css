@@ -1,0 +1,152 @@
+.chevron {
+  display: block;
+  transition: transform 0.2s;
+}
+
+.chevronExpanded {
+  transform: rotate(180deg);
+}
+
+.emptyBox {
+  border: 1px dashed var(--mantine-color-gray-4);
+  border-radius: 8px;
+}
+
+.preWrapText {
+  white-space: pre-wrap;
+}
+
+.internalNotesBlock {
+  background: var(--mantine-color-gray-0);
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: 6px;
+}
+
+.chartFallback {
+  background: #f8f9fa;
+}
+
+.kolCardClickable {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.kolCardDisabled {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.kolAvatarGrayscale {
+  filter: grayscale(100%);
+}
+
+.flexGrow {
+  flex-grow: 1;
+}
+
+.iconInline {
+  display: inline;
+}
+
+.templateCard {
+  border-color: var(--mantine-color-default-border);
+  cursor: pointer;
+}
+
+.templateCardActive {
+  border-color: var(--mantine-color-blue-filled);
+}
+
+.pulseIcon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.tabNav {
+  border-bottom: 1px solid var(--mantine-color-default-border);
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  color: var(--mantine-color-dimmed);
+  font-weight: 400;
+  font-size: var(--mantine-font-size-sm);
+  font-family: inherit;
+  transition: color 0.1s, border-color 0.1s;
+}
+
+.tabActive {
+  border-bottom-color: var(--mantine-color-blue-filled);
+  color: var(--mantine-color-blue-filled);
+  font-weight: 600;
+}
+
+.uploadDropzone {
+  border: 2px dashed var(--mantine-color-gray-4);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.fileInputOverlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  height: 100%;
+}
+
+.imageCover {
+  object-fit: cover;
+}
+
+.uploadAddMore {
+  width: 100px;
+  height: 100px;
+  border: 2px dashed var(--mantine-color-gray-4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.aiRecognizingCard {
+  background: var(--mantine-color-blue-0);
+}
+
+[data-mantine-color-scheme="dark"] .aiRecognizingCard {
+  background: rgba(51, 154, 240, 0.18);
+  border: 1px solid rgba(51, 154, 240, 0.35);
+}
+
+.aiSuccessCard {
+  background: var(--mantine-color-blue-0);
+  opacity: 0.8;
+}
+
+[data-mantine-color-scheme="dark"] .aiSuccessCard {
+  background: rgba(51, 154, 240, 0.16);
+  border: 1px solid rgba(51, 154, 240, 0.35);
+}
+
+.aiCardText {
+  color: var(--mantine-color-blue-9);
+}
+
+[data-mantine-color-scheme="dark"] .aiCardText {
+  color: var(--mantine-color-blue-3);
+}
