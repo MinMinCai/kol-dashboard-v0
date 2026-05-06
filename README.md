@@ -20,9 +20,10 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 6. [開發流程與優先級](#開發流程與優先級)  
 7. [測試與驗收標準](#測試與驗收標準)  
 8. [正式部署技術規劃（成效截圖 / 貼文截圖）](#正式部署技術規劃成效截圖--貼文截圖功能)  
-9. [Hydration 與 UI 穩定性備忘](#hydration-與-ui-穩定性備忘)  
-10. [資料庫穩定性與超時策略](#資料庫穩定性與超時策略)  
-11. [補充資源](#補充資源)  
+9. [樣式與元件慣例](#樣式與元件慣例-style--component-conventions)  
+10. [Hydration 與 UI 穩定性備忘](#hydration-與-ui-穩定性備忘)  
+11. [資料庫穩定性與超時策略](#資料庫穩定性與超時策略)  
+12. [補充資源](#補充資源)  
 
 ---
 
@@ -92,7 +93,9 @@ kol-db-demo/
 │   ├── styles.css                    # 全局樣式
 │   ├── components/                   # 可複用 UI 元件
 │   │   ├── ClientOnly.tsx            # 僅客戶端渲染包裝（避免 SSR 不相容）
-│   │   └── GlobalNotification.tsx    # 全域通知／Toast 容器
+│   │   ├── GlobalNotification.tsx    # 全域通知／Toast 容器
+│   │   ├── DemoGenerateReportModal.tsx       # 委刊單一覽／詳情共用：demo 報告生成 modal（KOL 選擇 + 模板 + 假進度條）
+│   │   └── DemoGenerateReportModal.module.css
 │   ├── store/
 │   │   └── notification.ts           # Zustand 全域通知狀態
 │   ├── lib/
@@ -105,7 +108,7 @@ kol-db-demo/
 │   │   ├── notifications.server.ts   # 提案異動通知：寫入 notifications + watcher 派送
 │   │   ├── report-ppt.server.ts      # 結案 PPT 生成（pptx / docx 組裝）
 │   │   └── social-links.ts           # 社群連結正規化共用函式
-│   └── routes/                       # 路由模組
+│   └── routes/                       # 路由模組（每個 *.tsx 對應 *.module.css，提供 scoped CSS；詳見「樣式與元件慣例」）
 │       ├── $.tsx                              # 404 全域捕捉路由 (Splat Route)
 │       ├── _index.tsx                         # 根路徑 `/` → redirect `/login`
 │       ├── login.tsx                          # 登入頁（demo cookie auth）
@@ -584,6 +587,125 @@ npm start
 
 ---
 
+## 樣式與元件慣例 (Style & Component Conventions)
+
+> 本節記錄 2026-05 那波重構後的樣式管理慣例，方便接手者快速了解 UI 層該怎麼寫。
+
+### 1. CSS Modules 為主，inline style 已全面清除
+
+每個 route 檔案 `Foo.tsx` 對應一個 `Foo.module.css`，class name 自動 hash（避免全域命名衝突）。原本 17 個 route 共 341 處 `style={{...}}` inline style 都已搬至對應的 module.css。
+
+**何時用 Mantine props，何時用 CSS Module class**
+
+| 情境 | 寫法 | 範例 |
+|------|------|------|
+| 純版面值（width / height / flex / margin / padding / line-height / text-align） | Mantine props | `<Box flex={1} miw={200} mih={40} pl={16} ta="right">`、`<Text lh={1.4}>` |
+| Border / background / 多屬性組合 / 條件樣式 / hover、disabled 等偽類 | CSS Module class | `className={isActive ? \`${styles.tab} ${styles.tabActive}\` : styles.tab}` |
+| 動態樣式函式（原本 `tabStyle()` 回傳 CSSProperties） | 改成 `tabClassName()` 回傳 string | `const tabClassName = (v: string) => v === active ? \`${styles.tab} ${styles.tabActive}\` : styles.tab;` |
+
+**JS hover → CSS `:hover`**：原本不少地方用 `onMouseEnter/Leave` 直接寫 inline style 切 background / borderColor，全部改成 CSS Module 內的 `.foo:hover` 規則（少了 React state、少了 re-render）。
+
+**`display: none` 隱藏元素**：native HTML element 用 `hidden` 屬性取代 `style={{ display: "none" }}`。
+
+### 2. dark / light 主題切換（兩種模式並存）
+
+**A. `_app` layout 內的頁面** — 用 attribute selector 切 dark variant。Mantine 把 color scheme 設在 `<html data-mantine-color-scheme="dark">` 上，而 CSS Module 內的 attribute selector 是全域 selector（不會被 hash），所以可以直接命中：
+
+```css
+.aiCard {
+  background: var(--mantine-color-blue-0);
+}
+[data-mantine-color-scheme="dark"] .aiCard {
+  background: rgba(51, 154, 240, 0.18);
+  border: 1px solid rgba(51, 154, 240, 0.35);
+}
+```
+
+採用此模式後，原本在 React 端 `useMantineColorScheme()` + MutationObserver 偵測 dark 來切 inline style 的邏輯就可以拿掉。
+
+**B. 獨立頁面（如 [login.tsx](app/routes/login.tsx)）** — 用 CSS custom properties + state class 切換。`login` 不在 `_app` layout 內，沒接到 Mantine theme，採用 React state 切 `.dark` class 配合 CSS variables：
+
+```css
+.page {
+  --login-bg: #ffffff;
+  --login-fg: #0f172a;
+}
+.page.dark {
+  --login-bg: #0f172a;
+  --login-fg: #f8fafc;
+}
+.rightPanel { background: var(--login-bg); }
+.formTitle  { color: var(--login-fg); }
+```
+
+JSX 端只要 `<div className={dark ? \`${styles.page} ${styles.dark}\` : styles.page}>`，整顆 tree 自動切色。
+
+### 3. 動態 class（含 `dangerouslySetInnerHTML` 的 script）
+
+如果 inline `<script>` 需要在 form submit reload 前即時切換 class（例：[_app.kols._index.tsx](app/routes/_app.kols._index.tsx) 標籤過濾的視覺回饋），把 CSS Module 的 hashed class name 注入 script template literal，script 用 `classList.add/remove`：
+
+```jsx
+<script dangerouslySetInnerHTML={{ __html: `
+  document.addEventListener('change', function(e) {
+    if (e.target.name !== 'tag') return;
+    var label = e.target.closest('label[data-tag-label]');
+    if (!label) return;
+    if (e.target.checked) {
+      label.classList.add('${styles.tagLabelActive}');
+    } else {
+      label.classList.remove('${styles.tagLabelActive}');
+    }
+  });
+`}} />
+```
+
+### 4. Build 設定（CSS Modules 啟用）
+
+- 已安裝 [`@remix-run/css-bundle@2.16.7`](https://www.npmjs.com/package/@remix-run/css-bundle)，於 [app/root.tsx](app/root.tsx) 透過 `cssBundleHref` 加入 `<link rel="stylesheet">`：
+  ```ts
+  import { cssBundleHref } from "@remix-run/css-bundle";
+  
+  export const links = () => [
+    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+    { rel: "stylesheet", href: mantineStylesHref },
+    { rel: "stylesheet", href: stylesHref },
+  ];
+  ```
+- **重要 gotcha**：`app/routes/` 內的 `*.module.css` 檔必須加入 [remix.config.mjs](remix.config.mjs) 的 `ignoredRouteFiles`：
+  ```js
+  export default {
+    ignoredRouteFiles: ["**/.*", "**/*.module.css"],
+  };
+  ```
+  否則 Remix 把 module.css 當 route 檔解析，build 時會在 `[plugin browser-route-module]` 拋 `Cannot read properties of undefined (reading 'filter')` 失敗。
+
+### 5. 共用元件
+
+#### `<DemoGenerateReportModal>` — [app/components/DemoGenerateReportModal.tsx](app/components/DemoGenerateReportModal.tsx)
+
+抽自 IO listing（[_app.insertion-orders._index.tsx](app/routes/_app.insertion-orders._index.tsx)）與 IO detail（[_app.insertion-orders.$insertionOrderId._index.tsx](app/routes/_app.insertion-orders.$insertionOrderId._index.tsx)）原本重複的 demo 報告生成 modal。內部封裝：
+
+- KOL 選擇（已上傳成效 / 尚未上傳）+ PowerPoint 模板選擇兩段表單
+- 假進度條（每 400ms 跳動）+ 5 步驟 checklist
+- 進度 100% 時的 toast / banner / 背景 fetcher.submit
+
+API 設計：parent 只負責 `opened` / `onClose` / `order`，外加可選 `onComplete` callback：
+
+```tsx
+<DemoGenerateReportModal
+  opened={genModalOpen}
+  onClose={closeGenModal}
+  order={activeOrder}
+  onComplete={handleGenerateComplete}
+/>
+```
+
+`onComplete` 讓父層自由帶 fetcher.submit 參數（IO listing 帶 `orderId`、IO detail 不帶——orderId 由 URL 決定）。
+
+> **reports.generate 不使用此元件**——它是真實 generate 實作（呼叫 `generateReport` action、處理 success / error 狀態、實際下載檔案），與兩個 demo modal 的假進度邏輯不同，硬抽會讓共用元件被一堆 mode flag 撐到難維護。三個檔案的差異是有意的設計，不該強制統一。
+
+---
+
 ## Hydration 與 UI 穩定性備忘
 
 在 Remix SSR 環境下，只要伺服端與瀏覽器渲染結果不一致，就可能造成 Hydration 失敗並導致按鈕、Modal 等互動失效。專案採用以下防禦策略：
@@ -642,4 +764,4 @@ npm start
 - [db/drizzle/migrations/](db/drizzle/migrations/) — 歷次 SQL migration（0000 ~ 0002）
 
 ---
-**更新時間**：2026 年 5 月 6 日  
+**更新時間**：2026 年 5 月 6 日（CSS Modules 重構、`<DemoGenerateReportModal>` 抽出共用元件、修正 reports.generate 與 generate-doc 的 TS 錯誤）  
