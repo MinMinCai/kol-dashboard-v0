@@ -723,7 +723,7 @@ export default function ProposalDetailPage() {
           ) : (
             <Stack gap="md">
               {sortedCandidates.map((c) => (
-                <Card key={c.id} withBorder padding="md" radius="md">
+                <Card key={c.id} withBorder padding={0} radius="md" style={{ overflow: "hidden" }}>
                   {isEditing && (
                     <>
                       <form id={`candidate-edit-form-${c.id}`} method="post" style={{ display: "none" }} />
@@ -732,8 +732,16 @@ export default function ProposalDetailPage() {
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
                     </>
                   )}
-                  <Stack gap="md">
-                    {/* Header: checkbox, name, status, actions */}
+
+                  {/* ── Header bar ── */}
+                  <Box
+                    px="md"
+                    py="sm"
+                    style={{
+                      background: "var(--mantine-color-default-hover)",
+                      borderBottom: "1px solid var(--mantine-color-default-border)",
+                    }}
+                  >
                     <Group justify="space-between" align="center" wrap="nowrap">
                       <Group gap="sm" align="center" wrap="nowrap">
                         <Checkbox
@@ -779,113 +787,125 @@ export default function ProposalDetailPage() {
                         </Group>
                       )}
                     </Group>
+                  </Box>
 
-                    <Divider />
-
-                    {/* Cooperation info */}
-                    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>合作項目</Text>
+                  <Stack gap={0} px="md" pt="md" pb="md">
+                    {/* ── 合作條件 ── */}
+                    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing={0} style={{ borderBottom: "1px solid var(--mantine-color-default-border)", paddingBottom: 12, marginBottom: 12 }}>
+                      <Box pr="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+                        <Text size="xs" c="dimmed" fw={600} mb={2}>合作項目</Text>
                         {isEditing ? (
                           <TextInput form={`candidate-edit-form-${c.id}`} name="role" size="xs" defaultValue={c.role || ""} />
                         ) : (
-                          <Text size="sm">{c.role || "-"}</Text>
+                          <Text size="sm" fw={500}>{c.role || "-"}</Text>
                         )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>預估報價</Text>
+                      </Box>
+                      <Box px="md" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+                        <Text size="xs" c="dimmed" fw={600} mb={2}>預估報價</Text>
                         {isEditing ? (
                           <TextInput form={`candidate-edit-form-${c.id}`} name="price" size="xs" defaultValue={c.price != null ? String(c.price) : "0"} />
                         ) : (
-                          <Text size="sm">${(c.price ?? 0).toLocaleString("zh-TW")}</Text>
+                          <Text size="sm" fw={700}>${(c.price ?? 0).toLocaleString("zh-TW")}</Text>
                         )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>實際報價</Text>
+                      </Box>
+                      <Box pl="md">
+                        <Text size="xs" c="dimmed" fw={600} mb={2}>實際報價</Text>
                         {isEditing ? (
                           <TextInput form={`candidate-edit-form-${c.id}`} name="actualPrice" size="xs" defaultValue={c.actualPrice != null ? String(c.actualPrice) : ""} placeholder="未填" />
                         ) : (
-                          <Text size="sm" c={c.actualPrice == null ? "dimmed" : undefined}>
+                          <Text size="sm" fw={c.actualPrice != null ? 700 : 400} c={c.actualPrice == null ? "dimmed" : undefined}>
                             {c.actualPrice != null ? `$${c.actualPrice.toLocaleString("zh-TW")}` : "-"}
                           </Text>
                         )}
-                      </div>
+                      </Box>
                     </SimpleGrid>
 
-                    {/* Metrics grid */}
-                    <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>真粉比例</Text>
-                        <Text size="sm">{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 名聲</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="reputationScore" size="xs" defaultValue={c.reputationScore != null ? String(c.reputationScore) : ""} />
-                        ) : (
-                          <Text size="sm">{c.reputationScore != null ? c.reputationScore : "-"}</Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>平均互動率</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="avgEngagementRate" size="xs" defaultValue={c.avgEngagementRate != null ? String(c.avgEngagementRate) : ""} />
-                        ) : (
-                          <Text size="sm">{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>互動率 index</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="engagementIndex" size="xs" defaultValue={c.engagementIndex != null ? String(c.engagementIndex) : ""} />
-                        ) : (
-                          <Text size="sm">{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>互動率評分</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="engagementScore" size="xs" defaultValue={c.engagementScore != null ? String(c.engagementScore) : ""} />
-                        ) : (
-                          <Text size="sm">{c.engagementScore != null ? c.engagementScore : "-"}</Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>品牌適配度</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="brandFitScore" size="xs" defaultValue={c.brandFitScore != null ? String(c.brandFitScore) : ""} />
-                        ) : (
-                          <Text size="sm">{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>綜合品質分數</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="qualityScore" size="xs" defaultValue={c.qualityScore != null ? String(c.qualityScore) : ""} />
-                        ) : (
-                          <Text size="sm" fw={600} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
-                            {c.qualityScore != null ? c.qualityScore : "-"}
-                          </Text>
-                        )}
-                      </div>
-                      <div>
-                        <Text size="xs" c="dimmed" fw={600} mb={4}>CPFR</Text>
-                        {isEditing ? (
-                          <TextInput form={`candidate-edit-form-${c.id}`} name="cpfr" size="xs" defaultValue={c.cpfr != null ? String(c.cpfr) : ""} />
-                        ) : (
-                          <Text size="sm">{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
-                        )}
-                      </div>
-                    </SimpleGrid>
+                    {/* ── 數據指標 ── */}
+                    <Box
+                      p="sm"
+                      mb="sm"
+                      style={{
+                        background: "var(--mantine-color-default-hover)",
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text size="xs" fw={700} c="dimmed" mb={8} style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>數據指標</Text>
+                      <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>真粉比例</Text>
+                          <Text size="sm" fw={500}>{c.realFollowerRatio != null ? `${c.realFollowerRatio}%` : "-"}</Text>
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>KOL 名聲</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="reputationScore" size="xs" defaultValue={c.reputationScore != null ? String(c.reputationScore) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.reputationScore != null ? c.reputationScore : "-"}</Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>平均互動率</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="avgEngagementRate" size="xs" defaultValue={c.avgEngagementRate != null ? String(c.avgEngagementRate) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.avgEngagementRate != null ? `${c.avgEngagementRate}%` : "-"}</Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>互動率 index</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="engagementIndex" size="xs" defaultValue={c.engagementIndex != null ? String(c.engagementIndex) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.engagementIndex != null ? c.engagementIndex : "-"}</Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>互動率評分</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="engagementScore" size="xs" defaultValue={c.engagementScore != null ? String(c.engagementScore) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.engagementScore != null ? c.engagementScore : "-"}</Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>品牌適配度</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="brandFitScore" size="xs" defaultValue={c.brandFitScore != null ? String(c.brandFitScore) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.brandFitScore != null ? c.brandFitScore : "-"}</Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>綜合品質分數</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="qualityScore" size="xs" defaultValue={c.qualityScore != null ? String(c.qualityScore) : ""} />
+                          ) : (
+                            <Text size="sm" fw={700} c={c.qualityScore != null && c.qualityScore >= 80 ? "green" : c.qualityScore != null && c.qualityScore >= 60 ? "yellow" : "red"}>
+                              {c.qualityScore != null ? c.qualityScore : "-"}
+                            </Text>
+                          )}
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" mb={2}>CPFR</Text>
+                          {isEditing ? (
+                            <TextInput form={`candidate-edit-form-${c.id}`} name="cpfr" size="xs" defaultValue={c.cpfr != null ? String(c.cpfr) : ""} />
+                          ) : (
+                            <Text size="sm" fw={500}>{c.cpfr != null ? c.cpfr.toFixed(4) : "-"}</Text>
+                          )}
+                        </div>
+                      </SimpleGrid>
+                    </Box>
 
-                    {/* Recommendation & feedback */}
-                    <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+                    {/* ── 建議與反饋 ── */}
+                    <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md" style={{ alignItems: "start" }}>
                       <div>
                         <Text size="xs" c="dimmed" fw={600} mb={4}>KOL 選擇建議</Text>
                         {isEditing ? (
                           <Textarea form={`candidate-edit-form-${c.id}`} name="recommendation" size="xs" autosize minRows={2} defaultValue={c.recommendation || ""} />
                         ) : (
-                          <Text size="sm">{c.recommendation || "-"}</Text>
+                          <Text size="sm" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.6 }}>
+                            {c.recommendation || "-"}
+                          </Text>
                         )}
                       </div>
                       <div>
@@ -897,11 +917,13 @@ export default function ProposalDetailPage() {
                             size="xs"
                             autosize
                             minRows={2}
-                            defaultValue={c.feedbackText || ""}
+                            defaultValue={c.feedbackText && c.feedbackText !== "null" ? c.feedbackText : ""}
                             placeholder="輸入客戶反饋"
                           />
                         ) : (
-                          <Text size="sm" c="dimmed">{c.feedbackText || "-"}</Text>
+                          <Text size="sm" c="dimmed" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.6 }}>
+                            {c.feedbackText && c.feedbackText !== "null" ? c.feedbackText : "-"}
+                          </Text>
                         )}
                       </div>
                     </SimpleGrid>
