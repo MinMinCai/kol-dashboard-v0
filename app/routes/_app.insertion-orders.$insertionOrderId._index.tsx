@@ -40,7 +40,7 @@ import { useNotificationStore } from "~/store/notification";
 import { ClientOnly } from "~/components/ClientOnly";
 import {
   getInsertionOrder,
-  addIOReview,
+  upsertIOReviewByAuthor,
   updateIOPerformance,
   updatePerformanceItem,
   deletePerformanceItem,
@@ -51,7 +51,9 @@ import {
   deleteInsertionOrder,
   type OrderKolCollaboration,
   type OrderPerformanceItem,
+  type OrderReview,
 } from "~/lib/mock-api.server";
+import { getCurrentMember } from "~/lib/demo-identity.server";
 
 function n(value: number | undefined): string {
   // Use a stable locale to prevent hydration mismatch
@@ -62,20 +64,71 @@ function currency(value: number | undefined): string {
 }
 
 // ── KolCollabCard: 獨立子元件 ──
+type ReviewGroup = {
+  author: string;
+  rating: number;
+  date: string;
+  internal?: OrderReview;
+  external?: OrderReview;
+};
+
+function groupReviewsByAuthor(reviews: OrderReview[] | undefined): ReviewGroup[] {
+  const map = new Map<string, ReviewGroup>();
+  for (const rv of reviews ?? []) {
+    const existing = map.get(rv.author);
+    if (existing) {
+      // newest date wins for the group's date label; rating taken from latest
+      if (rv.date > existing.date) {
+        existing.date = rv.date;
+        existing.rating = rv.rating;
+      }
+      if (rv.type === "internal") existing.internal = rv;
+      else if (rv.type === "external") existing.external = rv;
+      else existing.external = rv; // legacy entries without type → fall into external
+    } else {
+      const group: ReviewGroup = {
+        author: rv.author,
+        rating: rv.rating,
+        date: rv.date,
+      };
+      if (rv.type === "internal") group.internal = rv;
+      else if (rv.type === "external") group.external = rv;
+      else group.external = rv;
+      map.set(rv.author, group);
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => (b.date > a.date ? 1 : -1));
+}
+
+function authorInitial(name: string): string {
+  if (!name) return "?";
+  const trimmed = name.trim();
+  // For mixed scripts, take first character (Chinese uses 1 char, English first letter)
+  return trimmed.charAt(0).toUpperCase();
+}
+
 function KolCollabCard({
   kol,
+  currentUserName,
   onOpenUploadAndPerf,
   onOpenReview,
+  onEditReview,
   onEditPerformance,
   onDeletePerformance,
 }: {
   kol: OrderKolCollaboration;
+  currentUserName: string;
   onOpenUploadAndPerf: (k: { id: string; name: string }) => void;
   onOpenReview: (k: { id: string; name: string }) => void;
+  onEditReview: (k: { id: string; name: string }, group: ReviewGroup) => void;
   onEditPerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
   onDeletePerformance: (k: { id: string; name: string }, item: OrderPerformanceItem) => void;
 }) {
   const [expanded, { toggle }] = useDisclosure(false);
+  const reviewGroups = groupReviewsByAuthor(kol.reviews);
+  const displayRating = reviewGroups.length > 0
+    ? reviewGroups.reduce((sum, g) => sum + g.rating, 0) / reviewGroups.length
+    : (kol.rating ?? 0);
 
   return (
     <Card withBorder p="md" radius="md">
@@ -153,7 +206,7 @@ function KolCollabCard({
             <Stack gap={0} align="center">
               <Text size="xs" c="dimmed">評價</Text>
               <Group gap={4}>
-                <Text fw={700} size="xl">{(kol.rating ?? 0).toFixed(1)}</Text>
+                <Text fw={700} size="xl">{displayRating.toFixed(1)}</Text>
                 <Text color="yellow">⭐</Text>
               </Group>
             </Stack>
@@ -241,26 +294,63 @@ function KolCollabCard({
             {/* 合作評價 */}
             <Box>
               <Text fw={600} size="sm" mb="md">合作評價</Text>
-              {(kol.reviews ?? []).length > 0 ? (
+              {reviewGroups.length > 0 ? (
                 <Stack gap="xs">
-                  {kol.reviews?.map((rv) => (
-                    <Card key={rv.id} withBorder p="sm" radius="md">
-                      <Group justify="space-between">
-                        <Group gap="xs">
-                          <Avatar src={rv.avatarUrl} size="sm" />
-                          <Text size="sm" fw={600}>{rv.author}</Text>
-                          <Text size="xs" c="dimmed">{rv.date}</Text>
-                          {rv.type && (
-                            <Badge size="xs" color={rv.type === "internal" ? "red" : "blue"}>
-                              {rv.type === "internal" ? "內評" : "外評"}
-                            </Badge>
-                          )}
+                  {reviewGroups.map((g) => {
+                    const isOwn = g.author === currentUserName;
+                    return (
+                      <Card key={g.author} withBorder p="sm" radius="md">
+                        <Group justify="space-between" wrap="nowrap" align="flex-start">
+                          <Group gap="xs" align="center">
+                            <Avatar size="sm" radius="xl" color="blue" variant="filled">
+                              {authorInitial(g.author)}
+                            </Avatar>
+                            <Stack gap={0}>
+                              <Group gap={6}>
+                                <Text size="sm" fw={600}>{g.author}</Text>
+                                {isOwn && <Badge size="xs" variant="light" color="gray">我</Badge>}
+                              </Group>
+                              <Text size="xs" c="dimmed">{g.date}</Text>
+                            </Stack>
+                          </Group>
+                          <Group gap="xs" wrap="nowrap">
+                            <Rating value={g.rating} readOnly size="xs" />
+                            {isOwn && (
+                              <Menu position="bottom-end" withinPortal shadow="md" width={120}>
+                                <Menu.Target>
+                                  <ActionIcon variant="subtle" color="gray" size="sm" aria-label="編輯評價">
+                                    <IconDotsVertical size={14} />
+                                  </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                  <Menu.Item
+                                    leftSection={<IconPencil size={14} />}
+                                    onClick={() => onEditReview({ id: kol.kolId ?? kol.id, name: kol.name }, g)}
+                                  >
+                                    編輯
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
+                            )}
+                          </Group>
                         </Group>
-                        <Rating value={rv.rating} readOnly size="xs" />
-                      </Group>
-                      <Text size="sm" mt="xs">{rv.comment}</Text>
-                    </Card>
-                  ))}
+                        <Stack gap={6} mt="xs">
+                          {g.external && (
+                            <Group gap="xs" align="flex-start" wrap="nowrap">
+                              <Badge size="xs" color="blue" mt={2}>外評</Badge>
+                              <Text size="sm" style={{ flex: 1 }}>{g.external.comment}</Text>
+                            </Group>
+                          )}
+                          {g.internal && (
+                            <Group gap="xs" align="flex-start" wrap="nowrap">
+                              <Badge size="xs" color="red" mt={2}>內評</Badge>
+                              <Text size="sm" c="dimmed" style={{ flex: 1 }}>{g.internal.comment}</Text>
+                            </Group>
+                          )}
+                        </Stack>
+                      </Card>
+                    );
+                  })}
                 </Stack>
               ) : (
                 <Text size="sm" c="dimmed" p="md" ta="center" style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: '8px' }}>
@@ -275,17 +365,18 @@ function KolCollabCard({
   );
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const insertionOrderId = params.insertionOrderId ?? "";
   try {
     function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
       return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
     }
-    const [insertionOrder, brandCatalog, industryCatalog, teamMembers] = await Promise.all([
+    const [insertionOrder, brandCatalog, industryCatalog, teamMembers, currentMember] = await Promise.all([
       withTimeout(getInsertionOrder(insertionOrderId), null),
       withTimeout(listBrandCatalog(), []),
       withTimeout(listIndustryCatalog(), []),
       withTimeout(listTeamMembers(), []),
+      withTimeout(getCurrentMember(request), null),
     ]);
 
     if (!insertionOrder) {
@@ -296,8 +387,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     const kolManagers = (teamMembers ?? []).filter(m => m.group === 'KOL').map(m => m.name);
     const brands = (brandCatalog ?? []).map(b => b.name);
     const industries = (industryCatalog ?? []).map(i => i.name);
+    const currentUserName = currentMember?.name ?? "";
 
-    return json({ insertionOrder, salesOwners, kolManagers, brands, industries });
+    return json({ insertionOrder, salesOwners, kolManagers, brands, industries, currentUserName });
   } catch (error: any) {
     if (error instanceof Response) throw error;
     console.error("Loader error:", error);
@@ -370,24 +462,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const rating = Number(formData.get("rating"));
     const internalComment = formData.get("internalComment") as string;
     const externalComment = formData.get("externalComment") as string;
+    const currentMember = await getCurrentMember(request);
+    const author = currentMember?.name ?? "Demo User";
 
-    // Save both as separate reviews if needed, or follow common pattern
-    if (externalComment) {
-      await addIOReview(orderId, kolId, {
-        author: "System User", // In real app, get from session
-        comment: externalComment,
-        rating,
-        type: "external",
-      });
-    }
-    if (internalComment) {
-      await addIOReview(orderId, kolId, {
-        author: "System User",
-        comment: internalComment,
-        rating,
-        type: "internal",
-      });
-    }
+    await upsertIOReviewByAuthor(orderId, kolId, author, {
+      rating,
+      internalComment,
+      externalComment,
+    });
     return json({ success: true });
   }
 
@@ -465,7 +547,7 @@ function parseNotes(raw: string | undefined | null): { description: string; inte
 }
 
 export default function InsertionOrderDetailPage() {
-  const { insertionOrder, salesOwners, kolManagers, brands, industries } = useLoaderData<typeof loader>();
+  const { insertionOrder, salesOwners, kolManagers, brands, industries, currentUserName } = useLoaderData<typeof loader>();
   const collaborations = insertionOrder.collaborations ?? [];
   const fetcher = useFetcher();
   const submit = useSubmit();
@@ -558,6 +640,11 @@ export default function InsertionOrderDetailPage() {
   } | null>(null);
   const [editingPerformance, setEditingPerformance] = useState<OrderPerformanceItem | null>(null);
   const [deletingPerformance, setDeletingPerformance] = useState<OrderPerformanceItem | null>(null);
+  const [editingReview, setEditingReview] = useState<{
+    rating: number;
+    internalComment: string;
+    externalComment: string;
+  } | null>(null);
 
   const totalReach =
     insertionOrder.totalReach ??
@@ -582,6 +669,20 @@ export default function InsertionOrderDetailPage() {
 
   const handleOpenReview = (kol: { id: string; name: string }) => {
     setSelectedKol(kol);
+    setEditingReview(null);
+    openReview();
+  };
+
+  const handleEditReview = (
+    kol: { id: string; name: string },
+    group: { rating: number; internal?: { comment: string } | undefined; external?: { comment: string } | undefined },
+  ) => {
+    setSelectedKol(kol);
+    setEditingReview({
+      rating: group.rating,
+      internalComment: group.internal?.comment ?? "",
+      externalComment: group.external?.comment ?? "",
+    });
     openReview();
   };
 
@@ -835,8 +936,10 @@ export default function InsertionOrderDetailPage() {
             <KolCollabCard
               key={kol.id}
               kol={kol}
+              currentUserName={currentUserName}
               onOpenUploadAndPerf={handleOpenUploadAndPerf}
               onOpenReview={handleOpenReview}
+              onEditReview={handleEditReview}
               onEditPerformance={handleEditPerformance}
               onDeletePerformance={handleDeletePerformance}
             />
@@ -885,11 +988,12 @@ export default function InsertionOrderDetailPage() {
 
       <Modal
         id="review-modal"
+        key={editingReview ? "edit" : "new"}
         opened={reviewOpened}
-        onClose={closeReview}
-        title={`留下評價 - ${selectedKol?.name}`}
+        onClose={() => { closeReview(); setEditingReview(null); }}
+        title={`${editingReview ? "編輯評價" : "留下評價"} - ${selectedKol?.name}`}
       >
-        <fetcher.Form method="post" onSubmit={closeReview}>
+        <fetcher.Form method="post" onSubmit={() => { closeReview(); setEditingReview(null); }}>
           <input type="hidden" name="intent" value="review" />
           <input type="hidden" name="kolId" value={selectedKol?.id} />
           <Stack gap="md">
@@ -897,26 +1001,28 @@ export default function InsertionOrderDetailPage() {
               <Text size="sm" fw={500}>
                 星級評分
               </Text>
-              <Rating defaultValue={4.5} name="rating" fractions={2} />
+              <Rating defaultValue={editingReview?.rating ?? 4.5} name="rating" fractions={2} />
             </Stack>
             <Textarea
               label="內部評論 (僅限同仁查看)"
               name="internalComment"
               placeholder="例如：溝通積極、素材品質高..."
+              defaultValue={editingReview?.internalComment ?? ""}
               rows={3}
             />
             <Textarea
               label="外部評論 (可用於結案報告)"
               name="externalComment"
               placeholder="例如：受眾反饋熱烈，轉單效果佳..."
+              defaultValue={editingReview?.externalComment ?? ""}
               rows={3}
             />
             <Group justify="flex-end">
-              <Button type="button" variant="default" onClick={closeReview}>
+              <Button type="button" variant="default" onClick={() => { closeReview(); setEditingReview(null); }}>
                 取消
               </Button>
               <Button color="yellow" type="submit" loading={isSubmitting}>
-                提交評價
+                {editingReview ? "儲存修改" : "提交評價"}
               </Button>
             </Group>
           </Stack>

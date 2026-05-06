@@ -33,11 +33,11 @@ function formatCurrency(value: number | undefined): string {
   return `NT$ ${(value ?? 0).toLocaleString("zh-TW")}`;
 }
 
-function isKolFavorited(kol: { isFavorite?: boolean; favoriteFolder?: string; favoriteFolders?: string[] }): boolean {
+function isKolFavorited(kol: { isFavorite?: boolean; favoriteFolder?: string | null; favoriteFolders?: string[] }): boolean {
   return Boolean(kol.isFavorite || kol.favoriteFolder || (kol.favoriteFolders ?? []).length > 0);
 }
 
-function getFavoriteSelection(kol: { favoriteFolder?: string; favoriteFolders?: string[] }): string[] {
+function getFavoriteSelection(kol: { favoriteFolder?: string | null; favoriteFolders?: string[] }): string[] {
   return Array.from(new Set(kol.favoriteFolders ?? (kol.favoriteFolder ? [kol.favoriteFolder] : [])));
 }
 

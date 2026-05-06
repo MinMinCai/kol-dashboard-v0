@@ -126,7 +126,7 @@ export type Kol = {
   averagePrice?: number;
   industryDistribution?: string[];
   isFavorite?: boolean;
-  favoriteFolder?: string;
+  favoriteFolder?: string | null;
   favoriteFolders?: string[];
   avatarUrl?: string;
   social?: {
@@ -986,6 +986,53 @@ export async function addIOReview(
   };
   const updated = [...collabs];
   updated[idx] = { ...updated[idx], reviews: [...(updated[idx].reviews ?? []), newReview] };
+  return updateInsertionOrder(orderId, { collaborations: updated });
+}
+
+/**
+ * Replace all reviews from a given author for a KOL with the supplied
+ * internal/external comment pair (sharing the same rating). Empty comments are
+ * skipped so the caller can also use this to delete a single review-type.
+ * Acts as upsert-by-author: covers create + edit + delete-comment cases.
+ */
+export async function upsertIOReviewByAuthor(
+  orderId: string,
+  kolId: string,
+  author: string,
+  data: { rating: number; internalComment?: string; externalComment?: string },
+): Promise<InsertionOrder> {
+  const io = await getInsertionOrder(orderId);
+  if (!io) throw new Error("Order not found");
+  const collabs = io.collaborations ?? [];
+  const idx = collabs.findIndex((c) => c.kolId === kolId || c.id === kolId);
+  if (idx === -1) throw new Error("Collaboration not found");
+  const existing = collabs[idx].reviews ?? [];
+  const others = existing.filter((r) => r.author !== author);
+  const date = new Date().toISOString().split("T")[0];
+  const baseId = Date.now();
+  const fresh: OrderReview[] = [];
+  if (data.externalComment && data.externalComment.trim()) {
+    fresh.push({
+      id: `rv_${baseId}_ext`,
+      author,
+      date,
+      comment: data.externalComment.trim(),
+      rating: data.rating,
+      type: "external",
+    });
+  }
+  if (data.internalComment && data.internalComment.trim()) {
+    fresh.push({
+      id: `rv_${baseId}_int`,
+      author,
+      date,
+      comment: data.internalComment.trim(),
+      rating: data.rating,
+      type: "internal",
+    });
+  }
+  const updated = [...collabs];
+  updated[idx] = { ...updated[idx], reviews: [...others, ...fresh] };
   return updateInsertionOrder(orderId, { collaborations: updated });
 }
 
