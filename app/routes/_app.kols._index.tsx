@@ -389,7 +389,6 @@ export default function KolListPage() {
       {/* ── page header ── */}
       <Group justify="space-between" align="flex-end">
         <Box>
-          <Text c="dimmed" size="sm">KOL 管理</Text>
           <Title order={2}>KOL 一覽</Title>
         </Box>
 
@@ -702,9 +701,6 @@ export default function KolListPage() {
                   <Stack align="center" gap="xs">
                     <Avatar src={kol.avatarUrl} size={72} radius={999} />
                     <Text fw={600}>{kol.displayName}</Text>
-                    <Text size="sm" c="dimmed">
-                      @{kol.instagramHandle ?? kol.displayName.toLowerCase().replaceAll(" ", "")}
-                    </Text>
                   </Stack>
                   <Divider my="sm" />
                   <Stack gap={4}>

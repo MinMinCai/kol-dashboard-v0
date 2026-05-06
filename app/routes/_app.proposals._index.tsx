@@ -221,7 +221,6 @@ export default function ProposalListPage() {
     <Stack gap="md">
       <Group justify="space-between" align="flex-end">
         <Box>
-          <Text c="dimmed" size="sm">提案管理</Text>
           <Title order={2}>提案一覽</Title>
         </Box>
         <Button component={Link} to="/proposals/new">新增提案</Button>

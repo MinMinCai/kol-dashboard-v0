@@ -568,11 +568,12 @@ export default function ProposalDetailPage() {
                 { value: "draft", label: "草稿" },
                 { value: "internal_review", label: "內部審核" },
                 { value: "sent_to_client", label: "已送出給客戶" },
+                { value: "approved", label: "已核准" },
               ]}
             />
           ) : (
             <Text size="xl" fw={700} mt={5}>
-              {{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶" }[proposal.stage] ?? proposal.stage}
+              {{ draft: "草稿", internal_review: "內部審核", sent_to_client: "已送出給客戶", approved: "已核准" }[proposal.stage] ?? proposal.stage}
             </Text>
           )}
         </Card>

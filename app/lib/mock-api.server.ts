@@ -400,9 +400,10 @@ async function getFavoriteFolderState() {
 }
 
 async function enrichKols(kols: Kol[]): Promise<Kol[]> {
-  const [{ folderNamesByKolId }, socialAccountRows] = await Promise.all([
+  const [{ folderNamesByKolId }, socialAccountRows, ioRows] = await Promise.all([
     getFavoriteFolderState(),
     db.select().from(kolSocialAccountsTable).catch(() => []),
+    db.select({ collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
   ]);
 
   const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
@@ -412,6 +413,22 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
     const current = socialLinksByKolId.get(row.kolId) ?? {};
     if (row.profileUrl) current[platformKey] = row.profileUrl;
     socialLinksByKolId.set(row.kolId, current);
+  }
+
+  // Count distinct insertion orders each KOL appears in (single source of truth
+  // for "合作次數"). One order containing the same KOL multiple times still
+  // counts once.
+  const collabCountByKolId = new Map<string, number>();
+  for (const row of ioRows) {
+    const collabs = (row.collaborations as OrderKolCollaboration[] | null) ?? [];
+    const kolIdsInOrder = new Set<string>();
+    for (const c of collabs) {
+      const kid = c.kolId ?? c.id;
+      if (kid) kolIdsInOrder.add(kid);
+    }
+    for (const kid of kolIdsInOrder) {
+      collabCountByKolId.set(kid, (collabCountByKolId.get(kid) ?? 0) + 1);
+    }
   }
 
   return kols.map((kol) => {
@@ -427,6 +444,7 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
 
     return {
       ...kol,
+      collaborations: collabCountByKolId.get(kol.id) ?? 0,
       isFavorite: Boolean(kol.isFavorite || mergedFolders.length > 0),
       favoriteFolders: mergedFolders,
       favoriteFolder: mergedFolders[0] ?? kol.favoriteFolder,
