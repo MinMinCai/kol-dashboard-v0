@@ -504,9 +504,6 @@ export default function FavoritesPage() {
               <Stack align="center" gap={6} mt="xs">
                 <Avatar src={kol.avatarUrl} size={72} radius={999} />
                 <Text fw={600}>{kol.displayName}</Text>
-                <Text size="sm" c="dimmed">
-                  @{kol.instagramHandle ?? kol.displayName.toLowerCase().replaceAll(" ", "")}
-                </Text>
               </Stack>
 
               <Divider my="sm" />
