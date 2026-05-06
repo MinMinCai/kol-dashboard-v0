@@ -24,7 +24,7 @@ import {
 import { useMantineColorScheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   addProposalKol,
@@ -190,6 +190,7 @@ export default function ProposalDetailPage() {
   );
   const navigation = useNavigation();
   const submit = useSubmit();
+  const statusFetcher = useFetcher<{ success?: boolean }>();
   const { colorScheme } = useMantineColorScheme();
   const [domColorScheme, setDomColorScheme] = useState<"light" | "dark" | null>(null);
   const isDark = (domColorScheme ?? colorScheme) === "dark";
@@ -746,7 +747,11 @@ export default function ProposalDetailPage() {
                           <Select
                             size="xs"
                             style={{ width: 120 }}
-                            value={c.status}
+                            value={
+                              statusFetcher.state !== "idle" && statusFetcher.formData?.get("candidateId") === c.id
+                                ? String(statusFetcher.formData.get("status") ?? c.status)
+                                : c.status
+                            }
                             data={[
                               { value: "pending", label: "待定" },
                               { value: "accepted", label: "已接受" },
@@ -759,7 +764,7 @@ export default function ProposalDetailPage() {
                               formData.append("candidateId", c.id);
                               formData.append("status", val);
                               formData.append("feedback", c.feedbackText || "");
-                              submit(formData, { method: "post" });
+                              statusFetcher.submit(formData, { method: "post" });
                             }}
                           />
                         ) : (

@@ -203,8 +203,7 @@ export async function action({ request }: ActionFunctionArgs) {
     } catch (e) {
       return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
     }
-    const url = new URL(request.url);
-    return redirect(url.pathname + url.search);
+    return json({ success: true });
   }
 
   if (intent === "updateFavoriteFolders") {
@@ -224,15 +223,13 @@ export async function action({ request }: ActionFunctionArgs) {
       return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
     }
 
-    const url = new URL(request.url);
-    return redirect(url.pathname + url.search);
+    return json({ success: true });
   }
 
   if (intent === "removeFavorite") {
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
     await clearKolFavorites(kolId);
-    const url = new URL(request.url);
-    return redirect(url.pathname + url.search);
+    return json({ success: true });
   }
 
   if (intent === "delete") {
@@ -289,6 +286,7 @@ export default function KolListPage() {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const batchImportFetcher = useFetcher<{ result?: { total: number; success: number; failed: number; errors: string[] }; error?: string }>();
+  const favoriteFetcher = useFetcher<{ success?: boolean; error?: string }>();
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
   const [favoritePickerKolId, setFavoritePickerKolId] = useState<string | null>(null);
@@ -330,6 +328,15 @@ export default function KolListPage() {
     setFavoritePickerKolId(kol.id);
     setFavoritePickerSelection(getFavoriteSelection(kol));
     setFavoritePickerIsFavorite(isKolFavorited(kol));
+  }
+
+  function getOptimisticFavorited(kol: Kol): boolean {
+    if (favoriteFetcher.state !== "idle" && favoriteFetcher.formData?.get("kolId") === kol.id) {
+      const intent = favoriteFetcher.formData?.get("intent");
+      if (intent === "removeFavorite") return false;
+      if (intent === "updateFavoriteFolders" || intent === "addFavorite") return true;
+    }
+    return isKolFavorited(kol);
   }
 
   const favoriteInputStyle = {
@@ -652,7 +659,7 @@ export default function KolListPage() {
           <SimpleGrid cols={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing={24}>
             {pageRows.map((kol) => {
               const kolTags = getPrimaryTags(kol);
-              const isFavorited = isKolFavorited(kol);
+              const isFavorited = getOptimisticFavorited(kol);
               const instagramUrl = buildSocialProfileUrl("instagram", kol.socialLinks?.instagram ?? kol.instagramHandle);
               const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
               const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
@@ -850,12 +857,12 @@ export default function KolListPage() {
                             fontSize: 16,
                             padding: 0,
                             lineHeight: 1,
-                            color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
+                            color: getOptimisticFavorited(kol) ? "var(--mantine-color-red-filled)" : "var(--mantine-color-gray-4)",
                           }}
-                          title={isKolFavorited(kol) ? "管理收藏資料夾" : "加入收藏"}
+                          title={getOptimisticFavorited(kol) ? "管理收藏資料夾" : "加入收藏"}
                           onClick={() => openFavoritePicker(kol)}
                         >
-                          {isKolFavorited(kol) ? "♥" : "♡"}
+                          {getOptimisticFavorited(kol) ? "♥" : "♡"}
                         </button>
                         <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>
                         <Button component={Link} to={`/kols/${kol.id}/edit`} variant="default" size="xs">編輯</Button>
@@ -952,7 +959,7 @@ export default function KolListPage() {
         centered
         size="sm"
       >
-        <Form
+        <favoriteFetcher.Form
           method="post"
           onSubmit={() => {
             setFavoritePickerKolId(null);
@@ -1002,7 +1009,7 @@ export default function KolListPage() {
               </Button>
             </Group>
           </Stack>
-        </Form>
+        </favoriteFetcher.Form>
       </Modal>
 
       {/* ── Batch Import Dialog ── */}

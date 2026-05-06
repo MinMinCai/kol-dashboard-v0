@@ -20,8 +20,8 @@ import {
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useMemo, useState } from "react";
+import { Form, Link, useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
+import { useEffect, useMemo, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, replaceKolFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
 
@@ -566,6 +566,14 @@ export default function KolDetailPage() {
   const [contractOpened, setContractOpened] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>(kol.platforms?.[0] ?? kol.platform ?? "Instagram");
   const ioFetcher = useFetcher<InsertionOrder | null>();
+  const favoriteFetcher = useFetcher<{ success?: boolean }>();
+  const revalidator = useRevalidator();
+
+  useEffect(() => {
+    if (favoriteFetcher.state === "idle" && favoriteFetcher.data?.success) {
+      revalidator.revalidate();
+    }
+  }, [favoriteFetcher.state, favoriteFetcher.data, revalidator]);
 
   const openPerfModal = (orderId: string) => {
     setPerfModalOpened(true);
@@ -609,7 +617,11 @@ export default function KolDetailPage() {
   const activeRealFollowerRatio =
     activePlatformMetrics?.realFollowerRatio
     ?? (selectedPlatform === "Instagram" ? kol.realFollowerRatio : undefined);
-  const favoriteActionLabel = isKolFavorited(kol) ? "管理收藏" : "加入收藏";
+  const pendingFavoriteIntent = favoriteFetcher.state !== "idle" ? String(favoriteFetcher.formData?.get("intent") ?? "") : "";
+  const optimisticFavorited = pendingFavoriteIntent === "remove_favorite" ? false
+    : pendingFavoriteIntent === "update_favorite_folders" ? true
+    : isKolFavorited(kol);
+  const favoriteActionLabel = optimisticFavorited ? "管理收藏" : "加入收藏";
 
 
   const tabStyle = (value: string): React.CSSProperties => ({
@@ -683,11 +695,11 @@ export default function KolDetailPage() {
                 }}
                 styles={{
                   root: {
-                    color: isKolFavorited(kol) ? "var(--mantine-color-red-filled)" : undefined,
+                    color: optimisticFavorited ? "var(--mantine-color-red-filled)" : undefined,
                   },
                 }}
               >
-                {isKolFavorited(kol) ? "♥" : "♡"} {favoriteActionLabel}
+                {optimisticFavorited ? "♥" : "♡"} {favoriteActionLabel}
               </Button>
               <Button
                 type="button"
@@ -1023,7 +1035,7 @@ export default function KolDetailPage() {
             ✕
           </button>
         </Group>
-        <Form
+        <favoriteFetcher.Form
           method="post"
           onSubmit={() => { setFolderPickerOpen(false); (document.getElementById("folder-picker-dialog") as HTMLDialogElement)?.close(); }}
         >
@@ -1085,7 +1097,7 @@ export default function KolDetailPage() {
               </button>
             </Group>
           </Stack>
-        </Form>
+        </favoriteFetcher.Form>
       </dialog>
     </Stack>
   );
