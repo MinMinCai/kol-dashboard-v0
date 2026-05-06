@@ -551,6 +551,13 @@
       "engagementRate": 3.9,
       "rating": 4.1,
       "collaborations": 5,
+      "averagePrice": 42000,
+      "industryDistribution": [
+        "家電(2)",
+        "食品(1)",
+        "母嬰(1)",
+        "汽車(1)"
+      ],
       "isFavorite": false,
       "avatarUrl": "https://i.pravatar.cc/160?img=14",
       "social": {
@@ -559,7 +566,7 @@
         "tiktok": 9000
       },
       "city": "Taipei",
-      "notes": "居家斜槽",
+      "notes": "居家斜槓",
       "contact": {
         "phone": "0966-234-567",
         "email": "ken.food@chefstudio.com",
@@ -707,6 +714,11 @@
       "engagementRate": 5.1,
       "rating": 4.3,
       "collaborations": 9,
+      "averagePrice": 47000,
+      "industryDistribution": [
+        "食品(2)",
+        "母嬰(1)"
+      ],
       "isFavorite": true,
       "avatarUrl": "https://i.pravatar.cc/160?img=25",
       "social": {
@@ -847,6 +859,10 @@
       "engagementRate": 4.2,
       "rating": 4,
       "collaborations": 4,
+      "averagePrice": 48000,
+      "industryDistribution": [
+        "汽車(1)"
+      ],
       "isFavorite": false,
       "avatarUrl": "https://i.pravatar.cc/160?img=44",
       "social": {
@@ -943,6 +959,12 @@
       "engagementRate": 4.8,
       "rating": 4.6,
       "collaborations": 13,
+      "averagePrice": 52000,
+      "industryDistribution": [
+        "食品(2)",
+        "家電(1)",
+        "母嬰(1)"
+      ],
       "isFavorite": true,
       "avatarUrl": "https://i.pravatar.cc/160?img=47",
       "social": {
@@ -1099,6 +1121,10 @@
       "engagementRate": 4.4,
       "rating": 4.8,
       "collaborations": 10,
+      "averagePrice": 85000,
+      "industryDistribution": [
+        "汽車(1)"
+      ],
       "isFavorite": false,
       "avatarUrl": "https://i.pravatar.cc/160?img=59",
       "social": {
@@ -1224,6 +1250,8 @@
       "kolCount": 5,
       "status": "completed",
       "totalBudget": 250000,
+      "tax": 12500,
+      "totalWithTax": 262500,
       "avgRating": 4.5,
       "totalReach": 450000,
       "totalEngagement": 35000,

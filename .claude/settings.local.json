@@ -13,7 +13,9 @@
       "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\\\\routes\" | ForEach-Object { $_.Name })",
       "Read(//c/Users/Emily Cai/tech_web/kol-db-demo/app/routes/**)",
       "Bash(node -e \"require\\('@mantine/dates'\\)\")",
-      "Bash(grep 'proposals.$proposalId\\\\|mock-api')"
+      "Bash(grep 'proposals.$proposalId\\\\|mock-api')",
+      "Bash(node -e ' *)",
+      "Bash(git checkout *)"
     ]
   }
 }
