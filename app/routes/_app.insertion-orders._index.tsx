@@ -53,6 +53,7 @@ import {
   IconCloudUpload
 } from "@tabler/icons-react";
 import { listInsertionOrders, updateInsertionOrder, deleteInsertionOrder, type InsertionOrder } from "~/lib/mock-api.server";
+import styles from "./_app.insertion-orders._index.module.css";
 
 
 type TimeFilter = "all" | "last30" | "last90" | "thisYear";
@@ -339,47 +340,30 @@ export default function InsertionOrderListPage() {
       </Group>
 
       {/* ── Server-driven filter form ── */}
-      <form key={`${search}|${clientFilter}|${industryFilter}|${timeFilter}|${sort}`} method="get" style={{ display: "contents" }}>
+      <form key={`${search}|${clientFilter}|${industryFilter}|${timeFilter}|${sort}`} method="get" className={styles.formContents}>
         <Stack gap="sm">
           <Group align="end" wrap="wrap">
             {/* Search */}
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>
+            <div className={styles.searchField}>
+              <label className={styles.fieldLabel}>
                 搜尋
               </label>
               <input
                 name="search"
                 defaultValue={search}
                 placeholder="搜尋委刊單編號、標題或客戶"
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  boxSizing: "border-box",
-                }}
+                className={styles.searchInput}
               />
             </div>
 
             {/* Client */}
             <div>
-              <label htmlFor="filter-client" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>客戶</label>
+              <label htmlFor="filter-client" className={styles.fieldLabel}>客戶</label>
               <select
                 id="filter-client"
                 name="client"
                 defaultValue={clientFilter}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  minWidth: 140,
-                }}
+                className={styles.filterSelect}
               >
                 <option value="">全部</option>
                 {allClients.map((c) => (
@@ -390,20 +374,12 @@ export default function InsertionOrderListPage() {
 
             {/* Industry */}
             <div>
-              <label htmlFor="filter-industry" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>產業</label>
+              <label htmlFor="filter-industry" className={styles.fieldLabel}>產業</label>
               <select
                 id="filter-industry"
                 name="industry"
                 defaultValue={industryFilter}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  minWidth: 140,
-                }}
+                className={styles.filterSelect}
               >
                 <option value="">全部</option>
                 {allIndustries.map((i) => (
@@ -414,20 +390,12 @@ export default function InsertionOrderListPage() {
 
             {/* Time */}
             <div>
-              <label htmlFor="filter-time" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>時間</label>
+              <label htmlFor="filter-time" className={styles.fieldLabel}>時間</label>
               <select
                 id="filter-time"
                 name="time"
                 defaultValue={timeFilter}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  minWidth: 140,
-                }}
+                className={styles.filterSelect}
               >
                 <option value="all">全部</option>
                 <option value="last30">近 30 天</option>
@@ -438,7 +406,7 @@ export default function InsertionOrderListPage() {
 
             {/* Sort */}
             <div>
-              <label htmlFor="filter-sort" style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 4 }}>排序</label>
+              <label htmlFor="filter-sort" className={styles.fieldLabel}>排序</label>
               <select
                 id="filter-sort"
                 name="sort"
@@ -446,15 +414,7 @@ export default function InsertionOrderListPage() {
                 onChange={(e) => {
                   e.currentTarget.form?.requestSubmit();
                 }}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                  minWidth: 160,
-                }}
+                className={`${styles.filterSelect} ${styles.filterSelectWide}`}
               >
                 <option value="order_no_asc">委刊單編號（小→大）</option>
                 <option value="order_no_desc">委刊單編號（大→小）</option>
@@ -472,16 +432,7 @@ export default function InsertionOrderListPage() {
 
             <button
               type="submit"
-              style={{
-                padding: "8px 20px",
-                background: "var(--mantine-color-blue-filled)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className={styles.formSubmitButton}
             >
               套用篩選
             </button>
@@ -489,15 +440,7 @@ export default function InsertionOrderListPage() {
             {(search || clientFilter || industryFilter || timeFilter !== "all") && (
               <a
                 href="/insertion-orders"
-                style={{
-                  padding: "8px 16px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  textDecoration: "none",
-                  color: "var(--mantine-color-text)",
-                  background: "var(--mantine-color-body)",
-                }}
+                className={styles.linkButton}
               >
                 清除篩選
               </a>
@@ -529,7 +472,7 @@ export default function InsertionOrderListPage() {
 
       {/* ── List ── */}
       {rows.length === 0 ? (
-        <Card withBorder p="xl" style={{ textAlign: "center" }}>
+        <Card withBorder p="xl" ta="center">
           <Text size="48px">📄</Text>
           <Title order={3}>尚無委刊單</Title>
           <Text c="dimmed" mb="md">調整篩選條件，或建立您的第一個委刊單</Text>
@@ -539,7 +482,7 @@ export default function InsertionOrderListPage() {
         <Stack gap="md">
           {rows.map((order) => {
             return (
-              <Card key={order.id} withBorder className="io-card" style={{ cursor: "pointer" }} onClick={() => { window.location.href = `/insertion-orders/${order.id}`; }}>
+              <Card key={order.id} withBorder className={`io-card ${styles.ioCard}`} onClick={() => { window.location.href = `/insertion-orders/${order.id}`; }}>
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Text fw={600}>📋 #{order.orderNo} {order.title ?? "未命名專案"}</Text>
@@ -583,7 +526,7 @@ export default function InsertionOrderListPage() {
         <Group justify="space-between" align="center">
           <Group>
             <Text size="sm" c="dimmed">每頁筆數</Text>
-            <form method="get" style={{ display: "inline" }}>
+            <form method="get" className={styles.inlineForm}>
               <input type="hidden" name="search" value={search} />
               <input type="hidden" name="client" value={clientFilter} />
               <input type="hidden" name="industry" value={industryFilter} />
@@ -595,14 +538,7 @@ export default function InsertionOrderListPage() {
                 name="pageSize"
                 defaultValue={pageSize}
                 onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
-                style={{
-                  padding: "6px 10px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  fontSize: 14,
-                  background: "var(--mantine-color-body)",
-                  color: "var(--mantine-color-text)",
-                }}
+                className={styles.pageSizeSelect}
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -615,14 +551,7 @@ export default function InsertionOrderListPage() {
             {currentPage > 1 && (
               <a
                 href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage - 1}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  color: "var(--mantine-color-text)",
-                  fontSize: 14,
-                }}
+                className={styles.pageNavLink}
               >
                 ‹ 上一頁
               </a>
@@ -632,16 +561,7 @@ export default function InsertionOrderListPage() {
               <a
                 key={p}
                 href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${p}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 10px",
-                  border: p === currentPage ? "1px solid var(--mantine-color-blue-filled)" : "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  background: p === currentPage ? "var(--mantine-color-blue-filled)" : "var(--mantine-color-body)",
-                  color: p === currentPage ? "#fff" : "var(--mantine-color-text)",
-                  fontSize: 14,
-                  fontWeight: p === currentPage ? 600 : 400,
-                }}
+                className={p === currentPage ? `${styles.pageNumberLink} ${styles.pageNumberLinkActive}` : styles.pageNumberLink}
               >
                 {p}
               </a>
@@ -650,14 +570,7 @@ export default function InsertionOrderListPage() {
             {currentPage < totalPages && (
               <a
                 href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage + 1}&pageSize=${pageSize}`}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid var(--mantine-color-default-border)",
-                  borderRadius: 4,
-                  textDecoration: "none",
-                  color: "var(--mantine-color-text)",
-                  fontSize: 14,
-                }}
+                className={styles.pageNavLink}
               >
                 下一頁 ›
               </a>
@@ -708,8 +621,7 @@ export default function InsertionOrderListPage() {
                         withBorder
                         p="sm"
                         radius="md"
-                        style={{ transition: 'all 0.2s', cursor: 'pointer' }}
-                        className="hover:shadow-sm"
+                        className={`hover:shadow-sm ${styles.kolCardClickable}`}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -719,13 +631,13 @@ export default function InsertionOrderListPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Avatar src={kol.avatarUrl} radius="xl" size="md" />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Box className={styles.flexGrow}>
                             <Text fw={600}>{kol.name || "KOL Name"}</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /> | IG限動 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /></Text>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} color="green" className={styles.iconInline} /> | IG限動 <IconCheck size={12} color="green" className={styles.iconInline} /></Text>
                             </Group>
                           </Box>
-                          <Box style={{ textAlign: 'right' }}>
+                          <Box ta="right">
                             <Badge variant="dot" color="blue">總觸及 80K</Badge>
                             <Text size="xs" c="dimmed" mt={4}>互動率 7.8%</Text>
                           </Box>
@@ -734,7 +646,7 @@ export default function InsertionOrderListPage() {
                     ))}
                     {/* Mock empty check context */}
                     {(activeOrder.collaborations || []).filter((k: any) => (k.performanceItems || []).length > 0).length === 0 && (
-                      <Card withBorder p="sm" radius="md" style={{ cursor: 'pointer' }} onClick={() => toggleKolSelection("demo-gina")}>
+                      <Card withBorder p="sm" radius="md" className={styles.kolCardClickable} onClick={() => toggleKolSelection("demo-gina")}>
                         <Group wrap="nowrap">
                           <Checkbox
                             checked={selectedKolIds.includes("demo-gina")}
@@ -742,10 +654,10 @@ export default function InsertionOrderListPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Avatar color="blue" radius="xl" size="md">G</Avatar>
-                          <Box style={{ flexGrow: 1 }}>
+                          <Box className={styles.flexGrow}>
                             <Text fw={600}>Gina (Demo)</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /> | IG限動 <IconCheck size={12} style={{ display: 'inline', color: 'green' }} /></Text>
+                              <Text size="xs" c="dimmed">IG貼文 <IconCheck size={12} color="green" className={styles.iconInline} /> | IG限動 <IconCheck size={12} color="green" className={styles.iconInline} /></Text>
                             </Group>
                           </Box>
                         </Group>
@@ -765,7 +677,7 @@ export default function InsertionOrderListPage() {
                         p="sm"
                         radius="md"
                         bg="light-dark(var(--mantine-color-orange-0), rgba(253, 126, 20, 0.15))"
-                        style={{ opacity: 0.8, cursor: 'pointer' }}
+                        className={styles.kolCardDisabled}
                         onClick={() => toggleKolSelection(kol.id)}
                       >
                         <Group wrap="nowrap">
@@ -774,11 +686,11 @@ export default function InsertionOrderListPage() {
                             onChange={() => toggleKolSelection(kol.id)}
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <Avatar src={kol.avatarUrl} radius="xl" size="md" style={{ filter: 'grayscale(100%)' }} />
-                          <Box style={{ flexGrow: 1 }}>
+                          <Avatar src={kol.avatarUrl} radius="xl" size="md" className={styles.kolAvatarGrayscale} />
+                          <Box className={styles.flexGrow}>
                             <Text fw={600} c="dimmed">{kol.name || "KOL Name"}</Text>
                             <Group gap="xs" mt={4}>
-                              <Text size="xs" c="red.7"><IconX size={12} style={{ display: 'inline' }} /> 無成效資料</Text>
+                              <Text size="xs" c="red.7"><IconX size={12} className={styles.iconInline} /> 無成效資料</Text>
                             </Group>
                           </Box>
                           <Button variant="subtle" size="xs" color="blue" rightSection="→">前往上傳成效</Button>
@@ -792,7 +704,7 @@ export default function InsertionOrderListPage() {
                 <Card bg="light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.15))" p="sm" radius="md" mt="xs">
                   <Group wrap="nowrap" align="flex-start">
                     <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
-                    <Text size="sm" c="blue.9" style={{ lineHeight: 1.4 }}>
+                    <Text size="sm" c="blue.9" lh={1.4}>
                       未勾選的 KOL 將不會出現在報告中。建議先上傳所有 KOL 的成效資料後再生成報告。
                     </Text>
                   </Group>
@@ -816,19 +728,19 @@ export default function InsertionOrderListPage() {
                 <Box>
                   <Text size="sm" fw={500} mb="xs">PowerPoint 模板</Text>
                   <Group grow>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} style={{ borderColor: selectedTemplate === "standard" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("standard")} className={selectedTemplate === "standard" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "standard" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "standard" ? "" : "dimmed"}>公司標準模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} style={{ borderColor: selectedTemplate === "simple" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("simple")} className={selectedTemplate === "simple" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "simple" ? "blue" : "gray"}><IconTemplate /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "simple" ? "" : "dimmed"}>簡約模板</Text>
                       </Stack>
                     </Card>
-                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} style={{ borderColor: selectedTemplate === "none" ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-default-border)', cursor: 'pointer' }}>
+                    <Card withBorder p="sm" onClick={() => setSelectedTemplate("none")} className={selectedTemplate === "none" ? `${styles.templateCard} ${styles.templateCardActive}` : styles.templateCard}>
                       <Stack align="center" gap="xs">
                         <ThemeIcon size="xl" variant="light" color={selectedTemplate === "none" ? "blue" : "gray"}><IconFile /></ThemeIcon>
                         <Text fw={500} size="sm" c={selectedTemplate === "none" ? "" : "dimmed"}>不套用模板</Text>
@@ -871,7 +783,7 @@ export default function InsertionOrderListPage() {
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
       >
         <Stack align="center" ta="center" gap="md" py="md">
-          <ThemeIcon size={64} radius="100%" variant="light" color="blue" style={{ animation: 'pulse 2s infinite' }}>
+          <ThemeIcon size={64} radius="100%" variant="light" color="blue" className={styles.pulseIcon}>
             <IconRobot size={40} />
           </ThemeIcon>
           <Box>
@@ -964,13 +876,6 @@ export default function InsertionOrderListPage() {
         </Stack>
       </Modal>
 
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
     </Stack>
   );
 }

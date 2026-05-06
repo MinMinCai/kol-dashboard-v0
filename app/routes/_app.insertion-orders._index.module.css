@@ -1,0 +1,144 @@
+.formContents {
+  display: contents;
+}
+
+.searchField {
+  flex: 1;
+  min-width: 200px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  box-sizing: border-box;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.filterSelectWide {
+  min-width: 160px;
+}
+
+.formSubmitButton {
+  padding: 8px 20px;
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.linkButton {
+  padding: 8px 16px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  background: var(--mantine-color-body);
+  font-size: 14px;
+}
+
+.ioCard {
+  cursor: pointer;
+}
+
+.inlineForm {
+  display: inline;
+}
+
+.pageSizeSelect {
+  padding: 6px 10px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 4px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNavLink {
+  padding: 6px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNumberLink {
+  padding: 6px 10px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+
+.pageNumberLinkActive {
+  border-color: var(--mantine-color-blue-filled);
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+  font-weight: 600;
+}
+
+.kolCardClickable {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.kolCardDisabled {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.kolAvatarGrayscale {
+  filter: grayscale(100%);
+}
+
+.flexGrow {
+  flex-grow: 1;
+}
+
+.iconInline {
+  display: inline;
+}
+
+.templateCard {
+  border-color: var(--mantine-color-default-border);
+  cursor: pointer;
+}
+
+.templateCardActive {
+  border-color: var(--mantine-color-blue-filled);
+}
+
+.pulseIcon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
