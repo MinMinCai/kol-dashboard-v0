@@ -2,6 +2,7 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import { redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { DEMO_USER, demoAuthCookie } from "~/lib/demo-auth.server";
+import styles from "./login.module.css";
 
 export async function action(_: ActionFunctionArgs) {
   return redirect("/dashboard", {
@@ -17,40 +18,13 @@ export async function action(_: ActionFunctionArgs) {
 export default function LoginPage() {
   const [dark, setDark] = useState(false);
 
-  const bg = dark ? "#0f172a" : "#ffffff";
-  const fg = dark ? "#f8fafc" : "#0f172a";
-  const subtle = dark ? "#94a3b8" : "#64748b";
-  const border = dark ? "#1e293b" : "#e2e8f0";
-  const googleBg = dark ? "#1e293b" : "#f8fafc";
-  const googleBorder = dark ? "#334155" : "#cbd5e1";
-  const googleHoverBg = dark ? "#273549" : "#f1f5f9";
-
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        width: "100vw",
-        overflow: "hidden",
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <div className={dark ? `${styles.page} ${styles.dark}` : styles.page}>
       {/* ── LEFT PANEL ── */}
-      <div
-        style={{
-          flex: "0 0 50%",
-          position: "relative",
-          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 35%, #0f3460 65%, #1a1a2e 100%)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "48px",
-          overflow: "hidden",
-        }}
-      >
+      <div className={styles.leftPanel}>
         {/* Abstract shape layer */}
         <svg
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.15 }}
+          className={styles.bgShapes}
           viewBox="0 0 600 800"
           preserveAspectRatio="xMidYMid slice"
           xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +37,7 @@ export default function LoginPage() {
 
         {/* Influencer network graphic */}
         <svg
-          style={{ position: "absolute", right: 0, bottom: "20%", opacity: 0.1 }}
+          className={styles.networkGraphic}
           width="360"
           height="360"
           viewBox="0 0 360 360"
@@ -93,95 +67,44 @@ export default function LoginPage() {
         </svg>
 
         {/* Brand */}
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 8,
-                background: "linear-gradient(135deg, #3b82f6, #6366f1)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+        <div className={styles.brandWrap}>
+          <div className={styles.brandRow}>
+            <div className={styles.brandIcon}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <span style={{ color: "white", fontWeight: 700, fontSize: 18, letterSpacing: "-0.3px" }}>KOL DB</span>
+            <span className={styles.brandText}>KOL DB</span>
           </div>
         </div>
 
         {/* Hero copy */}
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ marginBottom: 24 }}>
-            <span
-              style={{
-                display: "inline-block",
-                padding: "4px 12px",
-                background: "rgba(59,130,246,0.25)",
-                border: "1px solid rgba(59,130,246,0.4)",
-                borderRadius: 20,
-                color: "#93c5fd",
-                fontSize: 12,
-                fontWeight: 600,
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                marginBottom: 16,
-              }}
-            >
+        <div className={styles.heroWrap}>
+          <div className={styles.heroBadgeWrap}>
+            <span className={styles.heroBadge}>
               Influencer Management Platform
             </span>
-            <h1
-              style={{
-                color: "#ffffff",
-                fontSize: 42,
-                fontWeight: 800,
-                lineHeight: 1.15,
-                letterSpacing: "-1px",
-                margin: 0,
-              }}
-            >
+            <h1 className={styles.heroTitle}>
               統一管理<br />
-              <span
-                style={{
-                  background: "linear-gradient(90deg, #60a5fa, #818cf8, #34d399)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
+              <span className={styles.heroTitleAccent}>
                 KOL 合作全週期
               </span>
             </h1>
-            <p style={{ color: "#94a3b8", fontSize: 15, lineHeight: 1.6, marginTop: 16, maxWidth: 340 }}>
+            <p className={styles.heroDesc}>
               從提案到委刊單，從 KOL 搜尋到結案報告，一個平台掌握所有行銷合作流程。
             </p>
           </div>
 
           {/* Feature chips */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className={styles.featureList}>
             {[
               { icon: "👥", text: "KOL 資料庫與管理" },
               { icon: "📋", text: "提案與委刊單流程" },
               { icon: "📊", text: "結案報告自動生成" },
             ].map((f) => (
-              <div
-                key={f.text}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 10,
-                  padding: "10px 14px",
-                  backdropFilter: "blur(4px)",
-                }}
-              >
-                <span style={{ fontSize: 18 }}>{f.icon}</span>
-                <span style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 500 }}>{f.text}</span>
+              <div key={f.text} className={styles.featureItem}>
+                <span className={styles.featureIcon}>{f.icon}</span>
+                <span className={styles.featureText}>{f.text}</span>
               </div>
             ))}
           </div>
@@ -189,96 +112,30 @@ export default function LoginPage() {
       </div>
 
       {/* ── RIGHT PANEL ── */}
-      <div
-        style={{
-          flex: "0 0 50%",
-          background: bg,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "48px",
-          position: "relative",
-          transition: "background 300ms",
-        }}
-      >
+      <div className={styles.rightPanel}>
         {/* Theme toggle */}
         <button
           type="button"
           onClick={() => setDark((d) => !d)}
-          style={{
-            position: "absolute",
-            top: 24,
-            right: 24,
-            background: "none",
-            border: `1px solid ${border}`,
-            borderRadius: 8,
-            padding: "6px 12px",
-            cursor: "pointer",
-            color: subtle,
-            fontSize: 13,
-            fontWeight: 500,
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            transition: "all 200ms",
-          }}
+          className={styles.themeToggle}
         >
           {dark ? "☀️" : "🌙"} {dark ? "Light" : "Dark"}
         </button>
 
-        <div style={{ width: "100%", maxWidth: 360 }}>
+        <div className={styles.formWrap}>
           {/* Header */}
-          <div style={{ marginBottom: 40 }}>
-            <h2
-              style={{
-                color: fg,
-                fontSize: 28,
-                fontWeight: 800,
-                letterSpacing: "-0.5px",
-                margin: 0,
-                marginBottom: 8,
-              }}
-            >
+          <div className={styles.formHeader}>
+            <h2 className={styles.formTitle}>
               歡迎回來 👋
             </h2>
-            <p style={{ color: subtle, fontSize: 15, margin: 0, lineHeight: 1.6 }}>
+            <p className={styles.formDesc}>
               使用 Google 帳號登入以繼續使用 KOL DB
             </p>
           </div>
 
           {/* Google Login Button */}
           <Form method="post" reloadDocument>
-            <button
-              type="submit"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 12,
-                width: "100%",
-                padding: "13px 20px",
-                background: googleBg,
-                border: `1.5px solid ${googleBorder}`,
-                borderRadius: 12,
-                cursor: "pointer",
-                textDecoration: "none",
-                color: fg,
-                fontSize: 15,
-                fontWeight: 600,
-                transition: "background 150ms, box-shadow 150ms",
-                boxSizing: "border-box",
-                marginBottom: 24,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = googleHoverBg;
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = googleBg;
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
+            <button type="submit" className={styles.googleBtn}>
               <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -290,35 +147,20 @@ export default function LoginPage() {
           </Form>
 
           {/* Divider */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 24,
-            }}
-          >
-            <div style={{ flex: 1, height: 1, background: border }} />
-            <div style={{ flex: 1, height: 1, background: border }} />
+          <div className={styles.divider}>
+            <div className={styles.dividerLine} />
+            <div className={styles.dividerLine} />
           </div>
 
           {/* Info card */}
-          <div
-            style={{
-              background: dark ? "#1e293b" : "#f8fafc",
-              border: `1px solid ${border}`,
-              borderRadius: 12,
-              padding: "16px 18px",
-              marginBottom: 32,
-            }}
-          >
-            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 16, marginTop: 1 }}>🔒</span>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardRow}>
+              <span className={styles.infoIcon}>🔒</span>
               <div>
-                <p style={{ color: fg, fontSize: 13, fontWeight: 600, margin: 0, marginBottom: 4 }}>
+                <p className={styles.infoTitle}>
                   安全登入
                 </p>
-                <p style={{ color: subtle, fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+                <p className={styles.infoDesc}>
                   透過 BetterAuth + Google OAuth 2.0 進行身分驗證，我們不儲存您的密碼。
                 </p>
               </div>
@@ -326,12 +168,12 @@ export default function LoginPage() {
           </div>
 
           {/* Footer */}
-          <p style={{ color: subtle, fontSize: 12, textAlign: "center", lineHeight: 1.6 }}>
+          <p className={styles.footer}>
             登入即代表您同意我們的
             {" "}
-            <a href="#" style={{ color: "#3b82f6", textDecoration: "none" }}>服務條款</a>
+            <a href="#" className={styles.footerLink}>服務條款</a>
             {" "}及{" "}
-            <a href="#" style={{ color: "#3b82f6", textDecoration: "none" }}>隱私政策</a>
+            <a href="#" className={styles.footerLink}>隱私政策</a>
           </p>
         </div>
       </div>

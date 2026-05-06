@@ -1,0 +1,294 @@
+.page {
+  --login-bg: #ffffff;
+  --login-fg: #0f172a;
+  --login-subtle: #64748b;
+  --login-border: #e2e8f0;
+  --login-google-bg: #f8fafc;
+  --login-google-border: #cbd5e1;
+  --login-google-hover-bg: #f1f5f9;
+  --login-info-bg: #f8fafc;
+
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.page.dark {
+  --login-bg: #0f172a;
+  --login-fg: #f8fafc;
+  --login-subtle: #94a3b8;
+  --login-border: #1e293b;
+  --login-google-bg: #1e293b;
+  --login-google-border: #334155;
+  --login-google-hover-bg: #273549;
+  --login-info-bg: #1e293b;
+}
+
+.leftPanel {
+  flex: 0 0 50%;
+  position: relative;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 35%, #0f3460 65%, #1a1a2e 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  overflow: hidden;
+}
+
+.bgShapes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.15;
+}
+
+.networkGraphic {
+  position: absolute;
+  right: 0;
+  bottom: 20%;
+  opacity: 0.1;
+}
+
+.brandWrap {
+  position: relative;
+  z-index: 1;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.brandIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandText {
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.heroWrap {
+  position: relative;
+  z-index: 1;
+}
+
+.heroBadgeWrap {
+  margin-bottom: 24px;
+}
+
+.heroBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(59, 130, 246, 0.25);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 20px;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.heroTitle {
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.heroTitleAccent {
+  background: linear-gradient(90deg, #60a5fa, #818cf8, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroDesc {
+  color: #94a3b8;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 16px;
+  max-width: 340px;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  backdrop-filter: blur(4px);
+}
+
+.featureIcon {
+  font-size: 18px;
+}
+
+.featureText {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rightPanel {
+  flex: 0 0 50%;
+  background: var(--login-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  position: relative;
+  transition: background 300ms;
+}
+
+.themeToggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: 1px solid var(--login-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--login-subtle);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 200ms;
+}
+
+.formWrap {
+  width: 100%;
+  max-width: 360px;
+}
+
+.formHeader {
+  margin-bottom: 40px;
+}
+
+.formTitle {
+  color: var(--login-fg);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.formDesc {
+  color: var(--login-subtle);
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--login-google-bg);
+  border: 1.5px solid var(--login-google-border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--login-fg);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 150ms, box-shadow 150ms;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+.googleBtn:hover {
+  background: var(--login-google-hover-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--login-border);
+}
+
+.infoCard {
+  background: var(--login-info-bg);
+  border: 1px solid var(--login-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 32px;
+}
+
+.infoCardRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.infoIcon {
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+.infoTitle {
+  color: var(--login-fg);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  margin-bottom: 4px;
+}
+
+.infoDesc {
+  color: var(--login-subtle);
+  font-size: 12px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footer {
+  color: var(--login-subtle);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.footerLink {
+  color: #3b82f6;
+  text-decoration: none;
+}
