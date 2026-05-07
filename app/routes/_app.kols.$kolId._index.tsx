@@ -24,8 +24,10 @@ import { Form, Link, useFetcher, useLoaderData, useRevalidator } from "@remix-ru
 import { useEffect, useMemo, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import styles from "./_app.kols.$kolId._index.module.css";
-import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, replaceKolFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
-import { getCurrentMember } from "~/lib/demo-identity.server";
+import type { InsertionOrder, KolCollabRecord, OrderKolCollaboration, OrderPerformanceItem, PlatformMetrics } from "~/lib/mock-api.server";
+import { handleKolDetailAction, loadKolDetail } from "~/lib/kols.server";
+
+// ============ Format & Favorite Helpers ============
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -41,6 +43,8 @@ function isKolFavorited(kol: { isFavorite?: boolean; favoriteFolder?: string | n
 function getFavoriteSelection(kol: { favoriteFolder?: string | null; favoriteFolders?: string[] }): string[] {
   return Array.from(new Set(kol.favoriteFolders ?? (kol.favoriteFolder ? [kol.favoriteFolder] : [])));
 }
+
+// ============ Sub-component: SparkLine (price trend chart) ============
 
 function SparkLine({ points }: { points: { date: string; price: number }[] }) {
   const width = 620;
@@ -133,7 +137,8 @@ function SparkLine({ points }: { points: { date: string; price: number }[] }) {
   );
 }
 
-// ─── Platform types ────────────────────────────────────────────────────────────
+// ============ Platform Types & Helpers ============
+
 const PLATFORMS = ["IG 貼文", "IG 限動", "IG Reels", "YouTube"] as const;
 type PlatformKey = typeof PLATFORMS[number];
 
@@ -148,6 +153,8 @@ function normalizePlatform(title: string): PlatformKey | null {
 function fmt(v: number | undefined) {
   return v != null ? v.toLocaleString("zh-TW") : "-";
 }
+
+// ============ Sub-component: Performance Overview Modal ============
 
 function PerformanceOverviewModal({ opened, onClose, order }: {
   opened: boolean;
@@ -381,58 +388,19 @@ function PlatformTabSelector({
   );
 }
 
+// ============ Loader & Action ============
+
 export async function action({ params, request }: ActionFunctionArgs) {
-  const kolId = params.kolId ?? "";
-  if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
   const formData = await request.formData();
-  const intent = formData.get("intent");
-  const currentMember = await getCurrentMember(request).catch(() => null);
-  const memberId = currentMember?.id;
-
-  try {
-    if (intent === "add_favorite") {
-      const folder = String(formData.get("folder") ?? "").trim() || undefined;
-      await addKolToFavoriteFolder(kolId, folder ?? "", memberId);
-    } else if (intent === "update_favorite_folders") {
-      const selectedFolders = String(formData.get("selectedFolders") ?? "")
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean);
-      if (selectedFolders.length > 0) {
-        await replaceKolFavoriteFolders(kolId, selectedFolders, memberId);
-      } else {
-        await addKolToFavoriteFolder(kolId, "", memberId);
-      }
-    } else if (intent === "remove_favorite") {
-      await clearKolFavorites(kolId);
-    }
-  } catch (e) {
-    return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
-  }
-  return json({ success: true });
-}
-
-function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
-  ]);
+  return handleKolDetailAction(params.kolId ?? "", request, formData);
 }
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  const kol = await withTimeout(getKol(params.kolId ?? ""), null).catch(() => null);
-  if (!kol) throw new Response("Not Found", { status: 404 });
-
-  const url = new URL(request.url);
-  const tab = url.searchParams.get("tab") ?? "projects";
-  const limit = Math.max(5, Number(url.searchParams.get("limit") ?? "5"));
-  const currentMember = await getCurrentMember(request).catch(() => null);
-  const folders = await withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]);
-
-  return json({ kol, tab, limit, folders });
+  return json(await loadKolDetail(params.kolId ?? "", request));
 }
 
-// ─── Contract Generator Modal ─────────────────────────────────────────────────
+// ============ Sub-component: Contract Generator Modal ============
+
 function ContractModal({ opened, onClose, kol }: {
   opened: boolean;
   onClose: () => void;
@@ -541,6 +509,8 @@ ${extraClause || "（無）"}
     </Modal>
   );
 }
+
+// ============ Page Component ============
 
 export default function KolDetailPage() {
   const { kol, tab, limit, folders } = useLoaderData<typeof loader>();

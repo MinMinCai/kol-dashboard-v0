@@ -27,7 +27,6 @@ import { useDisclosure } from "@mantine/hooks";
 // import { BarChart } from "@mantine/charts"; // 暫不開發
 import {
   json,
-  redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
@@ -37,24 +36,15 @@ import { Menu, ActionIcon } from "@mantine/core";
 import { IconPencil, IconCheck, IconChevronDown, IconTrash, IconDotsVertical } from "@tabler/icons-react";
 import { ClientOnly } from "~/components/ClientOnly";
 import { DemoGenerateReportModal } from "~/components/DemoGenerateReportModal";
-import {
-  getInsertionOrder,
-  upsertIOReviewByAuthor,
-  deleteIOReviewsByAuthor,
-  updateIOPerformance,
-  updatePerformanceItem,
-  deletePerformanceItem,
-  listBrandCatalog,
-  listIndustryCatalog,
-  listTeamMembers,
-  updateInsertionOrder,
-  deleteInsertionOrder,
-  type OrderKolCollaboration,
-  type OrderPerformanceItem,
-  type OrderReview,
+import type {
+  OrderKolCollaboration,
+  OrderPerformanceItem,
+  OrderReview,
 } from "~/lib/mock-api.server";
-import { getCurrentMember } from "~/lib/demo-identity.server";
+import { handleInsertionOrderAction, loadInsertionOrderDetail } from "~/lib/insertion-orders.server";
 import styles from "./_app.insertion-orders.$insertionOrderId._index.module.css";
+
+// ============ Format & Review Helpers ============
 
 function n(value: number | undefined): string {
   // Use a stable locale to prevent hydration mismatch
@@ -113,6 +103,8 @@ function authorInitial(name: string): string {
 function snapToHalf(value: number): number {
   return Math.round(value * 2) / 2;
 }
+
+// ============ Sub-component: KolCollabCard ============
 
 function KolCollabCard({
   kol,
@@ -377,176 +369,18 @@ function KolCollabCard({
   );
 }
 
+// ============ Loader & Action ============
+
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  const insertionOrderId = params.insertionOrderId ?? "";
-  try {
-    function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
-      return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
-    }
-    const [insertionOrder, brandCatalog, industryCatalog, teamMembers, currentMember] = await Promise.all([
-      withTimeout(getInsertionOrder(insertionOrderId), null),
-      withTimeout(listBrandCatalog(), []),
-      withTimeout(listIndustryCatalog(), []),
-      withTimeout(listTeamMembers(), []),
-      withTimeout(getCurrentMember(request), null),
-    ]);
-
-    if (!insertionOrder) {
-      throw new Response("Not Found", { status: 404 });
-    }
-
-    const salesOwners = (teamMembers ?? []).filter(m => m.group === 'AE').map(m => m.name);
-    const kolManagers = (teamMembers ?? []).filter(m => m.group === 'KOL').map(m => m.name);
-    const brands = (brandCatalog ?? []).map(b => b.name);
-    const industries = (industryCatalog ?? []).map(i => i.name);
-    const currentUserName = currentMember?.name ?? "";
-
-    return json({ insertionOrder, salesOwners, kolManagers, brands, industries, currentUserName });
-  } catch (error: any) {
-    if (error instanceof Response) throw error;
-    console.error("Loader error:", error);
-    throw new Response(error.message || "Internal Server Error", { status: 500 });
-  }
+  return json(await loadInsertionOrderDetail(params.insertionOrderId ?? "", request));
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const orderId = params.insertionOrderId ?? "";
   const formData = await request.formData();
-  const intent = formData.get("intent");
-
-  if (intent === "updateOrder") {
-    const projectName = String(formData.get("projectName") ?? "").trim();
-    const clientName = String(formData.get("clientName") ?? "").trim();
-    const brand = String(formData.get("brand") ?? "").trim();
-    const industry = String(formData.get("industry") ?? "").trim();
-    const mcnName = String(formData.get("mcnName") ?? "").trim();
-    const salesOwner = String(formData.get("salesOwner") ?? "").trim();
-    const kolManager = String(formData.get("kolManager") ?? "").trim();
-    const startDate = String(formData.get("startDate") ?? "").trim();
-    const endDate = String(formData.get("endDate") ?? "").trim();
-    const totalBudget = Number(formData.get("totalBudget") ?? 0);
-    const tax = Number(formData.get("tax") ?? 0);
-    const totalWithTax = totalBudget + tax;
-
-    await updateInsertionOrder(orderId, {
-      projectName,
-      title: projectName,
-      clientName,
-      brand,
-      industry,
-      mcnName,
-      salesOwner,
-      kolManager,
-      startDate,
-      endDate,
-      totalBudget,
-      tax,
-      totalWithTax,
-    });
-    return json({ success: true });
-  }
-
-  if (intent === "deleteOrder") {
-    await deleteInsertionOrder(orderId);
-    return redirect("/insertion-orders");
-  }
-
-  if (intent === "generateReport") {
-    const io = await getInsertionOrder(orderId);
-    if (io) {
-      const newReport = {
-        id: `rep_${Date.now()}`,
-        name: `結案報告_v${(io.reports?.filter((r: any) => r.type === "draft").length || 0) + 1}.pptx`,
-        type: "draft" as const,
-        createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
-        createdBy: "系統 AI",
-      };
-      await updateInsertionOrder(orderId, {
-        hasDraft: true,
-        reports: [...(io.reports || []), newReport]
-      });
-    }
-    return json({ success: true });
-  }
-
-  if (intent === "review") {
-    const kolId = formData.get("kolId") as string;
-    const rating = Math.round(Number(formData.get("rating")) * 2) / 2;
-    const internalComment = formData.get("internalComment") as string;
-    const externalComment = formData.get("externalComment") as string;
-    const currentMember = await getCurrentMember(request);
-    const author = currentMember?.name ?? "Demo User";
-
-    await upsertIOReviewByAuthor(orderId, kolId, author, {
-      rating,
-      internalComment,
-      externalComment,
-    });
-    return json({ success: true });
-  }
-
-  if (intent === "reviewDelete") {
-    const kolId = formData.get("kolId") as string;
-    const currentMember = await getCurrentMember(request);
-    const author = currentMember?.name ?? "Demo User";
-    await deleteIOReviewsByAuthor(orderId, kolId, author);
-    return json({ success: true });
-  }
-
-  if (intent === "performance") {
-    const kolId = formData.get("kolId") as string;
-    const title = formData.get("title") as string;
-    const impressions = Number(formData.get("impressions"));
-    const reach = Number(formData.get("reach"));
-    const likes = Number(formData.get("likes"));
-    const comments = Number(formData.get("comments"));
-
-    await updateIOPerformance(orderId, kolId, {
-      title,
-      metrics: {
-        impressions,
-        reach,
-        likes,
-        comments,
-        engagementRate:
-          impressions > 0 ? ((likes + comments) / impressions) * 100 : 0,
-      },
-    });
-    return json({ success: true });
-  }
-
-  if (intent === "performanceUpdate") {
-    const kolId = formData.get("kolId") as string;
-    const performanceId = formData.get("performanceId") as string;
-    const title = formData.get("title") as string;
-    const impressions = Number(formData.get("impressions"));
-    const reach = Number(formData.get("reach"));
-    const likes = Number(formData.get("likes"));
-    const comments = Number(formData.get("comments"));
-
-    await updatePerformanceItem(orderId, kolId, performanceId, {
-      title,
-      metrics: {
-        impressions,
-        reach,
-        likes,
-        comments,
-        engagementRate:
-          impressions > 0 ? ((likes + comments) / impressions) * 100 : 0,
-      },
-    });
-    return json({ success: true });
-  }
-
-  if (intent === "performanceDelete") {
-    const kolId = formData.get("kolId") as string;
-    const performanceId = formData.get("performanceId") as string;
-    await deletePerformanceItem(orderId, kolId, performanceId);
-    return json({ success: true });
-  }
-
-  return json({ success: false });
+  return handleInsertionOrderAction(params.insertionOrderId ?? "", request, formData);
 }
+
+// ============ Notes Parser ============
 
 function parseNotes(raw: string | undefined | null): { description: string; internalNotes: string } {
   if (!raw) return { description: "", internalNotes: "" };
@@ -566,7 +400,10 @@ function parseNotes(raw: string | undefined | null): { description: string; inte
   };
 }
 
+// ============ Page Component ============
+
 export default function InsertionOrderDetailPage() {
+  // ============ Loader Data & Hooks ============
   const { insertionOrder, salesOwners, kolManagers, brands, industries, currentUserName } = useLoaderData<typeof loader>();
   const collaborations = insertionOrder.collaborations ?? [];
   const fetcher = useFetcher();
@@ -574,7 +411,7 @@ export default function InsertionOrderDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const { description, internalNotes } = parseNotes((insertionOrder as any).notes);
 
-  // ── Report Generation State ──
+  // ============ Report Generation State ============
   const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
 
   const handleGenerateComplete = () => {
@@ -1047,6 +884,8 @@ export default function InsertionOrderDetailPage() {
     </Stack >
   );
 }
+
+// ============ Sub-component: PerformanceModal ============
 
 function PerformanceModal({ opened, onClose, insertionOrder, selectedKol, fetcher, editingItem }: any) {
   const isEditing = Boolean(editingItem);

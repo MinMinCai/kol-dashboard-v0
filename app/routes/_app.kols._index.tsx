@@ -17,44 +17,16 @@ import {
   Title,
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
-import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigate, useRevalidator, useSubmit, useNavigation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
-import { addKolToFavoriteFolder, clearKolFavorites, deleteKol, listFavoriteFolders, listKols, listTagCatalog, replaceKolFavoriteFolders, type Kol } from "~/lib/mock-api.server";
-import { getCurrentMember } from "~/lib/demo-identity.server";
+import type { Kol } from "~/lib/mock-api.server";
+import { FOLLOWER_RANGES, getFollowerBase, getPrimaryTags } from "~/lib/kols";
+import { handleKolListAction, loadKolList } from "~/lib/kols.server";
 import styles from "./_app.kols._index.module.css";
 
-// ─── constants ───────────────────────────────────────────────────────────────
-
-const FOLLOWER_RANGES = [
-  { key: "1000", label: "1,000+", min: 1000 },
-  { key: "5000", label: "5,000+", min: 5000 },
-  { key: "10000", label: "10K+", min: 10000 },
-  { key: "50000", label: "50K+", min: 50000 },
-  { key: "100000", label: "100K+", min: 100000 },
-];
-
-type SortKey = "name" | "followers" | "engagement" | "rating" | "collaborations";
-type SortOrder = "asc" | "desc";
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
-
-function getPrimaryTags(kol: Kol): string[] {
-  if (kol.tags && kol.tags.length > 0) return kol.tags;
-  return kol.categories ?? [];
-}
-
-function getFollowerBase(kol: Kol): number {
-  const counts = [
-    kol.social?.instagram ?? 0,
-    kol.social?.youtube ?? 0,
-    kol.social?.tiktok ?? 0,
-    kol.social?.facebook ?? 0,
-    kol.followers ?? 0,
-  ];
-  return Math.max(...counts, 0);
-}
+// ============ Component-only helpers ============
 
 function isKolFavorited(kol: Kol): boolean {
   return Boolean(kol.isFavorite || kol.favoriteFolder || (kol.favoriteFolders ?? []).length > 0);
@@ -64,191 +36,18 @@ function getFavoriteSelection(kol: Kol): string[] {
   return Array.from(new Set(kol.favoriteFolders ?? (kol.favoriteFolder ? [kol.favoriteFolder] : [])));
 }
 
-// ─── loader (all filtering / sorting / paging done server-side) ──────────────
+// ============ Loader & Action ============
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const sp = url.searchParams;
-
-  const q = sp.get("q")?.trim().toLowerCase() ?? "";
-  const view = sp.get("view") === "table" ? "table" : "card";
-  const sortKey = (sp.get("sort") ?? "followers") as SortKey;
-  const sortOrder = (sp.get("order") ?? "desc") as SortOrder;
-  const page = Math.max(1, Number(sp.get("page") ?? "1"));
-  const showFilters = sp.get("panel") === "filters";
-  const deleted = sp.get("deleted") === "1";
-
-  // multi-value params
-  const followerRanges = sp.getAll("fr");
-  const industries = sp.getAll("ind");
-  const tags = sp.getAll("tag");
-  const minRating = Number(sp.get("minRating") ?? "0");
-  const maxRating = Number(sp.get("maxRating") ?? "5");
-
-  const withTimeout = <T,>(p: Promise<T>, fallback: T, ms = 8000): Promise<T> =>
-    Promise.race([p, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
-
-  const currentMember = await getCurrentMember(request).catch(() => null);
-
-  const [allKols, folders, tagCatalog] = await Promise.all([
-    withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
-    // Only folders the current member can write to (own + legacy public).
-    withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]),
-    withTimeout(listTagCatalog(), [] as { name: string }[]).catch(() => [] as { name: string }[]),
-  ]);
-
-  let kols = allKols;
-
-  // --- text search ---
-  if (q) {
-    kols = kols.filter((kol) => {
-      const t = getPrimaryTags(kol);
-      return (
-        kol.displayName.toLowerCase().includes(q) ||
-        (kol.instagramHandle ?? "").toLowerCase().includes(q) ||
-        (kol.industry ?? "").toLowerCase().includes(q) ||
-        t.some((tag) => tag.toLowerCase().includes(q))
-      );
-    });
-  }
-
-  // --- follower ranges ---
-  if (followerRanges.length > 0) {
-    kols = kols.filter((kol) => {
-      const base = getFollowerBase(kol);
-      return followerRanges.some((rk) => {
-        const range = FOLLOWER_RANGES.find((r) => r.key === rk);
-        return range ? base >= range.min : false;
-      });
-    });
-  }
-
-  // --- industries ---
-  if (industries.length > 0) {
-    kols = kols.filter((kol) => industries.includes(kol.industry ?? ""));
-  }
-
-  // --- tags ---
-  if (tags.length > 0) {
-    kols = kols.filter((kol) => {
-      const t = getPrimaryTags(kol);
-      return tags.every((tag) => t.includes(tag));
-    });
-  }
-
-  // --- rating ---
-  kols = kols.filter((kol) => {
-    const r = kol.rating ?? 0;
-    return r >= minRating && r <= maxRating;
-  });
-
-  // --- sort ---
-  const m = sortOrder === "asc" ? 1 : -1;
-  kols.sort((a, b) => {
-    if (sortKey === "name") return a.displayName.localeCompare(b.displayName) * m;
-    if (sortKey === "followers") return (getFollowerBase(a) - getFollowerBase(b)) * m;
-    if (sortKey === "engagement") return ((a.engagementRate ?? 0) - (b.engagementRate ?? 0)) * m;
-    if (sortKey === "rating") return ((a.rating ?? 0) - (b.rating ?? 0)) * m;
-    return ((a.collaborations ?? 0) - (b.collaborations ?? 0)) * m;
-  });
-
-  // --- pagination ---
-  const pageSize = view === "card" ? 8 : 10;
-  const totalPages = Math.max(1, Math.ceil(kols.length / pageSize));
-  const safePageNo = Math.min(page, totalPages);
-  const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize);
-
-  const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
-  const catalogTags = tagCatalog.map((t) => t.name);
-  const allTags = [...new Set([...allKols.flatMap((k) => getPrimaryTags(k)), ...catalogTags])];
-
-  return json({
-    deleted,
-    pageRows,
-    total: kols.length,
-    totalPages,
-    page: safePageNo,
-    pageSize,
-    view,
-    sortKey,
-    sortOrder,
-    showFilters,
-    followerRanges,
-    industries,
-    tags,
-    minRating,
-    maxRating,
-    q,
-    allIndustries,
-    allTags,
-    folders,
-    // active filter count for badge
-    activeFilterCount:
-      followerRanges.length + industries.length + tags.length +
-      (minRating > 0 || maxRating < 5 ? 1 : 0),
-  });
+  return json(await loadKolList(request));
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const intent = formData.get("intent");
-  const kolId = String(formData.get("kolId") ?? "");
-  const currentMember = await getCurrentMember(request).catch(() => null);
-  const memberId = currentMember?.id;
-
-  if (intent === "addFavorite") {
-    if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    const folder = String(formData.get("folder") ?? "").trim() || undefined;
-    try {
-      await addKolToFavoriteFolder(kolId, folder ?? "", memberId);
-    } catch (e) {
-      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
-    }
-    return json({ success: true });
-  }
-
-  if (intent === "updateFavoriteFolders") {
-    if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    const selectedFolders = String(formData.get("selectedFolders") ?? "")
-      .split(",")
-      .map((name) => name.trim())
-      .filter(Boolean);
-
-    try {
-      if (selectedFolders.length > 0) {
-        await replaceKolFavoriteFolders(kolId, selectedFolders, memberId);
-      } else {
-        await addKolToFavoriteFolder(kolId, "", memberId);
-      }
-    } catch (e) {
-      return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
-    }
-
-    return json({ success: true });
-  }
-
-  if (intent === "removeFavorite") {
-    if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    await clearKolFavorites(kolId);
-    return json({ success: true });
-  }
-
-  if (intent === "delete") {
-    if (!kolId) {
-      return json({ error: "Missing KOL id" }, { status: 400 });
-    }
-
-    await deleteKol(kolId);
-
-    const url = new URL(request.url);
-    url.searchParams.set("deleted", "1");
-    return redirect(url.pathname + "?" + url.searchParams.toString());
-  }
-
-  return null;
+  return handleKolListAction(request, formData);
 }
 
-// ─── helpers for building URL strings ────────────────────────────────────────
+// ============ URL Builder Helper ============
 
 /**
  * Returns a URLSearchParams string preserving all current params,
@@ -276,7 +75,10 @@ function buildUrl(
 
 // ─── component ───────────────────────────────────────────────────────────────
 
+// ============ Page Component ============
+
 export default function KolListPage() {
+  // ============ Loader Data & Hooks ============
   const {
     pageRows, total, totalPages, page, view, sortKey, sortOrder,
     showFilters, followerRanges, industries, tags, minRating, maxRating,
@@ -288,6 +90,8 @@ export default function KolListPage() {
   const revalidator = useRevalidator();
   const batchImportFetcher = useFetcher<{ result?: { total: number; success: number; failed: number; errors: string[] }; error?: string }>();
   const favoriteFetcher = useFetcher<{ success?: boolean; error?: string }>();
+
+  // ============ State ============
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
   const [deleteKolName, setDeleteKolName] = useState<string | null>(null);
   const [favoritePickerKolId, setFavoritePickerKolId] = useState<string | null>(null);
@@ -304,6 +108,7 @@ export default function KolListPage() {
     }
   }, [batchImportState, batchImportData, revalidator]);
 
+  // ============ URL & Sort Helpers ============
   // Current params object for URL building
   const current: Record<string, string | string[]> = {
     ...(deleted ? { deleted: "1" } : {}),
@@ -325,6 +130,7 @@ export default function KolListPage() {
     return buildUrl(current, { sort: key, order: nextOrder });
   }
 
+  // ============ Favorite Handlers ============
   function openFavoritePicker(kol: Kol) {
     setFavoritePickerKolId(kol.id);
     setFavoritePickerSelection(getFavoriteSelection(kol));
@@ -347,6 +153,7 @@ export default function KolListPage() {
 
   const isSubmitting = navigation.state === "submitting";
 
+  // ============ Delete Handlers ============
   const requestDeleteKol = (id: string, name: string) => {
     setDeleteKolId(id);
     setDeleteKolName(name);
@@ -362,6 +169,7 @@ export default function KolListPage() {
     setDeleteKolName(null);
   };
 
+  // ============ Render ============
   return (
     <Stack gap="md">
       {deleted && (
@@ -376,7 +184,7 @@ export default function KolListPage() {
         </Alert>
       )}
 
-      {/* ── page header ── */}
+      {/* ============ Page Header ============ */}
       <Group justify="space-between" align="flex-end">
         <Box>
           <Title order={2}>KOL 一覽</Title>
@@ -406,7 +214,7 @@ export default function KolListPage() {
         </Group>
       </Group>
 
-      {/* ── search + filter bar ── */}
+      {/* ============ Search + Filter Bar ============ */}
       <Group justify="flex-start" align="flex-end" wrap="wrap" gap={8}>
         {/*
           Search: a real HTML form. Submits by pressing Enter or clicking the button.
@@ -451,7 +259,7 @@ export default function KolListPage() {
         </a>
       </Group>
 
-      {/* ── filter panel (shown when ?panel=filters) ── */}
+      {/* ============ Filter Panel (when ?panel=filters) ============ */}
       {
         showFilters && (
           <Card withBorder>
@@ -560,10 +368,10 @@ export default function KolListPage() {
         )
       }
 
-      {/* ── results count ── */}
+      {/* ============ Results Count ============ */}
       <Text c="dimmed" size="sm">共 {total} 筆結果{q ? `（搜尋：${q}）` : ""}</Text>
 
-      {/* ── CARD VIEW ── */}
+      {/* ============ Card View ============ */}
       {
         view === "card" && (
           <SimpleGrid cols={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing={24}>
@@ -673,7 +481,7 @@ export default function KolListPage() {
         )
       }
 
-      {/* ── TABLE VIEW ── */}
+      {/* ============ Table View ============ */}
       {
         view === "table" && (
           <Card withBorder>
@@ -774,7 +582,7 @@ export default function KolListPage() {
         )
       }
 
-      {/* ── pagination ── */}
+      {/* ============ Pagination ============ */}
       {
         totalPages > 1 && (
           <Group justify="center">
@@ -793,6 +601,7 @@ export default function KolListPage() {
         )
       }
 
+      {/* ============ Modal: Delete KOL ============ */}
       <Modal
         opened={!!deleteKolId}
         onClose={() => {
@@ -823,7 +632,7 @@ export default function KolListPage() {
         </Stack>
       </Modal>
 
-      {/* ── Favorite Folder Picker Modal ── */}
+      {/* ============ Modal: Favorite Folder Picker ============ */}
       <Modal
         opened={!!favoritePickerKolId}
         onClose={() => {
@@ -888,7 +697,7 @@ export default function KolListPage() {
         </favoriteFetcher.Form>
       </Modal>
 
-      {/* ── Batch Import Dialog ── */}
+      {/* ============ Modal: Batch Import Dialog ============ */}
       <dialog
         id="kol-batch-import-dialog"
         className={styles.batchImportDialog}
