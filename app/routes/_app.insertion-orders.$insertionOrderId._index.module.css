@@ -4,8 +4,8 @@
 }
 
 .collabCard {
-  --card-bg: light-dark(var(--mantine-color-blue-0), #223248);
-  background: light-dark(var(--mantine-color-blue-0), #223248);
+  --card-bg: light-dark(#f1f8ff, #1f2730);
+  background: light-dark(#f1f8ff, #1f2730);
 }
 
 .chevronExpanded {
