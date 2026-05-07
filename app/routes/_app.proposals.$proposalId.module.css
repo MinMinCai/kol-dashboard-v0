@@ -25,11 +25,12 @@
 
 .candidateCard {
   overflow: hidden;
-  background: light-dark(#fafbfc, var(--mantine-color-dark-6));
+  --card-bg: light-dark(var(--mantine-color-blue-0), #223248);
+  background: light-dark(var(--mantine-color-blue-0), #223248);
 }
 
 .candidateHeader {
-  background: var(--mantine-color-default-hover);
+  background: light-dark(var(--mantine-color-blue-1), #2e405c);
   border-bottom: 1px solid var(--mantine-color-default-border);
 }
 
@@ -44,7 +45,7 @@
 }
 
 .metricsBlock {
-  background: var(--mantine-color-default-hover);
+  background: light-dark(var(--mantine-color-blue-1), #2e405c);
   border-radius: 6px;
 }
 
