@@ -22,6 +22,7 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { DatePickerInput } from "@mantine/dates";
 import styles from "./_app.proposals.$proposalId.module.css";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
@@ -225,6 +226,11 @@ export default function ProposalDetailPage() {
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
   const [downloadingDocType, setDownloadingDocType] = useState<"contract" | "io" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [dateModalOpened, { open: openDateModal, close: closeDateModal }] = useDisclosure(false);
+  const [pendingDocType, setPendingDocType] = useState<"contract" | "io" | null>(null);
+  const [cooperationStart, setCooperationStart] = useState<Date | null>(null);
+  const [cooperationEnd, setCooperationEnd] = useState<Date | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<
     { type: "single"; candidateId: string; name: string } | { type: "batch"; candidateIds: string[] } | null
   >(null);
@@ -342,7 +348,42 @@ export default function ProposalDetailPage() {
     return basicMatch?.[1] ?? fallback;
   };
 
-  const downloadSelectedDocuments = async (docType: "contract" | "io") => {
+  const requestGenerateDocs = (docType: "contract" | "io") => {
+    if (selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection) return;
+    setPendingDocType(docType);
+    setDateError(null);
+    openDateModal();
+  };
+
+  const toIsoDate = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const confirmGenerateDocs = () => {
+    if (!pendingDocType) return;
+    if (!cooperationStart || !cooperationEnd) {
+      setDateError("請填入合作起訖日期");
+      return;
+    }
+    if (cooperationEnd < cooperationStart) {
+      setDateError("結束日期不可早於起始日期");
+      return;
+    }
+    const docType = pendingDocType;
+    const start = toIsoDate(cooperationStart);
+    const end = toIsoDate(cooperationEnd);
+    closeDateModal();
+    void downloadSelectedDocuments(docType, start, end);
+  };
+
+  const downloadSelectedDocuments = async (
+    docType: "contract" | "io",
+    startDate: string,
+    endDate: string,
+  ) => {
     if (selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection) return;
 
     setDownloadingDocType(docType);
@@ -350,9 +391,13 @@ export default function ProposalDetailPage() {
 
     try {
       for (const candidate of selectedAcceptedCandidates) {
-        const response = await fetch(
-          `/api/proposals/${proposal.id}/generate-doc?type=${docType}&candidateId=${encodeURIComponent(candidate.id)}`,
-        );
+        const params = new URLSearchParams({
+          type: docType,
+          candidateId: candidate.id,
+          startDate,
+          endDate,
+        });
+        const response = await fetch(`/api/proposals/${proposal.id}/generate-doc?${params}`);
 
         if (!response.ok) {
           throw new Error(`${candidate.kolName} 下載失敗`);
@@ -643,7 +688,7 @@ export default function ProposalDetailPage() {
                 color="grape"
                 loading={downloadingDocType === "contract"}
                 disabled={selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection}
-                onClick={() => void downloadSelectedDocuments("contract")}
+                onClick={() => requestGenerateDocs("contract")}
               >
                 生成 KOL 合約
               </Button>
@@ -654,7 +699,7 @@ export default function ProposalDetailPage() {
                 color="blue"
                 loading={downloadingDocType === "io"}
                 disabled={selectedAcceptedCandidates.length === 0 || hasNonAcceptedSelection}
-                onClick={() => void downloadSelectedDocuments("io")}
+                onClick={() => requestGenerateDocs("io")}
               >
                 生成 KOL 委刊單
               </Button>
@@ -1180,6 +1225,59 @@ export default function ProposalDetailPage() {
             </Button>
             <Button color="red" onClick={confirmDelete}>
               確認刪除
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Cooperation Date Modal — choose period before generating contract / IO */}
+      <Modal
+        opened={dateModalOpened}
+        onClose={() => {
+          closeDateModal();
+          setPendingDocType(null);
+          setDateError(null);
+        }}
+        title={pendingDocType === "contract" ? "選擇合作期間（合約用）" : "選擇合作期間（委刊單用）"}
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed">
+            選擇的日期會自動填入文件中所有合作起訖日欄位（年/月/日 各自獨立）。
+          </Text>
+          <DatePickerInput
+            label="合作起始日"
+            placeholder="選擇起始日"
+            value={cooperationStart}
+            onChange={(v) => setCooperationStart(v ? new Date(v) : null)}
+            valueFormat="YYYY/MM/DD"
+            required
+          />
+          <DatePickerInput
+            label="合作結束日"
+            placeholder="選擇結束日"
+            value={cooperationEnd}
+            onChange={(v) => setCooperationEnd(v ? new Date(v) : null)}
+            valueFormat="YYYY/MM/DD"
+            minDate={cooperationStart ?? undefined}
+            required
+          />
+          {dateError && (
+            <Text size="xs" c="red">{dateError}</Text>
+          )}
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              onClick={() => {
+                closeDateModal();
+                setPendingDocType(null);
+                setDateError(null);
+              }}
+            >
+              取消
+            </Button>
+            <Button onClick={confirmGenerateDocs}>
+              確認並下載
             </Button>
           </Group>
         </Stack>

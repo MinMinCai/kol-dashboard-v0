@@ -15,7 +15,32 @@
       "Bash(node -e \"require\\('@mantine/dates'\\)\")",
       "Bash(grep 'proposals.$proposalId\\\\|mock-api')",
       "Bash(node -e ' *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(node tmp/extract-text.mjs tmp/template-extract/contract/word/document.xml)",
+      "Bash(node tmp/extract-text.mjs tmp/template-extract/io/word/document.xml)",
+      "PowerShell(npm install docxtemplater pizzip 2>&1)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"app\\\\templates\")",
+      "PowerShell(Copy-Item \"docs\\\\assets\\\\KOL�X��\\(�v���峹\\)_fake.docx\" \"app\\\\templates\\\\kol-contract.docx\" -Force)",
+      "PowerShell(Copy-Item \"docs\\\\assets\\\\KOL�e�Z��_�d��_���q��_fake.docx\" \"app\\\\templates\\\\kol-insertion-order.docx\" -Force)",
+      "PowerShell(node -e \"const p = require\\('./node_modules/docxtemplater/package.json'\\); console.log\\('docxtemplater', p.version, 'main:', p.main, 'module:', p.module, 'type:', p.type, 'exports:', JSON.stringify\\(p.exports\\)\\);\")",
+      "PowerShell(node -e \"const p = require\\('./node_modules/pizzip/package.json'\\); console.log\\('pizzip', p.version, 'main:', p.main, 'module:', p.module, 'type:', p.type, 'exports:', JSON.stringify\\(p.exports\\)\\);\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"docs\\\\templates\")",
+      "PowerShell(Move-Item \"app\\\\templates\\\\kol-contract.docx\" \"docs\\\\templates\\\\kol-contract.docx\" -Force)",
+      "PowerShell(Move-Item \"app\\\\templates\\\\kol-insertion-order.docx\" \"docs\\\\templates\\\\kol-insertion-order.docx\" -Force)",
+      "PowerShell(npx tsc --noEmit -p . 2>&1)",
+      "PowerShell(node scripts/smoke-test-docx.mjs)",
+      "PowerShell(npm uninstall docx 2>&1)",
+      "PowerShell(npm run dev)",
+      "Bash(node --env-file=.env -e ' *)",
+      "Bash(node --env-file=.env --input-type=module -e ' *)",
+      "Bash(curl -s -o /tmp/test1.bin -w \"HTTP=%{http_code} CT=%{content_type}\\\\n\" \"http://localhost:3000/api/proposals/prop_001/generate-doc?type=contract&candidateId=51a1&startDate=2026-05-06&endDate=2026-06-30\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP=%{http_code}\\\\n\" \"http://localhost:3000/api/proposals/prop_001/generate-doc?type=contract&candidateId=51a1\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP=%{http_code}\\\\n\" \"http://localhost:3000/api/proposals/prop_001/generate-doc?type=contract&candidateId=51a1&startDate=2026-06-30&endDate=2026-05-06\")",
+      "Bash(node --env-file=.env.local --input-type=module -e ' *)",
+      "Bash(curl -s -o /tmp/test1.docx -w \"HTTP=%{http_code} CT=%{content_type} SIZE=%{size_download}\\\\n\" \"http://localhost:3000/api/proposals/prop_from_io_001/generate-doc?type=contract&candidateId=pk_prop_from_io_001_kol_003&startDate=2026-05-06&endDate=2026-06-30\")",
+      "Bash(curl -s -o /tmp/test1-io.docx -w \"HTTP=%{http_code} CT=%{content_type} SIZE=%{size_download}\\\\n\" \"http://localhost:3000/api/proposals/prop_from_io_001/generate-doc?type=io&candidateId=pk_prop_from_io_001_kol_003&startDate=2026-05-06&endDate=2026-06-30\")"
     ]
   }
 }

@@ -13,12 +13,14 @@ import { useEffect, useState } from "react";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import mantineStylesHref from "@mantine/core/styles.css";
 import mantineChartsStylesHref from "@mantine/charts/styles.css";
+import mantineDatesStylesHref from "@mantine/dates/styles.css";
 import stylesHref from "./styles.css";
 
 export const links = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: mantineStylesHref },
   { rel: "stylesheet", href: mantineChartsStylesHref },
+  { rel: "stylesheet", href: mantineDatesStylesHref },
   { rel: "stylesheet", href: stylesHref },
 ];
 
