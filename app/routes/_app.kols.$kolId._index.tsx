@@ -614,71 +614,97 @@ export default function KolDetailPage() {
       <Grid>
         <Grid.Col span={{ base: 12, lg: 9 }}>
           {/* Profile card */}
-          <Card withBorder p="lg">
-            <Group justify="space-between" align="flex-start" wrap="nowrap">
-              <Group align="flex-start" wrap="nowrap">
-                <Avatar src={kol.avatarUrl} size={96} radius={999} />
-                <Stack gap={6}>
-                  <Title order={2}>{kol.displayName}</Title>
-                  {socialRows.map((row) =>
-                    row.url ? (
-                      <a key={row.label} href={row.url} target="_blank" rel="noreferrer" className="social-link" title={`前往 ${row.label}`}>
-                        {row.icon}
-                        <Text size="sm" span>{row.label} {row.detail}</Text>
-                      </a>
-                    ) : (
-                      <Group key={row.label} gap={4}>
-                        {row.icon}
-                        <Text size="sm">{row.label} {row.detail}</Text>
-                      </Group>
-                    )
-                  )}
-                  <Group gap={6}>
-                    {(kol.tags ?? kol.categories).map((tag) => (
-                      <Badge key={tag} variant="light" radius="xl">{tag}</Badge>
-                    ))}
-                  </Group>
-                </Stack>
-              </Group>
-              <Stack align="flex-end" gap={6}>
-                <Text>⭐ {avgRating.toFixed(1)} ({collabCount} 次合作)</Text>
-                <Text>平均價格: {formatCurrency(avgPrice)}</Text>
-                <Text>請款方式: <Badge variant="dot">{kol.paymentMethod || "未設定"}</Badge></Text>
-                <Group gap={6}>
-                  {(kol.industryDistribution ?? [kol.industry ?? "未分類"]).map((industry) => (
-                    <Badge key={industry} color="gray" variant="light">{industry}</Badge>
+          <Card withBorder p="lg" radius="lg">
+            {/* Identity section */}
+            <Group align="flex-start" wrap="nowrap">
+              <Avatar src={kol.avatarUrl} size={96} radius={999} />
+              <Stack gap={6}>
+                <Title order={2}>{kol.displayName}</Title>
+                {socialRows.map((row) =>
+                  row.url ? (
+                    <a key={row.label} href={row.url} target="_blank" rel="noreferrer" className="social-link" title={`前往 ${row.label}`}>
+                      {row.icon}
+                      <Text size="sm" span>{row.label} {row.detail}</Text>
+                    </a>
+                  ) : (
+                    <Group key={row.label} gap={4}>
+                      {row.icon}
+                      <Text size="sm">{row.label} {row.detail}</Text>
+                    </Group>
+                  )
+                )}
+                <Group gap={6} mt={4}>
+                  {(kol.tags ?? kol.categories).map((tag) => (
+                    <Badge key={tag} variant="light" radius="xl">{tag}</Badge>
                   ))}
                 </Group>
               </Stack>
             </Group>
-            <Group mt="md" gap="xs">
-              <Button
-                type="button"
-                variant="default"
-                size="xs"
-                onClick={() => {
-                  setFolderSelection(getFavoriteSelection(kol));
-                  setFolderPickerOpen(true);
-                  const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement;
-                  d?.showModal();
-                }}
-                styles={{
-                  root: {
-                    color: optimisticFavorited ? "var(--mantine-color-red-filled)" : undefined,
-                  },
-                }}
-              >
-                {optimisticFavorited ? "♥" : "♡"} {favoriteActionLabel}
-              </Button>
-              <Button
-                type="button"
-                variant="default"
-                size="xs"
-                onClick={() => setContactOpened(true)}
-              >
-                📞 查看聯絡方式
-              </Button>
-              <Button type="button" variant="default" size="xs" component={Link} to={`/kols/${kol.id}/edit`}>
+
+            <Divider my="lg" />
+
+            {/* Stats section */}
+            <Grid gutter="md">
+              <Grid.Col span={{ base: 6, md: 3 }}>
+                <Text size="xs" c="dimmed">平均評分</Text>
+                <Group gap={6} mt={4} align="baseline">
+                  <Text fw={700} size="lg">⭐ {avgRating.toFixed(1)}</Text>
+                  <Text c="dimmed" size="xs">({collabCount} 次合作)</Text>
+                </Group>
+              </Grid.Col>
+              <Grid.Col span={{ base: 6, md: 3 }}>
+                <Text size="xs" c="dimmed">平均價格</Text>
+                <Text fw={700} size="lg" mt={4}>{formatCurrency(avgPrice)}</Text>
+              </Grid.Col>
+              <Grid.Col span={{ base: 6, md: 3 }}>
+                <Text size="xs" c="dimmed">合作產業</Text>
+                <Group gap={6} mt={4}>
+                  {(kol.industryDistribution ?? [kol.industry ?? "未分類"]).map((industry) => (
+                    <Badge key={industry} color="gray" variant="light">{industry}</Badge>
+                  ))}
+                </Group>
+              </Grid.Col>
+              <Grid.Col span={{ base: 6, md: 3 }}>
+                <Text size="xs" c="dimmed">請款方式</Text>
+                <Group mt={4}>
+                  <Badge variant="dot">{kol.paymentMethod || "未設定"}</Badge>
+                </Group>
+              </Grid.Col>
+            </Grid>
+
+            <Divider my="lg" />
+
+            {/* Action section */}
+            <Group justify="space-between">
+              <Group gap="xs">
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    setFolderSelection(getFavoriteSelection(kol));
+                    setFolderPickerOpen(true);
+                    const d = document.getElementById("folder-picker-dialog") as HTMLDialogElement;
+                    d?.showModal();
+                  }}
+                  styles={{
+                    root: {
+                      color: optimisticFavorited ? "var(--mantine-color-red-filled)" : undefined,
+                    },
+                  }}
+                >
+                  {optimisticFavorited ? "♥" : "♡"} {favoriteActionLabel}
+                </Button>
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={() => setContactOpened(true)}
+                >
+                  📞 查看聯絡方式
+                </Button>
+              </Group>
+              <Button type="button" variant="filled" size="sm" component={Link} to={`/kols/${kol.id}/edit`}>
                 ✏️ 編輯
               </Button>
             </Group>

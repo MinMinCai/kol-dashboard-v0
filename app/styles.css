@@ -9,7 +9,10 @@ body {
   --kol-surface: #ffffff;
   --kol-chrome: #fafbfc;
   --kol-workspace: #f4f5f7;
-  --mantine-color-text: #1f2937;
+  --mantine-color-text: #3f3f46;
+  --mantine-radius-default: 10px;
+  --mantine-radius-md: 12px;
+  --mantine-radius-lg: 18px;
 }
 
 [data-mantine-color-scheme="dark"] {
