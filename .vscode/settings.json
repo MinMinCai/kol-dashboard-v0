@@ -2,5 +2,11 @@
     "workbench.preferredDarkColorTheme": "Dark Modern",
     "workbench.preferredHighContrastLightColorTheme": "Default High Contrast Light",
     "workbench.preferredLightColorTheme": "Light Modern",
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "*.tsx": "${capture}.module.css, ${capture}.test.tsx, ${capture}.test.ts",
+        "*.ts": "${capture}.test.ts"
+    }
 }
