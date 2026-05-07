@@ -132,7 +132,7 @@ function KolCollabCard({
     : (kol.rating ?? 0);
 
   return (
-    <Card withBorder p="md" radius="md">
+    <Card withBorder p="md" radius="md" className={styles.collabCard}>
       <Stack gap="md">
         <Group justify="space-between" align="flex-start">
           <Group align="flex-start">

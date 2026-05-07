@@ -3,6 +3,10 @@
   transition: transform 0.2s;
 }
 
+.collabCard {
+  background: light-dark(#fafbfc, var(--mantine-color-dark-6));
+}
+
 .chevronExpanded {
   transform: rotate(180deg);
 }

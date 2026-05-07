@@ -25,6 +25,7 @@
 
 .candidateCard {
   overflow: hidden;
+  background: light-dark(#fafbfc, var(--mantine-color-dark-6));
 }
 
 .candidateHeader {
