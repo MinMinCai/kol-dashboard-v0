@@ -40,7 +40,26 @@
       "Bash(curl -s -o /dev/null -w \"HTTP=%{http_code}\\\\n\" \"http://localhost:3000/api/proposals/prop_001/generate-doc?type=contract&candidateId=51a1&startDate=2026-06-30&endDate=2026-05-06\")",
       "Bash(node --env-file=.env.local --input-type=module -e ' *)",
       "Bash(curl -s -o /tmp/test1.docx -w \"HTTP=%{http_code} CT=%{content_type} SIZE=%{size_download}\\\\n\" \"http://localhost:3000/api/proposals/prop_from_io_001/generate-doc?type=contract&candidateId=pk_prop_from_io_001_kol_003&startDate=2026-05-06&endDate=2026-06-30\")",
-      "Bash(curl -s -o /tmp/test1-io.docx -w \"HTTP=%{http_code} CT=%{content_type} SIZE=%{size_download}\\\\n\" \"http://localhost:3000/api/proposals/prop_from_io_001/generate-doc?type=io&candidateId=pk_prop_from_io_001_kol_003&startDate=2026-05-06&endDate=2026-06-30\")"
+      "Bash(curl -s -o /tmp/test1-io.docx -w \"HTTP=%{http_code} CT=%{content_type} SIZE=%{size_download}\\\\n\" \"http://localhost:3000/api/proposals/prop_from_io_001/generate-doc?type=io&candidateId=pk_prop_from_io_001_kol_003&startDate=2026-05-06&endDate=2026-06-30\")",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000 :3001 :4000\")",
+      "Bash(curl -s -o response.html -w \"HTTP_CODE:%{http_code}\\\\n\" \"http://localhost:3000/favorites\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP_CODE:%{http_code}\\\\n\" \"http://localhost:3000/favorites?folder=%E5%85%A8%E9%83%A8\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP_CODE:%{http_code}\\\\n\" \"http://localhost:3000/favorites?folder=test\")",
+      "Bash(curl -s \"http://localhost:3000/favorites\")",
+      "Bash(findstr /C:\"資料夾\")",
+      "Bash(curl -s \"http://localhost:3000/favorites\" -w \"\\\\n---\\\\nHTTP_CODE:%{http_code}\\\\n\")",
+      "Bash(curl -s -o page.html \"http://localhost:3000/favorites\")",
+      "Bash(findstr /C:\"folder=\" /C:\"buildHref\" /C:\"onClick\")",
+      "Bash(curl -s \"http://localhost:3000/favorites\" -o /tmp/favorites.html)",
+      "Bash(npx playwright *)",
+      "Bash(curl -s -o /tmp/r.html -w \"HTTP_CODE:%{http_code}\\\\n\" \"http://localhost:3000/favorites?folder=%E5%AE%B6%E9%9B%BB%E5%B0%88%E6%A1%88%E5%80%99%E9%81%B8\" -b \"view-as=eyJtZW1iZXJJZCI6Im1lbWJlcl9hbXkifQ%3D%3D\")",
+      "Bash(curl -s \"http://localhost:3000/kols\")",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(curl -s \"http://localhost:3000/api/db-health\")",
+      "Bash(git status *)",
+      "Bash(curl -s \"http://localhost:3000/api/db-health\" -o /tmp/health.json)"
     ]
   }
 }

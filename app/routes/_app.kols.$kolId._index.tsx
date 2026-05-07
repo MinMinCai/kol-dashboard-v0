@@ -25,6 +25,7 @@ import { useEffect, useMemo, useState } from "react";
 import { buildSocialProfileUrl } from "~/lib/social-links";
 import styles from "./_app.kols.$kolId._index.module.css";
 import { addKolToFavoriteFolder, clearKolFavorites, getKol, listFavoriteFolders, replaceKolFavoriteFolders, type InsertionOrder, type KolCollabRecord, type OrderKolCollaboration, type OrderPerformanceItem, type PlatformMetrics } from "~/lib/mock-api.server";
+import { getCurrentMember } from "~/lib/demo-identity.server";
 
 function formatNumber(value: number | undefined): string {
   return (value ?? 0).toLocaleString("zh-TW");
@@ -382,24 +383,31 @@ function PlatformTabSelector({
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const kolId = params.kolId ?? "";
+  if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
   const formData = await request.formData();
-  if (formData.get("intent") === "add_favorite") {
-    const folder = String(formData.get("folder") ?? "").trim() || undefined;
-    await addKolToFavoriteFolder(kolId, folder ?? "");
-  }
-  if (formData.get("intent") === "update_favorite_folders") {
-    const selectedFolders = String(formData.get("selectedFolders") ?? "")
-      .split(",")
-      .map((name) => name.trim())
-      .filter(Boolean);
-    if (selectedFolders.length > 0) {
-      await replaceKolFavoriteFolders(kolId, selectedFolders);
-    } else {
-      await addKolToFavoriteFolder(kolId, "");
+  const intent = formData.get("intent");
+  const currentMember = await getCurrentMember(request).catch(() => null);
+  const memberId = currentMember?.id;
+
+  try {
+    if (intent === "add_favorite") {
+      const folder = String(formData.get("folder") ?? "").trim() || undefined;
+      await addKolToFavoriteFolder(kolId, folder ?? "", memberId);
+    } else if (intent === "update_favorite_folders") {
+      const selectedFolders = String(formData.get("selectedFolders") ?? "")
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+      if (selectedFolders.length > 0) {
+        await replaceKolFavoriteFolders(kolId, selectedFolders, memberId);
+      } else {
+        await addKolToFavoriteFolder(kolId, "", memberId);
+      }
+    } else if (intent === "remove_favorite") {
+      await clearKolFavorites(kolId);
     }
-  }
-  if (formData.get("intent") === "remove_favorite") {
-    await clearKolFavorites(kolId);
+  } catch (e) {
+    return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });
   }
   return json({ success: true });
 }
@@ -418,7 +426,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const tab = url.searchParams.get("tab") ?? "projects";
   const limit = Math.max(5, Number(url.searchParams.get("limit") ?? "5"));
-  const folders = await withTimeout(listFavoriteFolders(), [] as string[]).catch(() => [] as string[]);
+  const currentMember = await getCurrentMember(request).catch(() => null);
+  const folders = await withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]);
 
   return json({ kol, tab, limit, folders });
 }
