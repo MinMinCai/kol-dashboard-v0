@@ -5,6 +5,36 @@ body {
   font-family: "Noto Sans TC", sans-serif;
 }
 
+:root {
+  --kol-surface: #ffffff;
+  --kol-chrome: #ffffff;
+  --kol-workspace: #faf7f2;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --kol-surface: var(--mantine-color-dark-6);
+  --kol-chrome: var(--mantine-color-dark-7);
+  --kol-workspace: var(--mantine-color-dark-8);
+}
+
+[data-app-shell-header],
+[data-mantine-appshell-header],
+.mantine-AppShell-header {
+  background: var(--kol-chrome);
+}
+
+[data-app-shell-navbar],
+[data-mantine-appshell-navbar],
+.mantine-AppShell-navbar {
+  background: var(--kol-chrome);
+}
+
+[data-app-shell-main],
+[data-mantine-appshell-main],
+.mantine-AppShell-main {
+  background: var(--kol-workspace);
+}
+
 a {
   color: inherit;
   text-decoration: none;
