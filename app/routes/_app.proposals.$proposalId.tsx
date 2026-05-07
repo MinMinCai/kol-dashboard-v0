@@ -27,162 +27,25 @@ import styles from "./_app.proposals.$proposalId.module.css";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  addProposalKol,
-  getProposal,
-  listKols,
-  listProposalKols,
-  updateProposalKolDetails,
-  updateProposalKolStatus,
-  deleteProposalKol,
-  updateProposal,
-  type Kol,
-} from "~/lib/mock-api.server";
-import { notifyProposalUpdated } from "~/lib/notifications.server";
+import { type Kol } from "~/lib/mock-api.server";
+import { handleProposalAction, loadProposalDetail } from "~/lib/proposals.server";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell } from "@tabler/icons-react";
 
-function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
-  ]);
-}
+// ============ Loader & Action ============
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const proposalId = params.proposalId ?? "";
-  const [proposal, candidates, allKols] = await Promise.all([
-    withTimeout(getProposal(proposalId), null),
-    withTimeout(listProposalKols(proposalId), []),
-    withTimeout(listKols(), []),
-  ]);
-
-  if (!proposal) throw new Response("Not Found", { status: 404 });
-
-  return json({ proposal, candidates, allKols });
+  return json(await loadProposalDetail(params.proposalId ?? ""));
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const proposalId = params.proposalId ?? "";
   const formData = await request.formData();
-  const intent = formData.get("intent");
-
-  // Helper: who made this change (from form or default)
-  const updatedBy = String(formData.get("updatedBy") ?? "同事");
-  const ts = new Date().toISOString();
-
-  if (intent === "add_candidate") {
-    const kolId = String(formData.get("kolId"));
-    const price = Number(String(formData.get("price") || "0").replace(/,/g, ""));
-    const role = String(formData.get("role"));
-    const recommendation = String(formData.get("recommendation") || formData.get("reason") || "");
-    const kolName = String(formData.get("kolName"));
-    const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
-    const actualPrice = actualPriceStr ? Number(actualPriceStr) : undefined;
-    const realFollowerRatio = parseOptionalNumber(formData.get("realFollowerRatio"));
-    const reputationScore = parseOptionalNumber(formData.get("reputationScore"));
-    const avgEngagementRate = parseOptionalNumber(formData.get("avgEngagementRate"));
-    const engagementIndex = parseOptionalNumber(formData.get("engagementIndex"));
-    const engagementScore = parseOptionalNumber(formData.get("engagementScore"));
-    const brandFitScore = parseOptionalNumber(formData.get("brandFitScore"));
-    const qualityScore = parseOptionalNumber(formData.get("qualityScore"));
-    const cpfr = parseOptionalNumber(formData.get("cpfr"));
-
-    await addProposalKol({
-      proposalId,
-      kolId,
-      kolName,
-      price,
-      actualPrice,
-      role,
-      reason: recommendation,
-      realFollowerRatio,
-      reputationScore,
-      avgEngagementRate,
-      engagementIndex,
-      engagementScore,
-      brandFitScore,
-      qualityScore,
-      cpfr,
-      recommendation,
-    });
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `新增人選「${kolName}」`, timestamp: ts });
-    return json({ success: true });
-  }
-
-  if (intent === "update_status") {
-    const candidateId = String(formData.get("candidateId"));
-    const status = String(formData.get("status"));
-    const feedback = String(formData.get("feedback"));
-    await updateProposalKolStatus(candidateId, status, feedback);
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新人選狀態", timestamp: ts });
-    return json({ success: true });
-  }
-
-  if (intent === "delete_candidate") {
-    const candidateId = String(formData.get("candidateId"));
-    await deleteProposalKol(candidateId);
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "移除人選", timestamp: ts });
-    return json({ success: true });
-  }
-
-  if (intent === "batch_delete_candidates") {
-    const idsString = String(formData.get("candidateIds") || "");
-    const ids = idsString.split(",").filter(Boolean);
-    await Promise.all(ids.map(id => deleteProposalKol(id)));
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `批次移除 ${ids.length} 位人選`, timestamp: ts });
-    return json({ success: true });
-  }
-
-  if (intent === "update_candidate_details") {
-    const candidateId = String(formData.get("candidateId"));
-    const price = Number(String(formData.get("price") || "0").replace(/,/g, ""));
-    const actualPriceStr = String(formData.get("actualPrice") || "").replace(/,/g, "");
-    const actualPrice = actualPriceStr ? Number(actualPriceStr) : undefined;
-    await updateProposalKolDetails(candidateId, {
-      role: String(formData.get("role") || ""),
-      price,
-      actualPrice,
-      realFollowerRatio: parseOptionalNumber(formData.get("realFollowerRatio")),
-      reputationScore: parseOptionalNumber(formData.get("reputationScore")),
-      avgEngagementRate: parseOptionalNumber(formData.get("avgEngagementRate")),
-      engagementIndex: parseOptionalNumber(formData.get("engagementIndex")),
-      engagementScore: parseOptionalNumber(formData.get("engagementScore")),
-      brandFitScore: parseOptionalNumber(formData.get("brandFitScore")),
-      qualityScore: parseOptionalNumber(formData.get("qualityScore")),
-      cpfr: parseOptionalNumber(formData.get("cpfr")),
-      recommendation: String(formData.get("recommendation") || ""),
-      feedbackText: formData.has("feedbackText") ? String(formData.get("feedbackText") || "") : undefined,
-    });
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: "更新候選人資料", timestamp: ts });
-    return json({ success: true });
-  }
-
-  if (intent === "update_proposal") {
-    const stage = formData.get("stage") ? String(formData.get("stage")) : undefined;
-    const title = formData.get("title") ? String(formData.get("title")) : undefined;
-    const clientName = formData.get("clientName") ? String(formData.get("clientName")) : undefined;
-    const budgetStr = formData.get("budget") ? String(formData.get("budget")).replace(/,/g, "").replace(/\$/g, "") : undefined;
-    const budget = budgetStr !== undefined ? Number(budgetStr) : undefined;
-    const dueDate = formData.get("dueDate") ? String(formData.get("dueDate")) : undefined;
-
-    await updateProposal(proposalId, { stage, title, clientName, budget, dueDate });
-    const changedFields = ([stage ? "階段" : "", title ? "標題" : "", clientName ? "客戶" : "", budget !== undefined ? "預算" : "", dueDate ? "截止日" : ""]).filter((s) => s !== "").join("、");
-    notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `修改${changedFields}`, timestamp: ts });
-    return json({ success: true });
-  }
-
-  return json({ success: false });
+  return json(await handleProposalAction(params.proposalId ?? "", formData));
 }
 
-function parseOptionalNumber(value: FormDataEntryValue | null): number | undefined {
-  if (value == null) return undefined;
-  const raw = String(value).replace(/,/g, "").trim();
-  if (!raw) return undefined;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
+// ============ Page Component ============
 
 export default function ProposalDetailPage() {
+  // ============ Loader Data & Hooks ============
   const { proposal, candidates, allKols } = useLoaderData<typeof loader>();
   /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成 Kol[] 供後續安全存取 */
   const kols = useMemo(
@@ -192,6 +55,8 @@ export default function ProposalDetailPage() {
   const navigation = useNavigation();
   const submit = useSubmit();
   const statusFetcher = useFetcher<{ success?: boolean }>();
+
+  // ============ State ============
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
@@ -235,7 +100,7 @@ export default function ProposalDetailPage() {
     { type: "single"; candidateId: string; name: string } | { type: "batch"; candidateIds: string[] } | null
   >(null);
 
-  // ── SSE: real-time update notifications ──────────────────────────────────────
+  // ============ SSE: Real-time Update Notifications ============
   type UpdateNotice = { updatedBy: string; field: string; timestamp: string };
   const [updateNotices, setUpdateNotices] = useState<UpdateNotice[]>([]);
   const revalidator = useRevalidator();
@@ -266,6 +131,7 @@ export default function ProposalDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal.id]);
 
+  // ============ Constants & Lookups ============
   const statusColor: Record<string, string> = {
     pending: "gray",
     accepted: "green",
@@ -286,6 +152,7 @@ export default function ProposalDetailPage() {
     { label: "生成 AI 推薦理由", icon: "✨" },
   ];
 
+  // ============ Computed Values & Sync Effects ============
   const allKolOptions = useMemo(
     () => kols.map((k) => ({ value: k.id, label: k.displayName, followers: k.followers, averagePrice: k.averagePrice, rating: k.rating, engagementRate: k.engagementRate, realFollowerRatio: k.realFollowerRatio })),
     [kols],
@@ -332,6 +199,7 @@ export default function ProposalDetailPage() {
     });
   }, [manualSelectedKol]);
 
+  // ============ Document Download Handlers ============
   const getDownloadFilename = (contentDisposition: string | null, fallback: string) => {
     if (!contentDisposition) return fallback;
 
@@ -423,6 +291,7 @@ export default function ProposalDetailPage() {
     }
   };
 
+  // ============ AI Search Handler ============
   const handleAiSearch = () => {
     if (!aiQuery.trim()) return;
     setAiSearching(true);
@@ -460,6 +329,7 @@ export default function ProposalDetailPage() {
     }, 160);
   };
 
+  // ============ Delete Confirmation Handlers ============
   const requestDeleteSingle = (candidateId: string, name: string) => {
     setDeleteTarget({ type: "single", candidateId, name });
     openDeleteConfirm();
@@ -488,9 +358,10 @@ export default function ProposalDetailPage() {
     setDeleteTarget(null);
   };
 
+  // ============ Render ============
   return (
     <Stack gap="lg">
-      {/* ── Real-time update notifications ── */}
+      {/* ============ Real-time update notifications ============ */}
       {updateNotices.length > 0 && (
         <Card withBorder p="xs" className={styles.notificationCard}>
           <Group gap="xs" mb={4}>
@@ -507,12 +378,13 @@ export default function ProposalDetailPage() {
           </Stack>
         </Card>
       )}
+      {/* ============ Header: Title + Edit / Export / IO buttons ============ */}
       <Group justify="space-between" align="flex-start">
         <Group align="center" gap="md" flex={1}>
-          <ActionIcon 
-            variant="subtle" 
-            color="gray" 
-            component={Link} 
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            component={Link}
             to="/proposals"
             size="lg"
           >
@@ -572,6 +444,7 @@ export default function ProposalDetailPage() {
         </Group>
       </Group>
 
+      {/* ============ Stats Cards: Stage / Budget / Due Date ============ */}
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
         <Card withBorder>
           <Text size="xs" c="dimmed" fw={700}>當前階段</Text>
@@ -623,7 +496,7 @@ export default function ProposalDetailPage() {
         </Card>
       </SimpleGrid>
 
-      {/* AI Search Section - Only visible in Edit Mode */}
+      {/* ============ AI Search Section (Edit Mode only) ============ */}
       {isEditing && (
         <Card withBorder padding="lg" radius="md" className={styles.aiSearchCard}>
         <Stack gap="xs">
@@ -661,6 +534,7 @@ export default function ProposalDetailPage() {
       </Card>
       )}
 
+      {/* ============ Candidate List ============ */}
       <Card withBorder>
         <Stack gap="md">
           <Group justify="space-between">
@@ -946,7 +820,7 @@ export default function ProposalDetailPage() {
         </Stack>
       </Card>
 
-      {/* AI Search Results Modal */}
+      {/* ============ Modal: AI Search Results ============ */}
       <Modal
         id="proposal-ai-search-modal"
         opened={aiSearchOpened}
@@ -1083,7 +957,7 @@ export default function ProposalDetailPage() {
         </Stack>
       </Modal>
 
-      {/* Manual Add Candidate Modal */}
+      {/* ============ Modal: Manual Add Candidate ============ */}
       <Modal
         id="proposal-manual-add-modal"
         opened={addOpened}
@@ -1201,6 +1075,7 @@ export default function ProposalDetailPage() {
         </Form>
       </Modal>
 
+      {/* ============ Modal: Delete Confirm (single / batch) ============ */}
       <Modal
         opened={deleteConfirmOpened}
         onClose={() => {
@@ -1230,7 +1105,7 @@ export default function ProposalDetailPage() {
         </Stack>
       </Modal>
 
-      {/* Cooperation Date Modal — choose period before generating contract / IO */}
+      {/* ============ Modal: Cooperation Date (for contract / IO docs) ============ */}
       <Modal
         opened={dateModalOpened}
         onClose={() => {
@@ -1283,7 +1158,7 @@ export default function ProposalDetailPage() {
         </Stack>
       </Modal>
 
-      {/* Reject/Feedback Modal */}
+      {/* ============ Modal: Reject / Feedback ============ */}
       <Modal
         opened={!!feedbackCandidate}
         onClose={() => setFeedbackCandidate(null)}
@@ -1305,6 +1180,7 @@ export default function ProposalDetailPage() {
         </Form>
       </Modal>
 
+      {/* ============ Edit Mode: Save / Cancel Buttons ============ */}
       {isEditing && (
         <Group justify="flex-end" mt="xl" pb="xl">
           <Button

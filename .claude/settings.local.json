@@ -59,7 +59,11 @@
       "Bash(git log *)",
       "Bash(curl -s \"http://localhost:3000/api/db-health\")",
       "Bash(git status *)",
-      "Bash(curl -s \"http://localhost:3000/api/db-health\" -o /tmp/health.json)"
+      "Bash(curl -s \"http://localhost:3000/api/db-health\" -o /tmp/health.json)",
+      "Bash(xargs wc -l)",
+      "Bash(sed 's/\\\\.tsx$//')",
+      "Bash(sed 's/\\\\.module\\\\.css$//')",
+      "Bash(wc -l \"app/routes/_app.proposals.\\\\$proposalId.tsx\")"
     ]
   }
 }
