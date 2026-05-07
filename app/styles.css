@@ -15,7 +15,12 @@ body {
   --mantine-radius-lg: 18px;
 }
 
+[data-mantine-color-scheme="light"] {
+  color-scheme: light;
+}
+
 [data-mantine-color-scheme="dark"] {
+  color-scheme: dark;
   --kol-surface: var(--mantine-color-dark-6);
   --kol-chrome: var(--mantine-color-dark-7);
   --kol-workspace: var(--mantine-color-dark-8);
@@ -52,7 +57,7 @@ a {
 .kol-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px light-dark(rgba(15, 23, 42, 0.12), rgba(0, 0, 0, 0.4));
-  background-color: #f0f6ff;
+  background-color: light-dark(#f0f6ff, var(--mantine-color-dark-5));
 }
 
 .social-link {
