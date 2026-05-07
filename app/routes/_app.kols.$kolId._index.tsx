@@ -616,10 +616,19 @@ export default function KolDetailPage() {
           {/* Profile card */}
           <Card withBorder p="lg" radius="lg">
             {/* Identity section */}
-            <Group align="flex-start" wrap="nowrap">
-              <Avatar src={kol.avatarUrl} size={96} radius={999} />
-              <Stack gap={6}>
-                <Title order={2}>{kol.displayName}</Title>
+            <Group justify="space-between" align="flex-start" wrap="nowrap">
+              <Group align="flex-start" wrap="nowrap">
+                <Avatar src={kol.avatarUrl} size={96} radius={999} />
+                <Stack gap={6}>
+                  <Title order={2}>{kol.displayName}</Title>
+                  <Group gap={6} mt={4}>
+                    {(kol.tags ?? kol.categories).map((tag) => (
+                      <Badge key={tag} variant="light" radius="xl">{tag}</Badge>
+                    ))}
+                  </Group>
+                </Stack>
+              </Group>
+              <Stack gap={6} align="flex-end">
                 {socialRows.map((row) =>
                   row.url ? (
                     <a key={row.label} href={row.url} target="_blank" rel="noreferrer" className="social-link" title={`前往 ${row.label}`}>
@@ -633,11 +642,6 @@ export default function KolDetailPage() {
                     </Group>
                   )
                 )}
-                <Group gap={6} mt={4}>
-                  {(kol.tags ?? kol.categories).map((tag) => (
-                    <Badge key={tag} variant="light" radius="xl">{tag}</Badge>
-                  ))}
-                </Group>
               </Stack>
             </Group>
 
@@ -645,14 +649,15 @@ export default function KolDetailPage() {
 
             {/* Stats section */}
             <Grid gutter="md">
-              <Grid.Col span={{ base: 6, md: 3 }}>
+              <Grid.Col span={{ base: 6, md: 2 }}>
                 <Text size="xs" c="dimmed">平均評分</Text>
-                <Group gap={6} mt={4} align="baseline">
-                  <Text fw={700} size="lg">⭐ {avgRating.toFixed(1)}</Text>
-                  <Text c="dimmed" size="xs">({collabCount} 次合作)</Text>
-                </Group>
+                <Text fw={700} size="lg" mt={4}>⭐ {avgRating.toFixed(1)}</Text>
               </Grid.Col>
-              <Grid.Col span={{ base: 6, md: 3 }}>
+              <Grid.Col span={{ base: 6, md: 2 }}>
+                <Text size="xs" c="dimmed">合作次數</Text>
+                <Text fw={700} size="lg" mt={4}>{collabCount} 次</Text>
+              </Grid.Col>
+              <Grid.Col span={{ base: 6, md: 2 }}>
                 <Text size="xs" c="dimmed">平均價格</Text>
                 <Text fw={700} size="lg" mt={4}>{formatCurrency(avgPrice)}</Text>
               </Grid.Col>
