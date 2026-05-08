@@ -25,12 +25,11 @@
 
 .candidateCard {
   overflow: hidden;
-  background-color: light-dark(#f3f9fd, #1d2530) !important;
-  box-shadow: 0 2px 6px light-dark(rgba(15, 23, 42, 0.08), rgba(0, 0, 0, 0.35));
+  box-shadow: 0 2px 6px light-dark(rgba(15, 23, 42, 0.08), rgba(0, 0, 0, 0.35)) !important;
 }
 
 .candidateHeader {
-  background: light-dark(#f3f9fd, #1d2530);
+  background: var(--mantine-color-default-hover);
   border-bottom: 1px solid var(--mantine-color-default-border);
 }
 
@@ -45,7 +44,7 @@
 }
 
 .metricsBlock {
-  background: light-dark(#ffffff, #2a3a4e);
+  background: var(--mantine-color-default-hover);
   border-radius: 6px;
 }
 

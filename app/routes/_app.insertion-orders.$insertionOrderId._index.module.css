@@ -4,8 +4,7 @@
 }
 
 .collabCard {
-  background-color: light-dark(#f3f9fd, #1d2530) !important;
-  box-shadow: 0 2px 6px light-dark(rgba(15, 23, 42, 0.08), rgba(0, 0, 0, 0.35));
+  box-shadow: 0 2px 6px light-dark(rgba(15, 23, 42, 0.08), rgba(0, 0, 0, 0.35)) !important;
 }
 
 .chevronExpanded {
