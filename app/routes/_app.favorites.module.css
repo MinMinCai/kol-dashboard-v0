@@ -55,6 +55,17 @@
 
 .kolCard {
   cursor: pointer;
+  transition: background-color 150ms, box-shadow 150ms;
+}
+
+.kolCard:hover {
+  background-color: #eef3fc !important;
+  box-shadow: 0 4px 16px rgba(15, 52, 96, 0.1) !important;
+}
+
+[data-mantine-color-scheme="dark"] .kolCard:hover {
+  background-color: #1a2340 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
 
 .kolCardSelected {

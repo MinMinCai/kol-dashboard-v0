@@ -146,7 +146,11 @@
 }
 
 .featureIcon {
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .featureText {
@@ -172,17 +176,48 @@
   top: 24px;
   right: 24px;
   background: none;
-  border: 1px solid var(--login-border);
-  border-radius: 8px;
-  padding: 6px 12px;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  color: var(--login-subtle);
-  font-size: 13px;
-  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 6px;
-  transition: all 200ms;
+}
+
+.toggleTrack {
+  display: flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--login-border);
+  border: 1px solid var(--login-border);
+  position: relative;
+  transition: background 200ms;
+}
+
+.toggleTrack[data-dark="true"] {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.toggleThumb {
+  position: absolute;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 200ms;
+  color: #64748b;
+}
+
+.toggleTrack[data-dark="true"] .toggleThumb {
+  left: 22px;
+  color: #fbbf24;
 }
 
 .formWrap {
@@ -201,6 +236,15 @@
   letter-spacing: -0.5px;
   margin: 0;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.waveIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--login-subtle);
 }
 
 .formDesc {
@@ -263,8 +307,11 @@
 }
 
 .infoIcon {
-  font-size: 16px;
-  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--login-subtle);
 }
 
 .infoTitle {

@@ -4,8 +4,24 @@
 }
 
 .collabCard {
-  background-color: light-dark(#f3f9fd, #1d2530) !important;
-  box-shadow: 0 4px 12px light-dark(rgba(15, 23, 42, 0.14), rgba(0, 0, 0, 0.5)) !important;
+  background-color: #f3f9fd !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14) !important;
+  transition: background-color 150ms, box-shadow 150ms;
+}
+
+[data-mantine-color-scheme="dark"] .collabCard {
+  background-color: #1d2530 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.collabCard:hover {
+  background-color: #eef3fc !important;
+  box-shadow: 0 4px 16px rgba(15, 52, 96, 0.12) !important;
+}
+
+[data-mantine-color-scheme="dark"] .collabCard:hover {
+  background-color: #1a2340 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
 }
 
 .chevronExpanded {

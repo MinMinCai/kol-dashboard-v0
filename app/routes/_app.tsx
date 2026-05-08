@@ -124,7 +124,7 @@ export default function AppLayoutRoute() {
       <GlobalNotification />
       <AppShell
         layout="alt"
-        header={{ height: 64 }}
+        header={{ height: 54 }}
         navbar={{ width: 260, breakpoint: "sm" }}
         padding="xl"
       >

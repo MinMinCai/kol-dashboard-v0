@@ -72,8 +72,8 @@
 }
 
 [data-mantine-color-scheme="dark"] .themeToggleTrack {
-  background: var(--mantine-color-blue-7);
-  border-color: var(--mantine-color-blue-7);
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .themeToggleThumb {
@@ -234,14 +234,8 @@
 }
 
 @keyframes greetingIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
 }
 
 .greeting {
@@ -249,7 +243,7 @@
   font-weight: 600;
   color: var(--mantine-color-text);
   display: inline-block;
-  animation: greetingIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  animation: greetingIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
 }
 
 .viewAsInSidebar {

@@ -4,6 +4,57 @@ import { redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { DEMO_USER, demoAuthCookie } from "~/lib/demo-auth.server";
 import styles from "./login.module.css";
 
+const FeatureIconKol = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="6" cy="5" r="2.5"/>
+    <path d="M1 14c0-3 2.2-5 5-5s5 2 5 5"/>
+    <circle cx="12" cy="5" r="2"/>
+    <path d="M12 10c1.8.2 3 1.5 3 4"/>
+  </svg>
+);
+const FeatureIconProposal = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="1" width="12" height="14" rx="1.5"/>
+    <line x1="5" y1="5" x2="11" y2="5"/>
+    <line x1="5" y1="8" x2="11" y2="8"/>
+    <line x1="5" y1="11" x2="8" y2="11"/>
+  </svg>
+);
+const FeatureIconReport = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="1,12 5,7 8,10 11,5 15,8"/>
+    <line x1="1" y1="14" x2="15" y2="14"/>
+  </svg>
+);
+const IconLock = () => (
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="7" width="10" height="8" rx="1.5"/>
+    <path d="M5 7V5a3 3 0 0 1 6 0v2"/>
+  </svg>
+);
+const IconSunLogin = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8" cy="8" r="3"/>
+    <line x1="8" y1="1" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="15"/>
+    <line x1="1" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="15" y2="8"/>
+    <line x1="3.05" y1="3.05" x2="4.46" y2="4.46"/><line x1="11.54" y1="11.54" x2="12.95" y2="12.95"/>
+    <line x1="3.05" y1="12.95" x2="4.46" y2="11.54"/><line x1="11.54" y1="4.46" x2="12.95" y2="3.05"/>
+  </svg>
+);
+const IconMoonLogin = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/>
+  </svg>
+);
+const IconWave = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 11.5c.5-1 1.5-1.5 2.5-1s1.5 2 1 3l-2 4c-.5 1-1.8 1.4-2.8.9S4.3 17 4.8 16l1-2"/>
+    <path d="M11.5 9c.5-1 1.5-1.5 2.5-1s1.5 2 1 3l-.5 1"/>
+    <path d="M15.5 7.5c.4-.9 1.4-1.3 2.3-.9s1.3 1.4.9 2.3l-2 4.5"/>
+    <path d="M9 7c.3-.8 1.1-1.2 1.9-.9"/>
+  </svg>
+);
+
 export async function action(_: ActionFunctionArgs) {
   return redirect("/dashboard", {
     headers: {
@@ -99,13 +150,13 @@ export default function LoginPage() {
 
           {/* Feature chips */}
           <div className={styles.featureList}>
-            {[
-              { icon: "👥", text: "KOL 資料庫與管理" },
-              { icon: "📋", text: "提案與委刊單流程" },
-              { icon: "📊", text: "結案報告自動生成" },
-            ].map((f) => (
+            {([
+              { Icon: FeatureIconKol, text: "KOL 資料庫與管理" },
+              { Icon: FeatureIconProposal, text: "提案與委刊單流程" },
+              { Icon: FeatureIconReport, text: "結案報告自動生成" },
+            ] as const).map((f) => (
               <div key={f.text} className={styles.featureItem}>
-                <span className={styles.featureIcon}>{f.icon}</span>
+                <span className={styles.featureIcon}><f.Icon /></span>
                 <span className={styles.featureText}>{f.text}</span>
               </div>
             ))}
@@ -115,20 +166,25 @@ export default function LoginPage() {
 
       {/* ── RIGHT PANEL ── */}
       <div className={styles.rightPanel}>
-        {/* Theme toggle */}
+        {/* Theme toggle switch */}
         <button
           type="button"
           onClick={() => setDark((d) => !d)}
           className={styles.themeToggle}
+          aria-label="切換亮暗模式"
         >
-          {dark ? "☀️" : "🌙"} {dark ? "Light" : "Dark"}
+          <span className={styles.toggleTrack} data-dark={dark ? "true" : "false"}>
+            <span className={styles.toggleThumb}>
+              {dark ? <IconSunLogin /> : <IconMoonLogin />}
+            </span>
+          </span>
         </button>
 
         <div className={styles.formWrap}>
           {/* Header */}
           <div className={styles.formHeader}>
             <h2 className={styles.formTitle}>
-              歡迎回來 👋
+              歡迎回來 <span className={styles.waveIcon}><IconWave /></span>
             </h2>
             <p className={styles.formDesc}>
               使用 Google 帳號登入以繼續使用 KOL DB
@@ -157,7 +213,7 @@ export default function LoginPage() {
           {/* Info card */}
           <div className={styles.infoCard}>
             <div className={styles.infoCardRow}>
-              <span className={styles.infoIcon}>🔒</span>
+              <span className={styles.infoIcon}><IconLock /></span>
               <div>
                 <p className={styles.infoTitle}>
                   安全登入
