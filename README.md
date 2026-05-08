@@ -105,6 +105,12 @@ kol-db-demo/
 │   │   ├── db.server.ts              # Drizzle + postgres.js 連線（singleton + 連線池調整）
 │   │   ├── mock-api.server.ts        # 資料存取層（業務 API / Drizzle）
 │   │   ├── kol-batch-import.server.ts # KOL Excel 批量匯入：欄位驗證 + xlsx 解析
+│   │   ├── kols.ts                   # KOL 共用常數與 helper（FOLLOWER_RANGES、getPrimaryTags 等）
+│   │   ├── kols.server.ts            # KOL 列表與詳情的 loader/action 邏輯
+│   │   ├── proposals.server.ts       # 提案詳情的 loader/action 邏輯
+│   │   ├── insertion-orders.server.ts # 委刊單詳情的 loader/action 邏輯
+│   │   ├── reports.ts                # 結案報告共用常數與 helper（SortOption、buildReportDownloadPath）
+│   │   ├── reports.server.ts         # 結案報告的 loader/action 邏輯
 │   │   ├── notifications.server.ts   # 提案異動通知：寫入 notifications + watcher 派送
 │   │   ├── report-ppt.server.ts      # 結案 PPT 生成（pptx / docx 組裝）
 │   │   └── social-links.ts           # 社群連結正規化共用函式
@@ -480,17 +486,6 @@ npm start
    - **成效截圖辨識（Claude Haiku 4.5 + Tool Use 結構化輸出）** — 詳見〈正式部署技術規劃〉。
    - 自動結案報告生成（PPT，含截圖嵌入；`report-ppt.server.ts` 已具雛形）。
    - 提案 AI 分析步驟（候選人組合評估，目前 Mock）。
-
-### 開發優先級列表說明
-
-| 優先級 | 模組 | 說明 |
-|--------|------|------|
-| 🔴 **最高** | 認證 + RBAC | 解鎖所有業務路由 |
-| 🔴 **最高** | KOL CRUD | 核心資料對象 |
-| 🟠 **高** | 提案流程 | 業務核心 |
-| 🟠 **高** | 委刊單 | 執行與合約 |
-| 🟡 **中** | 報表儀表板 | 資料可視化 |
-| 🔵 **低** | AI 功能 | 進階體驗 |
 
 > 詳細時程請見 `docs/mvp-roadmap.md`。
 
