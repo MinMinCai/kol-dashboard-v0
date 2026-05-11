@@ -244,7 +244,18 @@
 .waveIcon {
   display: inline-flex;
   align-items: center;
-  color: var(--login-subtle);
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--login-fg);
+  opacity: 0.72;
+  transform: translateY(1px) rotate(-14deg);
+  transform-origin: center;
+}
+
+.waveIcon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .formDesc {

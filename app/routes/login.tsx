@@ -47,11 +47,13 @@ const IconMoonLogin = () => (
   </svg>
 );
 const IconWave = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M7 11.5c.5-1 1.5-1.5 2.5-1s1.5 2 1 3l-2 4c-.5 1-1.8 1.4-2.8.9S4.3 17 4.8 16l1-2"/>
-    <path d="M11.5 9c.5-1 1.5-1.5 2.5-1s1.5 2 1 3l-.5 1"/>
-    <path d="M15.5 7.5c.4-.9 1.4-1.3 2.3-.9s1.3 1.4.9 2.3l-2 4.5"/>
-    <path d="M9 7c.3-.8 1.1-1.2 1.9-.9"/>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 11V5.75a1.25 1.25 0 1 1 2.5 0V10" />
+    <path d="M11.5 10V4.75a1.25 1.25 0 1 1 2.5 0V10" />
+    <path d="M14 10V5.75a1.25 1.25 0 1 1 2.5 0V11" />
+    <path d="M16.5 11V8.25a1.25 1.25 0 1 1 2.5 0v4.5a6 6 0 0 1-6 6h-.38a5.5 5.5 0 0 1-5.34-4.18l-.87-3.31a1.25 1.25 0 0 1 2.36-.87L10 12" />
+    <path d="M6 6.5c-.76.43-1.4 1.05-1.84 1.81" />
+    <path d="M18.75 5.5c.73.45 1.32 1.08 1.71 1.83" />
   </svg>
 );
 
