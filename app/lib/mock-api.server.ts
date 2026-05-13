@@ -708,7 +708,6 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
     update.contact = data.contact;
     update.contactEmail = data.contact.email ?? null;
     update.contactPhone = data.contact.phone ?? null;
-    update.contactLineId = data.contact.lineId ?? null;
   }
   if (data.collaborationHistory !== undefined) update.collaborationHistory = data.collaborationHistory;
   if (data.priceTrend !== undefined) update.priceTrend = data.priceTrend;
@@ -774,7 +773,6 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       socialLinks: data.socialLinks ?? null,
       contactEmail: data.contact?.email ?? null,
       contactPhone: data.contact?.phone ?? null,
-      contactLineId: data.contact?.lineId ?? null,
       status: "active",
     })
     .returning();

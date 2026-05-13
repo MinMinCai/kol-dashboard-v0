@@ -27,7 +27,6 @@ export const kols = pgTable(
     categories: text("categories").array().default([]).notNull(),
     contactEmail: varchar("contact_email", { length: 200 }),
     contactPhone: varchar("contact_phone", { length: 50 }),
-    contactLineId: varchar("contact_line_id", { length: 50 }),
     basePriceMin: numeric("base_price_min", { precision: 12, scale: 2 }),
     basePriceMax: numeric("base_price_max", { precision: 12, scale: 2 }),
     status: varchar("status", { length: 20 }).default("active").notNull(),
