@@ -601,12 +601,12 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | id | text PK | |
 | clientId | text FK → clients.id | 關聯客戶（可為 null） |
 | clientName | varchar(200) | 客戶名稱快照 |
-| title | varchar(255) NOT NULL | 提案標題 |
+| title | varchar(255) NOT NULL | 案件名稱 |
 | objective | text | 提案目標 |
 | budget | numeric(12,2) | 預算 |
 | stage | varchar(30) | draft / review / approved / rejected，預設 draft |
 | owner | varchar(100) | 負責人 |
-| dueDate | varchar(20) | 截止日期 |
+| launchMonth | varchar(20) | 預計上線月份 |
 | lastModifiedBy | varchar(100) | 最後修改者（用於 activity log 顯示） |
 | activityLog | jsonb[] | 提案異動歷史記錄 |
 | createdAt / updatedAt | timestamp | |

@@ -201,7 +201,7 @@ GET /api/proposals/:proposalId/export
 | 欄位 | 值 |
 |------|-----|
 | Content-Type | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` |
-| Content-Disposition | `attachment; filename*=UTF-8''{提案標題}.xlsx` |
+| Content-Disposition | `attachment; filename*=UTF-8''{案件名稱}.xlsx` |
 
 **Excel 結構**
 

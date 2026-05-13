@@ -318,11 +318,10 @@ export default function ProposalCreatePage() {
             <Box>
               <Title order={4} mb="sm">基本資料</Title>
               <Stack gap="sm">
-                <TextInput name="title" label="提案標題" required />
-                <TextInput name="clientName" label="客戶名稱" required />
-                {/* Task 1: Budget with thousand separator */}
+                <TextInput name="title" label="案件名稱" required />
+                <TextInput name="clientName" label="客戶" required />
                 <NumberInput
-                  label="預算"
+                  label="總預算"
                   value={budget}
                   onChange={setBudget}
                   thousandSeparator=","
@@ -331,7 +330,7 @@ export default function ProposalCreatePage() {
                   allowNegative={false}
                 />
                 <TextInput
-                  type="date"
+                  type="month"
                   label="預計上線月份"
                   value={launchMonth}
                   onChange={(e) => setLaunchMonth(e.currentTarget.value)}

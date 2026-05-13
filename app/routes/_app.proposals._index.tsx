@@ -234,7 +234,7 @@ export default function ProposalListPage() {
           <input
             name="q"
             defaultValue={q}
-            placeholder="搜尋提案標題或客戶"
+            placeholder="搜尋案件名稱或客戶"
             className={`${styles.formInput} ${styles.searchInput}`}
           />
           <select name="client" defaultValue={client} className={styles.formInput} title="篩選客戶">
@@ -410,13 +410,13 @@ export default function ProposalListPage() {
             <input type="hidden" name="intent" value="edit_proposal" />
             <input type="hidden" name="id" value={editingProposal.id} />
             <Stack>
-              <TextInput name="title" label="提案標題" defaultValue={editingProposal.title} required />
-              <TextInput name="clientName" label="客戶名稱" defaultValue={editingProposal.clientName} required />
-              <NumberInput name="budget" label="預算" defaultValue={editingProposal.budget} thousandSeparator="," />
-              <TextInput type="date" name="launchMonth" label="預計上線月份" defaultValue={editingProposal.launchMonth?.slice(0, 10) ?? ""} />
+              <TextInput name="title" label="案件名稱" defaultValue={editingProposal.title} required />
+              <TextInput name="clientName" label="客戶" defaultValue={editingProposal.clientName} required />
+              <NumberInput name="budget" label="總預算" defaultValue={editingProposal.budget} thousandSeparator="," />
+              <TextInput type="month" name="launchMonth" label="預計上線月份" defaultValue={editingProposal.launchMonth?.slice(0, 7) ?? ""} />
               <Select
                 name="stage"
-                label="提案階段"
+                label="目前階段"
                 defaultValue={["draft", "internal_review", "sent_to_client", "approved"].includes(editingProposal.stage) ? editingProposal.stage : "draft"}
                 data={ALL_STAGES}
                 required

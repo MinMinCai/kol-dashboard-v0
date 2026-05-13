@@ -61,7 +61,7 @@ export default function ProposalDetailPage() {
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
   const [editedBudget, setEditedBudget] = useState(proposal.budget);
-  const [editedDueDate, setEditedDueDate] = useState(proposal.launchMonth?.slice(0, 10) ?? "");
+  const [editedDueDate, setEditedDueDate] = useState(proposal.launchMonth?.slice(0, 7) ?? "");
   const [editedStage, setEditedStage] = useState(proposal.stage);
 
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
@@ -394,14 +394,14 @@ export default function ProposalDetailPage() {
             {isEditing ? (
             <Stack gap="xs">
               <TextInput
-                label="提案標題"
+                label="案件名稱"
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.currentTarget.value)}
                 size="md"
                 fw={700}
               />
               <TextInput
-                label="客戶名稱"
+                label="客戶"
                 value={editedClient}
                 onChange={(e) => setEditedClient(e.currentTarget.value)}
                 size="sm"
@@ -409,7 +409,7 @@ export default function ProposalDetailPage() {
             </Stack>
           ) : (
             <Stack gap={0}>
-              <Title order={2}>提案詳細：{proposal.title}</Title>
+              <Title order={2}>案件名稱：{proposal.title}</Title>
               <Text c="dimmed" size="sm">
                 ID: {proposal.id} | 客戶：{proposal.clientName}
               </Text>
@@ -437,7 +437,7 @@ export default function ProposalDetailPage() {
                 color="blue"
                 disabled={!candidates.some((c) => c.status === "accepted")}
               >
-                轉為委刊單
+                轉為執行案件
               </Button>
             </>
           )}
@@ -447,7 +447,7 @@ export default function ProposalDetailPage() {
       {/* ============ Stats Cards: Stage / Budget / Due Date ============ */}
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
         <Card withBorder>
-          <Text size="xs" c="dimmed" fw={700}>當前階段</Text>
+          <Text size="xs" c="dimmed" fw={700}>目前階段</Text>
           {isEditing ? (
             <Select
               mt={5}
@@ -482,10 +482,10 @@ export default function ProposalDetailPage() {
           )}
         </Card>
         <Card withBorder>
-          <Text size="xs" c="dimmed" fw={700}>截止日期</Text>
+          <Text size="xs" c="dimmed" fw={700}>預計上線月份</Text>
           {isEditing ? (
             <TextInput
-              type="date"
+              type="month"
               mt={5}
               value={editedDueDate}
               onChange={(e) => setEditedDueDate(e.currentTarget.value)}
@@ -1190,7 +1190,7 @@ export default function ProposalDetailPage() {
               setEditedTitle(proposal.title);
               setEditedClient(proposal.clientName);
               setEditedBudget(proposal.budget);
-              setEditedDueDate(proposal.launchMonth?.slice(0, 10) ?? "");
+              setEditedDueDate(proposal.launchMonth?.slice(0, 7) ?? "");
               setEditedStage(proposal.stage);
               setIsEditing(false);
             }}

@@ -37,9 +37,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   // ── Sheet 1: 提案基本資料 ──────────────────────────────────────
   const infoRows = [
-    ["提案標題", proposal.title],
-    ["客戶名稱", proposal.clientName],
-    ["當前階段", stageLabel[proposal.stage] ?? proposal.stage],
+    ["案件名稱", proposal.title],
+    ["客戶", proposal.clientName],
+    ["目前階段", stageLabel[proposal.stage] ?? proposal.stage],
     ["總預算", proposal.budget],
     ["預計上線月份", proposal.launchMonth],
   ];
