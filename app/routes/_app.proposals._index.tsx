@@ -1,10 +1,8 @@
 import {
   ActionIcon,
   Badge,
-  Box,
   Button,
   Card,
-  Divider,
   Group,
   Modal,
   NumberInput,
@@ -21,6 +19,7 @@ import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-r
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { deleteProposal, listProposals, updateProposal } from "~/lib/mock-api.server";
+import { getCurrentMember } from "~/lib/demo-identity.server";
 import styles from "./_app.proposals._index.module.css";
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -55,6 +54,11 @@ function buildUrl(base: Record<string, string>, overrides: Record<string, string
 // ─── action ───────────────────────────────────────────────────────────────────
 
 export async function action({ request }: ActionFunctionArgs) {
+  const member = await getCurrentMember(request).catch(() => null);
+  if (!member || member.role === "member") {
+    return json({ success: false, error: "權限不足" }, { status: 403 });
+  }
+
   const formData = await request.formData();
   const intent = formData.get("intent");
 
@@ -81,6 +85,9 @@ export async function action({ request }: ActionFunctionArgs) {
 // ─── loader ───────────────────────────────────────────────────────────────────
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const member = await getCurrentMember(request).catch(() => null);
+  const currentRole = member?.role ?? "member";
+
   const url = new URL(request.url);
   const sp = url.searchParams;
 
@@ -90,7 +97,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const budgetMin = Number(sp.get("budgetMin") ?? 0) || 0;
   const budgetMax = Number(sp.get("budgetMax") ?? 0) || 0;
   const overdue = sp.get("overdue") === "1";
-  const sort = sp.get("sort") ?? "";        // "budget" | "dueDate"
+  const sort = sp.get("sort") ?? "";        // "budget" | "launchMonth" | "updatedAt"
   const order = sp.get("order") ?? "desc"; // "asc" | "desc"
   const page = Math.max(1, Number(sp.get("page") ?? 1));
 
@@ -132,6 +139,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
       const db = b.launchMonth ?? "";
       return order === "asc" ? da.localeCompare(db) : db.localeCompare(da);
     });
+  } else if (sort === "updatedAt") {
+    proposals = [...proposals].sort((a, b) => {
+      const da = a.updatedAt ?? "";
+      const db = b.updatedAt ?? "";
+      return order === "asc" ? da.localeCompare(db) : db.localeCompare(da);
+    });
   }
 
   // ── pagination ──
@@ -153,6 +166,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     q, client, stage, budgetMin, budgetMax, overdue,
     sort, order,
     activeFilterCount,
+    currentRole,
     today,
   });
 }
@@ -163,14 +177,15 @@ export default function ProposalListPage() {
   const {
     proposals, total, totalPages, page,
     allClients, q, client, stage, budgetMin, budgetMax, overdue,
-    sort, order, activeFilterCount, today,
+    sort, order, activeFilterCount, today, currentRole,
   } = useLoaderData<typeof loader>();
+
+  const canEdit = currentRole === "admin" || currentRole === "manager";
 
   const [editingProposal, setEditingProposal] = useState<any>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
-  const [showFilters, setShowFilters] = useState(activeFilterCount > 0);
 
   const handleEdit = (p: any) => { setEditingProposal(p); open(); };
   const handleAskDelete = (p: any) => { setDeleteTarget(p); openDelete(); };
@@ -187,147 +202,94 @@ export default function ProposalListPage() {
     ...(order !== "desc" ? { order } : {}),
   };
 
-  const sortUrl = (key: string) => {
-    if (sort !== key) return buildUrl(current, { sort: key, order: "desc" });
-    return buildUrl(current, { sort: key, order: order === "desc" ? "asc" : "desc" });
-  };
-
-  const sortLabel = (key: string) => {
-    if (sort !== key) return "";
-    return order === "asc" ? " ↑" : " ↓";
-  };
-
   const pageUrl = (p: number) => {
     const out = new URLSearchParams(current);
     out.set("page", String(p));
     return `?${out.toString()}`;
   };
 
-  const thLink = (label: string, key: string) => (
-    <a href={sortUrl(key)} className={styles.thLink}>
-      {label}{sortLabel(key)}
-    </a>
-  );
+  // ── sort select value ──
+  const sortSelectValue = sort && order ? `${sort}_${order}` : "";
+
+  const SORT_OPTIONS = [
+    { value: "", label: "預設排序" },
+    { value: "launchMonth_asc", label: "預計上線月份（早→晚）" },
+    { value: "launchMonth_desc", label: "預計上線月份（晚→早）" },
+    { value: "updatedAt_desc", label: "最後更新日（新→舊）" },
+    { value: "updatedAt_asc", label: "最後更新日（舊→新）" },
+    { value: "budget_desc", label: "總預算（高→低）" },
+    { value: "budget_asc", label: "總預算（低→高）" },
+  ];
 
   return (
     <Stack gap="md">
-      <Group justify="space-between" align="flex-end">
-        <Box>
-          <Title order={2}>提案一覽</Title>
-        </Box>
+      <Group justify="space-between" align="center">
+        <Title order={2}>提案一覽</Title>
         <Button component={Link} to="/proposals/new">新增提案</Button>
       </Group>
 
-      {/* ── 搜尋 + 篩選 bar ── */}
-      <form method="get" action="/proposals" className={styles.formContents}>
-        <Group gap={8} wrap="wrap">
+      {/* ── 搜尋 + 篩選 inline bar ── */}
+      <form method="get" action="/proposals">
+        <Group gap={8} wrap="wrap" align="center">
           <input
             name="q"
             defaultValue={q}
-            placeholder="搜尋提案標題或客戶（按 Enter）"
+            placeholder="搜尋提案標題或客戶"
             className={`${styles.formInput} ${styles.searchInput}`}
           />
-          {/* preserve sort/order across search */}
-          {sort && <input type="hidden" name="sort" value={sort} />}
-          {order !== "desc" && <input type="hidden" name="order" value={order} />}
-          <button
-            type="submit"
-            className={`${styles.formInput} ${styles.formSubmitButton}`}
+          <select name="client" defaultValue={client} className={styles.formInput} title="篩選客戶">
+            <option value="">客戶：全部</option>
+            {allClients.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select name="stage" defaultValue={stage} className={styles.formInput} title="篩選目前階段">
+            <option value="">目前階段：全部</option>
+            {ALL_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+          <Group gap={4} align="center" wrap="nowrap">
+            <input
+              type="number"
+              name="budgetMin"
+              min={0}
+              step={10000}
+              defaultValue={budgetMin > 0 ? budgetMin : ""}
+              placeholder="預算最低"
+              className={`${styles.formInput} ${styles.budgetInput}`}
+            />
+            <Text size="sm" c="dimmed">—</Text>
+            <input
+              type="number"
+              name="budgetMax"
+              min={0}
+              step={10000}
+              defaultValue={budgetMax > 0 ? budgetMax : ""}
+              placeholder="預算最高"
+              className={`${styles.formInput} ${styles.budgetInput}`}
+            />
+          </Group>
+          <select
+            name="_sort"
+            defaultValue={sortSelectValue}
+            className={styles.formInput}
+            title="排序方式"
+            onChange={(e) => {
+              const [s, o] = e.currentTarget.value.split("_");
+              const form = e.currentTarget.form!;
+              const sortInput = form.querySelector<HTMLInputElement>('input[name="sort"]');
+              const orderInput = form.querySelector<HTMLInputElement>('input[name="order"]');
+              if (sortInput) sortInput.value = s ?? "";
+              if (orderInput) orderInput.value = o ?? "desc";
+            }}
           >
-            搜尋
+            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+          <input type="hidden" name="sort" defaultValue={sort} />
+          <input type="hidden" name="order" defaultValue={order || "desc"} />
+          <button type="submit" className={`${styles.formInput} ${styles.formSubmitButton}`}>
+            套用篩選
           </button>
-          {q && (
-            <a href={buildUrl(current, { q: null })} className={`${styles.formInput} ${styles.linkButton}`}>✕</a>
-          )}
-          <button
-            type="button"
-            className={`${styles.formInput} ${activeFilterCount > 0 ? `${styles.filterToggle} ${styles.filterToggleActive}` : styles.filterToggle}`}
-            onClick={() => setShowFilters((v) => !v)}
-          >
-            ⚙ 篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-          </button>
+          <a href="/proposals" className={`${styles.formInput} ${styles.linkButton}`}>清除</a>
         </Group>
       </form>
-
-      {/* ── 篩選面板 ── */}
-      {showFilters && (
-        <Card withBorder>
-          <Text fw={600} mb="md">篩選條件</Text>
-          <form method="get" action="/proposals">
-            {q && <input type="hidden" name="q" value={q} />}
-            {sort && <input type="hidden" name="sort" value={sort} />}
-            {order !== "desc" && <input type="hidden" name="order" value={order} />}
-
-            <Group align="flex-start" gap="xl" wrap="wrap">
-              {/* 客戶 */}
-              <Box miw={160}>
-                <Text size="sm" fw={600} mb={6}>客戶</Text>
-                <select name="client" defaultValue={client} className={styles.formInput} title="篩選客戶">
-                  <option value="">全部</option>
-                  {allClients.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </Box>
-
-              <Divider orientation="vertical" />
-
-              {/* 階段 */}
-              <Box miw={160}>
-                <Text size="sm" fw={600} mb={6}>階段</Text>
-                <select name="stage" defaultValue={stage} className={styles.formInput} title="篩選提案階段">
-                  <option value="">全部</option>
-                  {ALL_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
-              </Box>
-
-              <Divider orientation="vertical" />
-
-              {/* 預算區間 */}
-              <Box miw={220}>
-                <Text size="sm" fw={600} mb={6}>預算區間</Text>
-                <Group gap={8} align="center">
-                  <input
-                    type="number"
-                    name="budgetMin"
-                    min={0}
-                    step={10000}
-                    defaultValue={budgetMin > 0 ? budgetMin : ""}
-                    placeholder="最低"
-                    className={`${styles.formInput} ${styles.budgetInput}`}
-                  />
-                  <Text size="sm" c="dimmed">—</Text>
-                  <input
-                    type="number"
-                    name="budgetMax"
-                    min={0}
-                    step={10000}
-                    defaultValue={budgetMax > 0 ? budgetMax : ""}
-                    placeholder="最高"
-                    className={`${styles.formInput} ${styles.budgetInput}`}
-                  />
-                </Group>
-              </Box>
-
-              <Divider orientation="vertical" />
-
-              {/* 是否已截止 */}
-              <Box miw={120}>
-                <Text size="sm" fw={600} mb={6}>截止狀態</Text>
-                <label className={styles.checkboxLabel}>
-                  <input type="checkbox" name="overdue" value="1" defaultChecked={overdue} />
-                  僅顯示已截止
-                </label>
-              </Box>
-            </Group>
-
-            <Group mt="md" gap="sm">
-              <button type="submit" className={`${styles.formInput} ${styles.formSubmitButton}`}>
-                套用篩選
-              </button>
-              <a href="/proposals" className={`${styles.formInput} ${styles.linkButton}`}>清除篩選</a>
-            </Group>
-          </form>
-        </Card>
-      )}
 
       {/* ── 結果筆數 ── */}
       <Text c="dimmed" size="sm">共 {total} 筆{q ? `（搜尋：${q}）` : ""}</Text>
@@ -340,8 +302,8 @@ export default function ProposalListPage() {
               <Table.Th pl={16}>案件</Table.Th>
               <Table.Th>客戶</Table.Th>
               <Table.Th>目前階段</Table.Th>
-              <Table.Th>{thLink("總預算", "budget")}</Table.Th>
-              <Table.Th>{thLink("預計上線月份", "launchMonth")}</Table.Th>
+              <Table.Th>總預算</Table.Th>
+              <Table.Th>預計上線月份</Table.Th>
               <Table.Th>最後更新日</Table.Th>
               <Table.Th ta="right" pr={16}>操作</Table.Th>
             </Table.Tr>
@@ -388,12 +350,16 @@ export default function ProposalListPage() {
                         <ActionIcon variant="light" color="blue" component={Link} to={`/proposals/${p.id}`} title="查看詳細">
                           <IconEye size={16} />
                         </ActionIcon>
-                        <ActionIcon variant="light" color="orange" onClick={() => handleEdit(p)} title="編輯">
-                          <IconPencil size={16} />
-                        </ActionIcon>
-                        <ActionIcon variant="light" color="red" type="button" title="刪除" onClick={() => handleAskDelete(p)}>
-                          <IconTrash size={16} />
-                        </ActionIcon>
+                        {canEdit && (
+                          <ActionIcon variant="light" color="orange" onClick={() => handleEdit(p)} title="編輯">
+                            <IconPencil size={16} />
+                          </ActionIcon>
+                        )}
+                        {canEdit && (
+                          <ActionIcon variant="light" color="red" type="button" title="刪除" onClick={() => handleAskDelete(p)}>
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        )}
                       </Group>
                     </Table.Td>
                   </Table.Tr>
