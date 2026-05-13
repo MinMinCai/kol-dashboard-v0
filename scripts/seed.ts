@@ -94,6 +94,7 @@ async function seed() {
           socialLinks: kol.socialLinks ?? null,
           contactEmail: kol.contact?.email ?? null,
           contactPhone: kol.contact?.phone ?? null,
+          contactLineId: kol.contact?.lineId ?? null,
           status: "active",
         })
         .onConflictDoNothing();

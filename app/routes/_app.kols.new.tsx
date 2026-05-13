@@ -38,6 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const age = Number(formData.get("age") ?? 0);
   const phone = String(formData.get("contactPhone") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const lineId = String(formData.get("contactLineId") ?? "").trim();
   const tagsRaw = String(formData.get("tagsInput") ?? "");
   const socialsRaw = String(formData.get("socialsJson") ?? "[]");
   const avatarUrl = String(formData.get("avatarUrl") ?? "").trim();
@@ -124,7 +125,7 @@ export async function action({ request }: ActionFunctionArgs) {
       tiktok: socialMap.tiktok ?? 0,
       facebook: socialMap.facebook ?? 0,
     },
-    contact: { phone, email, manager: "" },
+    contact: { phone, email, lineId, manager: "" },
     gender: gender as "男" | "女" | "其他",
     age: Number.isFinite(age) && age > 0 ? age : undefined,
     city: "Taipei",
@@ -412,6 +413,7 @@ export default function KolCreatePage() {
                 <TextInput label="年齡" name="age" type="number" min={0} max={100} />
                 <TextInput label="聯絡方式" name="contactPhone" placeholder="09xx-xxx-xxx" />
                 <TextInput label="Email" name="email" type="email" placeholder="manager@example.com" />
+                <TextInput label="LINE ID" name="contactLineId" placeholder="@lineId 或帳號" />
 
                 <Box>
                   <Text size="sm" fw={500} mb={6}>請款方式</Text>

@@ -58,6 +58,7 @@ erDiagram
         text_array categories
         varchar contactEmail
         varchar contactPhone
+        varchar contactLineId
         numeric basePriceMin
         numeric basePriceMax
         varchar status
@@ -538,7 +539,7 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | country / city | varchar(80) | 地區 |
 | primaryLanguage | varchar(40) | 主要語言 |
 | categories | text[] | 內容分類 |
-| contactEmail / contactPhone | varchar | 聯絡資訊 |
+| contactEmail / contactPhone / contactLineId | varchar | 聯絡資訊 |
 | basePriceMin / basePriceMax | numeric(12,2) | 報價區間 |
 | status | varchar(20) | active / inactive，預設 active |
 | notes | text | 內部備註 |
@@ -564,7 +565,7 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | age | integer | 年齡 |
 | social | jsonb | `{instagram?, youtube?, tiktok?, facebook?}` 各平台粉絲數 |
 | socialLinks | jsonb | `{instagram?, youtube?, tiktok?, facebook?}` 各平台連結 |
-| contact | jsonb | `{phone?, email?, manager?}` |
+| contact | jsonb | `{phone?, email?, lineId?, manager?}` |
 | collaborationHistory | jsonb[] | 歷史合作記錄 |
 | priceTrend | jsonb[] | 報價趨勢 |
 | performanceStats | jsonb | 綜合績效統計 |

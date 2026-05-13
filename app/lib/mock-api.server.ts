@@ -138,6 +138,7 @@ export type Kol = {
   contact?: {
     phone?: string;
     email?: string;
+    lineId?: string;
     manager?: string;
   };
   collaborationHistory?: KolCollabRecord[];
@@ -668,7 +669,12 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
   if (data.favoriteFolder !== undefined) update.favoriteFolder = data.favoriteFolder ?? null;
   if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl;
   if (data.social !== undefined) update.social = data.social;
-  if (data.contact !== undefined) update.contact = data.contact;
+  if (data.contact !== undefined) {
+    update.contact = data.contact;
+    update.contactEmail = data.contact.email ?? null;
+    update.contactPhone = data.contact.phone ?? null;
+    update.contactLineId = data.contact.lineId ?? null;
+  }
   if (data.collaborationHistory !== undefined) update.collaborationHistory = data.collaborationHistory;
   if (data.priceTrend !== undefined) update.priceTrend = data.priceTrend;
   if (data.performanceStats !== undefined) update.performanceStats = data.performanceStats;
@@ -733,6 +739,7 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       socialLinks: data.socialLinks ?? null,
       contactEmail: data.contact?.email ?? null,
       contactPhone: data.contact?.phone ?? null,
+      contactLineId: data.contact?.lineId ?? null,
       status: "active",
     })
     .returning();

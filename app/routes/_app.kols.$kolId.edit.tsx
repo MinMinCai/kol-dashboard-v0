@@ -62,6 +62,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const avatarUrl = String(formData.get("avatarUrl") ?? "").trim();
   const phone = String(formData.get("contactPhone") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const lineId = String(formData.get("contactLineId") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const paymentMethod = formData.get("paymentMethod") as "勞報" | "發票" | null;
   const genderRaw = String(formData.get("gender") ?? "").trim();
@@ -120,7 +121,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     rating: Number.isFinite(rating) ? rating : 0,
     collaborations: Number.isFinite(collaborations) ? collaborations : 0,
     avatarUrl: avatarUrl || undefined,
-    contact: { phone, email },
+    contact: { phone, email, lineId },
     notes: notes || undefined,
     paymentMethod: paymentMethod || undefined,
     gender,
@@ -462,6 +463,12 @@ export default function KolEditPage() {
                       type="email"
                       defaultValue={kol.contact?.email ?? ""}
                       placeholder="manager@example.com"
+                    />
+                    <TextInput
+                      label="LINE ID"
+                      name="contactLineId"
+                      defaultValue={kol.contact?.lineId ?? ""}
+                      placeholder="@lineId 或帳號"
                     />
 
                     <Box>
