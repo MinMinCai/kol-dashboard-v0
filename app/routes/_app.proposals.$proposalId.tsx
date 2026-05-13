@@ -61,7 +61,7 @@ export default function ProposalDetailPage() {
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
   const [editedBudget, setEditedBudget] = useState(proposal.budget);
-  const [editedDueDate, setEditedDueDate] = useState(proposal.dueDate?.slice(0, 10) ?? "");
+  const [editedDueDate, setEditedDueDate] = useState(proposal.launchMonth?.slice(0, 10) ?? "");
   const [editedStage, setEditedStage] = useState(proposal.stage);
 
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
@@ -491,7 +491,7 @@ export default function ProposalDetailPage() {
               onChange={(e) => setEditedDueDate(e.currentTarget.value)}
             />
           ) : (
-            <Text size="xl" fw={700} mt={5}>{proposal.dueDate}</Text>
+            <Text size="xl" fw={700} mt={5}>{proposal.launchMonth}</Text>
           )}
         </Card>
       </SimpleGrid>
@@ -1190,7 +1190,7 @@ export default function ProposalDetailPage() {
               setEditedTitle(proposal.title);
               setEditedClient(proposal.clientName);
               setEditedBudget(proposal.budget);
-              setEditedDueDate(proposal.dueDate?.slice(0, 10) ?? "");
+              setEditedDueDate(proposal.launchMonth?.slice(0, 10) ?? "");
               setEditedStage(proposal.stage);
               setIsEditing(false);
             }}
@@ -1206,7 +1206,7 @@ export default function ProposalDetailPage() {
               formData.append("title", editedTitle);
               formData.append("clientName", editedClient);
               formData.append("budget", String(editedBudget));
-              formData.append("dueDate", editedDueDate);
+              formData.append("launchMonth", editedDueDate);
               formData.append("stage", editedStage);
               submit(formData, { method: "post" });
               setIsEditing(false);

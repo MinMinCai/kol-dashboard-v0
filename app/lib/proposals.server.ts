@@ -144,10 +144,10 @@ export async function handleProposalAction(
     const clientName = formData.get("clientName") ? String(formData.get("clientName")) : undefined;
     const budgetStr = formData.get("budget") ? String(formData.get("budget")).replace(/,/g, "").replace(/\$/g, "") : undefined;
     const budget = budgetStr !== undefined ? Number(budgetStr) : undefined;
-    const dueDate = formData.get("dueDate") ? String(formData.get("dueDate")) : undefined;
+    const launchMonth = formData.get("launchMonth") ? String(formData.get("launchMonth")) : undefined;
 
-    await updateProposal(proposalId, { stage, title, clientName, budget, dueDate });
-    const changedFields = ([stage ? "階段" : "", title ? "標題" : "", clientName ? "客戶" : "", budget !== undefined ? "預算" : "", dueDate ? "截止日" : ""]).filter((s) => s !== "").join("、");
+    await updateProposal(proposalId, { stage, title, clientName, budget, launchMonth });
+    const changedFields = ([stage ? "階段" : "", title ? "標題" : "", clientName ? "客戶" : "", budget !== undefined ? "預算" : "", launchMonth ? "預計上線月份" : ""]).filter((s) => s !== "").join("、");
     notifyProposalUpdated({ type: "proposal_updated", proposalId, updatedBy, field: `修改${changedFields}`, timestamp: ts });
     return { success: true };
   }

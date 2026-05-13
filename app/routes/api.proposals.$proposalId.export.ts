@@ -41,7 +41,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     ["客戶名稱", proposal.clientName],
     ["當前階段", stageLabel[proposal.stage] ?? proposal.stage],
     ["總預算", proposal.budget],
-    ["截止日期", proposal.dueDate],
+    ["預計上線月份", proposal.launchMonth],
   ];
   const wsInfo = XLSX.utils.aoa_to_sheet(infoRows);
   wsInfo["!cols"] = [{ wch: 14 }, { wch: 36 }];

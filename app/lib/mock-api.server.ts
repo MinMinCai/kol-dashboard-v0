@@ -175,7 +175,8 @@ export type Proposal = {
   clientName: string;
   stage: string;
   budget: number;
-  dueDate: string;
+  launchMonth: string;
+  updatedAt?: string;
 };
 
 export type PlatformAudienceMetrics = {
@@ -541,19 +542,26 @@ export async function getFolderAccessForMember(
 
 function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
   const budget = row.budget != null ? Number(row.budget) : 0;
-  const rawDate = row.dueDate as unknown;
-  const dueDate = rawDate instanceof Date
+  const rawDate = row.launchMonth as unknown;
+  const launchMonth = rawDate instanceof Date
     ? rawDate.toISOString().slice(0, 10)
     : typeof rawDate === "string"
       ? rawDate.slice(0, 10)
       : "";
+  const rawUpdatedAt = row.updatedAt as unknown;
+  const updatedAt = rawUpdatedAt instanceof Date
+    ? rawUpdatedAt.toISOString().slice(0, 10)
+    : typeof rawUpdatedAt === "string"
+      ? rawUpdatedAt.slice(0, 10)
+      : undefined;
   return {
     id: row.id,
     title: row.title,
     clientName: row.clientName ?? "",
     stage: row.stage,
     budget: isNaN(budget) ? 0 : budget,
-    dueDate,
+    launchMonth,
+    updatedAt,
   };
 }
 
@@ -755,7 +763,7 @@ export async function updateProposal(id: string, data: Partial<Proposal>): Promi
   if (data.clientName !== undefined) update.clientName = data.clientName;
   if (data.stage !== undefined) update.stage = data.stage;
   if (data.budget !== undefined) update.budget = String(data.budget);
-  if (data.dueDate !== undefined) update.dueDate = data.dueDate;
+  if (data.launchMonth !== undefined) update.launchMonth = data.launchMonth;
   update.updatedAt = new Date();
 
   const rows = await db.update(proposalsTable).set(update).where(eq(proposalsTable.id, id)).returning();
@@ -772,7 +780,7 @@ export async function createProposal(data: Omit<Proposal, "id">): Promise<Propos
       clientName: data.clientName ?? null,
       stage: data.stage ?? "draft",
       budget: data.budget != null ? String(data.budget) : null,
-      dueDate: data.dueDate || null,
+      launchMonth: data.launchMonth || null,
     })
     .returning();
   return rowToProposal(rows[0]);

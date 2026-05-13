@@ -69,9 +69,9 @@ export async function action({ request }: ActionFunctionArgs) {
     const title = String(formData.get("title"));
     const clientName = String(formData.get("clientName"));
     const budget = Number(formData.get("budget"));
-    const dueDate = String(formData.get("dueDate"));
+    const launchMonth = String(formData.get("launchMonth"));
     const stage = String(formData.get("stage"));
-    await updateProposal(id, { title, clientName, budget, dueDate, stage });
+    await updateProposal(id, { title, clientName, budget, launchMonth, stage });
     return json({ success: true });
   }
 
@@ -119,17 +119,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (budgetMax > 0) proposals = proposals.filter((p) => p.budget <= budgetMax);
 
   // ── overdue filter ──
-  if (overdue) proposals = proposals.filter((p) => p.dueDate && p.dueDate < today);
+  if (overdue) proposals = proposals.filter((p) => p.launchMonth && p.launchMonth < today);
 
   // ── sort (default = insertion/fetch order = newest first) ──
   if (sort === "budget") {
     proposals = [...proposals].sort((a, b) =>
       order === "asc" ? a.budget - b.budget : b.budget - a.budget
     );
-  } else if (sort === "dueDate") {
+  } else if (sort === "launchMonth") {
     proposals = [...proposals].sort((a, b) => {
-      const da = a.dueDate ?? "";
-      const db = b.dueDate ?? "";
+      const da = a.launchMonth ?? "";
+      const db = b.launchMonth ?? "";
       return order === "asc" ? da.localeCompare(db) : db.localeCompare(da);
     });
   }
@@ -337,24 +337,25 @@ export default function ProposalListPage() {
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th pl={16}>標題</Table.Th>
+              <Table.Th pl={16}>案件</Table.Th>
               <Table.Th>客戶</Table.Th>
-              <Table.Th>階段</Table.Th>
-              <Table.Th>{thLink("預算", "budget")}</Table.Th>
-              <Table.Th>{thLink("截止日", "dueDate")}</Table.Th>
+              <Table.Th>目前階段</Table.Th>
+              <Table.Th>{thLink("總預算", "budget")}</Table.Th>
+              <Table.Th>{thLink("預計上線月份", "launchMonth")}</Table.Th>
+              <Table.Th>最後更新日</Table.Th>
               <Table.Th ta="right" pr={16}>操作</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {proposals.length === 0 ? (
               <Table.Tr>
-                <Table.Td colSpan={6}>
+                <Table.Td colSpan={7}>
                   <Text ta="center" c="dimmed" py="xl">沒有符合條件的提案</Text>
                 </Table.Td>
               </Table.Tr>
             ) : (
               proposals.map((p) => {
-                const isOverdue = p.dueDate && p.dueDate < today;
+                const isOverdue = p.launchMonth && p.launchMonth < today;
                 return (
                   <Table.Tr key={p.id}>
                     <Table.Td pl={16}>
@@ -378,9 +379,10 @@ export default function ProposalListPage() {
                     <Table.Td>NT$ {(p.budget ?? 0).toLocaleString()}</Table.Td>
                     <Table.Td>
                       <Text size="sm" c={isOverdue ? "red" : undefined}>
-                        {p.dueDate || "—"}{isOverdue ? " ⚠" : ""}
+                        {p.launchMonth || "—"}{isOverdue ? " ⚠" : ""}
                       </Text>
                     </Table.Td>
+                    <Table.Td>{p.updatedAt || "—"}</Table.Td>
                     <Table.Td ta="right" pr={16}>
                       <Group gap="xs" justify="flex-end">
                         <ActionIcon variant="light" color="blue" component={Link} to={`/proposals/${p.id}`} title="查看詳細">
@@ -445,7 +447,7 @@ export default function ProposalListPage() {
               <TextInput name="title" label="提案標題" defaultValue={editingProposal.title} required />
               <TextInput name="clientName" label="客戶名稱" defaultValue={editingProposal.clientName} required />
               <NumberInput name="budget" label="預算" defaultValue={editingProposal.budget} thousandSeparator="," />
-              <TextInput type="date" name="dueDate" label="截止日" defaultValue={editingProposal.dueDate?.slice(0, 10) ?? ""} />
+              <TextInput type="date" name="launchMonth" label="預計上線月份" defaultValue={editingProposal.launchMonth?.slice(0, 10) ?? ""} />
               <Select
                 name="stage"
                 label="提案階段"

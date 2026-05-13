@@ -146,14 +146,14 @@ export async function action({ request }: ActionFunctionArgs) {
   const title = String(formData.get("title") ?? "").trim();
   const clientName = String(formData.get("clientName") ?? "").trim();
   const budget = Number(formData.get("budget") ?? 0);
-  const dueDate = String(formData.get("dueDate") ?? "").trim();
+  const launchMonth = String(formData.get("launchMonth") ?? "").trim();
   const candidatesRaw = String(formData.get("candidatesJson") ?? "[]");
 
   if (!title || !clientName) {
     return json({ error: "標題與客戶為必填" }, { status: 400 });
   }
 
-  const proposal = await createProposal({ title, clientName, budget, dueDate: dueDate || "TBD", stage: "draft" });
+  const proposal = await createProposal({ title, clientName, budget, launchMonth: launchMonth || "TBD", stage: "draft" });
 
   let candidates: ImportRow[] = [];
   try {
@@ -199,7 +199,7 @@ export default function ProposalCreatePage() {
   const [manualKolId, setManualKolId] = useState<string | null>(null);
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [budget, setBudget] = useState<number | string>(0);
-  const [dueDate, setDueDate] = useState("");
+  const [launchMonth, setLaunchMonth] = useState("");
   const [manualCandidate, setManualCandidate] = useState<Omit<ImportRow, "kolId" | "kolName">>({
     role: "待定",
     price: 0,
@@ -300,7 +300,7 @@ export default function ProposalCreatePage() {
     setManualKolId(null);
   };
 
-  const dueDateString = dueDate;
+  const dueDateString = launchMonth;
 
   return (
     <Stack gap="md">
@@ -313,7 +313,7 @@ export default function ProposalCreatePage() {
         <Form method="post">
           <input type="hidden" name="candidatesJson" value={JSON.stringify(candidates)} />
           <input type="hidden" name="budget" value={typeof budget === "number" ? budget : toNumber(budget)} />
-          <input type="hidden" name="dueDate" value={dueDateString} />
+          <input type="hidden" name="launchMonth" value={dueDateString} />
           <Stack gap="lg">
             <Box>
               <Title order={4} mb="sm">基本資料</Title>
@@ -332,9 +332,9 @@ export default function ProposalCreatePage() {
                 />
                 <TextInput
                   type="date"
-                  label="截止日"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.currentTarget.value)}
+                  label="預計上線月份"
+                  value={launchMonth}
+                  onChange={(e) => setLaunchMonth(e.currentTarget.value)}
                 />
               </Stack>
             </Box>

@@ -72,7 +72,7 @@ const modules = [
     to: "/proposals",
   },
   {
-    title: "委刊單管理",
+    title: "執行案件管理",
     description: "管理執行中的委刊單與合約細節",
     icon: IconFileInvoice,
     color: "violet",

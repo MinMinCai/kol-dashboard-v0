@@ -94,7 +94,7 @@ const navItems = [
   { to: "/dashboard", label: "Dashboard", Icon: IconDashboard },
   { to: "/proposals", label: "提案管理", Icon: IconProposals },
   { to: "/kols", label: "KOL 管理", Icon: IconKols },
-  { to: "/insertion-orders", label: "委刊單管理", Icon: IconOrders },
+  { to: "/insertion-orders", label: "執行案件管理", Icon: IconOrders },
   { to: "/favorites", label: "我的收藏", Icon: IconFavorites },
   { to: "/reports/generate", label: "結案報告產生", Icon: IconReports },
 ];

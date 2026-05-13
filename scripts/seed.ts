@@ -114,7 +114,7 @@ async function seed() {
           clientName: p.clientName ?? null,
           stage: p.stage ?? "draft",
           budget: p.budget != null ? String(p.budget) : null,
-          dueDate: p.dueDate ?? null,
+          launchMonth: p.launchMonth ?? null,
         })
         .onConflictDoNothing();
     }

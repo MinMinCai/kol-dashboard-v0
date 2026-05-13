@@ -114,7 +114,7 @@ export const proposals = pgTable(
     budget: numeric("budget", { precision: 12, scale: 2 }),
     stage: varchar("stage", { length: 30 }).default("draft").notNull(),
     owner: varchar("owner", { length: 100 }),
-    dueDate: varchar("due_date", { length: 20 }),
+    launchMonth: varchar("due_date", { length: 20 }),
     lastModifiedBy: varchar("last_modified_by", { length: 100 }),
     activityLog: jsonb("activity_log").$type<any[]>().default([]),
     createdAt: now,
