@@ -412,7 +412,7 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
   const [{ folderNamesByKolId }, socialAccountRows, ioRows] = await Promise.all([
     getFavoriteFolderState(),
     db.select().from(kolSocialAccountsTable).catch(() => []),
-    db.select({ collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
+    db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
   ]);
 
   const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
@@ -428,12 +428,40 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
   // for "合作次數"). One order containing the same KOL multiple times still
   // counts once.
   const collabCountByKolId = new Map<string, number>();
+  // Map: orderId → kolId → aggregated KolCollabMetrics (derived from performanceItems)
+  const metricsMap = new Map<string, Map<string, KolCollabMetrics>>();
   for (const row of ioRows) {
     const collabs = (row.collaborations as OrderKolCollaboration[] | null) ?? [];
     const kolIdsInOrder = new Set<string>();
     for (const c of collabs) {
       const kid = c.kolId ?? c.id;
       if (kid) kolIdsInOrder.add(kid);
+
+      // Derive KolCollabMetrics from performanceItems
+      if (kid && row.id && c.performanceItems?.length) {
+        let postViews = 0, postLikes = 0, postComments = 0, storyViews = 0, storyLikes = 0;
+        for (const item of c.performanceItems) {
+          const m = item.metrics as OrderPerformanceMetrics | undefined;
+          if (!m) continue;
+          const isStory = /限動|story/i.test(item.title ?? "");
+          if (isStory) {
+            storyViews += m.views ?? m.impressions ?? m.reach ?? 0;
+            storyLikes += m.likes ?? 0;
+          } else {
+            postViews += m.views ?? m.impressions ?? m.reach ?? 0;
+            postLikes += m.likes ?? 0;
+            postComments += m.comments ?? 0;
+          }
+        }
+        const kolMetrics: KolCollabMetrics = {};
+        if (postViews) kolMetrics.postViews = postViews;
+        if (postLikes) kolMetrics.postLikes = postLikes;
+        if (postComments) kolMetrics.postComments = postComments;
+        if (storyViews) kolMetrics.storyViews = storyViews;
+        if (storyLikes) kolMetrics.storyLikes = storyLikes;
+        if (!metricsMap.has(row.id)) metricsMap.set(row.id, new Map());
+        metricsMap.get(row.id)!.set(kid, kolMetrics);
+      }
     }
     for (const kid of kolIdsInOrder) {
       collabCountByKolId.set(kid, (collabCountByKolId.get(kid) ?? 0) + 1);
@@ -451,9 +479,16 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
       ]),
     );
 
+    const enrichedHistory = (kol.collaborationHistory ?? []).map((item) => {
+      if (!item.orderId || item.metrics) return item;
+      const derived = metricsMap.get(item.orderId)?.get(kol.id);
+      return derived ? { ...item, metrics: derived } : item;
+    });
+
     return {
       ...kol,
       collaborations: collabCountByKolId.get(kol.id) ?? 0,
+      collaborationHistory: enrichedHistory,
       isFavorite: Boolean(kol.isFavorite || mergedFolders.length > 0),
       favoriteFolders: mergedFolders,
       favoriteFolder: mergedFolders[0] ?? kol.favoriteFolder,
