@@ -5,7 +5,7 @@
 .formInput {
   padding: 8px 12px;
   border: 1px solid var(--mantine-color-default-border);
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
   background: var(--mantine-color-body);
   color: var(--mantine-color-text);
@@ -21,12 +21,13 @@
   background: var(--mantine-color-blue-filled);
   color: #fff;
   border: none;
+  border-radius: 6px;
   font-weight: 600;
 }
 
 .filterButton {
   padding: 6px 14px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--mantine-color-default-border);
   text-decoration: none;
   background: var(--mantine-color-body);
@@ -56,6 +57,8 @@
 .kolCard {
   cursor: pointer;
   transition: background-color 150ms, box-shadow 150ms;
+  display: flex !important;
+  flex-direction: column;
 }
 
 .kolCard:hover {
@@ -103,6 +106,11 @@
 .actionButtonRed {
   border: 1px solid var(--mantine-color-red-light);
   color: var(--mantine-color-red-filled);
+}
+
+.actionButtonTeal {
+  border: 1px solid var(--mantine-color-teal-light);
+  color: var(--mantine-color-teal-filled);
 }
 
 .dialog {

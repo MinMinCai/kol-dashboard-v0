@@ -111,6 +111,7 @@ export default function ReportManagementPage() {
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [orderSearch, setOrderSearch] = useState("");
+  const [pageSearch, setPageSearch] = useState("");
 
   useEffect(() => {
     if (deleteFetcher.state === "idle" && deleteFetcher.data?.ok) {
@@ -307,6 +308,18 @@ export default function ReportManagementPage() {
           </Button>
         </Group>
 
+        {/* Search Bar */}
+        <TextInput
+          placeholder="搜尋委刊單編號、案件名稱或客戶..."
+          value={pageSearch}
+          onChange={(e) => setPageSearch(e.currentTarget.value)}
+          rightSection={pageSearch ? (
+            <ActionIcon variant="subtle" size="sm" onClick={() => setPageSearch("")}>
+              <IconX size={14} />
+            </ActionIcon>
+          ) : undefined}
+        />
+
         {/* Filter Bar */}
         <form method="get">
           <Group align="end" wrap="wrap" gap="md">
@@ -384,7 +397,15 @@ export default function ReportManagementPage() {
 
         {/* Campaign Cards */}
         <Stack gap="lg">
-          {orders.map((order: any) => {
+          {orders.filter((order: any) => {
+            if (!pageSearch) return true;
+            const q = pageSearch.toLowerCase();
+            return (
+              order.orderNo?.toLowerCase().includes(q) ||
+              (order.title || order.projectName || "").toLowerCase().includes(q) ||
+              order.clientName?.toLowerCase().includes(q)
+            );
+          }).map((order: any) => {
             const hasDraft = order.hasDraft;
             const hasOfficial = order.hasOfficial;
             

@@ -83,7 +83,7 @@ export default function KolListPage() {
   // ============ Loader Data & Hooks ============
   const {
     pageRows, total, totalPages, page, view, sortKey, sortOrder,
-    showFilters, followerRanges, industries, tags, minRating, maxRating,
+    followerRanges, industries, tags, minRating, maxRating,
     q, allIndustries, allTags, activeFilterCount, deleted, folders,
   } = useLoaderData<typeof loader>();
   const submit = useSubmit();
@@ -124,7 +124,6 @@ export default function KolListPage() {
     ...(tags.length ? { tag: tags } : {}),
     ...(minRating > 0 ? { minRating: String(minRating) } : {}),
     ...(maxRating < 5 ? { maxRating: String(maxRating) } : {}),
-    ...(showFilters ? { panel: "filters" } : {}),
   };
 
   function sortUrl(key: string) {
@@ -217,159 +216,115 @@ export default function KolListPage() {
         </Group>
       </Group>
 
-      {/* ============ Search + Filter Bar ============ */}
-      <Group justify="flex-start" align="flex-end" wrap="wrap" gap={8}>
-        {/*
-          Search: a real HTML form. Submits by pressing Enter or clicking the button.
-          Works entirely via browser native GET request.
-        */}
-        <form method="get" action="/kols" className={styles.searchForm}>
-          {/* preserve other params */}
-          {view !== "card" && <input type="hidden" name="view" value={view} />}
-          {sortKey !== "followers" && <input type="hidden" name="sort" value={sortKey} />}
-          {sortOrder !== "desc" && <input type="hidden" name="order" value={sortOrder} />}
-          {showFilters && <input type="hidden" name="panel" value="filters" />}
-          {followerRanges.map((r) => <input key={r} type="hidden" name="fr" value={r} />)}
-          {industries.map((i) => <input key={i} type="hidden" name="ind" value={i} />)}
-          {tags.map((t) => <input key={t} type="hidden" name="tag" value={t} />)}
-          {minRating > 0 && <input type="hidden" name="minRating" value={String(minRating)} />}
-          {maxRating < 5 && <input type="hidden" name="maxRating" value={String(maxRating)} />}
+      {/* ============ Search Bar ============ */}
+      <form method="get" action="/kols" className={styles.searchForm}>
+        {/* preserve other params */}
+        {view !== "card" && <input type="hidden" name="view" value={view} />}
+        {sortKey !== "followers" && <input type="hidden" name="sort" value={sortKey} />}
+        {sortOrder !== "desc" && <input type="hidden" name="order" value={sortOrder} />}
+        {followerRanges.map((r) => <input key={r} type="hidden" name="fr" value={r} />)}
+        {industries.map((i) => <input key={i} type="hidden" name="ind" value={i} />)}
+        {tags.map((t) => <input key={t} type="hidden" name="tag" value={t} />)}
+        {minRating > 0 && <input type="hidden" name="minRating" value={String(minRating)} />}
+        {maxRating < 5 && <input type="hidden" name="maxRating" value={String(maxRating)} />}
 
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="搜尋 KOL 名稱、@帳號、產業或標籤（按 Enter 搜尋）"
-            className={styles.searchInput}
-          />
-          <button
-            type="submit"
-            className={styles.searchSubmit}
-          >搜尋</button>
-          {q && (
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder="搜尋 KOL 名稱、@帳號、產業或標籤（按 Enter 搜尋）"
+          className={styles.searchInput}
+        />
+        <button type="submit" className={styles.searchSubmit}>搜尋</button>
+        {q && (
+          <a href={buildUrl(current, { q: null })} className={styles.searchClear}>✕</a>
+        )}
+      </form>
+
+      {/* ============ Filter Panel (always visible) ============ */}
+      <Card withBorder p="md">
+        <form method="get" action="/kols">
+          {/* preserve non-filter params */}
+          <input type="hidden" name="view" value={view} />
+          <input type="hidden" name="sort" value={sortKey} />
+          <input type="hidden" name="order" value={sortOrder} />
+          {q && <input type="hidden" name="q" value={q} />}
+
+          <Group align="flex-start" gap="xl" wrap="wrap">
+            {/* follower ranges */}
+            <Box miw={120}>
+              <Text size="sm" fw={600} mb={6}>粉絲數</Text>
+              <Stack gap={4}>
+                {FOLLOWER_RANGES.map((r) => (
+                  <label key={r.key} className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="fr"
+                      value={r.key}
+                      defaultChecked={followerRanges.includes(r.key)}
+                    />
+                    {r.label}
+                  </label>
+                ))}
+              </Stack>
+            </Box>
+
+            <Divider orientation="vertical" />
+
+            {/* industries */}
+            <Box miw={120}>
+              <Text size="sm" fw={600} mb={6}>產業別</Text>
+              <Stack gap={4}>
+                {allIndustries.map((ind) => (
+                  <label key={ind} className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="ind"
+                      value={ind}
+                      defaultChecked={industries.includes(ind)}
+                    />
+                    {ind}
+                  </label>
+                ))}
+              </Stack>
+            </Box>
+
+            <Divider orientation="vertical" />
+
+            {/* tags */}
+            <Box style={{ flex: 1, minWidth: 200 }}>
+              <Text size="sm" fw={600} mb={6}>標籤</Text>
+              <Group gap={6} wrap="wrap">
+                {allTags.map((tag) => (
+                  <label
+                    key={tag}
+                    data-tag-label="1"
+                    className={tags.includes(tag) ? `${styles.tagLabel} ${styles.tagLabelActive}` : styles.tagLabel}
+                  >
+                    <input
+                      type="checkbox"
+                      name="tag"
+                      value={tag}
+                      defaultChecked={tags.includes(tag)}
+                      hidden
+                    />
+                    {tag}
+                  </label>
+                ))}
+              </Group>
+            </Box>
+          </Group>
+
+          <Group mt="md" gap="sm">
+            <button type="submit" className={styles.applyFilterSubmit}>
+              套用篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            </button>
             <a
-              href={buildUrl(current, { q: null })}
-              className={styles.searchClear}
-            >✕</a>
-          )}
+              href={buildUrl({ view, sort: sortKey, order: sortOrder }, {})}
+              className={styles.clearFilter}
+            >清除篩選</a>
+          </Group>
         </form>
-
-        {/* filter panel toggle */}
-        <a
-          href={buildUrl(current, { panel: showFilters ? null : "filters" })}
-          className={activeFilterCount > 0 ? `${styles.filterToggle} ${styles.filterToggleActive}` : styles.filterToggle}
-        >
-          ⚙ 篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-        </a>
-      </Group>
-
-      {/* ============ Filter Panel (when ?panel=filters) ============ */}
-      {
-        showFilters && (
-          <Card withBorder>
-            <Text fw={600} mb="md">篩選條件</Text>
-            <form method="get" action="/kols">
-              {/* preserve non-filter params */}
-              <input type="hidden" name="view" value={view} />
-              <input type="hidden" name="sort" value={sortKey} />
-              <input type="hidden" name="order" value={sortOrder} />
-              <input type="hidden" name="panel" value="filters" />
-              {q && <input type="hidden" name="q" value={q} />}
-
-              <Group align="flex-start" gap="xl" wrap="wrap">
-                {/* follower ranges */}
-                <Box miw={160}>
-                  <Text size="sm" fw={600} mb={6}>粉絲數</Text>
-                  <Stack gap={4}>
-                    {FOLLOWER_RANGES.map((r) => (
-                      <label key={r.key} className={styles.checkboxLabel}>
-                        <input
-                          type="checkbox"
-                          name="fr"
-                          value={r.key}
-                          defaultChecked={followerRanges.includes(r.key)}
-                        />
-                        {r.label}
-                      </label>
-                    ))}
-                  </Stack>
-                </Box>
-
-                <Divider orientation="vertical" />
-
-                {/* industries */}
-                <Box miw={160}>
-                  <Text size="sm" fw={600} mb={6}>產業別</Text>
-                  <Stack gap={4}>
-                    {allIndustries.map((ind) => (
-                      <label key={ind} className={styles.checkboxLabel}>
-                        <input
-                          type="checkbox"
-                          name="ind"
-                          value={ind}
-                          defaultChecked={industries.includes(ind)}
-                        />
-                        {ind}
-                      </label>
-                    ))}
-                  </Stack>
-                </Box>
-
-                <Divider orientation="vertical" />
-
-                {/* tags */}
-                <Box miw={200}>
-                  <Text size="sm" fw={600} mb={6}>標籤</Text>
-                  {/* Script for instant visual feedback — fires before page reload */}
-                  <script dangerouslySetInnerHTML={{
-                    __html: `
-                  document.addEventListener('change', function(e) {
-                    var cb = e.target;
-                    if (!cb || cb.name !== 'tag') return;
-                    var label = cb.closest('label[data-tag-label]');
-                    if (!label) return;
-                    if (cb.checked) {
-                      label.classList.add('${styles.tagLabelActive}');
-                    } else {
-                      label.classList.remove('${styles.tagLabelActive}');
-                    }
-                  });
-                `}} />
-                  <Group gap={6} wrap="wrap">
-                    {allTags.map((tag) => (
-                      <label
-                        key={tag}
-                        data-tag-label="1"
-                        className={tags.includes(tag) ? `${styles.tagLabel} ${styles.tagLabelActive}` : styles.tagLabel}
-                      >
-                        <input
-                          type="checkbox"
-                          name="tag"
-                          value={tag}
-                          defaultChecked={tags.includes(tag)}
-                          hidden
-                        />
-                        {tag}
-                      </label>
-                    ))}
-                  </Group>
-                </Box>
-
-              </Group>
-
-              <Group mt="md" gap="sm">
-                <button
-                  type="submit"
-                  className={styles.applyFilterSubmit}
-                >套用篩選</button>
-                <a
-                  href={buildUrl({ view, sort: sortKey, order: sortOrder, panel: "filters" }, {})}
-                  className={styles.clearFilter}
-                >清除篩選</a>
-              </Group>
-            </form>
-          </Card>
-        )
-      }
+      </Card>
 
       {/* ============ Results Count ============ */}
       <Text c="dimmed" size="sm">共 {total} 筆結果{q ? `（搜尋：${q}）` : ""}</Text>

@@ -9,6 +9,7 @@ import {
   Divider,
   Group,
   Menu,
+  Modal,
   SimpleGrid,
   Stack,
   Text,
@@ -16,7 +17,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconPhone } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
@@ -220,6 +221,7 @@ export default function FavoritesPage() {
   const navigate = useNavigate();
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [contactKol, setContactKol] = useState<Kol | null>(null);
   const [managingKol, setManagingKol] = useState<Kol | null>(null);
   const [folderSelection, setFolderSelection] = useState<string[]>([]);
   const [renamingFolder, setRenamingFolder] = useState(folder === "全部" ? "" : folder);
@@ -484,11 +486,11 @@ export default function FavoritesPage() {
             const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
             const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
             const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
-            const socialRows: { icon: React.ReactNode; label: string; count: number; url: string | null }[] = [
-              { icon: <IconBrandInstagram size={16} />, label: "Instagram", count: kol.social?.instagram ?? 0, url: instagramUrl },
-              { icon: <IconBrandYoutube size={16} />, label: "YouTube", count: kol.social?.youtube ?? 0, url: youtubeUrl },
-              { icon: <IconBrandTiktok size={16} />, label: "TikTok", count: kol.social?.tiktok ?? 0, url: tiktokUrl },
-              { icon: <IconBrandFacebook size={16} />, label: "Facebook", count: kol.social?.facebook ?? 0, url: facebookUrl },
+            const socialRows: { icon: React.ReactNode; label: string; count: number; url: string | null; engRate?: number }[] = [
+              { icon: <IconBrandInstagram size={16} />, label: "Instagram", count: kol.social?.instagram ?? 0, url: instagramUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["Instagram"] ?? (kol.social?.instagram ? kol.engagementRate : undefined) },
+              { icon: <IconBrandYoutube size={16} />, label: "YouTube", count: kol.social?.youtube ?? 0, url: youtubeUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["YouTube"] ?? kol.platformMetrics?.audienceMetrics?.["YouTube"]?.engagementRate },
+              { icon: <IconBrandTiktok size={16} />, label: "TikTok", count: kol.social?.tiktok ?? 0, url: tiktokUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["TikTok"] ?? kol.platformMetrics?.audienceMetrics?.["TikTok"]?.engagementRate },
+              { icon: <IconBrandFacebook size={16} />, label: "Facebook", count: kol.social?.facebook ?? 0, url: facebookUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["Facebook"] ?? kol.platformMetrics?.audienceMetrics?.["Facebook"]?.engagementRate },
             ].filter((row) => row.count > 0 || row.url);
             return (
             <Card
@@ -522,11 +524,17 @@ export default function FavoritesPage() {
                     >
                       {row.icon}
                       <Text size="sm" span>{row.count.toLocaleString()}</Text>
+                      {row.engRate != null && (
+                        <Text size="xs" c="blue" span> · {row.engRate.toFixed(1)}%</Text>
+                      )}
                     </a>
                   ) : (
                     <Group key={row.label} gap={4}>
                       {row.icon}
                       <Text size="sm">{row.count.toLocaleString()}</Text>
+                      {row.engRate != null && (
+                        <Text size="xs" c="blue"> · {row.engRate.toFixed(1)}%</Text>
+                      )}
                     </Group>
                   )
                 )}
@@ -563,10 +571,17 @@ export default function FavoritesPage() {
                 </Group>
               </Box>
 
-              <Group justify="space-between" mt="sm" onClick={(e) => e.stopPropagation()}>
+              <Group justify="space-between" mt="auto" pt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                 <Group gap="xs">
                   <Link to={`/kols/${kol.id}`} className={styles.viewLink}>查看詳細</Link>
+                  <button
+                    type="button"
+                    onClick={() => setContactKol(kol)}
+                    className={`${styles.actionButton} ${styles.actionButtonTeal}`}
+                  >
+                    聯絡方式
+                  </button>
                   {folder !== "全部"
                     && (kol.favoriteFolders ?? []).includes(folder)
                     && accessByFolderName.get(folder) !== "shared" && (
@@ -606,6 +621,50 @@ export default function FavoritesPage() {
           })}
         </SimpleGrid>
       )}
+
+      {/* ============ Modal: Contact Info ============ */}
+      <Modal
+        opened={!!contactKol}
+        onClose={() => setContactKol(null)}
+        title={`聯絡方式 — ${contactKol?.displayName ?? ""}`}
+        centered
+        size="sm"
+      >
+        {contactKol && (
+          <Stack gap="sm">
+            {contactKol.contact?.email ? (
+              <Group gap="xs">
+                <Text size="sm" fw={600} w={60}>Email</Text>
+                <Text size="sm">{contactKol.contact.email}</Text>
+              </Group>
+            ) : null}
+            {contactKol.contact?.phone ? (
+              <Group gap="xs">
+                <Text size="sm" fw={600} w={60}>電話</Text>
+                <Text size="sm">{contactKol.contact.phone}</Text>
+              </Group>
+            ) : null}
+            {contactKol.contact?.lineId ? (
+              <Group gap="xs">
+                <Text size="sm" fw={600} w={60}>LINE ID</Text>
+                <Text size="sm">{contactKol.contact.lineId}</Text>
+              </Group>
+            ) : null}
+            {contactKol.contact?.manager ? (
+              <Group gap="xs">
+                <Text size="sm" fw={600} w={60}>經紀人</Text>
+                <Text size="sm">{contactKol.contact.manager}</Text>
+              </Group>
+            ) : null}
+            {!contactKol.contact?.email && !contactKol.contact?.phone && !contactKol.contact?.lineId && !contactKol.contact?.manager && (
+              <Text size="sm" c="dimmed">尚未填寫聯絡方式。</Text>
+            )}
+            <Group justify="flex-end" mt="xs">
+              <Button variant="default" size="sm" onClick={() => setContactKol(null)}>關閉</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
 
       <dialog
         id="add-folder-dialog"
