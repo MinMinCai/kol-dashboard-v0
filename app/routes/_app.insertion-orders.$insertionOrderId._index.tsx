@@ -520,7 +520,7 @@ export default function InsertionOrderDetailPage() {
     <Stack gap="md">
       <Group gap={8}>
         <Link to="/insertion-orders" className="text-blue-500 hover:underline">
-          委刊單管理
+          執行案件管理
         </Link>
         <Text c="dimmed">&gt;</Text>
         <Text fw={600}>案件 #{insertionOrder.orderNo}</Text>
@@ -864,7 +864,7 @@ export default function InsertionOrderDetailPage() {
       <Modal
         opened={deleteModalOpened}
         onClose={closeDeleteModal}
-        title="確認刪除委刊單"
+        title="確認刪除執行案件"
         centered
       >
         <Stack gap="md">

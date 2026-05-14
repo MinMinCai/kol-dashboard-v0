@@ -39,7 +39,7 @@ export async function loader(_: LoaderFunctionArgs) {
       stats: [
         { label: "KOL 總數", value: String(kolCount ?? 0) },
         { label: "進行中提案", value: String(activeProposalCount ?? 0) },
-        { label: "委刊單總數", value: String(insertionOrderCount ?? 0) },
+        { label: "執行案件總數", value: String(insertionOrderCount ?? 0) },
       ],
       dbError: null as string | null,
     };
@@ -49,7 +49,7 @@ export async function loader(_: LoaderFunctionArgs) {
       stats: [
         { label: "KOL 總數", value: "-" },
         { label: "進行中提案", value: "-" },
-        { label: "委刊單總數", value: "-" },
+        { label: "執行案件總數", value: "-" },
       ],
       dbError: err instanceof Error ? err.message : String(err),
     };

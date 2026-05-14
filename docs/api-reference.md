@@ -11,7 +11,7 @@
 
 1. [KOL 管理](#kol-管理)
 2. [提案管理](#提案管理)
-3. [委刊單管理](#委刊單管理)
+3. [執行案件管理](#執行案件管理)
 4. [結案報告](#結案報告)
 5. [系統工具](#系統工具)
 
@@ -243,21 +243,21 @@ GET /api/proposals/:proposalId/generate-doc?type={type}&candidateId={id}&startDa
 
 ---
 
-## 委刊單管理
+## 執行案件管理
 
-### 單筆委刊單 JSON
+### 單筆執行案件 JSON
 
 ```
 GET /api/insertion-orders/:id
 ```
 
-取得單一委刊單的完整 JSON 資料（供除錯 / 外部系統使用）。
+取得單一執行案件的完整 JSON 資料（供除錯 / 外部系統使用）。
 
 **Path Params**
 
 | 參數 | 說明 |
 |------|------|
-| `id` | 委刊單 ID |
+| `id` | 執行案件 ID |
 
 **Response（成功）**
 
@@ -325,7 +325,7 @@ GET /api/reports/:orderId/:reportId/download
 
 | 參數 | 說明 |
 |------|------|
-| `orderId` | 委刊單 ID |
+| `orderId` | 執行案件 ID |
 | `reportId` | 報告 ID（由 `rep_${Date.now()}` 生成） |
 
 **Response（成功）**

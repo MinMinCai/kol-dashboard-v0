@@ -75,7 +75,7 @@ KOL_DB 是一套專為 KOL 行銷企劃團隊設計的 **完整生命週期管�
 │  Supabase (PostgreSQL) + Drizzle ORM            │
 │  - KOL (含 Favorites, Tags, Social Metrics)      │
 │  - 提案專案 (Proposals)                           │
-│  - 委刊單 (Insertion Orders) 與執行細節           │
+│  - 執行案件 (Insertion Orders) 與執行細節           │
 │  - 使用者與權限                                  │
 └─────────────────────────────────────────────────┘
 ```
@@ -94,7 +94,7 @@ kol-db-demo/
 │   ├── components/                   # 可複用 UI 元件
 │   │   ├── ClientOnly.tsx            # 僅客戶端渲染包裝（避免 SSR 不相容）
 │   │   ├── GlobalNotification.tsx    # 全域通知／Toast 容器
-│   │   ├── DemoGenerateReportModal.tsx       # 委刊單一覽／詳情共用：demo 報告生成 modal（KOL 選擇 + 模板 + 假進度條）
+│   │   ├── DemoGenerateReportModal.tsx       # 執行案件一覽／詳情共用：demo 報告生成 modal（KOL 選擇 + 模板 + 假進度條）
 │   │   └── DemoGenerateReportModal.module.css
 │   ├── store/
 │   │   └── notification.ts           # Zustand 全域通知狀態
@@ -108,7 +108,7 @@ kol-db-demo/
 │   │   ├── kols.ts                   # KOL 共用常數與 helper（FOLLOWER_RANGES、getPrimaryTags 等）
 │   │   ├── kols.server.ts            # KOL 列表與詳情的 loader/action 邏輯
 │   │   ├── proposals.server.ts       # 提案詳情的 loader/action 邏輯
-│   │   ├── insertion-orders.server.ts # 委刊單詳情的 loader/action 邏輯
+│   │   ├── insertion-orders.server.ts # 執行案件詳情的 loader/action 邏輯
 │   │   ├── reports.ts                # 結案報告共用常數與 helper（SortOption、buildReportDownloadPath）
 │   │   ├── reports.server.ts         # 結案報告的 loader/action 邏輯
 │   │   ├── notifications.server.ts   # 提案異動通知：寫入 notifications + watcher 派送
@@ -119,7 +119,7 @@ kol-db-demo/
 │       ├── _index.tsx                         # 根路徑 `/` → redirect `/login`
 │       ├── login.tsx                          # 登入頁（demo cookie auth）
 │       ├── _app.tsx                           # 主應用佈局 (側邊欄、導覽、view-as)
-│       ├── _app.dashboard.tsx                 # 儀表板（KOL/提案/委刊單統計 + SparkLine）
+│       ├── _app.dashboard.tsx                 # 儀表板（KOL/提案/執行案件統計 + SparkLine）
 │       ├── _app.settings.tsx                  # 系統設定 (URL-driven Tabs)
 │       ├── _app.kols._index.tsx               # KOL 列表（搜尋／篩選／批量匯入／engagement 排序）
 │       ├── _app.kols.new.tsx                  # 新增 KOL
@@ -128,10 +128,10 @@ kol-db-demo/
 │       ├── _app.proposals._index.tsx          # 提案列表（filter / sort / pagination）
 │       ├── _app.proposals.new.tsx             # 新提案（預算欄位、預填收藏 KOL）
 │       ├── _app.proposals.$proposalId.tsx     # 提案詳情（候選人排序、AI 分析、上傳報告）
-│       ├── _app.insertion-orders._index.tsx              # 委刊單列表（單號排序 / AI 報告生成入口）
-│       ├── _app.insertion-orders.new.tsx                 # 新增委刊單（Excel 智慧帶入 + KOL 選擇 modal）
-│       ├── _app.insertion-orders.$insertionOrderId._index.tsx  # 委刊單詳情（成效 / 評價 / 截圖上傳）
-│       ├── _app.insertion-orders.$insertionOrderId.edit.tsx    # 委刊單編輯（services / authorization）
+│       ├── _app.insertion-orders._index.tsx              # 執行案件列表（單號排序 / AI 報告生成入口）
+│       ├── _app.insertion-orders.new.tsx                 # 新增執行案件（Excel 智慧帶入 + KOL 選擇 modal）
+│       ├── _app.insertion-orders.$insertionOrderId._index.tsx  # 執行案件詳情（成效 / 評價 / 截圖上傳）
+│       ├── _app.insertion-orders.$insertionOrderId.edit.tsx    # 執行案件編輯（services / authorization）
 │       ├── _app.favorites.tsx                 # 收藏資料夾（建立 / 改名 / 刪除 / 共享 / Excel 匯出）
 │       ├── _app.reports.generate.tsx          # 結案報告管理（生成 / 下載 / 刪除）
 │       ├── api.db-health.ts                   # API：DB 健康檢查（Vercel function 探活用）
@@ -144,7 +144,7 @@ kol-db-demo/
 │       ├── api.proposals.$proposalId.export.ts    # API：提案匯出 (Excel / Word)
 │       ├── api.proposals.$proposalId.generate-doc.ts # API：提案文件生成（docx）
 │       ├── api.reports.$orderId.$reportId.download.ts # API：結案報告下載（含檔名）
-│       ├── api.insertion-orders.$id.ts        # API：單筆委刊單 JSON（除錯 / 外部）
+│       ├── api.insertion-orders.$id.ts        # API：單筆執行案件 JSON（除錯 / 外部）
 │       └── api.view-as.ts                     # API：Demo 階段使用者身份切換
 │
 ├── db/                               # 資料庫設定
@@ -235,14 +235,14 @@ kol-db-demo/
 - **異動事件流**
   - [api.proposals.$proposalId.events.ts](app/routes/api.proposals.$proposalId.events.ts) 提供事件查詢，作為異動通知的資料來源。
 
-### 3. 委刊單管理模組 (Insertion Order Management)
+### 3. 執行案件管理模組 (Insertion Order Management)
 
-- **委刊單一覽**
+- **執行案件一覽**
   - 卡片 / 列表呈現；支援 **單號 / 日期 / 預算等多欄位排序** 與篩選。
   - 列表頁可直接點選「AI 報告生成」進入結案流程。
 - **AI 智能解析匯入**
   - 新增委刊單頁：Excel 拖拉上傳，AI 解析後智慧帶入專案欄位、財務總計、KOL 明細（目前 Mock，介接點 `api.ai-parse-order.ts`）。
-  - **KOL 選擇 modal**：可從現有 KOL 庫搜尋並指派至委刊單，自動帶入正確 avatar 與 metrics。
+  - **KOL 選擇 modal**：可從現有 KOL 庫搜尋並指派至執行案件，自動帶入正確 avatar 與 metrics。
 - **執行進度追蹤**
   - 三層式摺疊結構（案件 → 合作品牌 → KOL）；展開可見成效明細與合作評價。
   - 編輯頁支援 services（合作項目）、authorization（授權內容）等欄位。
@@ -262,11 +262,11 @@ kol-db-demo/
   - 下載 API：[api.reports.$orderId.$reportId.download.ts](app/routes/api.reports.$orderId.$reportId.download.ts) 自動帶上案件名稱作為檔名。
   - 報告生成時顯示估算頁數與進度訊息。
 - **版本管理**
-  - 同一委刊單可保留多版本報告；刪除有確認 modal 防誤刪。
+  - 同一執行案件可保留多版本報告；刪除有確認 modal 防誤刪。
 
 ### 5. 儀表板 (Dashboard)
 
-- [_app.dashboard.tsx](app/routes/_app.dashboard.tsx) 提供 KOL / 提案 / 委刊單三大模組的數量總覽與近期趨勢。
+- [_app.dashboard.tsx](app/routes/_app.dashboard.tsx) 提供 KOL / 提案 / 執行案件三大模組的數量總覽與近期趨勢。
 - SparkLine 圖表（Recharts + `@mantine/charts`），含 Y 軸 ticks、grid lines、無資料訊息。
 - Loader 含 timeout / DB 連線 fallback，避免儀表板因資料庫慢查詢卡住整頁。
 
@@ -333,7 +333,7 @@ kol-db-demo/
    - `1-to-N` → **proposal_feedback**：客戶與內部反饋。  
    - `1-to-N` → **proposal_watchers**：訂閱此提案的使用者，異動時觸發通知。  
 
-4. **Insertion Order (委刊單)**  
+4. **Insertion Order (執行案件)**  
    - 狀態流：已建立 → 已簽署 → 執行中 → 已交付 → 已結算 → 已結案。  
    - `1-to-N` → **io_tasks**：執行任務分派。  
    - `1-to-N` → **campaign_performance**：成效數據追蹤。  
@@ -472,7 +472,7 @@ npm start
    - 提案績效追蹤與報表。
 
 4. **委刊單執行**
-   - 委刊單建立與合約欄位。
+   - 執行案件建立與合約欄位。
    - 執行節點與提醒。
    - 完成率與成效追蹤。
 
@@ -498,7 +498,7 @@ npm start
 - **工具**：Playwright（建議）
 - **標準**
   - 冒煙測試：登入、瀏覽 KOL、建立提案、匯入委刊單。
-  - 關鍵流測試：從提案建立到轉換為委刊單的完整流程。
+  - 關鍵流測試：從提案建立到轉換為執行案件的完整流程。
   - 回應式設計驗證：Desktop / Tablet / Mobile 主要流程正常。
 
 ### 整合測試 (Integration Testing)
@@ -735,7 +735,7 @@ API 設計：parent 只負責 `opened` / `onClose` / `order`，外加可選 `onC
 
 1. **Loader 通用 timeout**
    - 多數 loader 以 `withTimeout(promise, fallback, ms)` 包裝；超時退回安全的 fallback（空陣列 / 預設物件），確保頁面不會白屏。
-   - 委刊單詳情、提案列表、儀表板等資料密集頁皆已套用。
+   - 執行案件詳情、提案列表、儀表板等資料密集頁皆已套用。
 
 2. **Statement timeout**
    - 連線時設定 `statement_timeout=0`，避免 pgBouncer / Supabase 端短超時殺掉 migration 等長查詢。

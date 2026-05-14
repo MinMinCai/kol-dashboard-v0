@@ -42,7 +42,7 @@ type SortOption =
   | "budget_desc"
   | "budget_asc";
 
-/** 依委刊單編號（如 IO-2026-001）數字排序；無法解析時退回字串比較 */
+/** 依執行案件編號（如 IO-2026-001）數字排序；無法解析時退回字串比較 */
 function compareOrderNo(a: string, b: string): number {
   const re = /^IO-(\d+)-(\d+)$/i;
   const ma = a.match(re);
@@ -254,9 +254,9 @@ export default function InsertionOrderListPage() {
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={2}>委刊單管理</Title>
+        <Title order={2}>執行案件管理</Title>
         <Group>
-          <Button component="a" href="/insertion-orders/new">新增委刊單</Button>
+          <Button component="a" href="/insertion-orders/new">新增執行案件</Button>
         </Group>
       </Group>
 
@@ -272,7 +272,7 @@ export default function InsertionOrderListPage() {
               <input
                 name="search"
                 defaultValue={search}
-                placeholder="搜尋委刊單編號、標題或客戶"
+                placeholder="搜尋執行案件編號、標題或客戶"
                 className={styles.searchInput}
               />
             </div>
@@ -337,8 +337,8 @@ export default function InsertionOrderListPage() {
                 }}
                 className={`${styles.filterSelect} ${styles.filterSelectWide}`}
               >
-                <option value="order_no_asc">委刊單編號（小→大）</option>
-                <option value="order_no_desc">委刊單編號（大→小）</option>
+                <option value="order_no_asc">執行案件編號（小→大）</option>
+                <option value="order_no_desc">執行案件編號（大→小）</option>
                 <option value="date_desc">執行日期（新→舊）</option>
                 <option value="date_asc">執行日期（舊→新）</option>
                 <option value="title_az">名稱（A→Z）</option>
@@ -373,7 +373,7 @@ export default function InsertionOrderListPage() {
       {/* ── Stats ── (暫不開發)
       <SimpleGrid cols={{ base: 2, md: 4 }} spacing="sm">
         <Card withBorder>
-          <Text c="dimmed" size="sm">委刊單數</Text>
+          <Text c="dimmed" size="sm">執行案件數</Text>
           <Title order={3}>{stats.total}</Title>
         </Card>
         <Card withBorder>
@@ -395,8 +395,8 @@ export default function InsertionOrderListPage() {
       {rows.length === 0 ? (
         <Card withBorder p="xl" ta="center">
           <Text size="48px">📄</Text>
-          <Title order={3}>尚無委刊單</Title>
-          <Text c="dimmed" mb="md">調整篩選條件，或建立您的第一個委刊單</Text>
+          <Title order={3}>尚無執行案件</Title>
+          <Text c="dimmed" mb="md">調整篩選條件，或建立您的第一個執行案件</Text>
           <Button component={Link} to="/insertion-orders/new">開始建立</Button>
         </Card>
       ) : (
@@ -429,7 +429,7 @@ export default function InsertionOrderListPage() {
                       variant="light"
                       color="red"
                       size="lg"
-                      title="刪除委刊單"
+                      title="刪除執行案件"
                       onClick={() => handleAskDelete(order)}
                     >
                       <IconTrash size={16} />
@@ -511,7 +511,7 @@ export default function InsertionOrderListPage() {
       <Modal
         opened={deleteModalOpen}
         onClose={() => { closeDeleteModal(); setDeleteTarget(null); }}
-        title="確認刪除委刊單"
+        title="確認刪除執行案件"
         centered
       >
         <Stack gap="md">

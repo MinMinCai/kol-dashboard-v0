@@ -154,7 +154,7 @@ export default function LoginPage() {
           <div className={styles.featureList}>
             {([
               { Icon: FeatureIconKol, text: "KOL 資料庫與管理" },
-              { Icon: FeatureIconProposal, text: "提案與委刊單流程" },
+              { Icon: FeatureIconProposal, text: "提案與執行案件流程" },
               { Icon: FeatureIconReport, text: "結案報告自動生成" },
             ] as const).map((f) => (
               <div key={f.text} className={styles.featureItem}>

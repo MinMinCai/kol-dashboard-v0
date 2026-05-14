@@ -119,7 +119,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const projectQuote = Number(formData.get("projectQuote") ?? 0);
 
   if (!orderTitle || !clientName) {
-    return json({ error: "委刊單標題與客戶為必填" }, { status: 400 });
+    return json({ error: "執行案件標題與客戶為必填" }, { status: 400 });
   }
 
   const industries = industriesRaw ? industriesRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
@@ -302,7 +302,7 @@ export default function InsertionOrderCreatePage() {
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={2}>建立委刊單</Title>
+        <Title order={2}>建立執行案件</Title>
         <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
       </Group>
 
@@ -336,11 +336,11 @@ export default function InsertionOrderCreatePage() {
 
             {/* ── Basic info ── */}
             <Box>
-              <Title order={4} mb="sm">委刊單基本資訊</Title>
+              <Title order={4} mb="sm">執行案件基本資訊</Title>
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
                 <TextInput
                   name="orderTitle"
-                  label="委刊單標題"
+                  label="執行案件標題"
                   placeholder="例如：DAC_ALLIE_KOL行銷活動 委刊單"
                   required
                   value={orderTitleVal}
@@ -581,7 +581,7 @@ export default function InsertionOrderCreatePage() {
               <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
               <Group>
                 <Button type="submit" name="intent" value="draft" variant="default" loading={submitting}>儲存草稿</Button>
-                <Button type="submit" name="intent" value="create" loading={submitting}>建立委刊單</Button>
+                <Button type="submit" name="intent" value="create" loading={submitting}>建立執行案件</Button>
               </Group>
             </Group>
           </Stack>

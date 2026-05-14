@@ -40,9 +40,9 @@
 
 ---
 
-## Week 7-8: 委刊單執行
+## Week 7-8: 執行案件管理
 
-- ✅ 建立委刊單（Insertion Order）與 KOL 合作節點
+- ✅ 建立執行案件（Insertion Order）與 KOL 合作節點
 - ✅ AI 智能解析匯入（Excel → 欄位帶入，目前 Mock）：`api.ai-parse-order.ts`
 - ⚠️ 追蹤交付、審稿、付款狀態
   - 目前有合作項目（services）與授權（authorization）欄位，付款狀態尚未獨立追蹤
@@ -51,14 +51,14 @@
 - ➕ 三層式摺疊結構（委刊單 → 品牌 → KOL 明細）
 - ➕ 合作評價（星級評分 + 內部 / 外部評語）：`upsertIOReviewByAuthor`
 - ➕ 成效數據手動輸入（觸及 / 曝光 / 互動）：`updateIOPerformance`
-- ➕ 委刊單編輯（services / authorization 欄位）：`_app.insertion-orders.$insertionOrderId.edit.tsx`
+- ➕ 執行案件編輯（services / authorization 欄位）：`_app.insertion-orders.$insertionOrderId.edit.tsx`
 
 ---
 
 ## Week 9-10: 成效追蹤
 
 - ✅ 手動匯入成效數據（觸及人數、按讚、留言、分享、收藏、互動率）
-- ✅ Campaign KPI 面板（委刊單詳情成效總覽 modal，依 KOL / 版位分組）
+- ✅ Campaign KPI 面板（執行案件詳情成效總覽 modal，依 KOL / 版位分組）
 - ✅ 結案評價與復盤欄位（KOL 星級評分、客戶反饋）
 - ⚠️ CSV / API 自動匯入
   - CSV 尚未實作；API OCR 規格已定義，demo 以 mock 模擬，正式版接 Claude Haiku 4.5
@@ -87,7 +87,7 @@
 | 收藏資料夾共享（同事 / 整組，view / edit 權限）| `kol_favorite_folder_shares` |
 | KOL 收藏匯出 Excel | `api.kols.export-excel.ts` |
 | 提案異動通知系統（SSE + notifications 資料表）| `notifications.server.ts` |
-| 儀表板（KOL / 提案 / 委刊單統計 + SparkLine）| `_app.dashboard.tsx` |
+| 儀表板（KOL / 提案 / 執行案件 + SparkLine）| `_app.dashboard.tsx` |
 | 系統設定（客戶 / 品牌 / 標籤維護）| `_app.settings.tsx` |
 | Demo view-as 角色切換 | `api.view-as.ts` |
 | 結案報告管理頁（版本 / 下載 / 刪除）| `_app.reports.generate.tsx` |

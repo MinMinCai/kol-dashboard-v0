@@ -134,7 +134,7 @@ test("Smoke verify requested flows", async ({ page }, testInfo) => {
     // Sidebar active item background should not be "blue filled".
     const active = page
       .locator("nav")
-      .getByText("委刊單管理", { exact: false })
+      .getByText("執行案件管理", { exact: false })
       .first();
     await expect(active).toBeVisible();
     const bg = await active.evaluate((el) => getComputedStyle(el).backgroundColor);

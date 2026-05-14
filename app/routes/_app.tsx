@@ -128,7 +128,7 @@ export default function AppLayoutRoute() {
         navbar={{ width: 260, breakpoint: "sm" }}
         padding="xl"
       >
-      <AppShell.Header>
+      <AppShell.Header style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.10)" }}>
         <style dangerouslySetInnerHTML={{
           __html: `
           body.sidebar-collapsed {
@@ -255,7 +255,7 @@ export default function AppLayoutRoute() {
           </div>
           <div className={`${styles.brandText} nav-label`}>
             <Text fw={700} size="md" lh={1.2} style={{ color: 'rgba(255,255,255,0.95)' }}>KOL DB</Text>
-            <Text size="xs" lh={1.4} style={{ color: 'rgba(255,255,255,0.5)' }}>統一管理 KOL / 提案 / 委刊單</Text>
+            <Text size="xs" lh={1.4} style={{ color: 'rgba(255,255,255,0.5)' }}>統一管理 KOL / 提案 / 執行案件</Text>
           </div>
         </div>
         <Stack gap="xs" flex={1}>

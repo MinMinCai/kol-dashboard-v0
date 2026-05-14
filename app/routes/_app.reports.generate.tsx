@@ -310,7 +310,7 @@ export default function ReportManagementPage() {
 
         {/* Search Bar */}
         <TextInput
-          placeholder="搜尋委刊單編號、案件名稱或客戶..."
+          placeholder="搜尋執行案件編號、案件名稱或客戶..."
           value={pageSearch}
           onChange={(e) => setPageSearch(e.currentTarget.value)}
           rightSection={pageSearch ? (
@@ -376,8 +376,8 @@ export default function ReportManagementPage() {
                 navigate(`/reports/generate?${sp.toString()}`);
               }}
               data={[
-                { value: "order_no_asc", label: "委刊單編號（小→大）" },
-                { value: "order_no_desc", label: "委刊單編號（大→小）" },
+                { value: "order_no_asc", label: "執行案件編號（小→大）" },
+                { value: "order_no_desc", label: "執行案件編號（大→小）" },
                 { value: "date_desc", label: "執行日期（新→舊）" },
                 { value: "date_asc", label: "執行日期（舊→新）" },
                 { value: "title_az", label: "案件名稱（A→Z）" },
@@ -590,14 +590,14 @@ export default function ReportManagementPage() {
       <Modal 
         opened={selectOrderModalOpen}
         onClose={() => { closeSelectOrderModal(); setOrderSearch(""); }}
-        title={<Text fw={700} size="lg">選擇委刊單生成報告</Text>} 
+        title={<Text fw={700} size="lg">選擇執行案件生成報告</Text>} 
         size="lg"
         centered
       >
         <Stack gap="md">
           <Text size="sm" c="dimmed">請選擇一個案件來開始生成新的結案報告：</Text>
           <TextInput
-            placeholder="搜尋委刊單編號、名稱或客戶..."
+            placeholder="搜尋執行案件編號、名稱或客戶..."
             value={orderSearch}
             onChange={(e) => setOrderSearch(e.currentTarget.value)}
           />
@@ -716,7 +716,7 @@ export default function ReportManagementPage() {
                   <Text fw={500} size="sm" c="green.7" mb="xs">✅ 已上傳成效的 KOL (預設選擇)</Text>
                   <Stack gap="xs">
                     {(activeOrder.collaborations||[]).filter((k:any) => (k.performanceItems||[]).length > 0).length === 0 && (
-                      <Text size="sm" c="dimmed" py="xs">此委刊單目前沒有已上傳成效的 KOL</Text>
+                      <Text size="sm" c="dimmed" py="xs">此執行案件目前沒有已上傳成效的 KOL</Text>
                     )}
                     {activeOrder.collaborations?.filter((k:any) => (k.performanceItems||[]).length > 0).map((kol:any, idx:number) => {
                       const totalReach = kol.totalReach || 0;

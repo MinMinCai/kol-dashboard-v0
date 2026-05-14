@@ -10,7 +10,7 @@ function normalizePptFileName(value: string): string {
   return /\.pptx$/i.test(trimmed) ? trimmed : `${trimmed}.pptx`;
 }
 
-/** 依委刊單編號（IO-2026-001）數字排序；無法解析時退回字串比較 */
+/** 依執行案件編號（IO-2026-001）數字排序；無法解析時退回字串比較 */
 function compareOrderNo(a: string, b: string): number {
   const re = /^IO-(\d+)-(\d+)$/i;
   const ma = a.match(re);
