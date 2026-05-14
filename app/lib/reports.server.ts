@@ -82,6 +82,17 @@ export async function loadReports(request: Request) {
       case "date_asc":
         return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
       case "date_desc":
+        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+      case "report_date_desc": {
+        const latestA = (a.reports ?? []).reduce((max: string, r: any) => r.createdAt > max ? r.createdAt : max, "");
+        const latestB = (b.reports ?? []).reduce((max: string, r: any) => r.createdAt > max ? r.createdAt : max, "");
+        return latestB.localeCompare(latestA);
+      }
+      case "report_date_asc": {
+        const latestA = (a.reports ?? []).reduce((max: string, r: any) => r.createdAt > max ? r.createdAt : max, "");
+        const latestB = (b.reports ?? []).reduce((max: string, r: any) => r.createdAt > max ? r.createdAt : max, "");
+        return latestA.localeCompare(latestB);
+      }
       default:
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
     }

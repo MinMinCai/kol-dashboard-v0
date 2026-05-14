@@ -6,7 +6,9 @@ export type SortOption =
   | "title_az"
   | "title_za"
   | "budget_desc"
-  | "budget_asc";
+  | "budget_asc"
+  | "report_date_desc"
+  | "report_date_asc";
 
 export function buildReportDownloadPath(orderId: string, reportId: string): string {
   return `/api/reports/${orderId}/${reportId}/download`;

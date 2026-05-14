@@ -380,6 +380,8 @@ export default function ReportManagementPage() {
                 { value: "order_no_desc", label: "執行案件編號（大→小）" },
                 { value: "date_desc", label: "執行日期（新→舊）" },
                 { value: "date_asc", label: "執行日期（舊→新）" },
+                { value: "report_date_desc", label: "報告建立日期（新→舊）" },
+                { value: "report_date_asc", label: "報告建立日期（舊→新）" },
                 { value: "title_az", label: "案件名稱（A→Z）" },
                 { value: "title_za", label: "案件名稱（Z→A）" },
                 { value: "budget_desc", label: "總預算（高→低）" },
