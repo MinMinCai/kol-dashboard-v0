@@ -91,6 +91,7 @@ export default function ReportManagementPage() {
   const uploadFetcher = useFetcher<typeof action>();
   const deleteFetcher = useFetcher<typeof action>();
   const generateFetcher = useFetcher<typeof action>();
+  const editFetcher = useFetcher<typeof action>();
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -103,6 +104,10 @@ export default function ReportManagementPage() {
   const [selectOrderModalOpen, { open: openSelectOrderModal, close: closeSelectOrderModal }] = useDisclosure(false);
   const [deleteReportModalOpen, { open: openDeleteReportModal, close: closeDeleteReportModal }] = useDisclosure(false);
   const [reportDeleteTarget, setReportDeleteTarget] = useState<{ id: string; name: string; orderId: string } | null>(null);
+  const [editDraftModalOpen, { open: openEditDraftModal, close: closeEditDraftModal }] = useDisclosure(false);
+  const [editDraftTarget, setEditDraftTarget] = useState<{ id: string; name: string; note: string; orderId: string } | null>(null);
+  const [editDraftName, setEditDraftName] = useState("");
+  const [editDraftNote, setEditDraftNote] = useState("");
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [selectedKolIds, setSelectedKolIds] = useState<string[]>([]);
   const [reportTitle, setReportTitle] = useState("");
@@ -117,6 +122,13 @@ export default function ReportManagementPage() {
       navigate(".", { replace: true });
     }
   }, [deleteFetcher.state, deleteFetcher.data, navigate]);
+
+  useEffect(() => {
+    if (editFetcher.state === "idle" && editFetcher.data?.ok) {
+      closeEditDraftModal();
+      navigate(".", { replace: true });
+    }
+  }, [editFetcher.state, editFetcher.data, closeEditDraftModal, navigate]);
 
   useEffect(() => {
     if (!progressModalOpen || generateFetcher.state === "idle") {
@@ -153,7 +165,7 @@ export default function ReportManagementPage() {
     setGenerationError(null);
 
     const createdReport = generateFetcher.data.report;
-    const title = "結案報告已生成完成！";
+    const title = "草稿報告已生成完成！";
     const message = `${activeOrder.orderNo} ${activeOrder.title || activeOrder.projectName}|${createdReport.name}`;
     const downloadLink =
       generateFetcher.data.downloadUrl || buildReportDownloadPath(activeOrder.id, createdReport.id);
@@ -166,19 +178,37 @@ export default function ReportManagementPage() {
     if ("Notification" in window) {
       if (Notification.permission === "granted") {
         new Notification("🎉 結案報告已完成", {
-          body: `案件 #${activeOrder.orderNo} 的結案報告已生成完成，點擊查看`,
+          body: `案件 #${activeOrder.orderNo} 的草稿報告已生成完成，點擊查看`,
         });
       } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then((permission) => {
           if (permission === "granted") {
             new Notification("🎉 結案報告已完成", {
-              body: `案件 #${activeOrder.orderNo} 的結案報告已生成完成，點擊查看`,
+              body: `案件 #${activeOrder.orderNo} 的草稿報告已生成完成，點擊查看`,
             });
           }
         });
       }
     }
   }, [activeOrder, closeProgressModal, generateFetcher.data, generateFetcher.state, navigate, showBanner, showToast]);
+
+  const handleOpenEditDraftModal = (report: { id: string; name: string; note?: string; orderId: string }) => {
+    setEditDraftTarget({ id: report.id, name: report.name, note: report.note ?? "", orderId: report.orderId });
+    setEditDraftName(report.name.replace(/\.pptx$/i, ""));
+    setEditDraftNote(report.note ?? "");
+    openEditDraftModal();
+  };
+
+  const handleConfirmEditDraft = () => {
+    if (!editDraftTarget) return;
+    const fd = new FormData();
+    fd.append("intent", "editDraftReport");
+    fd.append("orderId", editDraftTarget.orderId);
+    fd.append("reportId", editDraftTarget.id);
+    fd.append("name", editDraftName.trim() ? `${editDraftName.trim()}.pptx` : editDraftTarget.name);
+    fd.append("note", editDraftNote);
+    editFetcher.submit(fd, { method: "post" });
+  };
 
   const handleDownload = (downloadUrl: string, reportName?: string) => {
     const a = document.createElement("a");
@@ -340,6 +370,7 @@ export default function ReportManagementPage() {
               data={[
                 { value: "all", label: "狀態：全部" },
                 { value: "official", label: "有正式版" },
+                { value: "draft", label: "有草稿" },
                 { value: "none", label: "無報告" },
               ]}
               allowDeselect={false}
@@ -374,7 +405,9 @@ export default function ReportManagementPage() {
         <Stack gap="lg">
           {orders.map((order: any) => {
             const hasOfficial = order.hasOfficial;
-            
+            const hasDraft = order.hasDraft;
+            const hasAnyReport = hasOfficial || hasDraft;
+
             const kols = order.collaborations ?? [];
             const readyKols = kols.filter(
               (k: any) => (k.performanceItems ?? []).some((p: any) => (p.metrics?.impressions ?? 0) > 0)
@@ -384,7 +417,7 @@ export default function ReportManagementPage() {
             return (
               <Card key={order.id} withBorder shadow="sm" radius="md" p={0}>
                 {/* 1. Campaign Header - All action buttons consolidated here */}
-                <Box p="md" className={hasOfficial ? styles.headerBarSeparated : undefined}>
+                <Box p="md" className={hasAnyReport ? styles.headerBarSeparated : undefined}>
                   <Group justify="space-between" align="flex-start">
                     <Box>
                       <Text fw={700} size="lg">📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
@@ -407,7 +440,7 @@ export default function ReportManagementPage() {
 
                 {/* 2. Reports Section */}
                 <Box p="md" bg="transparent">
-                  {!hasOfficial ? (
+                  {!hasAnyReport ? (
                     // Empty State
                     <Stack align="center" py="xl" gap="sm">
                       <Text c="dimmed" fw={500}>尚未生成結案報告</Text>
@@ -418,6 +451,45 @@ export default function ReportManagementPage() {
                     </Stack>
                   ) : (
                     <Stack gap="sm">
+                      {/* Draft Section */}
+                      {hasDraft && (
+                        <Card withBorder bg="var(--mantine-color-yellow-light)" radius="sm" p="sm">
+                          <Text size="sm" fw={600} mb="sm" c="yellow.8">草稿</Text>
+                          <Stack gap="xs">
+                            {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
+                              <Group key={report.id} justify="space-between" wrap="nowrap" className={styles.reportRow}>
+                                <Group wrap="nowrap" className={styles.flex1MinW0}>
+                                  <ThemeIcon size="lg" variant="light" color="yellow" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <Box miw={0}>
+                                    <Group gap="xs" wrap="nowrap">
+                                      <Text fw={500} truncate="end" miw={0}>{report.name}</Text>
+                                      <Badge color="yellow" variant="filled" size="xs" className={styles.flexShrink0}>草稿</Badge>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">建立時間: {report.createdAt} | 建立者: {report.createdBy}</Text>
+                                    {report.note && <Text size="xs" c="dimmed" mt={2}>說明: {report.note}</Text>}
+                                  </Box>
+                                </Group>
+                                <Group gap="xs" className={styles.flexShrink0}>
+                                  <ActionIcon
+                                    component="a"
+                                    href={buildReportDownloadPath(order.id, report.id)}
+                                    variant="light"
+                                    color="blue"
+                                  >
+                                    <IconDownload size={18} />
+                                  </ActionIcon>
+                                  <ActionIcon variant="light" color="gray" onClick={() => handleOpenEditDraftModal({ id: report.id, name: report.name, note: report.note, orderId: order.id })}>
+                                    <IconPencil size={18} />
+                                  </ActionIcon>
+                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}>
+                                    <IconTrash size={18} />
+                                  </ActionIcon>
+                                </Group>
+                              </Group>
+                            ))}
+                          </Stack>
+                        </Card>
+                      )}
                       {/* Official Section */}
                       {hasOfficial && (
                         <Card withBorder bg="var(--mantine-color-green-light)" radius="sm" p="sm">
@@ -604,6 +676,42 @@ export default function ReportManagementPage() {
             </Button>
             <Button color="red" onClick={handleConfirmDeleteReport}>
               確認刪除
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* ============ Modal: Edit Draft Report ============ */}
+      <Modal
+        opened={editDraftModalOpen}
+        onClose={closeEditDraftModal}
+        title={<Text fw={700} size="lg">編輯草稿報告</Text>}
+        centered
+        radius="md"
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      >
+        <Stack gap="lg">
+          <TextInput
+            label="報告名稱"
+            value={editDraftName}
+            onChange={(e) => setEditDraftName(e.currentTarget.value)}
+            rightSection={<Text size="xs" c="dimmed">.pptx</Text>}
+          />
+          <Textarea
+            label="說明 (選填)"
+            placeholder="例如: 第一版草稿，待確認數據..."
+            minRows={3}
+            value={editDraftNote}
+            onChange={(e) => setEditDraftNote(e.currentTarget.value)}
+          />
+          <Group justify="flex-end" gap="sm">
+            <Button variant="default" onClick={closeEditDraftModal}>取消</Button>
+            <Button
+              color="blue"
+              onClick={handleConfirmEditDraft}
+              loading={editFetcher.state !== "idle"}
+            >
+              儲存
             </Button>
           </Group>
         </Stack>
@@ -849,7 +957,7 @@ export default function ReportManagementPage() {
               <IconRobot size={40} />
             </ThemeIcon>
             <Box>
-              <Title order={3}>AI 正在為您生成報告</Title>
+              <Title order={3}>AI 正在為您生成草稿報告</Title>
               <Text c="dimmed" mt={4}>
                 案件 #{activeOrder?.orderNo} {activeOrder?.title || activeOrder?.projectName}
               </Text>

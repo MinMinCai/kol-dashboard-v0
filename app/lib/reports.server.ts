@@ -45,6 +45,7 @@ export async function loadReports(request: Request) {
 
   const mappedOrders = orders.map((order) => ({
     ...order,
+    hasDraft: order.hasDraft ?? false,
     hasOfficial: order.hasOfficial ?? false,
     reports: order.reports ?? [],
   }));
@@ -59,7 +60,8 @@ export async function loadReports(request: Request) {
     if (timeFilter === "this_year" && !order.startDate.startsWith("2026")) return false;
     if (timeFilter === "2024_10" && !order.startDate.startsWith("2024-10")) return false;
     if (statusFilter === "official" && !order.hasOfficial) return false;
-    if (statusFilter === "none" && order.hasOfficial) return false;
+    if (statusFilter === "draft" && !order.hasDraft) return false;
+    if (statusFilter === "none" && (order.hasOfficial || order.hasDraft)) return false;
     return true;
   });
 
@@ -140,12 +142,37 @@ export async function handleReportAction(formData: FormData) {
 
     const updatedReports = (io.reports ?? []).filter((r) => r.id !== reportId);
     const stillHasOfficial = updatedReports.some((r) => r.type === "official");
+    const stillHasDraft = updatedReports.some((r) => r.type === "draft");
 
     await updateInsertionOrder(orderId, {
       reports: updatedReports,
       hasOfficial: stillHasOfficial,
+      hasDraft: stillHasDraft,
     });
 
+    return json<ReportActionResult>({ ok: true });
+  }
+
+  if (intent === "editDraftReport") {
+    const orderId = String(formData.get("orderId"));
+    const reportId = String(formData.get("reportId"));
+    const newName = String(formData.get("name") ?? "").trim();
+    const newNote = formData.get("note") != null ? String(formData.get("note")) : undefined;
+
+    const io = await getInsertionOrder(orderId);
+    if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
+
+    const updatedReports = (io.reports ?? []).map((r) => {
+      if (r.id !== reportId || r.type !== "draft") return r;
+      return {
+        ...r,
+        name: newName || r.name,
+        note: newNote,
+        reportTitle: newName || r.reportTitle,
+      };
+    });
+
+    await updateInsertionOrder(orderId, { reports: updatedReports });
     return json<ReportActionResult>({ ok: true });
   }
 
@@ -196,7 +223,7 @@ export async function handleReportAction(formData: FormData) {
       const newReport = {
         id: `rep_${Date.now()}`,
         name: normalizePptFileName(normalizedTitle),
-        type: "official" as const,
+        type: "draft" as const,
         createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
         createdBy: "系統 AI",
         templateKey,
@@ -213,7 +240,7 @@ export async function handleReportAction(formData: FormData) {
       };
 
       await updateInsertionOrder(orderId, {
-        hasOfficial: true,
+        hasDraft: true,
         reports: [...(io.reports ?? []), reportWithFile],
       });
 
