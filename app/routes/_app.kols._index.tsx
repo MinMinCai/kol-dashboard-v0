@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Alert,
   Avatar,
   Badge,
@@ -15,8 +16,9 @@ import {
   Table,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
-import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconEdit, IconEye, IconPhone, IconTrash } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigate, useRevalidator, useSubmit, useNavigation } from "@remix-run/react";
 import { useEffect, useState } from "react";
@@ -443,44 +445,27 @@ export default function KolListPage() {
                     <Text size="sm">⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                     <Text size="xs" c="dimmed">合作 {kol.collaborations ?? 0} 次</Text>
                   </Group>
-                  <Group mt="sm" gap="xs" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="light"
-                      size="xs"
-                      fullWidth
-                      component={Link}
-                      to={`/kols/${kol.id}`}
-                    >
-                      查看詳情
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="xs"
-                      fullWidth
-                      component={Link}
-                      to={`/kols/${kol.id}/edit`}
-                    >
-                      編輯
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xs"
-                      fullWidth
-                      onClick={() => setContactKol(kol)}
-                    >
-                      聯絡方式
-                    </Button>
-                    <Button
-                      type="button"
-                      color="red"
-                      variant="light"
-                      size="xs"
-                      fullWidth
-                      onClick={() => requestDeleteKol(kol.id, kol.displayName)}
-                    >
-                      刪除
-                    </Button>
+                  <Group mt="auto" pt="sm" gap="xs" justify="center" onClick={(e) => e.stopPropagation()}>
+                    <Tooltip label="查看詳情" withArrow>
+                      <ActionIcon variant="light" size="lg" component={Link} to={`/kols/${kol.id}`}>
+                        <IconEye size={18} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="編輯" withArrow>
+                      <ActionIcon variant="default" size="lg" component={Link} to={`/kols/${kol.id}/edit`}>
+                        <IconEdit size={18} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="聯絡方式" withArrow>
+                      <ActionIcon variant="light" color="teal" size="lg" onClick={() => setContactKol(kol)}>
+                        <IconPhone size={18} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="刪除" withArrow>
+                      <ActionIcon variant="light" color="red" size="lg" onClick={() => requestDeleteKol(kol.id, kol.displayName)}>
+                        <IconTrash size={18} />
+                      </ActionIcon>
+                    </Tooltip>
                   </Group>
                 </Card>
               );
@@ -560,26 +545,37 @@ export default function KolListPage() {
                     <Table.Td>⭐ {(kol.rating ?? 0).toFixed(1)}</Table.Td>
                     <Table.Td>{kol.collaborations ?? 0}</Table.Td>
                     <Table.Td>
-                      <Group gap="xs">
-                        <button
-                          type="button"
-                          className={getOptimisticFavorited(kol) ? `${styles.favoriteTableBtn} ${styles.favoriteTableBtnActive}` : styles.favoriteTableBtn}
-                          title={getOptimisticFavorited(kol) ? "管理收藏資料夾" : "加入收藏"}
-                          onClick={() => openFavoritePicker(kol)}
-                        >
-                          {getOptimisticFavorited(kol) ? "♥" : "♡"}
-                        </button>
-                        <Button component={Link} to={`/kols/${kol.id}`} variant="light" size="xs">查看</Button>
-                        <Button component={Link} to={`/kols/${kol.id}/edit`} variant="default" size="xs">編輯</Button>
-                        <Button
-                          type="button"
-                          color="red"
-                          variant="subtle"
-                          size="xs"
-                          onClick={() => requestDeleteKol(kol.id, kol.displayName)}
-                        >
-                          刪除
-                        </Button>
+                      <Group gap={4}>
+                        <Tooltip label={getOptimisticFavorited(kol) ? "管理收藏資料夾" : "加入收藏"} withArrow>
+                          <ActionIcon
+                            variant="subtle"
+                            size="md"
+                            color={getOptimisticFavorited(kol) ? "red" : "gray"}
+                            onClick={() => openFavoritePicker(kol)}
+                          >
+                            {getOptimisticFavorited(kol) ? "♥" : "♡"}
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="查看詳情" withArrow>
+                          <ActionIcon variant="light" size="md" component={Link} to={`/kols/${kol.id}`}>
+                            <IconEye size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="編輯" withArrow>
+                          <ActionIcon variant="default" size="md" component={Link} to={`/kols/${kol.id}/edit`}>
+                            <IconEdit size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="聯絡方式" withArrow>
+                          <ActionIcon variant="light" color="teal" size="md" onClick={() => setContactKol(kol)}>
+                            <IconPhone size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="刪除" withArrow>
+                          <ActionIcon variant="light" color="red" size="md" onClick={() => requestDeleteKol(kol.id, kol.displayName)}>
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Tooltip>
                       </Group>
                     </Table.Td>
                   </Table.Tr>
