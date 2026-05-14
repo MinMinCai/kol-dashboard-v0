@@ -719,24 +719,35 @@ export default function KolDetailPage() {
           <Modal
             opened={contactOpened}
             onClose={() => setContactOpened(false)}
-            title="聯絡方式"
+            title={`聯絡方式 — ${kol.displayName}`}
           >
-            <Stack gap="sm">
-              <Text>
-                <Text span fw={600}>
-                  電話：
-                </Text>{" "}
-                {kol.contact?.phone || "尚未提供"}
-              </Text>
-              <Text>
-                <Text span fw={600}>
-                  Email：
-                </Text>{" "}
-                {kol.contact?.email || "尚未提供"}
-              </Text>
-              <Button type="button" variant="light" onClick={() => setContactOpened(false)}>
-                關閉
-              </Button>
+            <Stack gap="xs">
+              {kol.contact?.email && (
+                <Group gap="sm">
+                  <Text size="sm" fw={600} w={60}>Email</Text>
+                  <Text size="sm">{kol.contact.email}</Text>
+                </Group>
+              )}
+              {kol.contact?.phone && (
+                <Group gap="sm">
+                  <Text size="sm" fw={600} w={60}>電話</Text>
+                  <Text size="sm">{kol.contact.phone}</Text>
+                </Group>
+              )}
+              {kol.contact?.lineId && (
+                <Group gap="sm">
+                  <Text size="sm" fw={600} w={60}>LINE ID</Text>
+                  <Text size="sm">{kol.contact.lineId}</Text>
+                </Group>
+              )}
+              {!kol.contact?.email && !kol.contact?.phone && !kol.contact?.lineId && (
+                <Text size="sm" c="dimmed">尚未填寫聯絡方式。</Text>
+              )}
+              <Group justify="flex-end" mt="sm">
+                <Button type="button" variant="light" onClick={() => setContactOpened(false)}>
+                  關閉
+                </Button>
+              </Group>
             </Stack>
           </Modal>
 

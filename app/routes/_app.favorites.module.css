@@ -87,7 +87,8 @@
 
 .actionButton {
   background: none;
-  padding: 2px 8px;
+  height: 40px;
+  padding: 0 10px;
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;

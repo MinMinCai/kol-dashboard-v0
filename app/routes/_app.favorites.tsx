@@ -650,13 +650,7 @@ export default function FavoritesPage() {
                 <Text size="sm">{contactKol.contact.lineId}</Text>
               </Group>
             ) : null}
-            {contactKol.contact?.manager ? (
-              <Group gap="xs">
-                <Text size="sm" fw={600} w={60}>經紀人</Text>
-                <Text size="sm">{contactKol.contact.manager}</Text>
-              </Group>
-            ) : null}
-            {!contactKol.contact?.email && !contactKol.contact?.phone && !contactKol.contact?.lineId && !contactKol.contact?.manager && (
+            {!contactKol.contact?.email && !contactKol.contact?.phone && !contactKol.contact?.lineId && (
               <Text size="sm" c="dimmed">尚未填寫聯絡方式。</Text>
             )}
             <Group justify="flex-end" mt="xs">
