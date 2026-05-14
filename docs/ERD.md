@@ -165,6 +165,7 @@ erDiagram
     PROPOSALS {
         text id PK
         text clientId FK
+        text creatorId FK
         varchar clientName
         varchar title
         text objective
@@ -176,6 +177,13 @@ erDiagram
         jsonb activityLog
         timestamp createdAt
         timestamp updatedAt
+    }
+    PROPOSAL_PERMISSIONS {
+        text id PK
+        text proposalId FK
+        varchar department
+        varchar permissionLevel
+        timestamp createdAt
     }
     PROPOSAL_KOLS {
         text id PK
@@ -211,6 +219,8 @@ erDiagram
     }
 
     CLIENTS ||--o{ PROPOSALS : "has"
+    TEAM_MEMBERS ||--o{ PROPOSALS : "creates"
+    PROPOSALS ||--o{ PROPOSAL_PERMISSIONS : "has"
     PROPOSALS ||--o{ PROPOSAL_KOLS : "includes"
     KOLS ||--o{ PROPOSAL_KOLS : "referenced by"
     PROPOSALS ||--o{ PROPOSAL_FEEDBACK : "receives"
@@ -391,7 +401,7 @@ erDiagram
 | **Auth** | `users`, `sessions`, `accounts`, `verifications` | BetterAuth 身份驗證系統 |
 | **KOL** | `kols`, `kol_social_accounts` | KOL 資料庫，含各平台社群帳號 |
 | **收藏資料夾** | `kol_favorite_folders`, `kol_favorite_folder_items`, `kol_favorite_folder_shares`, `kol_favorite_folder_member_shares` | 個人 KOL 收藏資料夾，支援跨用戶 / 跨組 / 跨成員共享 |
-| **客戶 & 提案** | `clients`, `proposals`, `proposal_kols`, `proposal_feedback` | 從客戶建立提案、選定 KOL 的流程 |
+| **客戶 & 提案** | `clients`, `proposals`, `proposal_permissions`, `proposal_kols`, `proposal_feedback` | 從客戶建立提案、選定 KOL 的流程；`proposal_permissions` 管理提案的部門檢視／編輯權限 |
 | **通知** | `proposal_watchers`, `notifications` | 提案異動時通知訂閱者 |
 | **執行單** | `insertion_orders`, `io_tasks`, `campaign_performance` | 提案轉為合約後的任務追蹤與績效數據 |
 | **系統 / 目錄** | `ai_reports`, `tag_catalog`, `brand_catalog`, `industry_catalog`, `platform_catalog`, `team_members`, `system_preferences` | 獨立的系統設定與參考資料 |
@@ -401,20 +411,23 @@ erDiagram
 ### 核心業務流程
 
 ```
-CLIENTS
+TEAM_MEMBERS (creatorId)
   └─► PROPOSALS ──────────────────────────────► PROPOSAL_FEEDBACK
+           ├─► PROPOSAL_PERMISSIONS (部門權限)
            └─► PROPOSAL_KOLS ◄─────── KOLS
                                           │
+CLIENTS ───► PROPOSALS                    │
   └─► INSERTION_ORDERS ◄─────────────────┘
            ├─► IO_TASKS ◄──────────── KOLS
            └─► CAMPAIGN_PERFORMANCE ◄─ KOLS
 ```
 
-1. **客戶建立提案** — `CLIENTS` → `PROPOSALS`
-2. **提案選定 KOL** — `PROPOSALS` → `PROPOSAL_KOLS` ← `KOLS`
-3. **提案轉執行單** — `PROPOSALS` → `INSERTION_ORDERS` ← `CLIENTS`
-4. **任務分派** — `INSERTION_ORDERS` → `IO_TASKS` ← `KOLS`
-5. **績效追蹤** — `INSERTION_ORDERS` → `CAMPAIGN_PERFORMANCE` ← `KOLS`
+1. **客戶建立提案** — `CLIENTS` → `PROPOSALS`（建立者 `creatorId` → `TEAM_MEMBERS`）
+2. **設定部門權限** — `PROPOSALS` → `PROPOSAL_PERMISSIONS`（每筆一個部門一個 level）
+3. **提案選定 KOL** — `PROPOSALS` → `PROPOSAL_KOLS` ← `KOLS`
+4. **提案轉執行單** — `PROPOSALS` → `INSERTION_ORDERS` ← `CLIENTS`
+5. **任務分派** — `INSERTION_ORDERS` → `IO_TASKS` ← `KOLS`
+6. **績效追蹤** — `INSERTION_ORDERS` → `CAMPAIGN_PERFORMANCE` ← `KOLS`
 
 **提案通知流程：**
 
@@ -600,16 +613,33 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 |------|------|------|
 | id | text PK | |
 | clientId | text FK → clients.id | 關聯客戶（可為 null） |
+| **creatorId** | **text FK → team_members.id** | **提案建立人（ON DELETE SET NULL）；用於識別 creator 角色與預設權限** |
 | clientName | varchar(200) | 客戶名稱快照 |
 | title | varchar(255) NOT NULL | 案件名稱 |
 | objective | text | 提案目標 |
 | budget | numeric(12,2) | 預算 |
 | stage | varchar(30) | draft / review / approved / rejected，預設 draft |
-| owner | varchar(100) | 負責人 |
+| owner | varchar(100) | 負責人（舊欄位，顯示用） |
 | launchMonth | varchar(20) | 預計上線月份 |
 | lastModifiedBy | varchar(100) | 最後修改者（用於 activity log 顯示） |
 | activityLog | jsonb[] | 提案異動歷史記錄 |
 | createdAt / updatedAt | timestamp | |
+
+#### PROPOSAL_PERMISSIONS（新增，Migration 0003）
+| 欄位 | 型別 | 說明 |
+|------|------|------|
+| id | text PK | |
+| proposalId | text FK → proposals.id | CASCADE DELETE；與 department 聯合唯一 |
+| department | varchar(20) NOT NULL | 部門名稱：AE / KOL / Tech / Media / 其他 |
+| permissionLevel | varchar(10) NOT NULL | `'edit'`（可編輯提案內容）或 `'view'`（唯讀，但可生成文件與轉執行案件） |
+| createdAt | timestamp | |
+
+> **唯一約束：** `uq_proposal_permission_dept (proposalId, department)`  
+> **權限邏輯：**
+> - 此表無記錄時 → 所有人皆可存取（編輯 / 刪除）
+> - `creatorId` 對應的成員 → 永遠是 `creator` 角色，可刪除提案、管理部門權限
+> - creator 的部門隱含擁有 `edit` 權限（不需要寫入此表）
+> - 查不到部門對應記錄的成員 → `none`，無法進入提案詳細頁
 
 #### PROPOSAL_KOLS
 | 欄位 | 型別 | 說明 |

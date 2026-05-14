@@ -243,6 +243,61 @@ GET /api/proposals/:proposalId/generate-doc?type={type}&candidateId={id}&startDa
 
 ---
 
+### 提案部門權限（Remix Action）
+
+> 以下為 Remix Form Action，透過 `POST` 送至 `/proposals` 或 `/proposals/:proposalId`，以 `intent` 欄位區分操作。
+
+#### `update_permissions` — 更新提案部門權限（creator 限定）
+
+**端點：** `POST /proposals` （列表頁） 或 `POST /proposals/:proposalId` （詳細頁編輯模式）
+
+**FormData**
+
+| 欄位 | 型別 | 說明 |
+|------|------|------|
+| `intent` | string | `"update_permissions"` |
+| `id` | string | 提案 ID（列表頁送出時需要；詳細頁從 URL params 取得） |
+| `permissionsJson` | string | JSON 陣列，格式見下 |
+
+**`permissionsJson` 格式**
+
+```json
+[
+  { "department": "KOL", "permissionLevel": "view" },
+  { "department": "Media", "permissionLevel": "edit" }
+]
+```
+
+> - 不需帶入 creator 自己的部門（後端自動補上 `edit`）
+> - 空陣列 `[]` 表示清除所有限制（所有人皆可存取）
+> - 每個部門只能有一筆；若省略某部門，等同該部門沒有權限（`none`）
+
+**Response**
+
+```json
+{ "success": true }
+```
+
+**錯誤（HTTP 403）**
+
+```json
+{ "success": false, "error": "只有建立人可以修改權限" }
+```
+
+---
+
+### 提案權限存取規則
+
+| 角色 | 取得條件 | 可執行操作 |
+|------|---------|-----------|
+| **creator** | `proposals.creator_id === currentMember.id` | 所有操作 + 管理部門權限 + 刪除提案 |
+| **edit** | 部門在 `proposal_permissions` 中為 `edit` | 編輯提案內容、生成合約/委刊單、轉為執行案件 |
+| **view** | 部門在 `proposal_permissions` 中為 `view` | 生成合約/委刊單、轉為執行案件（不可編輯提案內容） |
+| **none** | 部門未列於 `proposal_permissions` | 無法進入提案詳細頁（HTTP 403） |
+| 無任何 permissions 記錄 | `proposal_permissions` 表中此 proposalId 無資料 | 所有人皆有 `edit` 存取（含刪除） |
+
+---
+
 ## 執行案件管理
 
 ### 單筆執行案件 JSON
