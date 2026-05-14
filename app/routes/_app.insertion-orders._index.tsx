@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Group,
+  MultiSelect,
   SimpleGrid,
   Stack,
   Text,
@@ -78,8 +79,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   try {
     const url = new URL(request.url);
     const search = url.searchParams.get("search") ?? "";
-    const clientFilter = url.searchParams.get("client") ?? "";
-    const industryFilter = url.searchParams.get("industry") ?? "";
+    const clientFilters = url.searchParams.getAll("client");
+    const industryFilters = url.searchParams.getAll("industry");
     const timeFilter = (url.searchParams.get("time") ?? "all") as TimeFilter;
     const sort = (url.searchParams.get("sort") ?? "order_no_asc") as SortOption;
     const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
@@ -103,8 +104,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
         (order.title ?? "").toLowerCase().includes(q) ||
         order.clientName.toLowerCase().includes(q);
       if (!textMatch) return false;
-      if (clientFilter && order.clientName !== clientFilter) return false;
-      if (industryFilter && order.industry !== industryFilter) return false;
+      if (clientFilters.length && !clientFilters.includes(order.clientName)) return false;
+      if (industryFilters.length && !industryFilters.includes(order.industry ?? "")) return false;
       if (!matchesTime(order, timeFilter)) return false;
       return true;
     });
@@ -152,8 +153,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       allClients,
       allIndustries,
       search,
-      clientFilter,
-      industryFilter,
+      clientFilters,
+      industryFilters,
       timeFilter,
       sort,
     });
@@ -214,14 +215,18 @@ export default function InsertionOrderListPage() {
     allClients,
     allIndustries,
     search,
-    clientFilter,
-    industryFilter,
+    clientFilters,
+    industryFilters,
     timeFilter,
     sort,
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
   const navigate = useNavigate();
+
+  // ── Multi-select filter local state ──
+  const [clientsLocal, setClientsLocal] = useState<string[]>(clientFilters);
+  const [industriesLocal, setIndustriesLocal] = useState<string[]>(industryFilters);
 
   // ── Delete Confirm State ──
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
@@ -250,6 +255,35 @@ export default function InsertionOrderListPage() {
     );
   };
 
+  function handleFilterSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const sp = new URLSearchParams();
+    const searchVal = (form.elements.namedItem("search") as HTMLInputElement)?.value ?? "";
+    if (searchVal) sp.set("search", searchVal);
+    clientsLocal.forEach((c) => sp.append("client", c));
+    industriesLocal.forEach((i) => sp.append("industry", i));
+    const timeVal = (form.elements.namedItem("time") as HTMLSelectElement)?.value ?? "all";
+    if (timeVal !== "all") sp.set("time", timeVal);
+    const sortVal = (form.elements.namedItem("sort") as HTMLSelectElement)?.value ?? "order_no_asc";
+    sp.set("sort", sortVal);
+    sp.set("pageSize", String(pageSize));
+    navigate(`/insertion-orders?${sp.toString()}`);
+  }
+
+  function buildPageUrl(p: number) {
+    const sp = new URLSearchParams();
+    if (search) sp.set("search", search);
+    clientFilters.forEach((c) => sp.append("client", c));
+    industryFilters.forEach((i) => sp.append("industry", i));
+    if (timeFilter !== "all") sp.set("time", timeFilter);
+    sp.set("sort", sort);
+    sp.set("page", String(p));
+    sp.set("pageSize", String(pageSize));
+    return `/insertion-orders?${sp.toString()}`;
+  }
+
+  const hasActiveFilters = !!(search || clientFilters.length || industryFilters.length || timeFilter !== "all");
 
   return (
     <Stack gap="md">
@@ -260,15 +294,13 @@ export default function InsertionOrderListPage() {
         </Group>
       </Group>
 
-      {/* ── Server-driven filter form ── */}
-      <form key={`${search}|${clientFilter}|${industryFilter}|${timeFilter}|${sort}`} method="get" className={styles.formContents}>
+      {/* ── Filter form ── */}
+      <form key={`${search}|${clientFilters.join(",")}|${industryFilters.join(",")}|${timeFilter}|${sort}`} onSubmit={handleFilterSubmit} className={styles.formContents}>
         <Stack gap="sm">
           <Group align="end" wrap="wrap">
             {/* Search */}
             <div className={styles.searchField}>
-              <label className={styles.fieldLabel}>
-                搜尋
-              </label>
+              <label className={styles.fieldLabel}>搜尋</label>
               <input
                 name="search"
                 defaultValue={search}
@@ -277,36 +309,32 @@ export default function InsertionOrderListPage() {
               />
             </div>
 
-            {/* Client */}
+            {/* Client multi-select */}
             <div>
-              <label htmlFor="filter-client" className={styles.fieldLabel}>客戶</label>
-              <select
-                id="filter-client"
-                name="client"
-                defaultValue={clientFilter}
-                className={styles.filterSelect}
-              >
-                <option value="">全部</option>
-                {allClients.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              <label className={styles.fieldLabel}>客戶</label>
+              <MultiSelect
+                placeholder="全部"
+                data={allClients}
+                value={clientsLocal}
+                onChange={setClientsLocal}
+                w={180}
+                clearable
+                comboboxProps={{ withinPortal: true }}
+              />
             </div>
 
-            {/* Industry */}
+            {/* Industry multi-select */}
             <div>
-              <label htmlFor="filter-industry" className={styles.fieldLabel}>產業</label>
-              <select
-                id="filter-industry"
-                name="industry"
-                defaultValue={industryFilter}
-                className={styles.filterSelect}
-              >
-                <option value="">全部</option>
-                {allIndustries.map((i) => (
-                  <option key={i} value={i}>{i}</option>
-                ))}
-              </select>
+              <label className={styles.fieldLabel}>產業</label>
+              <MultiSelect
+                placeholder="全部"
+                data={allIndustries}
+                value={industriesLocal}
+                onChange={setIndustriesLocal}
+                w={180}
+                clearable
+                comboboxProps={{ withinPortal: true }}
+              />
             </div>
 
             {/* Time */}
@@ -348,21 +376,14 @@ export default function InsertionOrderListPage() {
               </select>
             </div>
 
-            {/* Page size */}
             <input type="hidden" name="pageSize" value={pageSize} />
 
-            <button
-              type="submit"
-              className={styles.formSubmitButton}
-            >
+            <button type="submit" className={styles.formSubmitButton}>
               套用篩選
             </button>
 
-            {(search || clientFilter || industryFilter || timeFilter !== "all") && (
-              <a
-                href="/insertion-orders"
-                className={styles.linkButton}
-              >
+            {hasActiveFilters && (
+              <a href="/insertion-orders" className={styles.linkButton}>
                 清除篩選
               </a>
             )}
@@ -449,8 +470,8 @@ export default function InsertionOrderListPage() {
             <Text size="sm" c="dimmed">每頁筆數</Text>
             <form method="get" className={styles.inlineForm}>
               <input type="hidden" name="search" value={search} />
-              <input type="hidden" name="client" value={clientFilter} />
-              <input type="hidden" name="industry" value={industryFilter} />
+              {clientFilters.map((c) => <input key={c} type="hidden" name="client" value={c} />)}
+              {industryFilters.map((i) => <input key={i} type="hidden" name="industry" value={i} />)}
               <input type="hidden" name="time" value={timeFilter} />
               <input type="hidden" name="sort" value={sort} />
               <input type="hidden" name="page" value="1" />
@@ -471,7 +492,7 @@ export default function InsertionOrderListPage() {
           <Group gap={4}>
             {currentPage > 1 && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage - 1}&pageSize=${pageSize}`}
+                href={buildPageUrl(currentPage - 1)}
                 className={styles.pageNavLink}
               >
                 ‹ 上一頁
@@ -481,7 +502,7 @@ export default function InsertionOrderListPage() {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <a
                 key={p}
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${p}&pageSize=${pageSize}`}
+                href={buildPageUrl(p)}
                 className={p === currentPage ? `${styles.pageNumberLink} ${styles.pageNumberLinkActive}` : styles.pageNumberLink}
               >
                 {p}
@@ -490,7 +511,7 @@ export default function InsertionOrderListPage() {
 
             {currentPage < totalPages && (
               <a
-                href={`/insertion-orders?search=${encodeURIComponent(search)}&client=${encodeURIComponent(clientFilter)}&industry=${encodeURIComponent(industryFilter)}&time=${timeFilter}&sort=${sort}&page=${currentPage + 1}&pageSize=${pageSize}`}
+                href={buildPageUrl(currentPage + 1)}
                 className={styles.pageNavLink}
               >
                 下一頁 ›

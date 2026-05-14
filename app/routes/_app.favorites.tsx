@@ -341,7 +341,7 @@ export default function FavoritesPage() {
 
       <form method="get" className={styles.formContents}>
         <input type="hidden" name="folder" value={folder} />
-        <Group>
+        <Group wrap="wrap">
           <input name="search" defaultValue={search} placeholder="搜尋收藏 KOL" className={`${styles.formInput} ${styles.searchInput}`} />
           <select name="sort" defaultValue={sort} className={styles.formInput} aria-label="排序方式">
             <option value="rating_desc">評分由高到低</option>
@@ -351,22 +351,18 @@ export default function FavoritesPage() {
           <button type="submit" className={`${styles.formInput} ${styles.formSubmitButton}`}>
             套用
           </button>
-        </Group>
-      </form>
-
-      <Group>
-        {(() => {
-          const filterButtonClassName = (active: boolean): string =>
-            active ? `${styles.filterButton} ${styles.filterButtonActive}` : styles.filterButton;
-          const buildHref = (f: string) =>
-            `/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`;
-          const isOwnedFolderActive = ownedFolders.some((f) => f.name === folder);
-          const isSharedFolderActive = sharedFolders.some((f) => f.name === folder);
-          return (
-            <>
-              <a href={buildHref("全部")} className={filterButtonClassName(folder === "全部")}>
-                全部 ({folderCounts["全部"] ?? 0})
-              </a>
+          {(() => {
+            const filterButtonClassName = (active: boolean): string =>
+              active ? `${styles.filterButton} ${styles.filterButtonActive}` : styles.filterButton;
+            const buildHref = (f: string) =>
+              `/favorites?search=${encodeURIComponent(search)}&sort=${sort}&folder=${encodeURIComponent(f)}`;
+            const isOwnedFolderActive = ownedFolders.some((f) => f.name === folder);
+            const isSharedFolderActive = sharedFolders.some((f) => f.name === folder);
+            return (
+              <>
+                <a href={buildHref("全部")} className={filterButtonClassName(folder === "全部")}>
+                  全部 ({folderCounts["全部"] ?? 0})
+                </a>
               <Menu shadow="md" width={260} position="bottom-start">
                 <Menu.Target>
                   <button type="button" className={filterButtonClassName(isOwnedFolderActive)}>
@@ -445,6 +441,7 @@ export default function FavoritesPage() {
           );
         })()}
       </Group>
+      </form>
 
       {rows.length > 0 && (
         <Group gap="xs" justify="space-between">

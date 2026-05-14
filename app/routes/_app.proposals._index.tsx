@@ -5,6 +5,7 @@ import {
   Card,
   Group,
   Modal,
+  MultiSelect,
   NumberInput,
   Select,
   Stack,
@@ -16,7 +17,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronLeft, IconChevronRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import { deleteProposal, listProposals, updateProposal } from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
@@ -41,13 +42,19 @@ function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T>
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
 
-function buildUrl(base: Record<string, string>, overrides: Record<string, string | null>) {
-  const out = new URLSearchParams(base);
+function buildUrl(base: Record<string, string | string[]>, overrides: Record<string, string | string[] | null>) {
+  const out = new URLSearchParams();
+  for (const [k, v] of Object.entries(base)) {
+    if (Array.isArray(v)) v.forEach((item) => out.append(k, item));
+    else if (v !== "") out.set(k, v);
+  }
   for (const [k, v] of Object.entries(overrides)) {
     out.delete(k);
-    if (v !== null && v !== "") out.set(k, v);
+    if (v !== null) {
+      if (Array.isArray(v)) v.forEach((item) => out.append(k, item));
+      else if (v !== "") out.set(k, v);
+    }
   }
-  out.delete("page");
   return `?${out.toString()}`;
 }
 
@@ -92,8 +99,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const sp = url.searchParams;
 
   const q = sp.get("q")?.trim().toLowerCase() ?? "";
-  const client = sp.get("client") ?? "";
-  const stage = sp.get("stage") ?? "";
+  const clients = sp.getAll("client");
+  const stages = sp.getAll("stage");
   const budgetMin = Number(sp.get("budgetMin") ?? 0) || 0;
   const budgetMax = Number(sp.get("budgetMax") ?? 0) || 0;
   const overdue = sp.get("overdue") === "1";
@@ -116,10 +123,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   // ── client filter ──
-  if (client) proposals = proposals.filter((p) => p.clientName === client);
+  if (clients.length) proposals = proposals.filter((p) => clients.includes(p.clientName));
 
   // ── stage filter ──
-  if (stage) proposals = proposals.filter((p) => p.stage === stage);
+  if (stages.length) proposals = proposals.filter((p) => stages.includes(p.stage ?? ""));
 
   // ── budget range filter ──
   if (budgetMin > 0) proposals = proposals.filter((p) => p.budget >= budgetMin);
@@ -154,7 +161,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const pageRows = proposals.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const activeFilterCount =
-    (q ? 1 : 0) + (client ? 1 : 0) + (stage ? 1 : 0) +
+    (q ? 1 : 0) + (clients.length ? 1 : 0) + (stages.length ? 1 : 0) +
     (budgetMin > 0 || budgetMax > 0 ? 1 : 0) + (overdue ? 1 : 0);
 
   return json({
@@ -163,7 +170,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     totalPages,
     page: safePage,
     allClients,
-    q, client, stage, budgetMin, budgetMax, overdue,
+    q, clients, stages, budgetMin, budgetMax, overdue,
     sort, order,
     activeFilterCount,
     currentRole,
@@ -176,9 +183,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function ProposalListPage() {
   const {
     proposals, total, totalPages, page,
-    allClients, q, client, stage, budgetMin, budgetMax, overdue,
+    allClients, q, clients, stages, budgetMin, budgetMax, overdue,
     sort, order, activeFilterCount, today, currentRole,
   } = useLoaderData<typeof loader>();
+
+  const navigate = useNavigate();
+  const [clientsLocal, setClientsLocal] = useState<string[]>(clients);
+  const [stagesLocal, setStagesLocal] = useState<string[]>(stages);
 
   const canEdit = currentRole === "admin" || currentRole === "manager";
 
@@ -191,10 +202,10 @@ export default function ProposalListPage() {
   const handleAskDelete = (p: any) => { setDeleteTarget(p); openDelete(); };
 
   // ── current params for URL building ──
-  const current: Record<string, string> = {
+  const current: Record<string, string | string[]> = {
     ...(q ? { q } : {}),
-    ...(client ? { client } : {}),
-    ...(stage ? { stage } : {}),
+    ...(clients.length ? { client: clients } : {}),
+    ...(stages.length ? { stage: stages } : {}),
     ...(budgetMin > 0 ? { budgetMin: String(budgetMin) } : {}),
     ...(budgetMax > 0 ? { budgetMax: String(budgetMax) } : {}),
     ...(overdue ? { overdue: "1" } : {}),
@@ -203,10 +214,28 @@ export default function ProposalListPage() {
   };
 
   const pageUrl = (p: number) => {
-    const out = new URLSearchParams(current);
-    out.set("page", String(p));
-    return `?${out.toString()}`;
+    const out = buildUrl(current, { page: String(p) });
+    return out;
   };
+
+  function handleFilterSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const sp = new URLSearchParams();
+    const qVal = (form.elements.namedItem("q") as HTMLInputElement)?.value.trim() ?? "";
+    if (qVal) sp.set("q", qVal);
+    clientsLocal.forEach((c) => sp.append("client", c));
+    stagesLocal.forEach((s) => sp.append("stage", s));
+    const budgetMinVal = (form.elements.namedItem("budgetMin") as HTMLInputElement)?.value ?? "";
+    const budgetMaxVal = (form.elements.namedItem("budgetMax") as HTMLInputElement)?.value ?? "";
+    if (budgetMinVal) sp.set("budgetMin", budgetMinVal);
+    if (budgetMaxVal) sp.set("budgetMax", budgetMaxVal);
+    const sortInput = form.querySelector<HTMLInputElement>('input[name="sort"]');
+    const orderInput = form.querySelector<HTMLInputElement>('input[name="order"]');
+    if (sortInput?.value) sp.set("sort", sortInput.value);
+    if (orderInput?.value && orderInput.value !== "desc") sp.set("order", orderInput.value);
+    navigate(`/proposals?${sp.toString()}`);
+  }
 
   // ── sort select value ──
   const sortSelectValue = sort && order ? `${sort}_${order}` : "";
@@ -229,7 +258,7 @@ export default function ProposalListPage() {
       </Group>
 
       {/* ── 搜尋 + 篩選 inline bar ── */}
-      <form method="get" action="/proposals">
+      <form onSubmit={handleFilterSubmit}>
         <Group gap={8} wrap="wrap" align="center">
           <input
             name="q"
@@ -237,14 +266,24 @@ export default function ProposalListPage() {
             placeholder="搜尋案件名稱或客戶"
             className={`${styles.formInput} ${styles.searchInput}`}
           />
-          <select name="client" defaultValue={client} className={styles.formInput} title="篩選客戶">
-            <option value="">客戶：全部</option>
-            {allClients.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <select name="stage" defaultValue={stage} className={styles.formInput} title="篩選目前階段">
-            <option value="">目前階段：全部</option>
-            {ALL_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          <MultiSelect
+            placeholder="客戶：全部"
+            data={allClients}
+            value={clientsLocal}
+            onChange={setClientsLocal}
+            w={200}
+            clearable
+            comboboxProps={{ withinPortal: true }}
+          />
+          <MultiSelect
+            placeholder="目前階段：全部"
+            data={ALL_STAGES}
+            value={stagesLocal}
+            onChange={setStagesLocal}
+            w={200}
+            clearable
+            comboboxProps={{ withinPortal: true }}
+          />
           <Group gap={4} align="center" wrap="nowrap">
             <input
               type="number"

@@ -18,7 +18,7 @@
   width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--mantine-color-default-border);
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
   background: var(--mantine-color-body);
   color: var(--mantine-color-text);
@@ -28,7 +28,7 @@
 .filterSelect {
   padding: 8px 12px;
   border: 1px solid var(--mantine-color-default-border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--mantine-color-body);
   color: var(--mantine-color-text);
   font-size: 14px;
@@ -44,7 +44,7 @@
   background: var(--mantine-color-blue-filled);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -53,7 +53,7 @@
 .linkButton {
   padding: 8px 16px;
   border: 1px solid var(--mantine-color-default-border);
-  border-radius: 4px;
+  border-radius: 6px;
   text-decoration: none;
   color: var(--mantine-color-text);
   background: var(--mantine-color-body);
