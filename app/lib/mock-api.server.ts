@@ -239,7 +239,7 @@ export type TeamMember = {
 export type Report = {
   id: string;
   name: string;
-  type: "draft" | "official";
+  type: "official";
   createdAt: string;
   createdBy: string;
   fileSize?: string;
@@ -301,7 +301,6 @@ export type InsertionOrder = {
   totalWithTax?: number;
   startDate: string;
   endDate: string;
-  hasDraft?: boolean;
   hasOfficial?: boolean;
   reports?: Report[];
 };
@@ -671,9 +670,11 @@ function rowToInsertionOrder(row: typeof ioTable.$inferSelect): InsertionOrder {
     totalWithTax: row.totalWithTax != null ? Number(row.totalWithTax) : undefined,
     startDate: row.startDate ?? "",
     endDate: row.endDate ?? "",
-    hasDraft: row.hasDraft,
     hasOfficial: row.hasOfficial,
-    reports: (row.reports as Report[]) ?? [],
+    // Normalize legacy draft reports → official on read (data migration at runtime)
+    reports: ((row.reports as Report[]) ?? []).map((r) =>
+      r.type === ("draft" as string) ? { ...r, type: "official" as const } : r
+    ),
   };
 }
 
@@ -964,7 +965,6 @@ export async function updateInsertionOrder(
   if (data.collaborations !== undefined) update.collaborations = data.collaborations;
   if (data.tax !== undefined) update.tax = String(data.tax);
   if (data.totalWithTax !== undefined) update.totalWithTax = String(data.totalWithTax);
-  if (data.hasDraft !== undefined) update.hasDraft = data.hasDraft;
   if (data.hasOfficial !== undefined) update.hasOfficial = data.hasOfficial;
   if (data.reports !== undefined) update.reports = data.reports;
   update.updatedAt = new Date();
@@ -1001,7 +1001,6 @@ export async function createInsertionOrder(data: Omit<InsertionOrder, "id">): Pr
       documentUrl: data.documentUrl ?? null,
       tax: data.tax != null ? String(data.tax) : null,
       totalWithTax: data.totalWithTax != null ? String(data.totalWithTax) : null,
-      hasDraft: data.hasDraft ?? false,
       hasOfficial: data.hasOfficial ?? false,
       collaborations: data.collaborations ?? [],
       reports: data.reports ?? [],

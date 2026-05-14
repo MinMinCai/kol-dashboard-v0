@@ -45,7 +45,6 @@ export async function loadReports(request: Request) {
 
   const mappedOrders = orders.map((order) => ({
     ...order,
-    hasDraft: order.hasDraft ?? false,
     hasOfficial: order.hasOfficial ?? false,
     reports: order.reports ?? [],
   }));
@@ -59,9 +58,8 @@ export async function loadReports(request: Request) {
     if (clientFilter && order.clientName !== clientFilter) return false;
     if (timeFilter === "this_year" && !order.startDate.startsWith("2026")) return false;
     if (timeFilter === "2024_10" && !order.startDate.startsWith("2024-10")) return false;
-    if (statusFilter === "draft" && !order.hasDraft) return false;
     if (statusFilter === "official" && !order.hasOfficial) return false;
-    if (statusFilter === "none" && (order.hasDraft || order.hasOfficial)) return false;
+    if (statusFilter === "none" && order.hasOfficial) return false;
     return true;
   });
 
@@ -141,12 +139,10 @@ export async function handleReportAction(formData: FormData) {
     if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
 
     const updatedReports = (io.reports ?? []).filter((r) => r.id !== reportId);
-    const stillHasDraft = updatedReports.some((r) => r.type === "draft");
     const stillHasOfficial = updatedReports.some((r) => r.type === "official");
 
     await updateInsertionOrder(orderId, {
       reports: updatedReports,
-      hasDraft: stillHasDraft,
       hasOfficial: stillHasOfficial,
     });
 
@@ -157,22 +153,20 @@ export async function handleReportAction(formData: FormData) {
     const orderId = String(formData.get("orderId"));
     const fileName = String(formData.get("fileName"));
     const note = formData.get("note") ? String(formData.get("note")) : undefined;
-    const isOfficial = formData.get("isOfficial") === "true";
 
     const io = await getInsertionOrder(orderId);
     if (!io) return json<ReportActionResult>({ ok: false }, { status: 404 });
     const newReport = {
       id: `rep_${Date.now()}`,
       name: fileName,
-      type: (isOfficial ? "official" : "draft") as "official" | "draft",
+      type: "official" as const,
       createdAt: new Date().toISOString().slice(0, 10),
       createdBy: "手動上傳",
       note,
     };
 
     await updateInsertionOrder(orderId, {
-      hasOfficial: isOfficial ? true : io.hasOfficial,
-      hasDraft: !isOfficial ? true : io.hasDraft,
+      hasOfficial: true,
       reports: [...(io.reports ?? []), newReport],
     });
 
@@ -197,12 +191,12 @@ export async function handleReportAction(formData: FormData) {
     })();
 
     try {
-      const version = (io.reports?.filter((r) => r.type === "draft").length || 0) + 1;
+      const version = (io.reports?.length || 0) + 1;
       const normalizedTitle = reportTitle || `結案報告_v${version}`;
       const newReport = {
         id: `rep_${Date.now()}`,
         name: normalizePptFileName(normalizedTitle),
-        type: "draft" as const,
+        type: "official" as const,
         createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
         createdBy: "系統 AI",
         templateKey,
@@ -219,7 +213,7 @@ export async function handleReportAction(formData: FormData) {
       };
 
       await updateInsertionOrder(orderId, {
-        hasDraft: true,
+        hasOfficial: true,
         reports: [...(io.reports ?? []), reportWithFile],
       });
 

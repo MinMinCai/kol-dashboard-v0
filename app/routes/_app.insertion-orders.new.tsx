@@ -100,8 +100,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const intent = String(formData.get("intent") ?? "create");
-
   const orderTitle = String(formData.get("orderTitle") ?? "").trim();
   const projectName = String(formData.get("projectName") ?? "").trim();
   const clientName = String(formData.get("clientName") ?? "").trim();
@@ -176,7 +174,7 @@ export async function action({ request }: ActionFunctionArgs) {
     salesOwner: salesOwnersArr[0] ?? "",
     kolManager: kolManagersArr[0] ?? "",
     kolCount: selectedKols.length,
-    status: intent === "draft" ? "planned" : "in_progress",
+    status: "in_progress",
     documentUrl,
     totalBudget,
     tax,
@@ -579,10 +577,7 @@ export default function InsertionOrderCreatePage() {
 
             <Group justify="space-between">
               <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
-              <Group>
-                <Button type="submit" name="intent" value="draft" variant="default" loading={submitting}>儲存草稿</Button>
-                <Button type="submit" name="intent" value="create" loading={submitting}>建立執行案件</Button>
-              </Group>
+              <Button type="submit" name="intent" value="create" loading={submitting}>建立執行案件</Button>
             </Group>
           </Stack>
         </Form>

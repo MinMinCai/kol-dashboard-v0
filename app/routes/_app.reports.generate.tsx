@@ -95,7 +95,6 @@ export default function ReportManagementPage() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [isOfficial, setIsOfficial] = useState(true);
   const [versionNote, setVersionNote] = useState("");
 
   const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
@@ -210,7 +209,6 @@ export default function ReportManagementPage() {
     setUploadFile(null);
     setUploadProgress(null);
     setUploadSuccess(false);
-    setIsOfficial(true);
     setVersionNote("");
     openUploadModal();
   };
@@ -229,7 +227,7 @@ export default function ReportManagementPage() {
         fd.append("intent", "uploadReport");
         fd.append("orderId", activeOrder.id);
         fd.append("fileName", uploadFile.name);
-        fd.append("isOfficial", String(isOfficial));
+        fd.append("isOfficial", "true");
         if (versionNote) fd.append("note", versionNote);
         uploadFetcher.submit(fd, { method: "post" });
         setTimeout(() => {
@@ -341,7 +339,6 @@ export default function ReportManagementPage() {
               defaultValue={statusFilter}
               data={[
                 { value: "all", label: "狀態：全部" },
-                { value: "draft", label: "有草稿" },
                 { value: "official", label: "有正式版" },
                 { value: "none", label: "無報告" },
               ]}
@@ -376,7 +373,6 @@ export default function ReportManagementPage() {
         {/* Campaign Cards */}
         <Stack gap="lg">
           {orders.map((order: any) => {
-            const hasDraft = order.hasDraft;
             const hasOfficial = order.hasOfficial;
             
             const kols = order.collaborations ?? [];
@@ -388,7 +384,7 @@ export default function ReportManagementPage() {
             return (
               <Card key={order.id} withBorder shadow="sm" radius="md" p={0}>
                 {/* 1. Campaign Header - All action buttons consolidated here */}
-                <Box p="md" className={(hasDraft || hasOfficial) ? styles.headerBarSeparated : undefined}>
+                <Box p="md" className={hasOfficial ? styles.headerBarSeparated : undefined}>
                   <Group justify="space-between" align="flex-start">
                     <Box>
                       <Text fw={700} size="lg">📋 #{order.orderNo} {order.title ?? order.projectName ?? "未命名案件"}</Text>
@@ -411,8 +407,8 @@ export default function ReportManagementPage() {
 
                 {/* 2. Reports Section */}
                 <Box p="md" bg="transparent">
-                  {!hasDraft && !hasOfficial ? (
-                    // Empty State - no duplicate buttons (they live in the header now)
+                  {!hasOfficial ? (
+                    // Empty State
                     <Stack align="center" py="xl" gap="sm">
                       <Text c="dimmed" fw={500}>尚未生成結案報告</Text>
                       {missingCount > 0 && (
@@ -421,42 +417,7 @@ export default function ReportManagementPage() {
                       <Text size="sm" c="dimmed">請點擊右上角的「+ 生成新報告」開始生成</Text>
                     </Stack>
                   ) : (
-                    <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
-                      {/* Draft Section */}
-                      {hasDraft && (
-                        <Card withBorder bg="var(--mantine-color-gray-light)" radius="sm" p="sm">
-                          <Text size="sm" fw={600} mb="sm" c="dimmed">系統生成（草稿）</Text>
-                          <Stack gap="xs">
-                            {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" className={styles.reportRow}>
-                                <Group wrap="nowrap" className={styles.flex1MinW0}>
-                                  <ThemeIcon size="lg" variant="light" color="gray" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
-                                  <Box miw={0}>
-                                    <Group gap="xs" wrap="nowrap">
-                                      <Text fw={500} truncate="end" miw={0}>{report.name}</Text>
-                                      <Badge color="gray" variant="filled" size="xs" className={styles.flexShrink0}>草稿</Badge>
-                                    </Group>
-                                    <Text size="xs" c="dimmed">生成時間: {report.createdAt} | 生成者: {report.createdBy}</Text>
-                                  </Box>
-                                </Group>
-                                <Group gap="xs" className={styles.flexShrink0}>
-                                  <ActionIcon
-                                    component="a"
-                                    href={buildReportDownloadPath(order.id, report.id)}
-                                    variant="light"
-                                    color="blue"
-                                  >
-                                    <IconDownload size={18} />
-                                  </ActionIcon>
-                                  <ActionIcon variant="light" color="indigo" onClick={() => handleOpenGenModal(order)}><IconPencil size={18} /></ActionIcon>
-                                  <ActionIcon variant="light" color="red" onClick={() => handleAskDeleteReport({ id: report.id, name: report.name, orderId: order.id })}><IconTrash size={18} /></ActionIcon>
-                                </Group>
-                              </Group>
-                            ))}
-                          </Stack>
-                        </Card>
-                      )}
-
+                    <Stack gap="sm">
                       {/* Official Section */}
                       {hasOfficial && (
                         <Card withBorder bg="var(--mantine-color-green-light)" radius="sm" p="sm">
@@ -491,7 +452,7 @@ export default function ReportManagementPage() {
                           </Stack>
                         </Card>
                       )}
-                    </SimpleGrid>
+                    </Stack>
                   )}
                 </Box>
               </Card>
@@ -1036,29 +997,10 @@ export default function ReportManagementPage() {
             <Textarea
               label="版本說明 (選填)"
               placeholder="例如: 已根據客戶回饋修正數據呈現方式、更新品牌視覺..."
-              description="說明此版本與草稿的差異或修改內容"
               minRows={3}
               value={versionNote}
               onChange={(e) => setVersionNote(e.currentTarget.value)}
             />
-
-            {/* Section 3 - Status Setting */}
-            <Checkbox
-              checked={isOfficial}
-              onChange={(evt) => setIsOfficial(evt.currentTarget.checked)}
-              label={<Text fw={600} size="md">標記為正式版本</Text>}
-              description="正式版會顯示 ⭐ 標記，並優先展示給團隊成員"
-              size="md"
-            />
-
-            <Card bg="blue.0" p="sm" radius="md" mt="xs">
-              <Group wrap="nowrap" align="flex-start">
-                <ThemeIcon color="blue" variant="light" size="sm" mt={2}><IconBulb size={14} /></ThemeIcon>
-                <Text size="sm" c="blue.9" lh={1.4}>
-                  上傳正式版後，系統草稿仍會保留。您可以隨時查看或下載任一版本。
-                </Text>
-              </Group>
-            </Card>
 
             <Group justify="flex-end" mt="md">
               <Button variant="ghost" color="gray" onClick={closeUploadModal}>取消</Button>

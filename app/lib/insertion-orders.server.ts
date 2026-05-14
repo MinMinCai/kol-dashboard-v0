@@ -101,13 +101,13 @@ export async function handleInsertionOrderAction(
     if (io) {
       const newReport = {
         id: `rep_${Date.now()}`,
-        name: `結案報告_v${(io.reports?.filter((r: any) => r.type === "draft").length || 0) + 1}.pptx`,
-        type: "draft" as const,
+        name: `結案報告_v${(io.reports?.length || 0) + 1}.pptx`,
+        type: "official" as const,
         createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
         createdBy: "系統 AI",
       };
       await updateInsertionOrder(orderId, {
-        hasDraft: true,
+        hasOfficial: true,
         reports: [...(io.reports || []), newReport],
       });
     }
