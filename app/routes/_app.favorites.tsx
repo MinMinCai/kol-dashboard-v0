@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Alert,
   Avatar,
   Badge,
@@ -17,7 +18,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconPhone } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconEye, IconPhone } from "@tabler/icons-react";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
@@ -574,14 +575,16 @@ export default function FavoritesPage() {
               <Group justify="space-between" mt="auto" pt="sm" onClick={(e) => e.stopPropagation()}>
                 <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
                 <Group gap="xs">
-                  <Link to={`/kols/${kol.id}`} className={styles.viewLink}>查看詳細</Link>
-                  <button
-                    type="button"
-                    onClick={() => setContactKol(kol)}
-                    className={`${styles.actionButton} ${styles.actionButtonTeal}`}
-                  >
-                    聯絡方式
-                  </button>
+                  <Tooltip label="查看詳細" withArrow>
+                    <ActionIcon variant="light" color="blue" size="lg" component={Link} to={`/kols/${kol.id}`}>
+                      <IconEye size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label="聯絡方式" withArrow>
+                    <ActionIcon variant="light" color="teal" size="lg" onClick={() => setContactKol(kol)}>
+                      <IconPhone size={18} />
+                    </ActionIcon>
+                  </Tooltip>
                   {folder !== "全部"
                     && (kol.favoriteFolders ?? []).includes(folder)
                     && accessByFolderName.get(folder) !== "shared" && (

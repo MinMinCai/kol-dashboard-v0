@@ -28,6 +28,7 @@ function compareOrderNo(a: string, b: string): number {
 
 export async function loadReports(request: Request) {
   const url = new URL(request.url);
+  const q = url.searchParams.get("q") ?? "";
   const clientFilter = url.searchParams.get("client") ?? "";
   const timeFilter = url.searchParams.get("time") ?? "all";
   const statusFilter = url.searchParams.get("status") ?? "all";
@@ -50,6 +51,11 @@ export async function loadReports(request: Request) {
   }));
 
   const filtered = mappedOrders.filter((order) => {
+    if (q) {
+      const ql = q.toLowerCase();
+      const matchText = [order.orderNo, order.title, order.projectName, order.clientName].join(" ").toLowerCase();
+      if (!matchText.includes(ql)) return false;
+    }
     if (clientFilter && order.clientName !== clientFilter) return false;
     if (timeFilter === "this_year" && !order.startDate.startsWith("2026")) return false;
     if (timeFilter === "2024_10" && !order.startDate.startsWith("2024-10")) return false;
@@ -106,6 +112,7 @@ export async function loadReports(request: Request) {
     orders: paginatedOrders,
     allOrders: mappedOrders,
     allClients,
+    q,
     clientFilter,
     timeFilter,
     statusFilter,

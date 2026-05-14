@@ -10,6 +10,7 @@ import {
   Divider,
   Group,
   Modal,
+  MultiSelect,
   Pagination,
   SimpleGrid,
   Stack,
@@ -92,6 +93,43 @@ export default function KolListPage() {
   const revalidator = useRevalidator();
   const batchImportFetcher = useFetcher<{ result?: { total: number; success: number; failed: number; errors: string[] }; error?: string }>();
   const favoriteFetcher = useFetcher<{ success?: boolean; error?: string }>();
+
+  // ============ Filter local state ============
+  const [qLocal, setQLocal] = useState(q);
+  const [frLocal, setFrLocal] = useState<string[]>(followerRanges);
+  const [indLocal, setIndLocal] = useState<string[]>(industries);
+  const [tagLocal, setTagLocal] = useState<string[]>(tags);
+
+  useEffect(() => {
+    setQLocal(q);
+    setFrLocal(followerRanges);
+    setIndLocal(industries);
+    setTagLocal(tags);
+  }, [q, followerRanges, industries, tags]);
+
+  function applyFilters() {
+    const sp = new URLSearchParams();
+    if (qLocal) sp.set("q", qLocal);
+    if (view !== "card") sp.set("view", view);
+    if (sortKey !== "followers") sp.set("sort", sortKey);
+    if (sortOrder !== "desc") sp.set("order", sortOrder);
+    frLocal.forEach((v) => sp.append("fr", v));
+    indLocal.forEach((v) => sp.append("ind", v));
+    tagLocal.forEach((v) => sp.append("tag", v));
+    navigate(`/kols?${sp.toString()}`);
+  }
+
+  function clearFilters() {
+    setQLocal("");
+    setFrLocal([]);
+    setIndLocal([]);
+    setTagLocal([]);
+    const sp = new URLSearchParams();
+    if (view !== "card") sp.set("view", view);
+    if (sortKey !== "followers") sp.set("sort", sortKey);
+    if (sortOrder !== "desc") sp.set("order", sortOrder);
+    navigate(`/kols?${sp.toString()}`);
+  }
 
   // ============ State ============
   const [deleteKolId, setDeleteKolId] = useState<string | null>(null);
@@ -216,115 +254,53 @@ export default function KolListPage() {
         </Group>
       </Group>
 
-      {/* ============ Search Bar ============ */}
-      <form method="get" action="/kols" className={styles.searchForm}>
-        {/* preserve other params */}
-        {view !== "card" && <input type="hidden" name="view" value={view} />}
-        {sortKey !== "followers" && <input type="hidden" name="sort" value={sortKey} />}
-        {sortOrder !== "desc" && <input type="hidden" name="order" value={sortOrder} />}
-        {followerRanges.map((r) => <input key={r} type="hidden" name="fr" value={r} />)}
-        {industries.map((i) => <input key={i} type="hidden" name="ind" value={i} />)}
-        {tags.map((t) => <input key={t} type="hidden" name="tag" value={t} />)}
-        {minRating > 0 && <input type="hidden" name="minRating" value={String(minRating)} />}
-        {maxRating < 5 && <input type="hidden" name="maxRating" value={String(maxRating)} />}
-
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="搜尋 KOL 名稱、@帳號、產業或標籤（按 Enter 搜尋）"
-          className={styles.searchInput}
+      {/* ============ Search + Filter Bar ============ */}
+      <Group gap={8} wrap="wrap" align="flex-end">
+        <Box style={{ flex: "1 1 220px", minWidth: 180 }}>
+          <input
+            value={qLocal}
+            onChange={(e) => setQLocal(e.currentTarget.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") applyFilters(); }}
+            placeholder="搜尋 KOL 名稱、@帳號、產業或標籤"
+            className={`${styles.searchInput} ${styles.searchInputFull}`}
+          />
+        </Box>
+        <MultiSelect
+          placeholder="粉絲數"
+          data={FOLLOWER_RANGES.map((r) => ({ value: r.key, label: r.label }))}
+          value={frLocal}
+          onChange={setFrLocal}
+          w={160}
+          clearable
+          comboboxProps={{ withinPortal: true }}
         />
-        <button type="submit" className={styles.searchSubmit}>搜尋</button>
-        {q && (
-          <a href={buildUrl(current, { q: null })} className={styles.searchClear}>✕</a>
+        <MultiSelect
+          placeholder="產業別"
+          data={allIndustries}
+          value={indLocal}
+          onChange={setIndLocal}
+          w={160}
+          clearable
+          searchable
+          comboboxProps={{ withinPortal: true }}
+        />
+        <MultiSelect
+          placeholder="標籤"
+          data={allTags}
+          value={tagLocal}
+          onChange={setTagLocal}
+          w={180}
+          clearable
+          searchable
+          comboboxProps={{ withinPortal: true }}
+        />
+        <Button onClick={applyFilters}>
+          套用篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+        </Button>
+        {activeFilterCount > 0 && (
+          <Button variant="subtle" color="gray" onClick={clearFilters}>清除</Button>
         )}
-      </form>
-
-      {/* ============ Filter Panel (always visible) ============ */}
-      <Card withBorder p="md">
-        <form method="get" action="/kols">
-          {/* preserve non-filter params */}
-          <input type="hidden" name="view" value={view} />
-          <input type="hidden" name="sort" value={sortKey} />
-          <input type="hidden" name="order" value={sortOrder} />
-          {q && <input type="hidden" name="q" value={q} />}
-
-          <Group align="flex-start" gap="xl" wrap="wrap">
-            {/* follower ranges */}
-            <Box miw={120}>
-              <Text size="sm" fw={600} mb={6}>粉絲數</Text>
-              <Stack gap={4}>
-                {FOLLOWER_RANGES.map((r) => (
-                  <label key={r.key} className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      name="fr"
-                      value={r.key}
-                      defaultChecked={followerRanges.includes(r.key)}
-                    />
-                    {r.label}
-                  </label>
-                ))}
-              </Stack>
-            </Box>
-
-            <Divider orientation="vertical" />
-
-            {/* industries */}
-            <Box miw={120}>
-              <Text size="sm" fw={600} mb={6}>產業別</Text>
-              <Stack gap={4}>
-                {allIndustries.map((ind) => (
-                  <label key={ind} className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      name="ind"
-                      value={ind}
-                      defaultChecked={industries.includes(ind)}
-                    />
-                    {ind}
-                  </label>
-                ))}
-              </Stack>
-            </Box>
-
-            <Divider orientation="vertical" />
-
-            {/* tags */}
-            <Box style={{ flex: 1, minWidth: 200 }}>
-              <Text size="sm" fw={600} mb={6}>標籤</Text>
-              <Group gap={6} wrap="wrap">
-                {allTags.map((tag) => (
-                  <label
-                    key={tag}
-                    data-tag-label="1"
-                    className={tags.includes(tag) ? `${styles.tagLabel} ${styles.tagLabelActive}` : styles.tagLabel}
-                  >
-                    <input
-                      type="checkbox"
-                      name="tag"
-                      value={tag}
-                      defaultChecked={tags.includes(tag)}
-                      hidden
-                    />
-                    {tag}
-                  </label>
-                ))}
-              </Group>
-            </Box>
-          </Group>
-
-          <Group mt="md" gap="sm">
-            <button type="submit" className={styles.applyFilterSubmit}>
-              套用篩選{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-            </button>
-            <a
-              href={buildUrl({ view, sort: sortKey, order: sortOrder }, {})}
-              className={styles.clearFilter}
-            >清除篩選</a>
-          </Group>
-        </form>
-      </Card>
+      </Group>
 
       {/* ============ Results Count ============ */}
       <Text c="dimmed" size="sm">共 {total} 筆結果{q ? `（搜尋：${q}）` : ""}</Text>
@@ -407,7 +383,7 @@ export default function KolListPage() {
                       </ActionIcon>
                     </Tooltip>
                     <Tooltip label="編輯" withArrow>
-                      <ActionIcon variant="default" size="lg" component={Link} to={`/kols/${kol.id}/edit`}>
+                      <ActionIcon variant="light" color="orange" size="lg" component={Link} to={`/kols/${kol.id}/edit`}>
                         <IconEdit size={18} />
                       </ActionIcon>
                     </Tooltip>
@@ -517,7 +493,7 @@ export default function KolListPage() {
                           </ActionIcon>
                         </Tooltip>
                         <Tooltip label="編輯" withArrow>
-                          <ActionIcon variant="default" size="md" component={Link} to={`/kols/${kol.id}/edit`}>
+                          <ActionIcon variant="light" color="orange" size="md" component={Link} to={`/kols/${kol.id}/edit`}>
                             <IconEdit size={16} />
                           </ActionIcon>
                         </Tooltip>

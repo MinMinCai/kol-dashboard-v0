@@ -28,7 +28,7 @@ import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-r
 import { Link, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import { useNotificationStore } from "~/store/notification";
 import { useState, useEffect } from "react";
-import { buildReportDownloadPath, type SortOption } from "~/lib/reports";
+import { buildReportDownloadPath } from "~/lib/reports";
 import { handleReportAction, loadReports, type ReportActionResult } from "~/lib/reports.server";
 import { 
   IconFileTypePpt, 
@@ -74,6 +74,7 @@ export default function ReportManagementPage() {
     orders,
     allOrders,
     allClients,
+    q,
     clientFilter,
     timeFilter,
     statusFilter,
@@ -111,7 +112,6 @@ export default function ReportManagementPage() {
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [orderSearch, setOrderSearch] = useState("");
-  const [pageSearch, setPageSearch] = useState("");
 
   useEffect(() => {
     if (deleteFetcher.state === "idle" && deleteFetcher.data?.ok) {
@@ -308,90 +308,66 @@ export default function ReportManagementPage() {
           </Button>
         </Group>
 
-        {/* Search Bar */}
-        <TextInput
-          placeholder="搜尋執行案件編號、案件名稱或客戶..."
-          value={pageSearch}
-          onChange={(e) => setPageSearch(e.currentTarget.value)}
-          rightSection={pageSearch ? (
-            <ActionIcon variant="subtle" size="sm" onClick={() => setPageSearch("")}>
-              <IconX size={14} />
-            </ActionIcon>
-          ) : undefined}
-        />
-
-        {/* Filter Bar */}
+        {/* Search + Filter Bar */}
         <form method="get">
-          <Group align="end" wrap="wrap" gap="md">
-            <Select
-              label="客戶"
-              name="client"
-              placeholder="全部"
-              defaultValue={clientFilter}
-              data={["", ...allClients].map(c => ({ value: c, label: c || "全部" }))}
-              allowDeselect={false}
-              w={200}
+          <Group align="center" wrap="wrap" gap="sm">
+            <TextInput
+              name="q"
+              placeholder="搜尋執行案件編號、案件名稱或客戶..."
+              defaultValue={q}
+              className={styles.searchInput}
             />
             <Select
-              label="時間範圍"
+              name="client"
+              placeholder="客戶：全部"
+              defaultValue={clientFilter}
+              data={["", ...allClients].map(c => ({ value: c, label: c || "客戶：全部" }))}
+              allowDeselect={false}
+              w={160}
+            />
+            <Select
               name="time"
               defaultValue={timeFilter}
               data={[
-                { value: "all", label: "全部" },
+                { value: "all", label: "時間：全部" },
                 { value: "this_year", label: "2026 年" },
                 { value: "2024_10", label: "2024-10" },
               ]}
               allowDeselect={false}
-              w={140}
+              w={130}
             />
             <Select
-              label="狀態"
               name="status"
               defaultValue={statusFilter}
               data={[
-                { value: "all", label: "全部" },
+                { value: "all", label: "狀態：全部" },
                 { value: "draft", label: "有草稿" },
                 { value: "official", label: "有正式版" },
                 { value: "none", label: "無報告" },
               ]}
               allowDeselect={false}
-              w={140}
+              w={130}
             />
             <Select
-              label="排序"
               name="sort"
               defaultValue={sort}
-              onChange={(value) => {
-                if (!value) return;
-                const nextSort = value as SortOption;
-
-                const sp = new URLSearchParams();
-                if (clientFilter) sp.set("client", clientFilter);
-                sp.set("time", timeFilter);
-                sp.set("status", statusFilter);
-                sp.set("sort", nextSort);
-                sp.set("page", "1");
-                sp.set("pageSize", String(pageSize));
-
-                navigate(`/reports/generate?${sp.toString()}`);
-              }}
               data={[
-                { value: "order_no_asc", label: "執行案件編號（小→大）" },
-                { value: "order_no_desc", label: "執行案件編號（大→小）" },
+                { value: "order_no_asc", label: "案件編號（小→大）" },
+                { value: "order_no_desc", label: "案件編號（大→小）" },
                 { value: "date_desc", label: "執行日期（新→舊）" },
                 { value: "date_asc", label: "執行日期（舊→新）" },
-                { value: "report_date_desc", label: "報告建立日期（新→舊）" },
-                { value: "report_date_asc", label: "報告建立日期（舊→新）" },
+                { value: "report_date_desc", label: "報告日期（新→舊）" },
+                { value: "report_date_asc", label: "報告日期（舊→新）" },
                 { value: "title_az", label: "案件名稱（A→Z）" },
                 { value: "title_za", label: "案件名稱（Z→A）" },
-                { value: "budget_desc", label: "總預算（高→低）" },
-                { value: "budget_asc", label: "總預算（低→高）" },
+                { value: "budget_desc", label: "預算（高→低）" },
+                { value: "budget_asc", label: "預算（低→高）" },
               ]}
               allowDeselect={false}
-              w={200}
+              w={180}
             />
-            <Button type="submit" variant="light">套用篩選</Button>
-            {(clientFilter || timeFilter !== "all") && (
+            <Button type="submit">套用篩選</Button>
+            {(q || clientFilter || timeFilter !== "all" || statusFilter !== "all") && (
               <Button variant="subtle" color="gray" component="a" href="/reports/generate">清除</Button>
             )}
           </Group>
@@ -399,15 +375,7 @@ export default function ReportManagementPage() {
 
         {/* Campaign Cards */}
         <Stack gap="lg">
-          {orders.filter((order: any) => {
-            if (!pageSearch) return true;
-            const q = pageSearch.toLowerCase();
-            return (
-              order.orderNo?.toLowerCase().includes(q) ||
-              (order.title || order.projectName || "").toLowerCase().includes(q) ||
-              order.clientName?.toLowerCase().includes(q)
-            );
-          }).map((order: any) => {
+          {orders.map((order: any) => {
             const hasDraft = order.hasDraft;
             const hasOfficial = order.hasOfficial;
             
