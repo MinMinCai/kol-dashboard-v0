@@ -75,7 +75,13 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\\\\app\" -Recurse -Directory)",
       "Bash(Select-Object -First 20)",
       "Bash(Format-Table FullName)",
-      "Bash(grep -E 'favorites|kols\\\\._index|kols\\\\.$kolId')"
+      "Bash(grep -E 'favorites|kols\\\\._index|kols\\\\.$kolId')",
+      "Bash(Get-ChildItem -Recurse -Filter \"*proposal*\" -ErrorAction SilentlyContinue)",
+      "Bash(npx tsx *)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"isEditMode\\\\|generate-doc\\\\|deleteProposal\\\\|canEdit\\\\|IconTrash\\\\|isOwner\\\\|handleDelete\\\\|update_proposal\\\\|convert\\\\|insert.*order\\\\|execution\" app/routes/_app.proposals.\\\\$proposalId.tsx | head -60 2>&1)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"isEditing\\\\|deleteConfirm\\\\|儲存提案\\\\|取消編輯\\\\|刪除提案\" app/routes/_app.proposals.\\\\$proposalId.tsx | head -30 2>&1)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"刪除提案\\\\|deleteProposal\\\\|delete_proposal\\\\|openDeleteConfirm\\\\b\" app/routes/_app.proposals.\\\\$proposalId.tsx 2>&1)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"delete.*proposal\\\\|proposal.*delete\\\\|刪除此提案\\\\|提案刪除\" app/routes/_app.proposals.\\\\$proposalId.tsx 2>&1)"
     ]
   }
 }

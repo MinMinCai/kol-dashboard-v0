@@ -14,13 +14,21 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import type { ProposalPermission } from "~/lib/mock-api.server";
 import { useDisclosure } from "@mantine/hooks";
-import { IconChevronLeft, IconChevronRight, IconChevronUp, IconChevronDown, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronUp, IconChevronDown, IconEye, IconKey, IconPencil, IconTrash } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
-import { deleteProposal, listProposals, updateProposal } from "~/lib/mock-api.server";
+import {
+  deleteProposal,
+  listPermissionsForProposals,
+  listProposals,
+  setProposalPermissions,
+  updateProposal,
+} from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
+import { getProposalAccessLevel, DEPARTMENTS } from "~/lib/proposal-permissions.server";
 import styles from "./_app.proposals._index.module.css";
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -62,27 +70,59 @@ function buildUrl(base: Record<string, string | string[]>, overrides: Record<str
 
 export async function action({ request }: ActionFunctionArgs) {
   const member = await getCurrentMember(request).catch(() => null);
-  if (!member || member.role === "member") {
-    return json({ success: false, error: "權限不足" }, { status: 403 });
-  }
+  if (!member) return json({ success: false, error: "未登入" }, { status: 401 });
 
   const formData = await request.formData();
   const intent = formData.get("intent");
 
   if (intent === "delete_proposal") {
     const id = String(formData.get("id"));
+    const [allProposals, permsMap] = await Promise.all([listProposals(), listPermissionsForProposals([id])]);
+    const proposal = allProposals.find((p) => p.id === id);
+    if (!proposal) return json({ success: false, error: "提案不存在" }, { status: 404 });
+    const perms = permsMap.get(id) ?? [];
+    const level = getProposalAccessLevel(proposal, perms, member);
+    // Only creator can delete when permissions are set; if no permissions, anyone can
+    if (perms.length > 0 && level !== "creator") {
+      return json({ success: false, error: "只有建立人可以刪除此提案" }, { status: 403 });
+    }
     await deleteProposal(id);
     return json({ success: true });
   }
 
   if (intent === "edit_proposal") {
     const id = String(formData.get("id"));
+    const [allProposals, permsMap] = await Promise.all([listProposals(), listPermissionsForProposals([id])]);
+    const proposal = allProposals.find((p) => p.id === id);
+    if (!proposal) return json({ success: false, error: "提案不存在" }, { status: 404 });
+    const perms = permsMap.get(id) ?? [];
+    const level = getProposalAccessLevel(proposal, perms, member);
+    if (level !== "creator" && level !== "edit") {
+      return json({ success: false, error: "權限不足" }, { status: 403 });
+    }
     const title = String(formData.get("title"));
     const clientName = String(formData.get("clientName"));
     const budget = Number(formData.get("budget"));
     const launchMonth = String(formData.get("launchMonth"));
     const stage = String(formData.get("stage"));
     await updateProposal(id, { title, clientName, budget, launchMonth, stage });
+    return json({ success: true });
+  }
+
+  if (intent === "update_permissions") {
+    const id = String(formData.get("id"));
+    const allProposals = await listProposals();
+    const proposal = allProposals.find((p) => p.id === id);
+    if (!proposal || proposal.creatorId !== member.id) {
+      return json({ success: false, error: "只有建立人可以修改權限" }, { status: 403 });
+    }
+    let perms: { department: string; permissionLevel: "edit" | "view" }[] = [];
+    try { perms = JSON.parse(String(formData.get("permissionsJson") ?? "[]")); } catch { /* ignore */ }
+    // Creator's department always gets edit
+    const depts = new Map<string, "edit" | "view">();
+    if (member.group) depts.set(member.group, "edit");
+    for (const p of perms) depts.set(p.department, p.permissionLevel);
+    await setProposalPermissions(id, Array.from(depts.entries()).map(([department, permissionLevel]) => ({ department, permissionLevel })));
     return json({ success: true });
   }
 
@@ -93,7 +133,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const member = await getCurrentMember(request).catch(() => null);
-  const currentRole = member?.role ?? "member";
 
   const url = new URL(request.url);
   const sp = url.searchParams;
@@ -104,16 +143,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const budgetMin = Number(sp.get("budgetMin") ?? 0) || 0;
   const budgetMax = Number(sp.get("budgetMax") ?? 0) || 0;
   const overdue = sp.get("overdue") === "1";
-  const sort = sp.get("sort") ?? "";        // "budget" | "launchMonth" | "updatedAt"
-  const order = sp.get("order") ?? "desc"; // "asc" | "desc"
+  const sort = sp.get("sort") ?? "";
+  const order = sp.get("order") ?? "desc";
   const page = Math.max(1, Number(sp.get("page") ?? 1));
 
   const allProposals = await withTimeout(listProposals(), []).catch(() => []);
+  const permsMap = await listPermissionsForProposals(allProposals.map((p) => p.id));
 
   const allClients = [...new Set(allProposals.map((p) => p.clientName).filter(Boolean))].sort();
   const today = new Date().toISOString().slice(0, 10);
 
-  let proposals = allProposals.filter((p): p is NonNullable<typeof p> => p != null);
+  // Filter by permission: if no permissions set, everyone sees it; otherwise only accessible levels
+  let proposals = allProposals.filter((p): p is NonNullable<typeof p> => {
+    if (!p) return false;
+    const perms = permsMap.get(p.id) ?? [];
+    const level = getProposalAccessLevel(p, perms, member);
+    return level !== "none";
+  });
 
   // ── text search (title + clientName) ──
   if (q) {
@@ -171,6 +217,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
     (q ? 1 : 0) + (clients.length ? 1 : 0) + (stages.length ? 1 : 0) +
     (budgetMin > 0 || budgetMax > 0 ? 1 : 0) + (overdue ? 1 : 0);
 
+  // Per-row access levels for the current page
+  const proposalAccess = Object.fromEntries(
+    pageRows.map((p) => {
+      const perms = permsMap.get(p.id) ?? [];
+      return [p.id, getProposalAccessLevel(p, perms, member)];
+    }),
+  );
+
+  // Permissions snapshot for the current page (for the permissions modal)
+  const proposalPerms = Object.fromEntries(
+    pageRows.map((p) => [p.id, permsMap.get(p.id) ?? []]),
+  );
+
   return json({
     proposals: pageRows,
     total,
@@ -180,8 +239,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     q, clients, stages, budgetMin, budgetMax, overdue,
     sort, order,
     activeFilterCount,
-    currentRole,
     today,
+    currentMemberId: member?.id ?? null,
+    currentMemberGroup: member?.group ?? null,
+    proposalAccess,
+    proposalPerms,
   });
 }
 
@@ -191,22 +253,30 @@ export default function ProposalListPage() {
   const {
     proposals, total, totalPages, page,
     allClients, q, clients, stages, budgetMin, budgetMax, overdue,
-    sort, order, activeFilterCount, today, currentRole,
+    sort, order, activeFilterCount, today,
+    currentMemberId, currentMemberGroup,
+    proposalAccess, proposalPerms,
   } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const [clientsLocal, setClientsLocal] = useState<string[]>(clients);
   const [stagesLocal, setStagesLocal] = useState<string[]>(stages);
 
-  const canEdit = currentRole === "admin" || currentRole === "manager";
-
   const [editingProposal, setEditingProposal] = useState<any>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [permTarget, setPermTarget] = useState<any>(null);
+  const [permModalOpen, { open: openPermModal, close: closePermModal }] = useDisclosure(false);
+  const [editingPerms, setEditingPerms] = useState<{ department: string; permissionLevel: "edit" | "view" }[]>([]);
 
   const handleEdit = (p: any) => { setEditingProposal(p); open(); };
   const handleAskDelete = (p: any) => { setDeleteTarget(p); openDelete(); };
+  const handleOpenPerms = (p: any) => {
+    setPermTarget(p);
+    setEditingPerms((proposalPerms[p.id] as ProposalPermission[] ?? []).filter((pp) => pp.department !== currentMemberGroup));
+    openPermModal();
+  };
 
   // ── current params for URL building ──
   const current: Record<string, string | string[]> = {
@@ -411,12 +481,17 @@ export default function ProposalListPage() {
                         <ActionIcon variant="light" color="blue" component={Link} to={`/proposals/${p.id}`} title="查看詳細">
                           <IconEye size={16} />
                         </ActionIcon>
-                        {canEdit && (
+                        {(proposalAccess[p.id] === "creator" || proposalAccess[p.id] === "edit") && (
                           <ActionIcon variant="light" color="orange" onClick={() => handleEdit(p)} title="編輯">
                             <IconPencil size={16} />
                           </ActionIcon>
                         )}
-                        {canEdit && (
+                        {proposalAccess[p.id] === "creator" && (
+                          <ActionIcon variant="light" color="violet" onClick={() => handleOpenPerms(p)} title="權限設定">
+                            <IconKey size={16} />
+                          </ActionIcon>
+                        )}
+                        {(proposalAccess[p.id] === "creator" || ((proposalPerms[p.id] as ProposalPermission[])?.length === 0)) && (
                           <ActionIcon variant="light" color="red" type="button" title="刪除" onClick={() => handleAskDelete(p)}>
                             <IconTrash size={16} />
                           </ActionIcon>
@@ -504,6 +579,69 @@ export default function ProposalListPage() {
             </Group>
           </Stack>
         </Form>
+      </Modal>
+
+      {/* ── 權限設定 Modal（僅 creator 可見）── */}
+      <Modal opened={permModalOpen} onClose={closePermModal} title={`權限設定：${permTarget?.title ?? ""}`} size="md">
+        {permTarget && (
+          <Form method="post" onSubmit={closePermModal}>
+            <input type="hidden" name="intent" value="update_permissions" />
+            <input type="hidden" name="id" value={permTarget.id} />
+            <input type="hidden" name="permissionsJson" value={JSON.stringify(editingPerms)} />
+            <Stack gap="sm">
+              <Text size="sm" c="dimmed">你的部門（{currentMemberGroup ?? "—"}）預設擁有編輯權限，不需設定。</Text>
+              {(DEPARTMENTS as readonly string[])
+                .filter((dept) => dept !== currentMemberGroup)
+                .map((dept) => {
+                  const entry = editingPerms.find((p) => p.department === dept);
+                  return (
+                    <Group key={dept} gap="xs" align="center">
+                      <Text size="sm" w={60}>{dept}</Text>
+                      <Text
+                        size="xs"
+                        c={entry?.permissionLevel === "edit" ? "orange" : entry?.permissionLevel === "view" ? "blue" : "dimmed"}
+                        w={40}
+                      >
+                        {entry?.permissionLevel === "edit" ? "編輯" : entry?.permissionLevel === "view" ? "檢視" : "無"}
+                      </Text>
+                      <Group gap={4}>
+                        {(["edit", "view", "none"] as const).map((lvl) => (
+                          <Button
+                            key={lvl}
+                            size="xs"
+                            variant={
+                              (entry?.permissionLevel ?? "none") === lvl ? "filled" : "light"
+                            }
+                            color={lvl === "edit" ? "orange" : lvl === "view" ? "blue" : "gray"}
+                            onClick={() => {
+                              if (lvl === "none") {
+                                setEditingPerms((prev) => prev.filter((p) => p.department !== dept));
+                              } else {
+                                setEditingPerms((prev) => {
+                                  const next = prev.filter((p) => p.department !== dept);
+                                  next.push({ department: dept, permissionLevel: lvl });
+                                  return next;
+                                });
+                              }
+                            }}
+                          >
+                            {lvl === "edit" ? "編輯" : lvl === "view" ? "檢視" : "無權限"}
+                          </Button>
+                        ))}
+                      </Group>
+                    </Group>
+                  );
+                })}
+              <Text size="xs" c="dimmed" mt="xs">
+                不設定任何權限代表所有人皆可存取此提案。
+              </Text>
+              <Group justify="flex-end" mt="sm">
+                <Button variant="default" type="button" onClick={closePermModal}>取消</Button>
+                <Button type="submit" color="violet">儲存權限</Button>
+              </Group>
+            </Stack>
+          </Form>
+        )}
       </Modal>
     </Stack>
   );

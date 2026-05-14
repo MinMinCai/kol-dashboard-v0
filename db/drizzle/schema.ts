@@ -113,6 +113,7 @@ export const proposals = pgTable(
     objective: text("objective"),
     budget: numeric("budget", { precision: 12, scale: 2 }),
     stage: varchar("stage", { length: 30 }).default("draft").notNull(),
+    creatorId: text("creator_id").references(() => teamMembers.id, { onDelete: "set null" }),
     owner: varchar("owner", { length: 100 }),
     launchMonth: varchar("due_date", { length: 20 }),
     lastModifiedBy: varchar("last_modified_by", { length: 100 }),
@@ -164,6 +165,22 @@ export const proposalFeedback = pgTable("proposal_feedback", {
   createdBy: varchar("created_by", { length: 100 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+// ─── Proposal Permissions ─────────────────────────────────────────────────────
+
+export const proposalPermissions = pgTable(
+  "proposal_permissions",
+  {
+    id: text("id").primaryKey(),
+    proposalId: text("proposal_id").references(() => proposals.id, { onDelete: "cascade" }).notNull(),
+    department: varchar("department", { length: 20 }).notNull(),
+    permissionLevel: varchar("permission_level", { length: 10 }).notNull(), // 'edit' | 'view'
+    createdAt: now,
+  },
+  (table) => ({
+    proposalDeptUq: uniqueIndex("uq_proposal_permission_dept").on(table.proposalId, table.department),
+  }),
+);
 
 // ─── Insertion Orders ─────────────────────────────────────────────────────────
 

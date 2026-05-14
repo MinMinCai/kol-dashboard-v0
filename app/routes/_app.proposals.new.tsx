@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   Divider,
   Group,
   Modal,
@@ -24,8 +25,11 @@ import {
   createProposal,
   listFavoriteFolders,
   listKols,
+  setProposalPermissions,
   type Kol,
 } from "~/lib/mock-api.server";
+import { getCurrentMember } from "~/lib/demo-identity.server";
+import { DEPARTMENTS } from "~/lib/proposal-permissions.server";
 
 type FolderKol = Pick<
   Kol,
@@ -103,10 +107,11 @@ function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T>
   ]);
 }
 
-export async function loader(_: LoaderFunctionArgs) {
-  const [allKols, savedFolders] = await Promise.all([
+export async function loader({ request }: LoaderFunctionArgs) {
+  const [allKols, savedFolders, currentMember] = await Promise.all([
     withTimeout(listKols(), [] as Kol[]),
     withTimeout(listFavoriteFolders(), [] as string[]),
+    getCurrentMember(request).catch(() => null),
   ]);
   const favorites = allKols.filter((k) => k.isFavorite);
   const usedFolders = favorites.flatMap((r) => r.favoriteFolders ?? (r.favoriteFolder ? [r.favoriteFolder] : []));
@@ -138,22 +143,53 @@ export async function loader(_: LoaderFunctionArgs) {
     engagementRate: kol.engagementRate,
     realFollowerRatio: kol.realFollowerRatio,
   }));
-  return json({ folders, folderKols, allKolOptions });
+  return json({
+    folders,
+    folderKols,
+    allKolOptions,
+    currentMember: currentMember ? { id: currentMember.id, name: currentMember.name, group: currentMember.group } : null,
+  });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+  const currentMember = await getCurrentMember(request).catch(() => null);
   const formData = await request.formData();
   const title = String(formData.get("title") ?? "").trim();
   const clientName = String(formData.get("clientName") ?? "").trim();
   const budget = Number(formData.get("budget") ?? 0);
   const launchMonth = String(formData.get("launchMonth") ?? "").trim();
   const candidatesRaw = String(formData.get("candidatesJson") ?? "[]");
+  const permissionsRaw = String(formData.get("permissionsJson") ?? "[]");
 
   if (!title || !clientName) {
     return json({ error: "標題與客戶為必填" }, { status: 400 });
   }
 
-  const proposal = await createProposal({ title, clientName, budget, launchMonth: launchMonth || "TBD", stage: "draft" });
+  const proposal = await createProposal({
+    title,
+    clientName,
+    budget,
+    launchMonth: launchMonth || "TBD",
+    stage: "draft",
+    creatorId: currentMember?.id ?? null,
+    creatorName: currentMember?.name ?? null,
+  });
+
+  // Set creator's department as edit by default, then merge user-specified permissions
+  let extraPerms: { department: string; permissionLevel: "edit" | "view" }[] = [];
+  try {
+    extraPerms = JSON.parse(permissionsRaw);
+  } catch { /* ignore */ }
+
+  if (extraPerms.length > 0) {
+    const depts = new Map<string, "edit" | "view">();
+    // Creator's department always gets edit
+    if (currentMember?.group) depts.set(currentMember.group, "edit");
+    for (const p of extraPerms) {
+      depts.set(p.department, p.permissionLevel);
+    }
+    await setProposalPermissions(proposal.id, Array.from(depts.entries()).map(([department, permissionLevel]) => ({ department, permissionLevel })));
+  }
 
   let candidates: ImportRow[] = [];
   try {
@@ -188,8 +224,10 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/proposals/${proposal.id}`);
 }
 
+type DeptPermEntry = { department: string; permissionLevel: "edit" | "view" };
+
 export default function ProposalCreatePage() {
-  const { folders, folderKols, allKolOptions } = useLoaderData<typeof loader>();
+  const { folders, folderKols, allKolOptions, currentMember } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -200,6 +238,7 @@ export default function ProposalCreatePage() {
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [budget, setBudget] = useState<number | string>(0);
   const [launchMonth, setLaunchMonth] = useState("");
+  const [deptPerms, setDeptPerms] = useState<DeptPermEntry[]>([]);
   const [manualCandidate, setManualCandidate] = useState<Omit<ImportRow, "kolId" | "kolName">>({
     role: "待定",
     price: 0,
@@ -314,6 +353,7 @@ export default function ProposalCreatePage() {
           <input type="hidden" name="candidatesJson" value={JSON.stringify(candidates)} />
           <input type="hidden" name="budget" value={typeof budget === "number" ? budget : toNumber(budget)} />
           <input type="hidden" name="launchMonth" value={dueDateString} />
+          <input type="hidden" name="permissionsJson" value={JSON.stringify(deptPerms)} />
           <Stack gap="lg">
             <Box>
               <Title order={4} mb="sm">基本資料</Title>
@@ -335,6 +375,47 @@ export default function ProposalCreatePage() {
                   value={launchMonth}
                   onChange={(e) => setLaunchMonth(e.currentTarget.value)}
                 />
+              </Stack>
+            </Box>
+
+            <Divider />
+
+            <Box>
+              <Title order={4} mb="xs">部門權限設定</Title>
+              <Text size="sm" c="dimmed" mb="sm">
+                不設定則所有人皆可檢視與編輯。你的部門（{currentMember?.group ?? "—"}）預設擁有編輯權限。
+              </Text>
+              <Stack gap="xs">
+                {(DEPARTMENTS as readonly string[])
+                  .filter((dept) => dept !== currentMember?.group)
+                  .map((dept) => {
+                    const entry = deptPerms.find((p) => p.department === dept);
+                    return (
+                      <Group key={dept} gap="xs" align="center">
+                        <Text size="sm" w={60}>{dept}</Text>
+                        <Chip.Group
+                          value={entry?.permissionLevel ?? "none"}
+                          onChange={(val) => {
+                            if (val === "none") {
+                              setDeptPerms((prev) => prev.filter((p) => p.department !== dept));
+                            } else {
+                              setDeptPerms((prev) => {
+                                const next = prev.filter((p) => p.department !== dept);
+                                next.push({ department: dept, permissionLevel: val as "edit" | "view" });
+                                return next;
+                              });
+                            }
+                          }}
+                        >
+                          <Group gap={4}>
+                            <Chip value="edit" size="xs">編輯</Chip>
+                            <Chip value="view" size="xs">檢視</Chip>
+                            <Chip value="none" size="xs">無權限</Chip>
+                          </Group>
+                        </Chip.Group>
+                      </Group>
+                    );
+                  })}
               </Stack>
             </Box>
 

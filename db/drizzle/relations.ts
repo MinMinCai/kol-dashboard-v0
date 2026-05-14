@@ -13,8 +13,10 @@ import {
   notifications,
   proposalFeedback,
   proposalKols,
+  proposalPermissions,
   proposalWatchers,
   proposals,
+  teamMembers,
   users,
 } from "./schema";
 
@@ -42,9 +44,21 @@ export const proposalRelations = relations(proposals, ({ one, many }) => ({
     fields: [proposals.clientId],
     references: [clients.id],
   }),
+  creator: one(teamMembers, {
+    fields: [proposals.creatorId],
+    references: [teamMembers.id],
+  }),
   proposalKols: many(proposalKols),
   feedbacks: many(proposalFeedback),
+  permissions: many(proposalPermissions),
   insertionOrders: many(insertionOrders),
+}));
+
+export const proposalPermissionRelations = relations(proposalPermissions, ({ one }) => ({
+  proposal: one(proposals, {
+    fields: [proposalPermissions.proposalId],
+    references: [proposals.id],
+  }),
 }));
 
 export const proposalKolRelations = relations(proposalKols, ({ one }) => ({

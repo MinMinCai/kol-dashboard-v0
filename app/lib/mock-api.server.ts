@@ -4,6 +4,7 @@ import {
   kolSocialAccounts as kolSocialAccountsTable,
   proposals as proposalsTable,
   proposalKols as proposalKolsTable,
+  proposalPermissions as proposalPermissionsTable,
   insertionOrders as ioTable,
   kolFavoriteFolders as kolFavoriteFoldersTable,
   kolFavoriteFolderItems as kolFavoriteFolderItemsTable,
@@ -15,7 +16,7 @@ import {
   teamMembers as teamMembersTable,
   systemPreferences as systemPreferencesTable,
 } from "../../db/drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -178,6 +179,15 @@ export type Proposal = {
   budget: number;
   launchMonth: string;
   updatedAt?: string;
+  creatorId?: string | null;
+  creatorName?: string | null;
+};
+
+export type ProposalPermission = {
+  id: string;
+  proposalId: string;
+  department: string;
+  permissionLevel: "edit" | "view";
 };
 
 export type PlatformAudienceMetrics = {
@@ -576,7 +586,7 @@ export async function getFolderAccessForMember(
   return { folder, access: "none" };
 }
 
-function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
+function rowToProposal(row: typeof proposalsTable.$inferSelect, creatorName?: string | null): Proposal {
   const budget = row.budget != null ? Number(row.budget) : 0;
   const rawDate = row.launchMonth as unknown;
   const launchMonth = rawDate instanceof Date
@@ -598,6 +608,8 @@ function rowToProposal(row: typeof proposalsTable.$inferSelect): Proposal {
     budget: isNaN(budget) ? 0 : budget,
     launchMonth,
     updatedAt,
+    creatorId: row.creatorId ?? null,
+    creatorName: creatorName ?? null,
   };
 }
 
@@ -787,14 +799,26 @@ export async function deleteKol(id: string): Promise<boolean> {
 
 // ─── Proposal API ─────────────────────────────────────────────────────────────
 
+async function resolveCreatorNames(creatorIds: (string | null)[]): Promise<Map<string, string>> {
+  const ids = creatorIds.filter((id): id is string => id != null);
+  if (ids.length === 0) return new Map();
+  const members = await db.select({ id: teamMembersTable.id, name: teamMembersTable.name })
+    .from(teamMembersTable)
+    .where(inArray(teamMembersTable.id, ids));
+  return new Map(members.map((m) => [m.id, m.name]));
+}
+
 export async function listProposals(): Promise<Proposal[]> {
   const rows = await db.select().from(proposalsTable);
-  return rows.map(rowToProposal);
+  const nameMap = await resolveCreatorNames(rows.map((r) => r.creatorId));
+  return rows.map((r) => rowToProposal(r, r.creatorId ? nameMap.get(r.creatorId) : null));
 }
 
 export async function getProposal(id: string): Promise<Proposal | null> {
   const rows = await db.select().from(proposalsTable).where(eq(proposalsTable.id, id)).limit(1);
-  return rows.length > 0 ? rowToProposal(rows[0]) : null;
+  if (rows.length === 0) return null;
+  const nameMap = await resolveCreatorNames([rows[0].creatorId]);
+  return rowToProposal(rows[0], rows[0].creatorId ? nameMap.get(rows[0].creatorId) : null);
 }
 
 export async function updateProposal(id: string, data: Partial<Proposal>): Promise<Proposal> {
@@ -808,7 +832,8 @@ export async function updateProposal(id: string, data: Partial<Proposal>): Promi
 
   const rows = await db.update(proposalsTable).set(update).where(eq(proposalsTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
-  return rowToProposal(rows[0]);
+  const nameMap = await resolveCreatorNames([rows[0].creatorId]);
+  return rowToProposal(rows[0], rows[0].creatorId ? nameMap.get(rows[0].creatorId) : null);
 }
 
 export async function createProposal(data: Omit<Proposal, "id">): Promise<Proposal> {
@@ -821,9 +846,52 @@ export async function createProposal(data: Omit<Proposal, "id">): Promise<Propos
       stage: data.stage ?? "draft",
       budget: data.budget != null ? String(data.budget) : null,
       launchMonth: data.launchMonth || null,
+      creatorId: data.creatorId ?? null,
     })
     .returning();
-  return rowToProposal(rows[0]);
+  return rowToProposal(rows[0], data.creatorName ?? null);
+}
+
+// ─── Proposal Permission API ──────────────────────────────────────────────────
+
+export async function listProposalPermissions(proposalId: string): Promise<ProposalPermission[]> {
+  const rows = await db.select().from(proposalPermissionsTable).where(eq(proposalPermissionsTable.proposalId, proposalId));
+  return rows.map((r) => ({
+    id: r.id,
+    proposalId: r.proposalId,
+    department: r.department,
+    permissionLevel: r.permissionLevel as "edit" | "view",
+  }));
+}
+
+export async function setProposalPermissions(
+  proposalId: string,
+  permissions: { department: string; permissionLevel: "edit" | "view" }[],
+): Promise<void> {
+  await db.delete(proposalPermissionsTable).where(eq(proposalPermissionsTable.proposalId, proposalId));
+  if (permissions.length > 0) {
+    await db.insert(proposalPermissionsTable).values(
+      permissions.map((p) => ({
+        id: crypto.randomUUID(),
+        proposalId,
+        department: p.department,
+        permissionLevel: p.permissionLevel,
+      })),
+    );
+  }
+}
+
+/** Batch-fetch permissions for multiple proposals. Returns a Map<proposalId, ProposalPermission[]>. */
+export async function listPermissionsForProposals(proposalIds: string[]): Promise<Map<string, ProposalPermission[]>> {
+  if (proposalIds.length === 0) return new Map();
+  const rows = await db.select().from(proposalPermissionsTable).where(inArray(proposalPermissionsTable.proposalId, proposalIds));
+  const map = new Map<string, ProposalPermission[]>();
+  for (const r of rows) {
+    const entry = map.get(r.proposalId) ?? [];
+    entry.push({ id: r.id, proposalId: r.proposalId, department: r.department, permissionLevel: r.permissionLevel as "edit" | "view" });
+    map.set(r.proposalId, entry);
+  }
+  return map;
 }
 
 export async function deleteProposal(id: string): Promise<boolean> {

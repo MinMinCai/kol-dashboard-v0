@@ -27,31 +27,63 @@ import styles from "./_app.proposals.$proposalId.module.css";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { type Kol } from "~/lib/mock-api.server";
+import { listProposalPermissions, setProposalPermissions, type Kol } from "~/lib/mock-api.server";
 import { handleProposalAction, loadProposalDetail } from "~/lib/proposals.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
+import { getProposalAccessLevel, DEPARTMENTS, type ProposalAccessLevel } from "~/lib/proposal-permissions.server";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 // ============ Loader & Action ============
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  const [detail, currentMember] = await Promise.all([
-    loadProposalDetail(params.proposalId ?? ""),
+  const proposalId = params.proposalId ?? "";
+  const [detail, currentMember, permissions] = await Promise.all([
+    loadProposalDetail(proposalId),
     getCurrentMember(request).catch(() => null),
+    listProposalPermissions(proposalId).catch(() => []),
   ]);
-  return json({ ...detail, currentMember });
+  const accessLevel = getProposalAccessLevel(detail.proposal, permissions, currentMember);
+  if (accessLevel === "none") throw new Response("Forbidden", { status: 403 });
+  return json({ ...detail, currentMember, accessLevel, permissions });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  const proposalId = params.proposalId ?? "";
+  const currentMember = await getCurrentMember(request).catch(() => null);
   const formData = await request.formData();
-  return json(await handleProposalAction(params.proposalId ?? "", formData));
+  const intent = formData.get("intent");
+
+  // Permission-changing intent (creator only)
+  if (intent === "update_permissions") {
+    const proposal = (await loadProposalDetail(proposalId)).proposal;
+    if (!currentMember || proposal.creatorId !== currentMember.id) {
+      return json({ success: false, error: "只有建立人可以修改權限" });
+    }
+    let perms: { department: string; permissionLevel: "edit" | "view" }[] = [];
+    try { perms = JSON.parse(String(formData.get("permissionsJson") ?? "[]")); } catch { /* ignore */ }
+    const depts = new Map<string, "edit" | "view">();
+    if (currentMember.group) depts.set(currentMember.group, "edit");
+    for (const p of perms) depts.set(p.department, p.permissionLevel);
+    await setProposalPermissions(proposalId, Array.from(depts.entries()).map(([department, permissionLevel]) => ({ department, permissionLevel })));
+    return json({ success: true });
+  }
+
+  // All other intents: require at least edit access
+  const [permissions] = await Promise.all([listProposalPermissions(proposalId)]);
+  const proposal = (await loadProposalDetail(proposalId)).proposal;
+  const accessLevel = getProposalAccessLevel(proposal, permissions, currentMember);
+  if (accessLevel === "none" || accessLevel === "view") {
+    return json({ success: false, error: "權限不足" });
+  }
+
+  return json(await handleProposalAction(proposalId, formData));
 }
 
 // ============ Page Component ============
 
 export default function ProposalDetailPage() {
   // ============ Loader Data & Hooks ============
-  const { proposal, candidates, allKols, currentMember } = useLoaderData<typeof loader>();
+  const { proposal, candidates, allKols, currentMember, accessLevel, permissions } = useLoaderData<typeof loader>();
   /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成 Kol[] 供後續安全存取 */
   const kols = useMemo(
     () => (allKols ?? []).filter((item): item is Kol => item != null),
@@ -62,7 +94,13 @@ export default function ProposalDetailPage() {
   const statusFetcher = useFetcher<{ success?: boolean }>();
 
   // ============ State ============
+  const canEdit = accessLevel === "creator" || accessLevel === "edit";
+  const isCreator = accessLevel === "creator";
   const [isEditing, setIsEditing] = useState(false);
+  const [editingPerms, setEditingPerms] = useState<{ department: string; permissionLevel: "edit" | "view" }[]>(
+    (permissions as { department: string; permissionLevel: "edit" | "view"; id: string; proposalId: string }[])
+      .filter((p) => p.department !== currentMember?.group),
+  );
   const [editedTitle, setEditedTitle] = useState(proposal.title);
   const [editedClient, setEditedClient] = useState(proposal.clientName);
   const [editedBudget, setEditedBudget] = useState(proposal.budget);
@@ -430,6 +468,9 @@ export default function ProposalDetailPage() {
               <Text c="dimmed" size="sm">
                 ID: {proposal.id} | 客戶：{proposal.clientName}
               </Text>
+              {proposal.creatorName && (
+                <Text c="dimmed" size="xs">建立人：{proposal.creatorName}</Text>
+              )}
             </Stack>
           )}
         </Stack>
@@ -437,9 +478,11 @@ export default function ProposalDetailPage() {
         <Group align="center">
           {!isEditing && (
             <>
-              <Button variant="light" color="orange" onClick={() => setIsEditing(true)}>
-                編輯提案內容
-              </Button>
+              {canEdit && (
+                <Button variant="light" color="orange" onClick={() => setIsEditing(true)}>
+                  編輯提案內容
+                </Button>
+              )}
               <Button
                 variant="default"
                 component="a"
@@ -1201,42 +1244,99 @@ export default function ProposalDetailPage() {
         </Form>
       </Modal>
 
-      {/* ============ Edit Mode: Save / Cancel Buttons ============ */}
+      {/* ============ Edit Mode: Permission Editor (creator only) + Save / Cancel ============ */}
       {isEditing && (
-        <Group justify="flex-end" mt="xl" pb="xl">
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => {
-              setEditedTitle(proposal.title);
-              setEditedClient(proposal.clientName);
-              setEditedBudget(proposal.budget);
-              setEditedDueDate(proposal.launchMonth?.slice(0, 7) ?? "");
-              setEditedStage(proposal.stage);
-              setIsEditing(false);
-            }}
-          >
-            取消
-          </Button>
-          <Button
-            color="blue"
-            size="sm"
-            onClick={() => {
-              const formData = new FormData();
-              formData.append("intent", "update_proposal");
-              formData.append("title", editedTitle);
-              formData.append("clientName", editedClient);
-              formData.append("budget", String(editedBudget));
-              formData.append("launchMonth", editedDueDate);
-              formData.append("stage", editedStage);
-              formData.append("updatedBy", myName);
-              submit(formData, { method: "post" });
-              setIsEditing(false);
-            }}
-          >
-            儲存變更
-          </Button>
-        </Group>
+        <Stack mt="xl" pb="xl" gap="md">
+          {isCreator && (
+            <Card withBorder>
+              <Stack gap="xs">
+                <Text fw={600} size="sm">部門權限設定</Text>
+                <Text size="xs" c="dimmed">
+                  你的部門（{currentMember?.group ?? "—"}）預設擁有編輯權限。不設定任何權限代表所有人皆可存取此提案。
+                </Text>
+                {(DEPARTMENTS as readonly string[])
+                  .filter((dept) => dept !== currentMember?.group)
+                  .map((dept) => {
+                    const entry = editingPerms.find((p) => p.department === dept);
+                    return (
+                      <Group key={dept} gap="xs" align="center">
+                        <Text size="sm" w={60}>{dept}</Text>
+                        <Group gap={4}>
+                          {(["edit", "view", "none"] as const).map((lvl) => (
+                            <Button
+                              key={lvl}
+                              size="xs"
+                              variant={(entry?.permissionLevel ?? "none") === lvl ? "filled" : "light"}
+                              color={lvl === "edit" ? "orange" : lvl === "view" ? "blue" : "gray"}
+                              onClick={() => {
+                                if (lvl === "none") {
+                                  setEditingPerms((prev) => prev.filter((p) => p.department !== dept));
+                                } else {
+                                  setEditingPerms((prev) => {
+                                    const next = prev.filter((p) => p.department !== dept);
+                                    next.push({ department: dept, permissionLevel: lvl });
+                                    return next;
+                                  });
+                                }
+                              }}
+                            >
+                              {lvl === "edit" ? "編輯" : lvl === "view" ? "檢視" : "無權限"}
+                            </Button>
+                          ))}
+                        </Group>
+                      </Group>
+                    );
+                  })}
+              </Stack>
+            </Card>
+          )}
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => {
+                setEditedTitle(proposal.title);
+                setEditedClient(proposal.clientName);
+                setEditedBudget(proposal.budget);
+                setEditedDueDate(proposal.launchMonth?.slice(0, 7) ?? "");
+                setEditedStage(proposal.stage);
+                setEditingPerms(
+                  (permissions as { department: string; permissionLevel: "edit" | "view"; id: string; proposalId: string }[])
+                    .filter((p) => p.department !== currentMember?.group),
+                );
+                setIsEditing(false);
+              }}
+            >
+              取消
+            </Button>
+            <Button
+              color="blue"
+              size="sm"
+              onClick={() => {
+                const formData = new FormData();
+                formData.append("intent", "update_proposal");
+                formData.append("title", editedTitle);
+                formData.append("clientName", editedClient);
+                formData.append("budget", String(editedBudget));
+                formData.append("launchMonth", editedDueDate);
+                formData.append("stage", editedStage);
+                formData.append("updatedBy", myName);
+                submit(formData, { method: "post" });
+
+                if (isCreator) {
+                  const permFormData = new FormData();
+                  permFormData.append("intent", "update_permissions");
+                  permFormData.append("permissionsJson", JSON.stringify(editingPerms));
+                  submit(permFormData, { method: "post" });
+                }
+
+                setIsEditing(false);
+              }}
+            >
+              儲存變更
+            </Button>
+          </Group>
+        </Stack>
       )}
     </Stack>
   );
