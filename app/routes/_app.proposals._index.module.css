@@ -51,6 +51,26 @@
   white-space: nowrap;
 }
 
+.sortHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sortHeader:hover {
+  color: var(--mantine-color-blue-6);
+}
+
+.sortIconIdle {
+  opacity: 0.3;
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;

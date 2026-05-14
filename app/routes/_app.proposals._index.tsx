@@ -15,7 +15,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconChevronLeft, IconChevronRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronUp, IconChevronDown, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
@@ -136,7 +136,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (overdue) proposals = proposals.filter((p) => p.launchMonth && p.launchMonth < today);
 
   // ── sort (default = insertion/fetch order = newest first) ──
-  if (sort === "budget") {
+  const STAGE_ORDER: Record<string, number> = { draft: 0, internal_review: 1, sent_to_client: 2, approved: 3 };
+  if (sort === "stage") {
+    proposals = [...proposals].sort((a, b) => {
+      const sa = STAGE_ORDER[a.stage ?? ""] ?? 99;
+      const sb = STAGE_ORDER[b.stage ?? ""] ?? 99;
+      return order === "asc" ? sa - sb : sb - sa;
+    });
+  } else if (sort === "budget") {
     proposals = [...proposals].sort((a, b) =>
       order === "asc" ? a.budget - b.budget : b.budget - a.budget
     );
@@ -235,6 +242,21 @@ export default function ProposalListPage() {
     if (sortInput?.value) sp.set("sort", sortInput.value);
     if (orderInput?.value && orderInput.value !== "desc") sp.set("order", orderInput.value);
     navigate(`/proposals?${sp.toString()}`);
+  }
+
+  // ── sortable column header helper ──
+  function SortHeader({ col, label }: { col: string; label: string }) {
+    const isActive = sort === col;
+    const nextOrder = isActive && order === "desc" ? "asc" : "desc";
+    const href = buildUrl({ ...current, page: "1" }, { sort: col, order: nextOrder });
+    return (
+      <a href={href} className={styles.sortHeader}>
+        {label}
+        {isActive
+          ? (order === "asc" ? <IconChevronUp size={13} /> : <IconChevronDown size={13} />)
+          : <IconChevronDown size={13} className={styles.sortIconIdle} />}
+      </a>
+    );
   }
 
   // ── sort select value ──
@@ -340,10 +362,10 @@ export default function ProposalListPage() {
             <Table.Tr>
               <Table.Th pl={16}>案件</Table.Th>
               <Table.Th>客戶</Table.Th>
-              <Table.Th>目前階段</Table.Th>
-              <Table.Th>總預算</Table.Th>
-              <Table.Th>預計上線月份</Table.Th>
-              <Table.Th>最後更新日</Table.Th>
+              <Table.Th><SortHeader col="stage" label="目前階段" /></Table.Th>
+              <Table.Th><SortHeader col="budget" label="總預算" /></Table.Th>
+              <Table.Th><SortHeader col="launchMonth" label="預計上線月份" /></Table.Th>
+              <Table.Th><SortHeader col="updatedAt" label="最後更新日" /></Table.Th>
               <Table.Th ta="right" pr={16}>操作</Table.Th>
             </Table.Tr>
           </Table.Thead>

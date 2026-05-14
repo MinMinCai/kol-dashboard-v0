@@ -29,12 +29,17 @@ import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, u
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type Kol } from "~/lib/mock-api.server";
 import { handleProposalAction, loadProposalDetail } from "~/lib/proposals.server";
-import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell } from "@tabler/icons-react";
+import { getCurrentMember } from "~/lib/demo-identity.server";
+import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 // ============ Loader & Action ============
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  return json(await loadProposalDetail(params.proposalId ?? ""));
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  const [detail, currentMember] = await Promise.all([
+    loadProposalDetail(params.proposalId ?? ""),
+    getCurrentMember(request).catch(() => null),
+  ]);
+  return json({ ...detail, currentMember });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -46,7 +51,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function ProposalDetailPage() {
   // ============ Loader Data & Hooks ============
-  const { proposal, candidates, allKols } = useLoaderData<typeof loader>();
+  const { proposal, candidates, allKols, currentMember } = useLoaderData<typeof loader>();
   /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成 Kol[] 供後續安全存取 */
   const kols = useMemo(
     () => (allKols ?? []).filter((item): item is Kol => item != null),
@@ -103,16 +108,13 @@ export default function ProposalDetailPage() {
   // ============ SSE: Real-time Update Notifications ============
   type UpdateNotice = { updatedBy: string; field: string; timestamp: string };
   const [updateNotices, setUpdateNotices] = useState<UpdateNotice[]>([]);
+  const [noticesCollapsed, setNoticesCollapsed] = useState(false);
+  const myName = currentMember?.name ?? "anonymous";
   const revalidator = useRevalidator();
   const sseRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    // Use a stable "userId" for demo — in production derive from session
-    const stored = sessionStorage.getItem("demoUserId");
-    const myUserId: string = stored ?? "user-A";
-    if (!stored) sessionStorage.setItem("demoUserId", myUserId);
-
-    const es = new EventSource(`/api/proposals/${proposal.id}/events?userId=${encodeURIComponent(myUserId)}`);
+    const es = new EventSource(`/api/proposals/${proposal.id}/events?userId=${encodeURIComponent(myName)}`);
     sseRef.current = es;
 
     es.onmessage = (event) => {
@@ -353,6 +355,7 @@ export default function ProposalDetailPage() {
       formData.append("candidateIds", deleteTarget.candidateIds.join(","));
       setSelectedCandidateIds([]);
     }
+    formData.append("updatedBy", myName);
     submit(formData, { method: "post" });
     closeDeleteConfirm();
     setDeleteTarget(null);
@@ -364,18 +367,32 @@ export default function ProposalDetailPage() {
       {/* ============ Real-time update notifications ============ */}
       {updateNotices.length > 0 && (
         <Card withBorder p="xs" className={styles.notificationCard}>
-          <Group gap="xs" mb={4}>
+          <Group gap="xs">
             <IconBell size={16} color="var(--mantine-color-blue-6)" />
-            <Text size="sm" fw={600} c="blue.7">有同事更新了此提案</Text>
-            <Button variant="subtle" size="compact-xs" ml="auto" onClick={() => setUpdateNotices([])}>清除</Button>
+            <Text size="sm" fw={600} c="blue.7">
+              {Array.from(new Set(updateNotices.map((n) => n.updatedBy))).join("、")} 更新了此提案
+            </Text>
+            <Group gap={4} ml="auto">
+              <Button
+                variant="subtle"
+                size="compact-xs"
+                leftSection={noticesCollapsed ? <IconChevronDown size={12} /> : <IconChevronUp size={12} />}
+                onClick={() => setNoticesCollapsed((c) => !c)}
+              >
+                {noticesCollapsed ? "展開" : "折疊"}
+              </Button>
+              <Button variant="subtle" size="compact-xs" color="red" onClick={() => setUpdateNotices([])}>清除</Button>
+            </Group>
           </Group>
-          <Stack gap={4}>
-            {updateNotices.map((n, i) => (
-              <Text key={i} size="xs" c="dimmed">
-                {new Date(n.timestamp).toLocaleTimeString("zh-TW")}　<Text span fw={500} c="blue.7">{n.updatedBy}</Text>　{n.field}
-              </Text>
-            ))}
-          </Stack>
+          {!noticesCollapsed && (
+            <Stack gap={4} mt={6}>
+              {updateNotices.map((n, i) => (
+                <Text key={i} size="xs" c="dimmed">
+                  {new Date(n.timestamp).toLocaleTimeString("zh-TW")}　<Text span fw={500} c="blue.7">{n.updatedBy}</Text>　{n.field}
+                </Text>
+              ))}
+            </Stack>
+          )}
         </Card>
       )}
       {/* ============ Header: Title + Edit / Export / IO buttons ============ */}
@@ -621,6 +638,7 @@ export default function ProposalDetailPage() {
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="intent" value="update_candidate_details" />
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="candidateId" value={c.id} />
                       <input form={`candidate-edit-form-${c.id}`} type="hidden" name="realFollowerRatio" value={c.realFollowerRatio != null ? String(c.realFollowerRatio) : ""} />
+                      <input form={`candidate-edit-form-${c.id}`} type="hidden" name="updatedBy" value={myName} />
                     </>
                   )}
 
@@ -661,6 +679,7 @@ export default function ProposalDetailPage() {
                               formData.append("candidateId", c.id);
                               formData.append("status", val);
                               formData.append("feedback", c.feedbackText || "");
+                              formData.append("updatedBy", myName);
                               statusFetcher.submit(formData, { method: "post" });
                             }}
                           />
@@ -943,6 +962,7 @@ export default function ProposalDetailPage() {
                     <input type="hidden" name="price" value={res.averagePrice || 0} />
                     <input type="hidden" name="role" value="待討論" />
                     <input type="hidden" name="reason" value={res.aiReason} />
+                    <input type="hidden" name="updatedBy" value={myName} />
                     <Button size="xs" type="submit">
                       加入候選名單
                     </Button>
@@ -989,6 +1009,7 @@ export default function ProposalDetailPage() {
           }}
         >
           <input type="hidden" name="intent" value="add_candidate" />
+          <input type="hidden" name="updatedBy" value={myName} />
           <Stack>
             <Select
               label="選擇 KOL"
@@ -1208,6 +1229,7 @@ export default function ProposalDetailPage() {
               formData.append("budget", String(editedBudget));
               formData.append("launchMonth", editedDueDate);
               formData.append("stage", editedStage);
+              formData.append("updatedBy", myName);
               submit(formData, { method: "post" });
               setIsEditing(false);
             }}
