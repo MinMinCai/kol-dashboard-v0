@@ -1748,9 +1748,30 @@ export async function replaceKolFavoriteFolders(
   });
 }
 
-export async function clearKolFavorites(kolId: string): Promise<Kol> {
+export async function clearKolFavorites(kolId: string, memberId?: string | null): Promise<Kol> {
   const current = await getKol(kolId);
   if (!current) throw new Error("KOL not found");
+
+  if (memberId) {
+    // Only remove folders owned by this member; leave other users' folders untouched.
+    for (const folder of current.favoriteFolders ?? []) {
+      const { access } = await getFolderAccessForMember(folder, memberId);
+      if (access === "owner" || access === "public") {
+        await removeKolFromFavoriteFolder(kolId, folder, memberId);
+      }
+    }
+    // Only clear the global isFavorite flag if no folders remain across all users.
+    const { folderNamesByKolId } = await getFavoriteFolderState();
+    const remainingFolders = folderNamesByKolId.get(kolId) ?? [];
+    if (remainingFolders.length === 0) {
+      return updateKol(kolId, { isFavorite: false, favoriteFolder: null });
+    }
+    const refreshed = await getKol(kolId);
+    if (!refreshed) throw new Error("KOL not found");
+    return refreshed;
+  }
+
+  // No member context — legacy: remove all folders and clear flag.
   for (const folder of current.favoriteFolders ?? []) {
     await removeKolFromFavoriteFolder(kolId, folder);
   }

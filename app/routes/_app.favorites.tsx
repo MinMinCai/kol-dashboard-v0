@@ -132,7 +132,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "removeFavorite") {
     const kolId = String(formData.get("kolId") ?? "");
     if (!kolId) return json({ error: "Missing KOL id" }, { status: 400 });
-    await clearKolFavorites(kolId);
+    await clearKolFavorites(kolId, memberId);
     return redirect(url.pathname + "?" + url.searchParams.toString());
   }
 
