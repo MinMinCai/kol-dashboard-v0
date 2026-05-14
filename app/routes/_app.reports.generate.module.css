@@ -18,6 +18,10 @@
   border-color: var(--mantine-color-green-outline);
 }
 
+.reportRowDraft {
+  border-color: var(--mantine-color-gray-4);
+}
+
 .flex1MinW0 {
   flex: 1;
   min-width: 0;

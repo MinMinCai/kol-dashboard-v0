@@ -450,20 +450,20 @@ export default function ReportManagementPage() {
                       <Text size="sm" c="dimmed">請點擊右上角的「+ 生成新報告」開始生成</Text>
                     </Stack>
                   ) : (
-                    <Stack gap="sm">
+                    <SimpleGrid cols={hasDraft && hasOfficial ? 2 : 1} spacing="sm">
                       {/* Draft Section */}
                       {hasDraft && (
-                        <Card withBorder bg="var(--mantine-color-yellow-light)" radius="sm" p="sm">
-                          <Text size="sm" fw={600} mb="sm" c="yellow.8">草稿</Text>
+                        <Card withBorder bg="var(--mantine-color-gray-1)" radius="sm" p="sm">
+                          <Text size="sm" fw={600} mb="sm" c="gray.7">草稿</Text>
                           <Stack gap="xs">
                             {order.reports?.filter((r: any) => r.type === "draft").map((report: any) => (
-                              <Group key={report.id} justify="space-between" wrap="nowrap" className={styles.reportRow}>
+                              <Group key={report.id} justify="space-between" wrap="nowrap" className={`${styles.reportRow} ${styles.reportRowDraft}`}>
                                 <Group wrap="nowrap" className={styles.flex1MinW0}>
-                                  <ThemeIcon size="lg" variant="light" color="yellow" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
+                                  <ThemeIcon size="lg" variant="light" color="gray" className={styles.flexShrink0}><IconFileTypePpt size={20} /></ThemeIcon>
                                   <Box miw={0}>
                                     <Group gap="xs" wrap="nowrap">
                                       <Text fw={500} truncate="end" miw={0}>{report.name}</Text>
-                                      <Badge color="yellow" variant="filled" size="xs" className={styles.flexShrink0}>草稿</Badge>
+                                      <Badge color="gray" variant="filled" size="xs" className={styles.flexShrink0}>草稿</Badge>
                                     </Group>
                                     <Text size="xs" c="dimmed">建立時間: {report.createdAt} | 建立者: {report.createdBy}</Text>
                                     {report.note && <Text size="xs" c="dimmed" mt={2}>說明: {report.note}</Text>}
@@ -524,7 +524,7 @@ export default function ReportManagementPage() {
                           </Stack>
                         </Card>
                       )}
-                    </Stack>
+                    </SimpleGrid>
                   )}
                 </Box>
               </Card>
