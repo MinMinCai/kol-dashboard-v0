@@ -4,6 +4,7 @@ import {
   clearKolFavorites,
   deleteKol,
   getKol,
+  getKolFavoritesForMember,
   listFavoriteFolders,
   listKols,
   listTagCatalog,
@@ -41,10 +42,11 @@ export async function loadKolList(request: Request) {
 
   const currentMember = await getCurrentMember(request).catch(() => null);
 
-  const [allKols, folders, tagCatalog] = await Promise.all([
+  const [allKols, folders, tagCatalog, kolFavsByMember] = await Promise.all([
     withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
     withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]),
     withTimeout(listTagCatalog(), [] as { name: string }[]).catch(() => [] as { name: string }[]),
+    withTimeout(getKolFavoritesForMember(currentMember?.id), new Map<string, string[]>()).catch(() => new Map<string, string[]>()),
   ]);
 
   let kols = allKols;
@@ -99,7 +101,15 @@ export async function loadKolList(request: Request) {
   const pageSize = view === "card" ? 8 : 10;
   const totalPages = Math.max(1, Math.ceil(kols.length / pageSize));
   const safePageNo = Math.min(page, totalPages);
-  const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize);
+  const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize).map((kol) => {
+    const memberFolders = kolFavsByMember.get(kol.id) ?? [];
+    return {
+      ...kol,
+      isFavorite: memberFolders.length > 0,
+      favoriteFolders: memberFolders,
+      favoriteFolder: memberFolders[0] ?? null,
+    };
+  });
 
   const allIndustries = [...new Set(allKols.map((k) => k.industry).filter(Boolean))] as string[];
   const catalogTags = tagCatalog.map((t) => t.name);
@@ -201,9 +211,21 @@ export async function loadKolDetail(kolId: string, request: Request) {
   const tab = url.searchParams.get("tab") ?? "projects";
   const limit = Math.max(5, Number(url.searchParams.get("limit") ?? "5"));
   const currentMember = await getCurrentMember(request).catch(() => null);
-  const folders = await withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]);
 
-  return { kol, tab, limit, folders };
+  const [folders, kolFavsByMember] = await Promise.all([
+    withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]),
+    withTimeout(getKolFavoritesForMember(currentMember?.id), new Map<string, string[]>()).catch(() => new Map<string, string[]>()),
+  ]);
+
+  const memberFolders = kolFavsByMember.get(kol.id) ?? [];
+  const kolForMember = {
+    ...kol,
+    isFavorite: memberFolders.length > 0,
+    favoriteFolders: memberFolders,
+    favoriteFolder: memberFolders[0] ?? null,
+  };
+
+  return { kol: kolForMember, tab, limit, folders };
 }
 
 // ============ Detail Action ============
@@ -233,7 +255,7 @@ export async function handleKolDetailAction(
         await addKolToFavoriteFolder(kolId, "", memberId);
       }
     } else if (intent === "remove_favorite") {
-      await clearKolFavorites(kolId);
+      await clearKolFavorites(kolId, memberId);
     }
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : "操作失敗" }, { status: 403 });

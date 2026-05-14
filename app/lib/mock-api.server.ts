@@ -1495,6 +1495,45 @@ export async function listFavoriteFolderDetails(memberId?: string): Promise<Favo
 }
 
 /**
+ * Returns a Map of kolId → folder names that are visible to the given member.
+ * Used to compute per-user isFavorite / favoriteFolders on the KOL list and
+ * detail pages, so different users see their own favorite state independently.
+ */
+export async function getKolFavoritesForMember(
+  memberId?: string | null,
+): Promise<Map<string, string[]>> {
+  const { folderRows, itemRows, memberIdsByFolderId, folderById } = await getFavoriteFolderState();
+
+  // Determine which folder rows are visible to this member.
+  const visibleFolderIds = new Set<string>();
+  for (const row of folderRows) {
+    if (!row.ownerMemberId) {
+      // Legacy / public folder — visible to everyone.
+      visibleFolderIds.add(row.id);
+    } else if (memberId && row.ownerMemberId === memberId) {
+      visibleFolderIds.add(row.id);
+    } else if (memberId) {
+      const sharedWith = memberIdsByFolderId.get(row.id) ?? [];
+      if (sharedWith.includes(memberId)) visibleFolderIds.add(row.id);
+    } else {
+      // No member context (admin / unauthenticated) — see all.
+      visibleFolderIds.add(row.id);
+    }
+  }
+
+  const result = new Map<string, string[]>();
+  for (const item of itemRows) {
+    if (!visibleFolderIds.has(item.folderId)) continue;
+    const folder = folderById.get(item.folderId);
+    if (!folder) continue;
+    const existing = result.get(item.kolId) ?? [];
+    if (!existing.includes(folder.name)) existing.push(folder.name);
+    result.set(item.kolId, existing);
+  }
+  return result;
+}
+
+/**
  * Rename. If `memberId` is provided, only the owner (or anyone for legacy
  * unowned folders) can rename — otherwise throws.
  */
