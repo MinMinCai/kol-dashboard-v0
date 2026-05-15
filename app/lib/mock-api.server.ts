@@ -376,13 +376,7 @@ function rowToKol(row: typeof kolsTable.$inferSelect): Kol {
   };
 }
 
-// 5-second in-memory cache for enrichKols sub-queries (folder state + IO rows).
-// Prevents repeated heavy queries when multiple loaders fire in quick succession.
-declare global {
-  var __enrichKolsCache: { ts: number; folderState: Awaited<ReturnType<typeof _getFavoriteFolderStateUncached>>; ioRows: { id: string; collaborations: unknown }[] } | undefined;
-}
-
-async function _getFavoriteFolderStateUncached() {
+async function getFavoriteFolderState() {
   const [folderRows, itemRows, shareRows, prefs] = await Promise.all([
     db.select().from(kolFavoriteFoldersTable).catch(() => []),
     db.select().from(kolFavoriteFolderItemsTable).catch(() => []),
@@ -424,41 +418,11 @@ async function _getFavoriteFolderStateUncached() {
   };
 }
 
-const ENRICH_CACHE_TTL_MS = 5_000;
-
-// Public helper: returns folder state (same shape as before, used by many callers)
-async function getFavoriteFolderState() {
-  const cached = global.__enrichKolsCache;
-  if (cached && Date.now() - cached.ts < ENRICH_CACHE_TTL_MS) {
-    return cached.folderState;
-  }
-  // Not cached yet — fetch both together so we can cache ioRows at the same time
-  const [folderState, ioRows] = await Promise.all([
-    _getFavoriteFolderStateUncached(),
-    db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => [] as { id: string; collaborations: unknown }[]),
-  ]);
-  global.__enrichKolsCache = { ts: Date.now(), folderState, ioRows };
-  return folderState;
-}
-
-// Used only by enrichKols — returns cached ioRows without a second round-trip
-async function getEnrichCache() {
-  const cached = global.__enrichKolsCache;
-  if (cached && Date.now() - cached.ts < ENRICH_CACHE_TTL_MS) {
-    return { folderState: cached.folderState, ioRows: cached.ioRows };
-  }
-  const [folderState, ioRows] = await Promise.all([
-    _getFavoriteFolderStateUncached(),
-    db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => [] as { id: string; collaborations: unknown }[]),
-  ]);
-  global.__enrichKolsCache = { ts: Date.now(), folderState, ioRows };
-  return { folderState, ioRows };
-}
-
 async function enrichKols(kols: Kol[]): Promise<Kol[]> {
-  const [{ folderState: { folderNamesByKolId }, ioRows }, socialAccountRows] = await Promise.all([
-    getEnrichCache(),
+  const [{ folderNamesByKolId }, socialAccountRows, ioRows] = await Promise.all([
+    getFavoriteFolderState(),
     db.select().from(kolSocialAccountsTable).catch(() => []),
+    db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
   ]);
 
   const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
