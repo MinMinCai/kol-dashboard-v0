@@ -81,7 +81,10 @@
       "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"isEditMode\\\\|generate-doc\\\\|deleteProposal\\\\|canEdit\\\\|IconTrash\\\\|isOwner\\\\|handleDelete\\\\|update_proposal\\\\|convert\\\\|insert.*order\\\\|execution\" app/routes/_app.proposals.\\\\$proposalId.tsx | head -60 2>&1)",
       "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"isEditing\\\\|deleteConfirm\\\\|儲存提案\\\\|取消編輯\\\\|刪除提案\" app/routes/_app.proposals.\\\\$proposalId.tsx | head -30 2>&1)",
       "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"刪除提案\\\\|deleteProposal\\\\|delete_proposal\\\\|openDeleteConfirm\\\\b\" app/routes/_app.proposals.\\\\$proposalId.tsx 2>&1)",
-      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"delete.*proposal\\\\|proposal.*delete\\\\|刪除此提案\\\\|提案刪除\" app/routes/_app.proposals.\\\\$proposalId.tsx 2>&1)"
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"delete.*proposal\\\\|proposal.*delete\\\\|刪除此提案\\\\|提案刪除\" app/routes/_app.proposals.\\\\$proposalId.tsx 2>&1)",
+      "PowerShell(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\"; npx tsc --noEmit 2>&1 | Where-Object { $_ -notmatch \"node_modules\" -and $_ -notmatch \"tsconfig.json\" } | Select-Object -First 20)",
+      "PowerShell(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\"; npx tsc --noEmit 2>&1 | Select-String -NotMatch \"node_modules|tsconfig\" | Select-Object -First 20 | ForEach-Object { $_.Line })",
+      "PowerShell(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\"; $output = npx tsc --noEmit 2>&1; $output | Where-Object { $_ -match \"error TS\" -and $_ -notmatch \"node_modules\" } | Select-Object -First 20)"
     ]
   }
 }
