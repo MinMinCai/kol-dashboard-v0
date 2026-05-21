@@ -107,7 +107,16 @@ erDiagram
         timestamp updatedAt
     }
 
+    KOL_ACTIVITY_LOG {
+        text id PK
+        text kolId
+        varchar kolName
+        varchar action
+        timestamp createdAt
+    }
+
     KOLS ||--o{ KOL_SOCIAL_ACCOUNTS : "has"
+    KOLS ||--o{ KOL_ACTIVITY_LOG : "logged by"
 
     %% ─── 收藏資料夾區塊 ───
     KOL_FAVORITE_FOLDERS {
@@ -399,7 +408,7 @@ erDiagram
 | 區塊 | 資料表 | 說明 |
 |------|--------|------|
 | **Auth** | `users`, `sessions`, `accounts`, `verifications` | BetterAuth 身份驗證系統 |
-| **KOL** | `kols`, `kol_social_accounts` | KOL 資料庫，含各平台社群帳號 |
+| **KOL** | `kols`, `kol_social_accounts`, `kol_activity_log` | KOL 資料庫，含各平台社群帳號與操作紀錄 |
 | **收藏資料夾** | `kol_favorite_folders`, `kol_favorite_folder_items`, `kol_favorite_folder_shares`, `kol_favorite_folder_member_shares` | 個人 KOL 收藏資料夾，支援跨用戶 / 跨組 / 跨成員共享 |
 | **客戶 & 提案** | `clients`, `proposals`, `proposal_permissions`, `proposal_kols`, `proposal_feedback` | 從客戶建立提案、選定 KOL 的流程；`proposal_permissions` 管理提案的部門檢視／編輯權限 |
 | **通知** | `proposal_watchers`, `notifications` | 提案異動時通知訂閱者 |
@@ -583,6 +592,19 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | performanceStats | jsonb | 綜合績效統計 |
 | platformMetrics | jsonb | 各平台量化指標 |
 | createdAt / updatedAt | timestamp | |
+
+#### KOL_ACTIVITY_LOG（新增，Migration 0004）
+| 欄位 | 型別 | 說明 |
+|------|------|------|
+| id | text PK | |
+| kolId | text | 關聯 KOL ID（刪除操作時為 null，因為 KOL 已移除） |
+| kolName | varchar(150) NOT NULL | KOL 名稱快照（確保刪除後仍可顯示） |
+| action | varchar(20) NOT NULL | `'create'`（新增）/ `'update'`（修正）/ `'delete'`（刪除） |
+| createdAt | timestamp NOT NULL | 操作發生時間 |
+
+> 此表不設 FK constraint 至 `kols.id`，避免 KOL 刪除後 log 紀錄也跟著消失。Dashboard「近期活動」直接查此表取最新 5 筆。
+
+---
 
 #### KOL_SOCIAL_ACCOUNTS
 | 欄位 | 型別 | 說明 |

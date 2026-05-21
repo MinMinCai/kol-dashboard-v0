@@ -10,7 +10,7 @@ import {
   IconReportAnalytics,
 } from "@tabler/icons-react";
 import { db } from "~/lib/db.server";
-import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
+import { insertionOrders, kolActivityLog, kols, proposals } from "../../db/drizzle/schema";
 import styles from "./_app.dashboard.module.css";
 
 export const headers: HeadersFunction = () => ({
@@ -40,15 +40,18 @@ export async function loader(_: LoaderFunctionArgs) {
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
       db
         .select({
-          id: kols.id,
-          displayName: kols.displayName,
-          createdAt: kols.createdAt,
-          updatedAt: kols.updatedAt,
+          id: kolActivityLog.id,
+          kolId: kolActivityLog.kolId,
+          kolName: kolActivityLog.kolName,
+          action: kolActivityLog.action,
+          createdAt: kolActivityLog.createdAt,
         })
-        .from(kols)
-        .orderBy(desc(kols.updatedAt))
+        .from(kolActivityLog)
+        .orderBy(desc(kolActivityLog.createdAt))
         .limit(5),
     ]), 8000);
+
+    const actionLabel: Record<string, string> = { create: "新增", update: "修正", delete: "刪除" };
 
     return {
       stats: [
@@ -57,11 +60,10 @@ export async function loader(_: LoaderFunctionArgs) {
         { label: "執行中委刊單​", value: String(insertionOrderCount ?? 0) },
       ],
       recentKols: recentKols.map((k) => ({
-        id: k.id,
-        displayName: k.displayName,
-        // Date objects from Drizzle can't be compared with ===; use getTime() with a 1s threshold
-        action: Math.abs(k.updatedAt.getTime() - k.createdAt.getTime()) < 1000 ? "新增" : "修正",
-        updatedAt: k.updatedAt,
+        id: k.kolId,
+        displayName: k.kolName,
+        action: actionLabel[k.action] ?? k.action,
+        updatedAt: k.createdAt,
       })),
       dbError: null as string | null,
     };
@@ -200,19 +202,17 @@ export default function DashboardPage() {
                     <Badge
                       size="sm"
                       variant="light"
-                      color={item.action === "新增" ? "teal" : "blue"}
+                      color={item.action === "新增" ? "teal" : item.action === "刪除" ? "red" : "blue"}
                     >
                       {item.action}
                     </Badge>
-                    <Text
-                      size="sm"
-                      fw={500}
-                      component="a"
-                      href={`/kols/${item.id}`}
-                      className={styles.activityLink}
-                    >
-                      {item.displayName}
-                    </Text>
+                    {item.id ? (
+                      <Text size="sm" fw={500} component="a" href={`/kols/${item.id}`} className={styles.activityLink}>
+                        {item.displayName}
+                      </Text>
+                    ) : (
+                      <Text size="sm" fw={500} c="dimmed">{item.displayName}</Text>
+                    )}
                   </Group>
                   <Text size="xs" c="dimmed">
                     {new Date(item.updatedAt).toLocaleString("zh-TW", {

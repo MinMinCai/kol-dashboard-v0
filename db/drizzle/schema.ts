@@ -90,6 +90,16 @@ export const kolSocialAccounts = pgTable(
   }),
 );
 
+// ─── KOL Activity Log ────────────────────────────────────────────────────────
+
+export const kolActivityLog = pgTable("kol_activity_log", {
+  id: text("id").primaryKey(),
+  kolId: text("kol_id"),
+  kolName: varchar("kol_name", { length: 150 }).notNull(),
+  action: varchar("action", { length: 20 }).notNull(), // 'create' | 'update' | 'delete'
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // ─── Clients ─────────────────────────────────────────────────────────────────
 
 export const clients = pgTable("clients", {

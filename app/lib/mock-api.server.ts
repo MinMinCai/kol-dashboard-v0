@@ -15,6 +15,7 @@ import {
   platformCatalog as platformCatalogTable,
   teamMembers as teamMembersTable,
   systemPreferences as systemPreferencesTable,
+  kolActivityLog as kolActivityLogTable,
 } from "../../db/drizzle/schema";
 import { eq, inArray } from "drizzle-orm";
 
@@ -744,6 +745,7 @@ export async function updateKol(id: string, data: Partial<Kol>): Promise<Kol> {
 
   const rows = await db.update(kolsTable).set(update).where(eq(kolsTable.id, id)).returning();
   if (rows.length === 0) throw new Error("Update failed");
+  await db.insert(kolActivityLogTable).values({ id: crypto.randomUUID(), kolId: id, kolName: rows[0].displayName, action: "update" });
   const [kol] = await enrichKols([rowToKol(rows[0])]);
   return kol;
 }
@@ -788,12 +790,17 @@ export async function createKol(data: Omit<Kol, "id">): Promise<Kol> {
       status: "active",
     })
     .returning();
+  await db.insert(kolActivityLogTable).values({ id: crypto.randomUUID(), kolId: rows[0].id, kolName: rows[0].displayName, action: "create" });
   const [kol] = await enrichKols([rowToKol(rows[0])]);
   return kol;
 }
 
 export async function deleteKol(id: string): Promise<boolean> {
+  const existing = await db.select({ displayName: kolsTable.displayName }).from(kolsTable).where(eq(kolsTable.id, id));
   await db.delete(kolsTable).where(eq(kolsTable.id, id));
+  if (existing.length > 0) {
+    await db.insert(kolActivityLogTable).values({ id: crypto.randomUUID(), kolId: null, kolName: existing[0].displayName, action: "delete" });
+  }
   return true;
 }
 
