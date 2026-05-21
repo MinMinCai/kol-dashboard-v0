@@ -1,13 +1,13 @@
-import { Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
+import { Badge, Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import {
   IconUsers,
   IconFileText,
   IconFileInvoice,
   IconHeart,
-  IconReportAnalytics
+  IconReportAnalytics,
 } from "@tabler/icons-react";
 import { db } from "~/lib/db.server";
 import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
@@ -26,6 +26,7 @@ export async function loader(_: LoaderFunctionArgs) {
       [{ count: kolCount }],
       [{ count: activeProposalCount }],
       [{ count: insertionOrderCount }],
+      recentKols,
     ] = await withTimeout(Promise.all([
       db.select({ count: sql<number>`count(*)::int` }).from(kols),
       db
@@ -33,14 +34,30 @@ export async function loader(_: LoaderFunctionArgs) {
         .from(proposals)
         .where(sql`${proposals.stage} not in ('approved', 'rejected')`),
       db.select({ count: sql<number>`count(*)::int` }).from(insertionOrders),
+      db
+        .select({
+          id: kols.id,
+          displayName: kols.displayName,
+          createdAt: kols.createdAt,
+          updatedAt: kols.updatedAt,
+        })
+        .from(kols)
+        .orderBy(desc(kols.updatedAt))
+        .limit(5),
     ]), 8000);
 
     return {
       stats: [
         { label: "KOL 總數", value: String(kolCount ?? 0) },
         { label: "進行中提案", value: String(activeProposalCount ?? 0) },
-        { label: "執行案件總數", value: String(insertionOrderCount ?? 0) },
+        { label: "執行中委刊單​", value: String(insertionOrderCount ?? 0) },
       ],
+      recentKols: recentKols.map((k) => ({
+        id: k.id,
+        displayName: k.displayName,
+        action: k.createdAt === k.updatedAt ? "新增" : "修正",
+        updatedAt: k.updatedAt,
+      })),
       dbError: null as string | null,
     };
   } catch (err) {
@@ -49,8 +66,9 @@ export async function loader(_: LoaderFunctionArgs) {
       stats: [
         { label: "KOL 總數", value: "-" },
         { label: "進行中提案", value: "-" },
-        { label: "執行案件總數", value: "-" },
+        { label: "執行中委刊單​", value: "-" },
       ],
+      recentKols: [],
       dbError: err instanceof Error ? err.message : String(err),
     };
   }
@@ -128,7 +146,7 @@ function ModuleCard({
 }
 
 export default function DashboardPage() {
-  const { stats, dbError } = useLoaderData<typeof loader>();
+  const { stats, recentKols, dbError } = useLoaderData<typeof loader>();
 
   return (
     <Stack gap="xl">
@@ -157,6 +175,55 @@ export default function DashboardPage() {
           </Grid.Col>
         ))}
       </Grid>
+
+      <Stack gap="md">
+        <Title order={4}>近期活動</Title>
+        <Paper withBorder radius="md" shadow="xs">
+          {recentKols.length === 0 ? (
+            <Text size="sm" c="dimmed" p="md">尚無操作紀錄</Text>
+          ) : (
+            <Stack gap={0}>
+              {recentKols.map((item, i) => (
+                <Group
+                  key={item.id}
+                  justify="space-between"
+                  px="md"
+                  py="sm"
+                  className={i < recentKols.length - 1 ? styles.activityRow : undefined}
+                >
+                  <Group gap="sm">
+                    <Badge
+                      size="sm"
+                      variant="light"
+                      color={item.action === "新增" ? "teal" : "blue"}
+                    >
+                      {item.action}
+                    </Badge>
+                    <Text
+                      size="sm"
+                      fw={500}
+                      component="a"
+                      href={`/kols/${item.id}`}
+                      className={styles.activityLink}
+                    >
+                      {item.displayName}
+                    </Text>
+                  </Group>
+                  <Text size="xs" c="dimmed">
+                    {new Date(item.updatedAt).toLocaleString("zh-TW", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </Group>
+              ))}
+            </Stack>
+          )}
+        </Paper>
+      </Stack>
 
       <Stack gap="md">
         <Title order={4}>功能模組</Title>

@@ -8,3 +8,17 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
+
+.activityRow {
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.activityLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.activityLink:hover {
+  text-decoration: underline;
+  color: var(--mantine-color-blue-6);
+}
