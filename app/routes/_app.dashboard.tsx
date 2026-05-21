@@ -1,5 +1,5 @@
 import { Badge, Card, Grid, Group, Paper, Stack, Text, Title, ThemeIcon } from "@mantine/core";
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import { type HeadersFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { desc, sql } from "drizzle-orm";
 import {
@@ -12,6 +12,10 @@ import {
 import { db } from "~/lib/db.server";
 import { insertionOrders, kols, proposals } from "../../db/drizzle/schema";
 import styles from "./_app.dashboard.module.css";
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": "no-store",
+});
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return Promise.race([
@@ -55,7 +59,8 @@ export async function loader(_: LoaderFunctionArgs) {
       recentKols: recentKols.map((k) => ({
         id: k.id,
         displayName: k.displayName,
-        action: k.createdAt === k.updatedAt ? "新增" : "修正",
+        // Date objects from Drizzle can't be compared with ===; use getTime() with a 1s threshold
+        action: Math.abs(k.updatedAt.getTime() - k.createdAt.getTime()) < 1000 ? "新增" : "修正",
         updatedAt: k.updatedAt,
       })),
       dbError: null as string | null,
