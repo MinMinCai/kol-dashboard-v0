@@ -516,6 +516,28 @@ export default function InsertionOrderDetailPage() {
 
   const isSubmitting = fetcher.state !== "idle";
 
+  // ── IO Upload State ──
+  const [ioUploadFile, setIoUploadFile] = useState<File | null>(null);
+  const [ioUploadState, setIoUploadState] = useState<"idle" | "uploading" | "success">("idle");
+  const [ioUploadedFilename, setIoUploadedFilename] = useState<string | null>(null);
+  const [ioUploadModalOpened, { open: openIoUploadModal, close: closeIoUploadModal }] = useDisclosure(false);
+
+  const handleIoUploadSubmit = async () => {
+    if (!ioUploadFile) return;
+    setIoUploadState("uploading");
+    const fd = new FormData();
+    fd.append("file", ioUploadFile);
+    try {
+      const res = await fetch(`/api/insertion-orders/${insertionOrder.id}/upload-io`, { method: "POST", body: fd });
+      if (!res.ok) throw new Error("upload failed");
+      const { filename } = await res.json() as { filename: string };
+      setIoUploadedFilename(filename);
+      setIoUploadState("success");
+    } catch {
+      setIoUploadState("idle");
+    }
+  };
+
   return (
     <Stack gap="md">
       <Group gap={8}>
@@ -555,6 +577,22 @@ export default function InsertionOrderDetailPage() {
           </Group>
           <Button onClick={openGenModal}>
             📊 產生報告
+          </Button>
+          <Button
+            variant="light"
+            color="teal"
+            component="a"
+            href={`/api/insertion-orders/${insertionOrder.id}/generate-cue`}
+            download
+          >
+            📋 生成CUE表
+          </Button>
+          <Button
+            variant="light"
+            color="orange"
+            onClick={openIoUploadModal}
+          >
+            📤 委刊單上傳
           </Button>
           <Button type="button" variant="default">💾 匯出 Excel</Button>
         </Group>
@@ -859,6 +897,47 @@ export default function InsertionOrderDetailPage() {
         order={insertionOrder}
         onComplete={handleGenerateComplete}
       />
+
+      {/* ── IO Upload Modal ── */}
+      <Modal
+        opened={ioUploadModalOpened}
+        onClose={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}
+        title="上傳委刊單"
+        centered
+      >
+        <Stack gap="md">
+          {ioUploadState === "success" ? (
+            <>
+              <Text size="sm" c="green" fw={500}>✅ 已上傳：{ioUploadedFilename}</Text>
+              <Text size="xs" c="dimmed">委刊單檔名已記錄。</Text>
+              <Button onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}>
+                關閉
+              </Button>
+            </>
+          ) : (
+            <>
+              <FileInput
+                label="選擇委刊單檔案"
+                placeholder="點擊選擇 PDF / Word 檔案"
+                accept=".pdf,.doc,.docx"
+                value={ioUploadFile}
+                onChange={setIoUploadFile}
+              />
+              <Group justify="flex-end">
+                <Button variant="default" onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); }}>取消</Button>
+                <Button
+                  color="orange"
+                  loading={ioUploadState === "uploading"}
+                  disabled={!ioUploadFile}
+                  onClick={() => void handleIoUploadSubmit()}
+                >
+                  上傳
+                </Button>
+              </Group>
+            </>
+          )}
+        </Stack>
+      </Modal>
 
       {/* ── Delete Confirm Modal ── */}
       <Modal

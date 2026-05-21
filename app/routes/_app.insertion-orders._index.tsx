@@ -11,6 +11,7 @@ import {
   Modal,
   ActionIcon,
   Box,
+  FileInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -242,6 +243,37 @@ export default function InsertionOrderListPage() {
   const [genModalOpen, { open: openGenModal, close: closeGenModal }] = useDisclosure(false);
   const [activeOrder, setActiveOrder] = useState<InsertionOrder | null>(null);
 
+  // ── IO Upload Modal State ──
+  const [ioUploadOrder, setIoUploadOrder] = useState<InsertionOrder | null>(null);
+  const [ioUploadFile, setIoUploadFile] = useState<File | null>(null);
+  const [ioUploadState, setIoUploadState] = useState<"idle" | "uploading" | "success">("idle");
+  const [ioUploadedFilename, setIoUploadedFilename] = useState<string | null>(null);
+  const [ioUploadModalOpen, { open: openIoUploadModal, close: closeIoUploadModal }] = useDisclosure(false);
+
+  const handleOpenIoUpload = (order: InsertionOrder) => {
+    setIoUploadOrder(order);
+    setIoUploadFile(null);
+    setIoUploadState("idle");
+    setIoUploadedFilename(null);
+    openIoUploadModal();
+  };
+
+  const handleIoUploadSubmit = async () => {
+    if (!ioUploadFile || !ioUploadOrder) return;
+    setIoUploadState("uploading");
+    const fd = new FormData();
+    fd.append("file", ioUploadFile);
+    try {
+      const res = await fetch(`/api/insertion-orders/${ioUploadOrder.id}/upload-io`, { method: "POST", body: fd });
+      if (!res.ok) throw new Error("upload failed");
+      const { filename } = await res.json() as { filename: string };
+      setIoUploadedFilename(filename);
+      setIoUploadState("success");
+    } catch {
+      setIoUploadState("idle");
+    }
+  };
+
   const handleOpenGenModal = (order: InsertionOrder) => {
     setActiveOrder(order);
     openGenModal();
@@ -445,6 +477,22 @@ export default function InsertionOrderListPage() {
                     <Group>
                       <Button component="a" href={`/insertion-orders/${order.id}`}>查看詳情</Button>
                       <Button variant="default" onClick={() => handleOpenGenModal(order)}>📊 產生報告</Button>
+                      <Button
+                        variant="light"
+                        color="teal"
+                        component="a"
+                        href={`/api/insertion-orders/${order.id}/generate-cue`}
+                        download
+                      >
+                        📋 生成CUE表
+                      </Button>
+                      <Button
+                        variant="light"
+                        color="orange"
+                        onClick={() => handleOpenIoUpload(order)}
+                      >
+                        📤 委刊單上傳
+                      </Button>
                     </Group>
                     <ActionIcon
                       variant="light"
@@ -527,6 +575,49 @@ export default function InsertionOrderListPage() {
         onComplete={handleGenerateComplete}
       />
 
+
+      {/* ── IO Upload Modal ── */}
+      <Modal
+        opened={ioUploadModalOpen}
+        onClose={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}
+        title={`上傳委刊單：${ioUploadOrder?.title ?? ioUploadOrder?.orderNo ?? ""}`}
+        centered
+      >
+        <Stack gap="md">
+          {ioUploadState === "success" ? (
+            <>
+              <Text size="sm" c="green" fw={500}>✅ 已上傳：{ioUploadedFilename}</Text>
+              <Text size="xs" c="dimmed">委刊單檔名已記錄，可在案件詳細頁中查看。</Text>
+              <Button onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}>
+                關閉
+              </Button>
+            </>
+          ) : (
+            <>
+              <FileInput
+                label="選擇委刊單檔案"
+                placeholder="點擊選擇 PDF / Word 檔案"
+                accept=".pdf,.doc,.docx"
+                value={ioUploadFile}
+                onChange={setIoUploadFile}
+              />
+              <Group justify="flex-end">
+                <Button variant="default" onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); }}>
+                  取消
+                </Button>
+                <Button
+                  color="orange"
+                  loading={ioUploadState === "uploading"}
+                  disabled={!ioUploadFile}
+                  onClick={() => void handleIoUploadSubmit()}
+                >
+                  上傳
+                </Button>
+              </Group>
+            </>
+          )}
+        </Stack>
+      </Modal>
 
       {/* ── Delete Confirm Modal ── */}
       <Modal
