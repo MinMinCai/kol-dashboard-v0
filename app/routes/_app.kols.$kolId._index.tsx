@@ -591,7 +591,7 @@ export default function KolDetailPage() {
       </Group>
 
       <Grid>
-        <Grid.Col span={{ base: 12, lg: 9 }}>
+        <Grid.Col span={12}>
           {/* Profile card */}
           <Card withBorder p="lg" radius="lg">
             {/* Identity section */}

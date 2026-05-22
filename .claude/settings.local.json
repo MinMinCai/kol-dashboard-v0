@@ -93,7 +93,9 @@
       "PowerShell($maxWait = 60; $elapsed = 0; while \\($elapsed -lt $maxWait\\) { try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -TimeoutSec 3 -UseBasicParsing -ErrorAction Stop; if \\($r.StatusCode -eq 200\\) { Write-Output \"ready\"; break } } catch {} Start-Sleep -Seconds 3; $elapsed += 3 })",
       "PowerShell($page = Invoke-WebRequest -Uri \"http://localhost:3000/insertion-orders\" -UseBasicParsing; if \\($page.Content -match '/insertion-orders/\\([a-zA-Z0-9_\\\\-]+\\)\\\\\"'\\) { $Matches[1] } else { \"not found\" })",
       "PowerShell($page = Invoke-WebRequest -Uri \"http://localhost:3000/insertion-orders\" -UseBasicParsing; $matches2 = [regex]::Matches\\($page.Content, '/insertion-orders/\\([a-zA-Z0-9_\\\\-]+\\)'\\); $matches2 | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique | Where-Object { $_ -ne \"new\" } | Select-Object -First 3)",
-      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"草稿\\\\|正式版本\\\\|正式版\\\\|hasDraft\\\\|hasOfficial\\\\|上傳正式版\" app/routes/_app.insertion-orders.\\\\$insertionOrderId._index.tsx | head -20)"
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"草稿\\\\|正式版本\\\\|正式版\\\\|hasDraft\\\\|hasOfficial\\\\|上傳正式版\" app/routes/_app.insertion-orders.\\\\$insertionOrderId._index.tsx | head -20)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"平均評分\\\\|平均價格\\\\|合作次數\\\\|納款方式\\\\|paymentMethod\\\\|averagePrice\\\\|collaborationCount\\\\|SimpleGrid\\\\|Grid\\\\|stats\\\\|stat\" app/routes/_app.kols.\\\\$kolId._index.tsx | head -30)",
+      "Bash(cd \"c:\\\\Users\\\\Emily Cai\\\\tech_web\\\\kol-db-demo\" && grep -n \"lg: 3\\\\|lg.*3\\\\|span.*3\" app/routes/_app.kols.\\\\$kolId._index.tsx | head -10)"
     ]
   }
 }
