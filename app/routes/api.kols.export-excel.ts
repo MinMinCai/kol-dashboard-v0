@@ -50,6 +50,8 @@ function rowFromKol(kol: Kol): Record<(typeof EXPORT_COLUMNS)[number], string | 
     "TikTok 粉絲數": kol.social?.tiktok ?? 0,
     "Facebook URL": kol.socialLinks?.facebook ?? "",
     "Facebook 粉絲數": kol.social?.facebook ?? 0,
+    "Threads URL": kol.socialLinks?.threads ?? "",
+    "Threads 粉絲數": kol.social?.threads ?? 0,
     "評分": kol.rating ?? 0,
     "合作次數": kol.collaborations ?? 0,
     "平均價格": kol.averagePrice ?? 0,

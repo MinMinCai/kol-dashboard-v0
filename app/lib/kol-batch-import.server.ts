@@ -6,7 +6,7 @@ import { createKol } from "./mock-api.server";
 
 const GENDER_OPTIONS = ["男", "女", "其他"] as const;
 const PAYMENT_METHOD_OPTIONS = ["勞報", "發票"] as const;
-const PLATFORM_OPTIONS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
+const PLATFORM_OPTIONS = ["Instagram", "Facebook", "YouTube", "TikTok", "Threads"] as const;
 const AUDIENCE_AGE_OPTIONS = ["0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
 
 // ─── columns ─────────────────────────────────────────────────────────────────
@@ -30,7 +30,9 @@ export const BATCH_IMPORT_COLUMNS = [
   "TikTok 粉絲數",
   "Facebook URL",
   "Facebook 粉絲數",
-  // 受眾與其他資訊 (cols P-T, index 15-19)
+  "Threads URL",
+  "Threads 粉絲數",
+  // 受眾與其他資訊 (cols R-V, index 17-21)
   "主要受眾年齡層",
   "受眾性別比 男(%)",
   "受眾性別比 女(%)",
@@ -40,8 +42,8 @@ export const BATCH_IMPORT_COLUMNS = [
 
 const SECTION_HEADERS: Array<{ label: string; startCol: number; endCol: number }> = [
   { label: "基本資料", startCol: 0, endCol: 6 },
-  { label: "社群平台 (各平台填寫網址與粉絲數，未經營者留空)", startCol: 7, endCol: 14 },
-  { label: "受眾與其他資訊", startCol: 15, endCol: 19 },
+  { label: "社群平台 (各平台填寫網址與粉絲數，未經營者留空)", startCol: 7, endCol: 16 },
+  { label: "受眾與其他資訊", startCol: 17, endCol: 21 },
 ];
 
 // Indexes into BATCH_IMPORT_COLUMNS for fields backed by Excel dropdowns
@@ -130,12 +132,15 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
   const ttFollowers = toNumber(row["TikTok 粉絲數"]);
   const fbUrl = String(row["Facebook URL"] ?? "").trim();
   const fbFollowers = toNumber(row["Facebook 粉絲數"]);
+  const thUrl = String(row["Threads URL"] ?? "").trim();
+  const thFollowers = toNumber(row["Threads 粉絲數"]);
 
   const platforms: string[] = [];
   if (igUrl || igFollowers) platforms.push("Instagram");
+  if (fbUrl || fbFollowers) platforms.push("Facebook");
   if (ytUrl || ytFollowers) platforms.push("YouTube");
   if (ttUrl || ttFollowers) platforms.push("TikTok");
-  if (fbUrl || fbFollowers) platforms.push("Facebook");
+  if (thUrl || thFollowers) platforms.push("Threads");
 
   const igHandle = igUrl ? parseHandle(igUrl) : undefined;
 
@@ -172,9 +177,10 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
   const primaryPlatform = platforms[0] ?? "Instagram";
   const primaryFollowers =
     primaryPlatform === "Instagram" ? igFollowers
-      : primaryPlatform === "YouTube" ? ytFollowers
-        : primaryPlatform === "TikTok" ? ttFollowers
-          : fbFollowers;
+      : primaryPlatform === "Facebook" ? fbFollowers
+        : primaryPlatform === "YouTube" ? ytFollowers
+          : primaryPlatform === "TikTok" ? ttFollowers
+            : thFollowers;
 
   return {
     displayName,
@@ -193,9 +199,10 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
     },
     socialLinks: {
       instagram: igUrl || undefined,
+      facebook: fbUrl || undefined,
       youtube: ytUrl || undefined,
       tiktok: ttUrl || undefined,
-      facebook: fbUrl || undefined,
+      threads: thUrl || undefined,
     },
     rating: 0,
     collaborations: 0,
@@ -203,9 +210,10 @@ function buildPayloadFromRow(row: Record<string, unknown>) {
     isFavorite: false,
     social: {
       instagram: igFollowers,
+      facebook: fbFollowers,
       youtube: ytFollowers,
       tiktok: ttFollowers,
-      facebook: fbFollowers,
+      threads: thFollowers,
     },
     contact: { phone, email, manager: "" },
     gender,

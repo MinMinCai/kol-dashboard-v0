@@ -110,9 +110,10 @@ export async function action({ request }: ActionFunctionArgs) {
     },
     socialLinks: {
       instagram: socialLinkMap.instagram,
+      facebook: socialLinkMap.facebook,
       youtube: socialLinkMap.youtube,
       tiktok: socialLinkMap.tiktok,
-      facebook: socialLinkMap.facebook,
+      threads: socialLinkMap.threads,
     },
     rating: 0,
     collaborations: 0,
@@ -121,9 +122,10 @@ export async function action({ request }: ActionFunctionArgs) {
     avatarUrl: avatarUrl || undefined,
     social: {
       instagram: socialMap.instagram ?? 0,
+      facebook: socialMap.facebook ?? 0,
       youtube: socialMap.youtube ?? 0,
       tiktok: socialMap.tiktok ?? 0,
-      facebook: socialMap.facebook ?? 0,
+      threads: socialMap.threads ?? 0,
     },
     contact: { phone, email, lineId, manager: "" },
     gender: gender as "男" | "女" | "其他",
@@ -138,7 +140,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/kols/${created.id}`);
 }
 
-const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
+const AUDIENCE_PLATFORMS = ["Instagram", "Facebook", "YouTube", "TikTok", "Threads"] as const;
 type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 
 const AUDIENCE_AGE_OPTIONS = ["0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
@@ -163,10 +165,10 @@ function PlatformAudienceMetricsSection({ enabledPlatforms }: { enabledPlatforms
   const [activePlatform, setActivePlatform] = useState<AudiencePlatform>("Instagram");
   const [metrics, setMetrics] = useState<Record<AudiencePlatform, PlatformAudienceState>>({
     Instagram: emptyPlatformAudience(),
+    Facebook: emptyPlatformAudience(),
     YouTube: emptyPlatformAudience(),
     TikTok: emptyPlatformAudience(),
-    Facebook: emptyPlatformAudience(),
-    Twitter: emptyPlatformAudience(),
+    Threads: emptyPlatformAudience(),
   });
 
   // Auto-switch to first enabled platform when active becomes disabled
@@ -447,7 +449,7 @@ export default function KolCreatePage() {
                     <div className={styles.socialGrid}>
                       <Select
                         label="平台"
-                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
+                        data={["Instagram", "Facebook", "YouTube", "TikTok", "Threads"]}
                         value={item.platform}
                         onChange={(val) => updateSocial(item.id, "platform", val)}
                         size="sm"

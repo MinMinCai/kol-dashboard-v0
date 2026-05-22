@@ -138,22 +138,24 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
     socialLinks: {
       instagram: socialLinkMap.instagram,
+      facebook: socialLinkMap.facebook,
       youtube: socialLinkMap.youtube,
       tiktok: socialLinkMap.tiktok,
-      facebook: socialLinkMap.facebook,
+      threads: socialLinkMap.threads,
     },
     social: {
       instagram: socialMap.instagram ?? 0,
+      facebook: socialMap.facebook ?? 0,
       youtube: socialMap.youtube ?? 0,
       tiktok: socialMap.tiktok ?? 0,
-      facebook: socialMap.facebook ?? 0,
+      threads: socialMap.threads ?? 0,
     },
   });
 
   return redirect(`/kols/${kolId}`);
 }
 
-const AUDIENCE_PLATFORMS = ["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"] as const;
+const AUDIENCE_PLATFORMS = ["Instagram", "Facebook", "YouTube", "TikTok", "Threads"] as const;
 type AudiencePlatform = typeof AUDIENCE_PLATFORMS[number];
 
 const AUDIENCE_AGE_OPTIONS = ["0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
@@ -351,9 +353,10 @@ export default function KolEditPage() {
   type SocialRow = { id: string; platform: string; url: string; followers: number | null };
   const platformSeeds: Array<{ platform: string; urlKey: keyof NonNullable<Kol["socialLinks"]>; followersKey: keyof NonNullable<Kol["social"]> }> = [
     { platform: "Instagram", urlKey: "instagram", followersKey: "instagram" },
+    { platform: "Facebook", urlKey: "facebook", followersKey: "facebook" },
     { platform: "YouTube", urlKey: "youtube", followersKey: "youtube" },
     { platform: "TikTok", urlKey: "tiktok", followersKey: "tiktok" },
-    { platform: "Facebook", urlKey: "facebook", followersKey: "facebook" },
+    { platform: "Threads", urlKey: "threads", followersKey: "threads" },
   ];
   const initialSocials: SocialRow[] = platformSeeds
     .map((seed, idx): SocialRow | null => {
@@ -505,7 +508,7 @@ export default function KolEditPage() {
                     <div className={styles.socialGrid}>
                       <Select
                         label="平台"
-                        data={["Instagram", "YouTube", "TikTok", "Facebook", "Twitter"]}
+                        data={["Instagram", "Facebook", "YouTube", "TikTok", "Threads"]}
                         value={item.platform}
                         onChange={(val) => updateSocial(item.id, "platform", val)}
                         size="sm"

@@ -137,6 +137,7 @@ export type Kol = {
     youtube?: number;
     tiktok?: number;
     facebook?: number;
+    threads?: number;
   };
   contact?: {
     phone?: string;
@@ -170,6 +171,7 @@ export type Kol = {
     youtube?: string;
     tiktok?: string;
     facebook?: string;
+    threads?: string;
   };
 };
 
@@ -430,7 +432,7 @@ async function enrichKols(kols: Kol[]): Promise<Kol[]> {
   const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
   for (const row of socialAccountRows) {
     const platformKey = row.platform.toLowerCase() as keyof NonNullable<Kol["socialLinks"]>;
-    if (!["instagram", "youtube", "tiktok", "facebook"].includes(platformKey)) continue;
+    if (!["instagram", "youtube", "tiktok", "facebook", "threads"].includes(platformKey)) continue;
     const current = socialLinksByKolId.get(row.kolId) ?? {};
     if (row.profileUrl) current[platformKey] = row.profileUrl;
     socialLinksByKolId.set(row.kolId, current);
