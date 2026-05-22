@@ -723,7 +723,7 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | documentUrl | text | 合約文件 URL |
 | tax / totalWithTax | numeric(12,2) | 稅額 / 含稅總額 |
 | hasDraft / hasOfficial | boolean | 草稿 / 正式合約狀態 |
-| collaborations | jsonb[] | 合作明細清單 |
+| collaborations | jsonb[] | 合作明細清單，每筆物件結構如下：<br>`id` text、`kolId` text、`name` text、`avatarUrl` text、`services` text（合作項目）、`executionDate` date（上線日期）、`authorization` date（授權日期）、`price` numeric（成本未稅）、`clientQuote` numeric（對客戶報價未稅）、`uploadDate` text（舊欄位保留）、`rating` numeric、`totalReach` int、`totalEngagement` int |
 | reports | jsonb[] | 報告清單 |
 | createdAt / updatedAt | timestamp | |
 

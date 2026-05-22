@@ -104,11 +104,12 @@ export type OrderKolCollaboration = {
     youtube?: string;
     tiktok?: string;
   };
-  price?: number;
+  price?: number;         // 成本(未稅)
+  clientQuote?: number;   // 對客戶報價(未稅)
   services?: string;
-  uploadDate?: string;
-  executionDate?: string;
-  authorization?: string;
+  executionDate?: string; // 上線日期
+  authorization?: string; // 授權日期 (YYYY-MM-DD)
+  uploadDate?: string;    // 保留供舊資料相容
   rating?: number;
   totalReach?: number;
   totalEngagement?: number;

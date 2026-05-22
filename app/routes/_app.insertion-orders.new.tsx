@@ -39,10 +39,11 @@ type SelectedKolRow = {
   name: string;
   avatarUrl?: string;
   services: string[];
-  uploadDate: string;
-  executionDate: string;
-  authorization: string;
-  price: number;
+  executionDate: string;  // 上線日期
+  authorization: string;  // 授權日期 (YYYY-MM-DD)
+  price: number;          // 成本(未稅)
+  clientQuote: number;    // 對客戶報價(未稅)
+  uploadDate: string;     // 保留相容
 };
 
 function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
@@ -164,6 +165,7 @@ export async function action({ request }: ActionFunctionArgs) {
       name: row.name,
       avatarUrl: avatarByKolId.get(row.kolId) || row.avatarUrl || "",
       price: row.price,
+      clientQuote: row.clientQuote || 0,
       services: row.services.join(" + "),
       uploadDate: row.uploadDate,
       executionDate: row.executionDate,
@@ -224,6 +226,7 @@ export default function InsertionOrderCreatePage() {
       uploadDate: "",
       executionDate: "",
       authorization: "",
+      clientQuote: 0,
       price: pk.actualPrice ?? pk.price ?? 0,
     }));
   });
@@ -257,6 +260,7 @@ export default function InsertionOrderCreatePage() {
         executionDate: "",
         authorization: "",
         price: k.price,
+        clientQuote: 0,
       },
     ]);
   }
@@ -468,7 +472,7 @@ export default function InsertionOrderCreatePage() {
 
                         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="sm">
                           <TextInput
-                            label="合作內容"
+                            label="合作項目"
                             placeholder="例如：IG 貼文 1 篇、限時動態 2 則"
                             value={row.services.join(" + ")}
                             onChange={(e) =>
@@ -483,15 +487,15 @@ export default function InsertionOrderCreatePage() {
                             }
                           />
                           <TextInput
-                            label="授權項目"
-                            placeholder="例如：數位廣告投放一年"
+                            label="授權日期"
+                            type="date"
                             value={row.authorization}
                             onChange={(e) =>
                               updateKolField(row.id, "authorization", e.currentTarget.value)
                             }
                           />
                           <TextInput
-                            label="執行日期"
+                            label="上線日期"
                             type="date"
                             value={row.executionDate}
                             onChange={(e) =>
@@ -499,13 +503,24 @@ export default function InsertionOrderCreatePage() {
                             }
                           />
                           <TextInput
-                            label="KOL 報價"
+                            label="成本(未稅)"
                             type="number"
                             min={0}
                             step={1000}
                             value={String(row.price || "")}
                             onChange={(e) =>
                               updateKolField(row.id, "price", Number(e.currentTarget.value) || 0)
+                            }
+                          />
+                          <TextInput
+                            label="對客戶報價(未稅)"
+                            type="number"
+                            min={0}
+                            step={1000}
+                            style={{ gridColumn: "1 / -1" }}
+                            value={String(row.clientQuote || "")}
+                            onChange={(e) =>
+                              updateKolField(row.id, "clientQuote", Number(e.currentTarget.value) || 0)
                             }
                           />
                         </SimpleGrid>

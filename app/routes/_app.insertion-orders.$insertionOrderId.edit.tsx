@@ -36,10 +36,11 @@ type SelectedKolRow = {
   name: string;
   avatarUrl?: string;
   services: string[];
-  uploadDate: string;
-  executionDate: string;
-  authorization: string;
-  price: number;
+  executionDate: string;  // 上線日期
+  authorization: string;  // 授權日期 (YYYY-MM-DD)
+  price: number;          // 成本(未稅)
+  clientQuote: number;    // 對客戶報價(未稅)
+  uploadDate: string;     // 保留相容
   rating?: number;
   totalReach?: number;
   totalEngagement?: number;
@@ -147,6 +148,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       name: row.name,
       avatarUrl: row.avatarUrl,
       price: row.price,
+      clientQuote: (row as any).clientQuote || 0,
       services: Array.isArray(row.services) ? row.services.join(" + ") : (row.services || ""),
       uploadDate: row.uploadDate,
       executionDate: row.executionDate,
@@ -251,7 +253,7 @@ export default function InsertionOrderEditPage() {
       var selected = [];
       try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
       if (selected.some(function(x){ return x.kolId === id; })) return;
-      selected.push({ id:'row_'+Math.random().toString(36).slice(2,10), kolId:id, name:name, avatarUrl:avatar, services:['IG貼文'], uploadDate:'', executionDate:'', authorization:'', price:Number(price)||0 });
+      selected.push({ id:'row_'+Math.random().toString(36).slice(2,10), kolId:id, name:name, avatarUrl:avatar, services:['IG貼文'], uploadDate:'', executionDate:'', authorization:'', price:Number(price)||0, clientQuote:0 });
       if (ta) ta.value = JSON.stringify(selected);
       kolRenderSelected();
       var searchEl = document.getElementById('kol-dialog-search');
@@ -285,34 +287,30 @@ export default function InsertionOrderEditPage() {
         container.innerHTML = '<p style="font-size:14px;color:var(--mantine-color-dimmed);margin:8px 0;">尚未加入任何 KOL，請點擊「選擇合作 KOL」開始選擇。</p>';
         return;
       }
+      var inputStyle = 'width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;';
+      var labelStyle = 'font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;';
       container.innerHTML = selected.map(function(row){
         var servicesVal = Array.isArray(row.services) ? row.services.join(' + ') : (row.services || '');
         return '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--mantine-color-default-border);border-radius:6px;margin-top:8px;">'
-          +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;"/>'
+          +'<img src="'+(row.avatarUrl||'')+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;margin-top:2px;"/>'
           +'<div style="flex:1;">'
-          +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
           +'<span style="font-weight:600;font-size:14px;">'+row.name+'</span>'
-          +'<div style="display:flex;align-items:center;gap:6px;">'
-          +'<span style="font-size:13px;color:var(--mantine-color-dimmed);white-space:nowrap;">NT$</span>'
-          +'<input type="number" min="0" step="1000" aria-label="報價金額" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="width:120px;font-size:13px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);" />'
+          +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:3px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;">移除</button>'
+          +'</div>'
+          +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+          +'<div><label style="'+labelStyle+'">合作項目</label>'
+          +'<input type="text" aria-label="合作項目" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" value="'+servicesVal+'" oninput="kolUpdateServices(\\''+row.id+'\\',this.value)" style="'+inputStyle+'"/></div>'
+          +'<div><label style="'+labelStyle+'">授權日期</label>'
+          +'<input type="date" aria-label="授權日期" value="'+(row.authorization||'')+'" onchange="kolUpdateAuthorization(\\''+row.id+'\\',this.value)" style="'+inputStyle+'"/></div>'
+          +'<div><label style="'+labelStyle+'">上線日期</label>'
+          +'<input type="date" aria-label="上線日期" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="'+inputStyle+'"/></div>'
+          +'<div><label style="'+labelStyle+'">成本(未稅)</label>'
+          +'<input type="number" min="0" step="1000" aria-label="成本(未稅)" value="'+(row.price||0)+'" oninput="kolUpdatePrice(\\''+row.id+'\\',this.value)" style="'+inputStyle+'"/></div>'
+          +'<div style="grid-column:1/-1;"><label style="'+labelStyle+'">對客戶報價(未稅)</label>'
+          +'<input type="number" min="0" step="1000" aria-label="對客戶報價(未稅)" value="'+(row.clientQuote||0)+'" oninput="kolUpdateClientQuote(\\''+row.id+'\\',this.value)" style="'+inputStyle+'"/></div>'
           +'</div>'
           +'</div>'
-          +'<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-          +'<div>'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">合作內容</label>'
-          +'<input type="text" aria-label="合作內容" placeholder="例如：IG 貼文 1 篇、限時動態 2 則" value="'+servicesVal+'" oninput="kolUpdateServices(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
-          +'</div>'
-          +'<div>'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);display:block;margin-bottom:2px;">授權項目</label>'
-          +'<input type="text" aria-label="授權項目" placeholder="例如：數位廣告投放一年" value="'+(row.authorization||'')+'" oninput="kolUpdateAuthorization(\\''+row.id+'\\',this.value)" style="width:100%;font-size:12px;padding:4px 8px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);box-sizing:border-box;"/>'
-          +'</div>'
-          +'</div>'
-          +'<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
-          +'<label style="font-size:12px;color:var(--mantine-color-dimmed);">執行日期</label>'
-          +'<input type="date" aria-label="執行日期" value="'+(row.executionDate||'')+'" onchange="kolUpdateExecDate(\\''+row.id+'\\',this.value)" style="font-size:12px;padding:2px 6px;border:1px solid var(--mantine-color-default-border);border-radius:4px;background:var(--mantine-color-body);color:var(--mantine-color-text);"/>'
-          +'</div>'
-          +'</div>'
-          +'<button type="button" onclick="kolRemove(\\''+row.id+'\\');return false;" style="padding:4px 10px;border-radius:4px;border:1px solid #f87171;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;flex-shrink:0;">移除</button>'
           +'</div>';
       }).join('');
     }
@@ -346,6 +344,14 @@ export default function InsertionOrderEditPage() {
       try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
       var idx = selected.findIndex(function(x){ return x.id === rowId; });
       if (idx !== -1) selected[idx].authorization = val;
+      if (ta) ta.value = JSON.stringify(selected);
+    }
+    window.kolUpdateClientQuote = function(rowId, val) {
+      var ta = document.getElementById('kol-selected-json');
+      var selected = [];
+      try { selected = JSON.parse(ta ? ta.value || '[]' : '[]'); } catch(e){}
+      var idx = selected.findIndex(function(x){ return x.id === rowId; });
+      if (idx !== -1) selected[idx].clientQuote = Number(val) || 0;
       if (ta) ta.value = JSON.stringify(selected);
     }
   `;
@@ -384,6 +390,7 @@ export default function InsertionOrderEditPage() {
         executionDate: c.executionDate || "",
         authorization: c.authorization || "",
         price: c.price || 0,
+        clientQuote: c.clientQuote || 0,
         rating: c.rating || 0,
         totalReach: c.totalReach || 0,
         totalEngagement: c.totalEngagement || 0,
