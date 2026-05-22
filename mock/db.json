@@ -29,7 +29,8 @@
       "social": {
         "instagram": 183000,
         "youtube": 12000,
-        "tiktok": 54000
+        "tiktok": 54000,
+        "threads": 28000
       },
       "city": "Taipei",
       "notes": "女性 18-24 受眾集中",
@@ -108,10 +109,22 @@
         }
       ],
       "priceTrend": [
-        { "date": "2025-09", "price": 54000 },
-        { "date": "2025-11", "price": 54000 },
-        { "date": "2026-02", "price": 52000 },
-        { "date": "2026-03", "price": 52000 }
+        {
+          "date": "2025-09",
+          "price": 54000
+        },
+        {
+          "date": "2025-11",
+          "price": 54000
+        },
+        {
+          "date": "2026-02",
+          "price": 52000
+        },
+        {
+          "date": "2026-03",
+          "price": 52000
+        }
       ],
       "performanceStats": {
         "averageReach": 120000,
@@ -125,53 +138,111 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["Instagram", "YouTube", "TikTok"],
+        "platforms": [
+          "Instagram",
+          "YouTube",
+          "TikTok",
+          "Threads"
+        ],
         "priceTrend": {
           "Instagram": [
-            { "date": "2025-09", "price": 54000 },
-            { "date": "2025-11", "price": 54000 },
-            { "date": "2026-02", "price": 52000 },
-            { "date": "2026-03", "price": 52000 }
+            {
+              "date": "2025-09",
+              "price": 54000
+            },
+            {
+              "date": "2025-11",
+              "price": 54000
+            },
+            {
+              "date": "2026-02",
+              "price": 52000
+            },
+            {
+              "date": "2026-03",
+              "price": 52000
+            }
           ],
           "YouTube": [
-            { "date": "2025-09", "price": 28000 },
-            { "date": "2026-02", "price": 30000 }
+            {
+              "date": "2025-09",
+              "price": 28000
+            },
+            {
+              "date": "2026-02",
+              "price": 30000
+            }
           ],
           "TikTok": [
-            { "date": "2025-11", "price": 22000 },
-            { "date": "2026-03", "price": 24000 }
+            {
+              "date": "2025-11",
+              "price": 22000
+            },
+            {
+              "date": "2026-03",
+              "price": 24000
+            }
+          ],
+          "Threads": [
+            {
+              "date": "2026-03",
+              "price": 18000
+            }
           ]
         },
         "avgRating": {
           "Instagram": 4.7,
           "YouTube": 4.3,
-          "TikTok": 4.5
+          "TikTok": 4.5,
+          "Threads": 4.6
         },
         "avgEngagementRate": {
           "Instagram": 4.9,
           "YouTube": 3.2,
-          "TikTok": 6.8
+          "TikTok": 6.8,
+          "Threads": 5.2
         },
         "audienceMetrics": {
           "Instagram": {
             "engagementRate": 4.9,
             "exposureRate": 14.2,
-            "audienceGender": { "male": 18, "female": 82 },
+            "audienceGender": {
+              "male": 18,
+              "female": 82
+            },
             "audienceAge": "18-24, 25-34"
           },
           "YouTube": {
             "engagementRate": 3.2,
             "exposureRate": 8.5,
-            "audienceGender": { "male": 25, "female": 75 },
+            "audienceGender": {
+              "male": 25,
+              "female": 75
+            },
             "audienceAge": "18-24, 25-34"
           },
           "TikTok": {
             "engagementRate": 6.8,
-            "exposureRate": 18.0,
-            "audienceGender": { "male": 15, "female": 85 },
+            "exposureRate": 18,
+            "audienceGender": {
+              "male": 15,
+              "female": 85
+            },
             "audienceAge": "18-24"
+          },
+          "Threads": {
+            "engagementRate": 5.2,
+            "exposureRate": 9.8,
+            "audienceGender": {
+              "male": 16,
+              "female": 84
+            },
+            "audienceAge": "18-24, 25-34"
           }
         }
+      },
+      "socialLinks": {
+        "threads": "https://www.threads.net/@amybeauty.tw"
       }
     },
     {
@@ -237,8 +308,14 @@
         }
       ],
       "priceTrend": [
-        { "date": "2024-10", "price": 52000 },
-        { "date": "2026-02", "price": 62000 }
+        {
+          "date": "2024-10",
+          "price": 52000
+        },
+        {
+          "date": "2026-02",
+          "price": 62000
+        }
       ],
       "performanceStats": {
         "averageReach": 85000,
@@ -252,18 +329,37 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["YouTube", "Instagram", "TikTok"],
+        "platforms": [
+          "YouTube",
+          "Instagram",
+          "TikTok"
+        ],
         "priceTrend": {
           "YouTube": [
-            { "date": "2024-10", "price": 52000 },
-            { "date": "2026-02", "price": 62000 }
+            {
+              "date": "2024-10",
+              "price": 52000
+            },
+            {
+              "date": "2026-02",
+              "price": 62000
+            }
           ],
           "Instagram": [
-            { "date": "2024-10", "price": 22000 },
-            { "date": "2026-02", "price": 28000 }
+            {
+              "date": "2024-10",
+              "price": 22000
+            },
+            {
+              "date": "2026-02",
+              "price": 28000
+            }
           ],
           "TikTok": [
-            { "date": "2026-02", "price": 15000 }
+            {
+              "date": "2026-02",
+              "price": 15000
+            }
           ]
         },
         "avgRating": {
@@ -279,20 +375,29 @@
         "audienceMetrics": {
           "YouTube": {
             "engagementRate": 5.4,
-            "exposureRate": 12.0,
-            "audienceGender": { "male": 72, "female": 28 },
+            "exposureRate": 12,
+            "audienceGender": {
+              "male": 72,
+              "female": 28
+            },
             "audienceAge": "25-34, 35-44"
           },
           "Instagram": {
             "engagementRate": 3.8,
             "exposureRate": 9.5,
-            "audienceGender": { "male": 68, "female": 32 },
+            "audienceGender": {
+              "male": 68,
+              "female": 32
+            },
             "audienceAge": "25-34"
           },
           "TikTok": {
             "engagementRate": 7.2,
-            "exposureRate": 20.0,
-            "audienceGender": { "male": 65, "female": 35 },
+            "exposureRate": 20,
+            "audienceGender": {
+              "male": 65,
+              "female": 35
+            },
             "audienceAge": "18-24, 25-34"
           }
         }
@@ -328,7 +433,8 @@
       "social": {
         "instagram": 50000,
         "youtube": 20000,
-        "tiktok": 32000
+        "tiktok": 32000,
+        "threads": 18000
       },
       "contact": {
         "phone": "0900-123-456",
@@ -479,59 +585,123 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["Instagram", "YouTube", "TikTok"],
+        "platforms": [
+          "Instagram",
+          "YouTube",
+          "TikTok",
+          "Threads"
+        ],
         "priceTrend": {
           "Instagram": [
-            { "date": "2023-09", "price": 45000 },
-            { "date": "2023-12", "price": 44000 },
-            { "date": "2024-03", "price": 49000 },
-            { "date": "2024-06", "price": 47000 },
-            { "date": "2024-08", "price": 46000 },
-            { "date": "2024-10", "price": 50000 }
+            {
+              "date": "2023-09",
+              "price": 45000
+            },
+            {
+              "date": "2023-12",
+              "price": 44000
+            },
+            {
+              "date": "2024-03",
+              "price": 49000
+            },
+            {
+              "date": "2024-06",
+              "price": 47000
+            },
+            {
+              "date": "2024-08",
+              "price": 46000
+            },
+            {
+              "date": "2024-10",
+              "price": 50000
+            }
           ],
           "YouTube": [
-            { "date": "2024-03", "price": 25000 },
-            { "date": "2024-10", "price": 28000 }
+            {
+              "date": "2024-03",
+              "price": 25000
+            },
+            {
+              "date": "2024-10",
+              "price": 28000
+            }
           ],
           "TikTok": [
-            { "date": "2023-12", "price": 18000 },
-            { "date": "2024-06", "price": 20000 }
+            {
+              "date": "2023-12",
+              "price": 18000
+            },
+            {
+              "date": "2024-06",
+              "price": 20000
+            }
+          ],
+          "Threads": [
+            {
+              "date": "2026-01",
+              "price": 15000
+            }
           ]
         },
         "avgRating": {
           "Instagram": 4.5,
           "YouTube": 4.3,
-          "TikTok": 4.4
+          "TikTok": 4.4,
+          "Threads": 4.5
         },
         "avgEngagementRate": {
           "Instagram": 7.8,
           "YouTube": 4.5,
-          "TikTok": 9.2
+          "TikTok": 9.2,
+          "Threads": 6.8
         },
         "audienceMetrics": {
           "Instagram": {
             "engagementRate": 7.8,
             "exposureRate": 16.5,
-            "audienceGender": { "male": 22, "female": 78 },
+            "audienceGender": {
+              "male": 22,
+              "female": 78
+            },
             "audienceAge": "25-34, 35-44"
           },
           "YouTube": {
             "engagementRate": 4.5,
             "exposureRate": 10.2,
-            "audienceGender": { "male": 30, "female": 70 },
+            "audienceGender": {
+              "male": 30,
+              "female": 70
+            },
             "audienceAge": "25-34, 35-44"
           },
           "TikTok": {
             "engagementRate": 9.2,
-            "exposureRate": 22.0,
-            "audienceGender": { "male": 20, "female": 80 },
+            "exposureRate": 22,
+            "audienceGender": {
+              "male": 20,
+              "female": 80
+            },
             "audienceAge": "18-24, 25-34"
+          },
+          "Threads": {
+            "engagementRate": 6.8,
+            "exposureRate": 11.2,
+            "audienceGender": {
+              "male": 10,
+              "female": 90
+            },
+            "audienceAge": "25-34, 35-44"
           }
         }
       },
       "city": "Kaohsiung",
       "notes": "短影音表現佳",
-      "favoriteFolder": "家電專案"
+      "favoriteFolder": "家電專案",
+      "socialLinks": {
+        "threads": "https://www.threads.net/@gina.life"
+      }
     },
     {
       "id": "kol_004",
@@ -659,17 +829,38 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["Instagram", "YouTube"],
+        "platforms": [
+          "Instagram",
+          "YouTube"
+        ],
         "priceTrend": {
           "Instagram": [
-            { "date": "2024-10", "price": 42000 },
-            { "date": "2025-09", "price": 42000 },
-            { "date": "2025-12", "price": 42000 },
-            { "date": "2026-03", "price": 42000 }
+            {
+              "date": "2024-10",
+              "price": 42000
+            },
+            {
+              "date": "2025-09",
+              "price": 42000
+            },
+            {
+              "date": "2025-12",
+              "price": 42000
+            },
+            {
+              "date": "2026-03",
+              "price": 42000
+            }
           ],
           "YouTube": [
-            { "date": "2025-09", "price": 35000 },
-            { "date": "2025-12", "price": 35000 }
+            {
+              "date": "2025-09",
+              "price": 35000
+            },
+            {
+              "date": "2025-12",
+              "price": 35000
+            }
           ]
         },
         "avgRating": {
@@ -684,13 +875,19 @@
           "Instagram": {
             "engagementRate": 3.9,
             "exposureRate": 10.5,
-            "audienceGender": { "male": 45, "female": 55 },
+            "audienceGender": {
+              "male": 45,
+              "female": 55
+            },
             "audienceAge": "25-34, 35-44"
           },
           "YouTube": {
             "engagementRate": 5.2,
             "exposureRate": 13.8,
-            "audienceGender": { "male": 50, "female": 50 },
+            "audienceGender": {
+              "male": 50,
+              "female": 50
+            },
             "audienceAge": "25-34, 35-44"
           }
         }
@@ -724,7 +921,8 @@
       "social": {
         "instagram": 134000,
         "youtube": 22000,
-        "tiktok": 41000
+        "tiktok": 41000,
+        "threads": 22000
       },
       "city": "Hsinchu",
       "favoriteFolder": "美妝專案",
@@ -794,51 +992,103 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["Instagram", "TikTok", "YouTube"],
+        "platforms": [
+          "Instagram",
+          "TikTok",
+          "YouTube",
+          "Threads"
+        ],
         "priceTrend": {
           "Instagram": [
-            { "date": "2025-09", "price": 48000 },
-            { "date": "2025-11", "price": 46000 },
-            { "date": "2026-03", "price": 46000 }
+            {
+              "date": "2025-09",
+              "price": 48000
+            },
+            {
+              "date": "2025-11",
+              "price": 46000
+            },
+            {
+              "date": "2026-03",
+              "price": 46000
+            }
           ],
           "TikTok": [
-            { "date": "2025-09", "price": 32000 },
-            { "date": "2026-03", "price": 35000 }
+            {
+              "date": "2025-09",
+              "price": 32000
+            },
+            {
+              "date": "2026-03",
+              "price": 35000
+            }
           ],
           "YouTube": [
-            { "date": "2025-11", "price": 22000 }
+            {
+              "date": "2025-11",
+              "price": 22000
+            }
+          ],
+          "Threads": [
+            {
+              "date": "2026-02",
+              "price": 16000
+            }
           ]
         },
         "avgRating": {
           "Instagram": 4.3,
           "TikTok": 4.5,
-          "YouTube": 4.2
+          "YouTube": 4.2,
+          "Threads": 4.4
         },
         "avgEngagementRate": {
           "Instagram": 5.1,
           "TikTok": 8.8,
-          "YouTube": 3.5
+          "YouTube": 3.5,
+          "Threads": 5.5
         },
         "audienceMetrics": {
           "Instagram": {
             "engagementRate": 5.1,
             "exposureRate": 13.5,
-            "audienceGender": { "male": 20, "female": 80 },
+            "audienceGender": {
+              "male": 20,
+              "female": 80
+            },
             "audienceAge": "18-24, 25-34"
           },
           "TikTok": {
             "engagementRate": 8.8,
-            "exposureRate": 21.0,
-            "audienceGender": { "male": 18, "female": 82 },
+            "exposureRate": 21,
+            "audienceGender": {
+              "male": 18,
+              "female": 82
+            },
             "audienceAge": "18-24"
           },
           "YouTube": {
             "engagementRate": 3.5,
-            "exposureRate": 9.0,
-            "audienceGender": { "male": 28, "female": 72 },
+            "exposureRate": 9,
+            "audienceGender": {
+              "male": 28,
+              "female": 72
+            },
             "audienceAge": "25-34"
+          },
+          "Threads": {
+            "engagementRate": 5.5,
+            "exposureRate": 10.5,
+            "audienceGender": {
+              "male": 18,
+              "female": 82
+            },
+            "audienceAge": "18-24, 25-34"
           }
         }
+      },
+      "socialLinks": {
+        "threads": "https://www.threads.net/@lunafit.training"
       }
     },
     {
@@ -868,7 +1118,8 @@
       "social": {
         "instagram": 21000,
         "youtube": 47000,
-        "tiktok": 7000
+        "tiktok": 7000,
+        "threads": 12000
       },
       "city": "Taipei",
       "notes": "財經知識型 KOL，理性受眾為主",
@@ -908,37 +1159,73 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["YouTube", "Instagram"],
+        "platforms": [
+          "YouTube",
+          "Instagram",
+          "Threads"
+        ],
         "priceTrend": {
           "YouTube": [
-            { "date": "2026-03", "price": 48000 }
+            {
+              "date": "2026-03",
+              "price": 48000
+            }
           ],
           "Instagram": [
-            { "date": "2026-03", "price": 18000 }
+            {
+              "date": "2026-03",
+              "price": 18000
+            }
+          ],
+          "Threads": [
+            {
+              "date": "2026-03",
+              "price": 12000
+            }
           ]
         },
         "avgRating": {
-          "YouTube": 4.0,
-          "Instagram": 3.8
+          "YouTube": 4,
+          "Instagram": 3.8,
+          "Threads": 4.1
         },
         "avgEngagementRate": {
           "YouTube": 4.2,
-          "Instagram": 2.8
+          "Instagram": 2.8,
+          "Threads": 4.8
         },
         "audienceMetrics": {
           "YouTube": {
             "engagementRate": 4.2,
-            "exposureRate": 11.0,
-            "audienceGender": { "male": 62, "female": 38 },
+            "exposureRate": 11,
+            "audienceGender": {
+              "male": 62,
+              "female": 38
+            },
             "audienceAge": "25-34, 35-44"
           },
           "Instagram": {
             "engagementRate": 2.8,
             "exposureRate": 7.5,
-            "audienceGender": { "male": 58, "female": 42 },
+            "audienceGender": {
+              "male": 58,
+              "female": 42
+            },
             "audienceAge": "25-34"
+          },
+          "Threads": {
+            "engagementRate": 4.8,
+            "exposureRate": 8.5,
+            "audienceGender": {
+              "male": 60,
+              "female": 40
+            },
+            "audienceAge": "25-34, 35-44"
           }
         }
+      },
+      "socialLinks": {
+        "threads": "https://www.threads.net/@nora.moneytalk"
       }
     },
     {
@@ -970,7 +1257,8 @@
       "social": {
         "instagram": 112000,
         "youtube": 9000,
-        "tiktok": 38000
+        "tiktok": 38000,
+        "threads": 15000
       },
       "city": "Tainan",
       "favoriteFolder": "美妝專案",
@@ -1055,52 +1343,107 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["Instagram", "TikTok", "YouTube"],
+        "platforms": [
+          "Instagram",
+          "TikTok",
+          "YouTube",
+          "Threads"
+        ],
         "priceTrend": {
           "Instagram": [
-            { "date": "2024-10", "price": 52000 },
-            { "date": "2025-09", "price": 52000 },
-            { "date": "2025-11", "price": 52000 },
-            { "date": "2026-02", "price": 52000 }
+            {
+              "date": "2024-10",
+              "price": 52000
+            },
+            {
+              "date": "2025-09",
+              "price": 52000
+            },
+            {
+              "date": "2025-11",
+              "price": 52000
+            },
+            {
+              "date": "2026-02",
+              "price": 52000
+            }
           ],
           "TikTok": [
-            { "date": "2025-09", "price": 28000 },
-            { "date": "2026-02", "price": 30000 }
+            {
+              "date": "2025-09",
+              "price": 28000
+            },
+            {
+              "date": "2026-02",
+              "price": 30000
+            }
           ],
           "YouTube": [
-            { "date": "2025-11", "price": 18000 }
+            {
+              "date": "2025-11",
+              "price": 18000
+            }
+          ],
+          "Threads": [
+            {
+              "date": "2026-01",
+              "price": 14000
+            }
           ]
         },
         "avgRating": {
           "Instagram": 4.6,
           "TikTok": 4.7,
-          "YouTube": 4.2
+          "YouTube": 4.2,
+          "Threads": 4.5
         },
         "avgEngagementRate": {
           "Instagram": 4.8,
           "TikTok": 9.5,
-          "YouTube": 3.2
+          "YouTube": 3.2,
+          "Threads": 5.1
         },
         "audienceMetrics": {
           "Instagram": {
             "engagementRate": 4.8,
-            "exposureRate": 13.0,
-            "audienceGender": { "male": 25, "female": 75 },
+            "exposureRate": 13,
+            "audienceGender": {
+              "male": 25,
+              "female": 75
+            },
             "audienceAge": "25-34, 35-44"
           },
           "TikTok": {
             "engagementRate": 9.5,
             "exposureRate": 23.5,
-            "audienceGender": { "male": 22, "female": 78 },
+            "audienceGender": {
+              "male": 22,
+              "female": 78
+            },
             "audienceAge": "18-24, 25-34"
           },
           "YouTube": {
             "engagementRate": 3.2,
             "exposureRate": 8.5,
-            "audienceGender": { "male": 30, "female": 70 },
+            "audienceGender": {
+              "male": 30,
+              "female": 70
+            },
             "audienceAge": "25-34"
+          },
+          "Threads": {
+            "engagementRate": 5.1,
+            "exposureRate": 9.2,
+            "audienceGender": {
+              "male": 12,
+              "female": 88
+            },
+            "audienceAge": "25-34, 35-44"
           }
         }
+      },
+      "socialLinks": {
+        "threads": "https://www.threads.net/@zoefamily.fun"
       }
     },
     {
@@ -1170,13 +1513,22 @@
         }
       },
       "platformMetrics": {
-        "platforms": ["YouTube", "Instagram"],
+        "platforms": [
+          "YouTube",
+          "Instagram"
+        ],
         "priceTrend": {
           "YouTube": [
-            { "date": "2026-02", "price": 85000 }
+            {
+              "date": "2026-02",
+              "price": 85000
+            }
           ],
           "Instagram": [
-            { "date": "2026-02", "price": 32000 }
+            {
+              "date": "2026-02",
+              "price": 32000
+            }
           ]
         },
         "avgRating": {
@@ -1190,14 +1542,20 @@
         "audienceMetrics": {
           "YouTube": {
             "engagementRate": 4.4,
-            "exposureRate": 15.0,
-            "audienceGender": { "male": 80, "female": 20 },
+            "exposureRate": 15,
+            "audienceGender": {
+              "male": 80,
+              "female": 20
+            },
             "audienceAge": "25-34, 35-44"
           },
           "Instagram": {
             "engagementRate": 3.8,
             "exposureRate": 10.5,
-            "audienceGender": { "male": 75, "female": 25 },
+            "audienceGender": {
+              "male": 75,
+              "female": 25
+            },
             "audienceAge": "25-34, 35-44"
           }
         }
@@ -3051,43 +3409,83 @@
       "id": "client_001",
       "name": "Panasonic Taiwan",
       "industry": "家電",
-      "preferences": { "preferredPlatforms": ["Instagram", "YouTube"], "targetAudience": "25-45歲家庭主婦" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram",
+          "YouTube"
+        ],
+        "targetAudience": "25-45歲家庭主婦"
+      }
     },
     {
       "id": "client_002",
       "name": "Happy Food Co.",
       "industry": "食品",
-      "preferences": { "preferredPlatforms": ["Instagram", "TikTok"], "targetAudience": "18-35歲親子家庭" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram",
+          "TikTok"
+        ],
+        "targetAudience": "18-35歲親子家庭"
+      }
     },
     {
       "id": "client_003",
       "name": "DermaLab",
       "industry": "美妝保養",
-      "preferences": { "preferredPlatforms": ["Instagram"], "targetAudience": "18-35歲女性" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram"
+        ],
+        "targetAudience": "18-35歲女性"
+      }
     },
     {
       "id": "client_004",
       "name": "Aqua Home",
       "industry": "家電",
-      "preferences": { "preferredPlatforms": ["Instagram", "YouTube"], "targetAudience": "25-45歲都市白領" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram",
+          "YouTube"
+        ],
+        "targetAudience": "25-45歲都市白領"
+      }
     },
     {
       "id": "client_005",
       "name": "FitMeal",
       "industry": "食品",
-      "preferences": { "preferredPlatforms": ["Instagram", "TikTok"], "targetAudience": "20-35歲健身族群" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram",
+          "TikTok"
+        ],
+        "targetAudience": "20-35歲健身族群"
+      }
     },
     {
       "id": "client_006",
       "name": "BabyCare",
       "industry": "母嬰",
-      "preferences": { "preferredPlatforms": ["Instagram", "Facebook"], "targetAudience": "25-40歲新手父母" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram",
+          "Facebook"
+        ],
+        "targetAudience": "25-40歲新手父母"
+      }
     },
     {
       "id": "client_007",
       "name": "ALLIE",
       "industry": "美妝保養",
-      "preferences": { "preferredPlatforms": ["Instagram"], "targetAudience": "20-35歲女性" }
+      "preferences": {
+        "preferredPlatforms": [
+          "Instagram"
+        ],
+        "targetAudience": "20-35歲女性"
+      }
     }
   ],
   "kolSocialAccounts": [
@@ -3100,7 +3498,12 @@
       "followers": 183000,
       "avgViews": 98000,
       "engagementRate": 4.9,
-      "audienceProfile": { "female": 82, "male": 18, "ageGroup": "18-34", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 82,
+        "male": 18,
+        "ageGroup": "18-34",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_002",
@@ -3111,7 +3514,12 @@
       "followers": 54000,
       "avgViews": 42000,
       "engagementRate": 6.2,
-      "audienceProfile": { "female": 78, "male": 22, "ageGroup": "18-24", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 78,
+        "male": 22,
+        "ageGroup": "18-24",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_003",
@@ -3122,7 +3530,12 @@
       "followers": 210000,
       "avgViews": 180000,
       "engagementRate": 3.8,
-      "audienceProfile": { "female": 28, "male": 72, "ageGroup": "25-44", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 28,
+        "male": 72,
+        "ageGroup": "25-44",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_004",
@@ -3133,7 +3546,12 @@
       "followers": 92000,
       "avgViews": 55000,
       "engagementRate": 3.2,
-      "audienceProfile": { "female": 30, "male": 70, "ageGroup": "25-34", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 30,
+        "male": 70,
+        "ageGroup": "25-34",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_005",
@@ -3144,7 +3562,12 @@
       "followers": 145000,
       "avgViews": 88000,
       "engagementRate": 5.4,
-      "audienceProfile": { "female": 88, "male": 12, "ageGroup": "25-44", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 88,
+        "male": 12,
+        "ageGroup": "25-44",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_006",
@@ -3155,7 +3578,12 @@
       "followers": 68000,
       "avgViews": 32000,
       "engagementRate": 2.9,
-      "audienceProfile": { "female": 85, "male": 15, "ageGroup": "30-44", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 85,
+        "male": 15,
+        "ageGroup": "30-44",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_007",
@@ -3166,7 +3594,12 @@
       "followers": 320000,
       "avgViews": 290000,
       "engagementRate": 4.1,
-      "audienceProfile": { "female": 52, "male": 48, "ageGroup": "25-44", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 52,
+        "male": 48,
+        "ageGroup": "25-44",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_008",
@@ -3177,7 +3610,12 @@
       "followers": 127000,
       "avgViews": 72000,
       "engagementRate": 5.7,
-      "audienceProfile": { "female": 55, "male": 45, "ageGroup": "25-34", "topCity": "台中" }
+      "audienceProfile": {
+        "female": 55,
+        "male": 45,
+        "ageGroup": "25-34",
+        "topCity": "台中"
+      }
     },
     {
       "id": "ksa_009",
@@ -3188,7 +3626,12 @@
       "followers": 98000,
       "avgViews": 62000,
       "engagementRate": 6.8,
-      "audienceProfile": { "female": 74, "male": 26, "ageGroup": "20-34", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 74,
+        "male": 26,
+        "ageGroup": "20-34",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_010",
@@ -3199,7 +3642,12 @@
       "followers": 76000,
       "avgViews": 58000,
       "engagementRate": 8.3,
-      "audienceProfile": { "female": 70, "male": 30, "ageGroup": "18-29", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 70,
+        "male": 30,
+        "ageGroup": "18-29",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_011",
@@ -3210,7 +3658,12 @@
       "followers": 56000,
       "avgViews": 38000,
       "engagementRate": 4.5,
-      "audienceProfile": { "female": 22, "male": 78, "ageGroup": "20-39", "topCity": "新北" }
+      "audienceProfile": {
+        "female": 22,
+        "male": 78,
+        "ageGroup": "20-39",
+        "topCity": "新北"
+      }
     },
     {
       "id": "ksa_012",
@@ -3221,7 +3674,12 @@
       "followers": 162000,
       "avgViews": 105000,
       "engagementRate": 5.9,
-      "audienceProfile": { "female": 90, "male": 10, "ageGroup": "25-44", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 90,
+        "male": 10,
+        "ageGroup": "25-44",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_013",
@@ -3232,7 +3690,12 @@
       "followers": 74000,
       "avgViews": 48000,
       "engagementRate": 5.1,
-      "audienceProfile": { "female": 68, "male": 32, "ageGroup": "22-39", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 68,
+        "male": 32,
+        "ageGroup": "22-39",
+        "topCity": "台北"
+      }
     },
     {
       "id": "ksa_014",
@@ -3243,7 +3706,92 @@
       "followers": 38000,
       "avgViews": 22000,
       "engagementRate": 3.4,
-      "audienceProfile": { "female": 65, "male": 35, "ageGroup": "25-39", "topCity": "台北" }
+      "audienceProfile": {
+        "female": 65,
+        "male": 35,
+        "ageGroup": "25-39",
+        "topCity": "台北"
+      }
+    },
+    {
+      "id": "ksa_015",
+      "kolId": "kol_001",
+      "platform": "Threads",
+      "handle": "amybeauty.tw",
+      "profileUrl": "https://www.threads.net/@amybeauty.tw",
+      "followers": 28000,
+      "avgViews": 22000,
+      "engagementRate": 5.2,
+      "audienceProfile": {
+        "female": 84,
+        "male": 16,
+        "ageGroup": "18-34",
+        "topCity": "台北"
+      }
+    },
+    {
+      "id": "ksa_016",
+      "kolId": "kol_003",
+      "platform": "Threads",
+      "handle": "gina.life",
+      "profileUrl": "https://www.threads.net/@gina.life",
+      "followers": 18000,
+      "avgViews": 14000,
+      "engagementRate": 6.8,
+      "audienceProfile": {
+        "female": 90,
+        "male": 10,
+        "ageGroup": "25-44",
+        "topCity": "高雄"
+      }
+    },
+    {
+      "id": "ksa_017",
+      "kolId": "kol_005",
+      "platform": "Threads",
+      "handle": "lunafit.training",
+      "profileUrl": "https://www.threads.net/@lunafit.training",
+      "followers": 22000,
+      "avgViews": 17000,
+      "engagementRate": 5.5,
+      "audienceProfile": {
+        "female": 82,
+        "male": 18,
+        "ageGroup": "18-34",
+        "topCity": "新竹"
+      }
+    },
+    {
+      "id": "ksa_018",
+      "kolId": "kol_006",
+      "platform": "Threads",
+      "handle": "nora.moneytalk",
+      "profileUrl": "https://www.threads.net/@nora.moneytalk",
+      "followers": 12000,
+      "avgViews": 9500,
+      "engagementRate": 4.8,
+      "audienceProfile": {
+        "female": 40,
+        "male": 60,
+        "ageGroup": "25-44",
+        "topCity": "台北"
+      }
+    },
+    {
+      "id": "ksa_019",
+      "kolId": "kol_007",
+      "platform": "Threads",
+      "handle": "zoefamily.fun",
+      "profileUrl": "https://www.threads.net/@zoefamily.fun",
+      "followers": 15000,
+      "avgViews": 12000,
+      "engagementRate": 5.1,
+      "audienceProfile": {
+        "female": 88,
+        "male": 12,
+        "ageGroup": "25-44",
+        "topCity": "台南"
+      }
     }
   ],
   "proposalFeedbacks": [
@@ -3714,16 +4262,76 @@
     }
   ],
   "kolFavoriteFolderItems": [
-    { "id": "ffi_001", "folderId": "folder_001", "kolId": "kol_002", "note": "YouTube 家電開箱 CP 值高", "addedBy": "user_001" },
-    { "id": "ffi_002", "folderId": "folder_001", "kolId": "kol_006", "note": "3C 受眾與家電重疊", "addedBy": "user_001" },
-    { "id": "ffi_003", "folderId": "folder_001", "kolId": "kol_001", "note": "女性家庭受眾", "addedBy": "user_003" },
-    { "id": "ffi_004", "folderId": "folder_002", "kolId": "kol_001", "note": "互動率 4.9%，美妝主力", "addedBy": "user_001" },
-    { "id": "ffi_005", "folderId": "folder_002", "kolId": "kol_005", "note": "健康保養受眾精準", "addedBy": "user_001" },
-    { "id": "ffi_006", "folderId": "folder_003", "kolId": "kol_003", "note": "親子媽媽受眾 88% 女性", "addedBy": "user_003" },
-    { "id": "ffi_007", "folderId": "folder_003", "kolId": "kol_007", "note": "Zoe 家庭生活，轉換率高", "addedBy": "user_003" },
-    { "id": "ffi_008", "folderId": "folder_003", "kolId": "kol_004", "note": "Marc 食品 YouTube 大頻道", "addedBy": "user_003" },
-    { "id": "ffi_009", "folderId": "folder_004", "kolId": "kol_002", "note": "Tech Allen 首選", "addedBy": "user_002" },
-    { "id": "ffi_010", "folderId": "folder_004", "kolId": "kol_006", "note": "Kevin 中型 3C 頻道，性價比高", "addedBy": "user_002" }
+    {
+      "id": "ffi_001",
+      "folderId": "folder_001",
+      "kolId": "kol_002",
+      "note": "YouTube 家電開箱 CP 值高",
+      "addedBy": "user_001"
+    },
+    {
+      "id": "ffi_002",
+      "folderId": "folder_001",
+      "kolId": "kol_006",
+      "note": "3C 受眾與家電重疊",
+      "addedBy": "user_001"
+    },
+    {
+      "id": "ffi_003",
+      "folderId": "folder_001",
+      "kolId": "kol_001",
+      "note": "女性家庭受眾",
+      "addedBy": "user_003"
+    },
+    {
+      "id": "ffi_004",
+      "folderId": "folder_002",
+      "kolId": "kol_001",
+      "note": "互動率 4.9%，美妝主力",
+      "addedBy": "user_001"
+    },
+    {
+      "id": "ffi_005",
+      "folderId": "folder_002",
+      "kolId": "kol_005",
+      "note": "健康保養受眾精準",
+      "addedBy": "user_001"
+    },
+    {
+      "id": "ffi_006",
+      "folderId": "folder_003",
+      "kolId": "kol_003",
+      "note": "親子媽媽受眾 88% 女性",
+      "addedBy": "user_003"
+    },
+    {
+      "id": "ffi_007",
+      "folderId": "folder_003",
+      "kolId": "kol_007",
+      "note": "Zoe 家庭生活，轉換率高",
+      "addedBy": "user_003"
+    },
+    {
+      "id": "ffi_008",
+      "folderId": "folder_003",
+      "kolId": "kol_004",
+      "note": "Marc 食品 YouTube 大頻道",
+      "addedBy": "user_003"
+    },
+    {
+      "id": "ffi_009",
+      "folderId": "folder_004",
+      "kolId": "kol_002",
+      "note": "Tech Allen 首選",
+      "addedBy": "user_002"
+    },
+    {
+      "id": "ffi_010",
+      "folderId": "folder_004",
+      "kolId": "kol_006",
+      "note": "Kevin 中型 3C 頻道，性價比高",
+      "addedBy": "user_002"
+    }
   ],
   "kolFavoriteFolderShares": [
     {
@@ -3760,13 +4368,48 @@
     }
   ],
   "proposalWatchers": [
-    { "id": "pw_001", "proposalId": "prop_001", "userId": "user_001", "watchType": "owner" },
-    { "id": "pw_002", "proposalId": "prop_001", "userId": "user_003", "watchType": "manual" },
-    { "id": "pw_003", "proposalId": "prop_002", "userId": "user_002", "watchType": "owner" },
-    { "id": "pw_004", "proposalId": "prop_002", "userId": "user_001", "watchType": "mentioned" },
-    { "id": "pw_005", "proposalId": "92a0",     "userId": "user_003", "watchType": "owner" },
-    { "id": "pw_006", "proposalId": "92a0",     "userId": "user_001", "watchType": "manual" },
-    { "id": "pw_007", "proposalId": "244d",     "userId": "user_002", "watchType": "owner" }
+    {
+      "id": "pw_001",
+      "proposalId": "prop_001",
+      "userId": "user_001",
+      "watchType": "owner"
+    },
+    {
+      "id": "pw_002",
+      "proposalId": "prop_001",
+      "userId": "user_003",
+      "watchType": "manual"
+    },
+    {
+      "id": "pw_003",
+      "proposalId": "prop_002",
+      "userId": "user_002",
+      "watchType": "owner"
+    },
+    {
+      "id": "pw_004",
+      "proposalId": "prop_002",
+      "userId": "user_001",
+      "watchType": "mentioned"
+    },
+    {
+      "id": "pw_005",
+      "proposalId": "92a0",
+      "userId": "user_003",
+      "watchType": "owner"
+    },
+    {
+      "id": "pw_006",
+      "proposalId": "92a0",
+      "userId": "user_001",
+      "watchType": "manual"
+    },
+    {
+      "id": "pw_007",
+      "proposalId": "244d",
+      "userId": "user_002",
+      "watchType": "owner"
+    }
   ],
   "notifications": [
     {
@@ -3777,7 +4420,10 @@
       "refId": "prop_001",
       "actorId": "user_005",
       "message": "提案「Panasonic 家電推廣計畫」已由 Nina 核准，進入 approved 階段。",
-      "payload": { "from": "review", "to": "approved" },
+      "payload": {
+        "from": "review",
+        "to": "approved"
+      },
       "isRead": true,
       "readAt": "2026-03-02T09:15:00Z"
     },
@@ -3789,7 +4435,10 @@
       "refId": "prop_001",
       "actorId": "user_005",
       "message": "提案「Panasonic 家電推廣計畫」已由 Nina 核准，進入 approved 階段。",
-      "payload": { "from": "review", "to": "approved" },
+      "payload": {
+        "from": "review",
+        "to": "approved"
+      },
       "isRead": false,
       "readAt": null
     },
@@ -3801,7 +4450,10 @@
       "refId": "prop_002",
       "actorId": "user_001",
       "message": "Amy 在提案「Happy Food 親子食品導購」新增了內部回饋意見。",
-      "payload": { "feedbackId": "pf_003", "decision": "revision" },
+      "payload": {
+        "feedbackId": "pf_003",
+        "decision": "revision"
+      },
       "isRead": false,
       "readAt": null
     },
@@ -3813,7 +4465,10 @@
       "refId": "prop_002",
       "actorId": "user_002",
       "message": "Leo 在提案「Happy Food 親子食品導購」新增了修改需求。",
-      "payload": { "feedbackId": "pf_004", "decision": "revision" },
+      "payload": {
+        "feedbackId": "pf_004",
+        "decision": "revision"
+      },
       "isRead": true,
       "readAt": "2026-03-10T14:30:00Z"
     },
@@ -3825,7 +4480,10 @@
       "refId": "92a0",
       "actorId": "user_001",
       "message": "Amy 在提案「DermaLab 夏季保養新品」加入了新 KOL：Luna Fit。",
-      "payload": { "kolId": "kol_005", "kolName": "Luna Fit" },
+      "payload": {
+        "kolId": "kol_005",
+        "kolName": "Luna Fit"
+      },
       "isRead": false,
       "readAt": null
     },
@@ -3837,7 +4495,10 @@
       "refId": "92a0",
       "actorId": "user_003",
       "message": "Ivy 在提案「DermaLab 夏季保養新品」加入了新 KOL：Amy Beauty。",
-      "payload": { "kolId": "kol_001", "kolName": "Amy Beauty" },
+      "payload": {
+        "kolId": "kol_001",
+        "kolName": "Amy Beauty"
+      },
       "isRead": true,
       "readAt": "2026-03-15T10:00:00Z"
     },
@@ -3849,7 +4510,10 @@
       "refId": "244d",
       "actorId": null,
       "message": "你負責的提案「ALLIE KOL 行銷活動」截止日期在 3 天後，目前仍在草稿階段。",
-      "payload": { "stage": "draft", "dueDate": "2026-04-20" },
+      "payload": {
+        "stage": "draft",
+        "dueDate": "2026-04-20"
+      },
       "isRead": false,
       "readAt": null
     }
