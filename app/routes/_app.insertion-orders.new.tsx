@@ -11,7 +11,6 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  TagsInput,
   Text,
   TextInput,
   Textarea,
@@ -23,8 +22,6 @@ import { useState } from "react";
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
 import styles from "./_app.insertion-orders.new.module.css";
 import {
-  addBrandCatalog,
-  addIndustryCatalog,
   listBrandCatalog,
   listIndustryCatalog,
   listInsertionOrders,
@@ -100,12 +97,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const orderTitle = String(formData.get("orderTitle") ?? "").trim();
-  const projectName = String(formData.get("projectName") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
   const clientName = String(formData.get("clientName") ?? "").trim();
+  const industry = String(formData.get("industry") ?? "").trim();
   const mcnName = String(formData.get("mcnName") ?? "").trim();
-  const brandsRaw = String(formData.get("brands") ?? "").trim();
-  const industriesRaw = String(formData.get("industries") ?? "").trim();
   const salesOwnersRaw = String(formData.get("salesOwners") ?? "").trim();
   const kolManagersRaw = String(formData.get("kolManagers") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -116,32 +111,12 @@ export async function action({ request }: ActionFunctionArgs) {
   const taxRate = Number(formData.get("taxRate") ?? 5);
   const projectQuote = Number(formData.get("projectQuote") ?? 0);
 
-  if (!orderTitle || !clientName) {
-    return json({ error: "執行案件標題與客戶為必填" }, { status: 400 });
+  if (!title || !clientName) {
+    return json({ error: "案件名稱與客戶為必填" }, { status: 400 });
   }
 
-  const industries = industriesRaw ? industriesRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
-  const brandsArr = brandsRaw ? brandsRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
   const salesOwnersArr = salesOwnersRaw ? salesOwnersRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
   const kolManagersArr = kolManagersRaw ? kolManagersRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
-
-  const [brandCatalog, industryCatalog] = await Promise.all([
-    listBrandCatalog(),
-    listIndustryCatalog(),
-  ]);
-  const brandSet = new Set(brandCatalog.map((b) => b.name));
-  const industrySet = new Set(industryCatalog.map((i) => i.name));
-
-  await Promise.all(
-    brandsArr
-      .filter((b) => !brandSet.has(b))
-      .map((name) => addBrandCatalog({ name })),
-  );
-  await Promise.all(
-    industries
-      .filter((i) => !industrySet.has(i))
-      .map((name) => addIndustryCatalog({ name })),
-  );
 
   let selectedKols: SelectedKolRow[] = [];
   try { selectedKols = JSON.parse(selectedKolsJson); } catch { selectedKols = []; }
@@ -163,14 +138,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const payload = {
     orderNo,
-    orderTitle,
-    title: projectName || orderTitle,
-    projectName: projectName || orderTitle,
+    orderTitle: title,
+    title,
+    projectName: title,
     clientName,
     mcnName,
-    brand: brandsArr[0] ?? "",
-    industry: industries[0] ?? "未分類",
-    industryPath: industries.join(" > "),
+    brand: "",
+    industry: industry || "未分類",
+    industryPath: industry,
     salesOwner: salesOwnersArr[0] ?? "",
     kolManager: kolManagersArr[0] ?? "",
     kolCount: selectedKols.length,
@@ -225,9 +200,9 @@ export default function InsertionOrderCreatePage() {
   const industrySuggestions = industries;
 
   // ── Form field state ──
-  const [orderTitleVal, setOrderTitleVal] = useState(proposalData?.title ?? "");
-  const [projectNameVal, setProjectNameVal] = useState(proposalData?.title ?? "");
+  const [titleVal, setTitleVal] = useState(proposalData?.title ?? "");
   const [clientNameVal, setClientNameVal] = useState(proposalData?.clientName ?? "");
+  const [industryVal, setIndustryVal] = useState("");
   const [mcnNameVal, setMcnNameVal] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -337,23 +312,13 @@ export default function InsertionOrderCreatePage() {
               <Title order={4} mb="sm">執行案件基本資訊</Title>
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
                 <TextInput
-                  name="orderTitle"
-                  label="執行案件標題"
-                  placeholder="例如：DAC_ALLIE_KOL行銷活動 委刊單"
+                  name="title"
+                  label="案件名稱"
+                  placeholder="例如：DAC_ALLIE_KOL行銷活動"
                   required
-                  value={orderTitleVal}
-                  onChange={(e) => {
-                    setOrderTitleVal(e.currentTarget.value);
-                    // Mirror to projectName if they are still in sync
-                    if (projectNameVal === orderTitleVal) setProjectNameVal(e.currentTarget.value);
-                  }}
-                />
-                <TextInput
-                  name="projectName"
-                  label="專案名稱"
-                  placeholder="例如：2026 Q1 家電推廣"
-                  value={projectNameVal}
-                  onChange={(e) => setProjectNameVal(e.currentTarget.value)}
+                  style={{ gridColumn: "1 / -1" }}
+                  value={titleVal}
+                  onChange={(e) => setTitleVal(e.currentTarget.value)}
                 />
                 <TextInput
                   name="clientName"
@@ -364,31 +329,18 @@ export default function InsertionOrderCreatePage() {
                   onChange={(e) => setClientNameVal(e.currentTarget.value)}
                 />
                 <TextInput
+                  name="industry"
+                  label="類別"
+                  placeholder="例如：美妝、3C、食品"
+                  value={industryVal}
+                  onChange={(e) => setIndustryVal(e.currentTarget.value)}
+                />
+                <TextInput
                   name="mcnName"
-                  label="網紅公司名稱"
+                  label="外發公司名稱（選填）"
                   placeholder="例如：雲太資訊有限公司"
                   value={mcnNameVal}
                   onChange={(e) => setMcnNameVal(e.currentTarget.value)}
-                />
-                <TagsInput
-                  label="品牌"
-                  placeholder="選擇或輸入品牌，Enter 新增"
-                  data={brandSuggestions}
-                  value={selectedBrands}
-                  onChange={setSelectedBrands}
-                  clearable
-                  rightSection={<IconChevronDown size={14} />}
-                  rightSectionPointerEvents="none"
-                />
-                <TagsInput
-                  label="產業"
-                  placeholder="選擇或輸入產業，Enter 新增"
-                  data={industrySuggestions}
-                  value={selectedIndustries}
-                  onChange={setSelectedIndustries}
-                  clearable
-                  rightSection={<IconChevronDown size={14} />}
-                  rightSectionPointerEvents="none"
                 />
                 <Select
                   label="負責業務"
@@ -414,14 +366,14 @@ export default function InsertionOrderCreatePage() {
                 />
                 <TextInput
                   name="startDate"
-                  label="開始日"
+                  label="上線開始日"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.currentTarget.value)}
                 />
                 <TextInput
                   name="endDate"
-                  label="結束日"
+                  label="上線結束日"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.currentTarget.value)}
