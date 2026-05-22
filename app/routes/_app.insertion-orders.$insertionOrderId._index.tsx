@@ -593,26 +593,24 @@ export default function InsertionOrderDetailPage() {
               刪除
             </Button>
           </Group>
-          <Button onClick={openGenModal}>
-            📊 產生報告
+          <Button onClick={openGenModal} leftSection="📊">
+            產生報告
           </Button>
           <Button
-            variant="light"
-            color="teal"
+            variant="default"
             component="a"
             href={`/api/insertion-orders/${insertionOrder.id}/generate-cue`}
             download
           >
-            📋 生成CUE表
+            生成 CUE 表
           </Button>
           <Button
-            variant="light"
-            color="orange"
+            variant="default"
             onClick={openIoUploadModal}
           >
-            📤 委刊單上傳
+            委刊單上傳
           </Button>
-          <Button type="button" variant="default">💾 匯出 Excel</Button>
+          <Button type="button" variant="default">匯出 Excel</Button>
         </Group>
       </Group>
 
