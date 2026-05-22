@@ -339,6 +339,7 @@ export default function InsertionOrderCreatePage() {
                   name="mcnName"
                   label="外發公司名稱（選填）"
                   placeholder="例如：雲太資訊有限公司"
+                  style={{ gridColumn: "1 / -1" }}
                   value={mcnNameVal}
                   onChange={(e) => setMcnNameVal(e.currentTarget.value)}
                 />
