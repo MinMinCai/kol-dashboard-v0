@@ -952,6 +952,7 @@ export default function KolDetailPage() {
           </Card>
         </Grid.Col>
 
+        {/* 快速統計區塊 — 暫時隱藏
         <Grid.Col span={{ base: 12, lg: 3 }}>
           <Card withBorder>
             <Title order={4} mb="sm">快速統計</Title>
@@ -992,6 +993,7 @@ export default function KolDetailPage() {
             </Stack>
           </Card>
         </Grid.Col>
+        */}
       </Grid>
 
       {/* ── Folder Picker Dialog ── */}
