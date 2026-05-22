@@ -517,25 +517,43 @@ export default function InsertionOrderDetailPage() {
   const isSubmitting = fetcher.state !== "idle";
 
   // ── IO Upload State ──
-  const [ioUploadFile, setIoUploadFile] = useState<File | null>(null);
+  type IODocFile = { name: string; dataUrl: string };
+  const parseIODocs = (raw: string | undefined): IODocFile[] => {
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed as IODocFile[];
+    } catch {}
+    return [{ name: raw, dataUrl: "" }];
+  };
+
+  const [ioUploadFiles, setIoUploadFiles] = useState<File[]>([]);
   const [ioUploadState, setIoUploadState] = useState<"idle" | "uploading" | "success">("idle");
-  const [ioUploadedFilename, setIoUploadedFilename] = useState<string | null>(null);
+  const [ioUploadedFilenames, setIoUploadedFilenames] = useState<string[]>([]);
   const [ioUploadModalOpened, { open: openIoUploadModal, close: closeIoUploadModal }] = useDisclosure(false);
+  const [ioViewModalOpened, { open: openIoViewModal, close: closeIoViewModal }] = useDisclosure(false);
 
   const handleIoUploadSubmit = async () => {
-    if (!ioUploadFile) return;
+    if (!ioUploadFiles.length) return;
     setIoUploadState("uploading");
     const fd = new FormData();
-    fd.append("file", ioUploadFile);
+    ioUploadFiles.forEach((f) => fd.append("file", f));
     try {
       const res = await fetch(`/api/insertion-orders/${insertionOrder.id}/upload-io`, { method: "POST", body: fd });
       if (!res.ok) throw new Error("upload failed");
-      const { filename } = await res.json() as { filename: string };
-      setIoUploadedFilename(filename);
+      const { files } = await res.json() as { files: string[] };
+      setIoUploadedFilenames(files);
       setIoUploadState("success");
     } catch {
       setIoUploadState("idle");
     }
+  };
+
+  const resetIoUploadModal = () => {
+    closeIoUploadModal();
+    setIoUploadState("idle");
+    setIoUploadedFilenames([]);
+    setIoUploadFiles([]);
   };
 
   return (
@@ -632,15 +650,14 @@ export default function InsertionOrderDetailPage() {
               )}
               {insertionOrder.documentUrl && (
                 <Button
-                  component="a"
-                  href={insertionOrder.documentUrl}
-                  target="_blank"
                   variant="subtle"
                   leftSection="📄"
                   size="compact-sm"
                   p={0}
+                  style={{ alignSelf: "flex-start" }}
+                  onClick={openIoViewModal}
                 >
-                  下載委刊單合約
+                  檢視已上傳委刊單
                 </Button>
               )}
               {description && (
@@ -898,37 +915,73 @@ export default function InsertionOrderDetailPage() {
         onComplete={handleGenerateComplete}
       />
 
+      {/* ── IO View Modal ── */}
+      <Modal
+        opened={ioViewModalOpened}
+        onClose={closeIoViewModal}
+        title="已上傳委刊單"
+        centered
+        size="sm"
+      >
+        <Stack gap="sm">
+          {parseIODocs(insertionOrder.documentUrl).map((doc, i) => (
+            <Group key={i} gap="xs" align="center">
+              <Text size="lg">📄</Text>
+              {doc.dataUrl ? (
+                <Text
+                  component="a"
+                  href={doc.dataUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  size="sm"
+                  c="blue"
+                  td="underline"
+                >
+                  {doc.name}
+                </Text>
+              ) : (
+                <Text size="sm">{doc.name}</Text>
+              )}
+            </Group>
+          ))}
+          <Button mt="xs" variant="default" onClick={closeIoViewModal}>關閉</Button>
+        </Stack>
+      </Modal>
+
       {/* ── IO Upload Modal ── */}
       <Modal
         opened={ioUploadModalOpened}
-        onClose={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}
+        onClose={resetIoUploadModal}
         title="上傳委刊單"
         centered
       >
         <Stack gap="md">
           {ioUploadState === "success" ? (
             <>
-              <Text size="sm" c="green" fw={500}>✅ 已上傳：{ioUploadedFilename}</Text>
-              <Text size="xs" c="dimmed">委刊單檔名已記錄。</Text>
-              <Button onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}>
-                關閉
-              </Button>
+              <Stack gap={4}>
+                {ioUploadedFilenames.map((name, i) => (
+                  <Text key={i} size="sm" c="green" fw={500}>✅ {name}</Text>
+                ))}
+              </Stack>
+              <Text size="xs" c="dimmed">已成功上傳 {ioUploadedFilenames.length} 份委刊單，可於「檢視已上傳委刊單」查閱。</Text>
+              <Button onClick={resetIoUploadModal}>關閉</Button>
             </>
           ) : (
             <>
               <FileInput
-                label="選擇委刊單檔案"
+                label="選擇委刊單檔案（可多選）"
                 placeholder="點擊選擇 PDF / Word 檔案"
                 accept=".pdf,.doc,.docx"
-                value={ioUploadFile}
-                onChange={setIoUploadFile}
+                multiple
+                value={ioUploadFiles}
+                onChange={setIoUploadFiles}
               />
               <Group justify="flex-end">
-                <Button variant="default" onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); }}>取消</Button>
+                <Button variant="default" onClick={resetIoUploadModal}>取消</Button>
                 <Button
                   color="orange"
                   loading={ioUploadState === "uploading"}
-                  disabled={!ioUploadFile}
+                  disabled={!ioUploadFiles.length}
                   onClick={() => void handleIoUploadSubmit()}
                 >
                   上傳

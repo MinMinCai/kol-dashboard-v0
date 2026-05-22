@@ -245,29 +245,36 @@ export default function InsertionOrderListPage() {
 
   // ── IO Upload Modal State ──
   const [ioUploadOrder, setIoUploadOrder] = useState<InsertionOrder | null>(null);
-  const [ioUploadFile, setIoUploadFile] = useState<File | null>(null);
+  const [ioUploadFiles, setIoUploadFiles] = useState<File[]>([]);
   const [ioUploadState, setIoUploadState] = useState<"idle" | "uploading" | "success">("idle");
-  const [ioUploadedFilename, setIoUploadedFilename] = useState<string | null>(null);
+  const [ioUploadedFilenames, setIoUploadedFilenames] = useState<string[]>([]);
   const [ioUploadModalOpen, { open: openIoUploadModal, close: closeIoUploadModal }] = useDisclosure(false);
 
   const handleOpenIoUpload = (order: InsertionOrder) => {
     setIoUploadOrder(order);
-    setIoUploadFile(null);
+    setIoUploadFiles([]);
     setIoUploadState("idle");
-    setIoUploadedFilename(null);
+    setIoUploadedFilenames([]);
     openIoUploadModal();
   };
 
+  const resetIoUploadModalList = () => {
+    closeIoUploadModal();
+    setIoUploadState("idle");
+    setIoUploadedFilenames([]);
+    setIoUploadFiles([]);
+  };
+
   const handleIoUploadSubmit = async () => {
-    if (!ioUploadFile || !ioUploadOrder) return;
+    if (!ioUploadFiles.length || !ioUploadOrder) return;
     setIoUploadState("uploading");
     const fd = new FormData();
-    fd.append("file", ioUploadFile);
+    ioUploadFiles.forEach((f) => fd.append("file", f));
     try {
       const res = await fetch(`/api/insertion-orders/${ioUploadOrder.id}/upload-io`, { method: "POST", body: fd });
       if (!res.ok) throw new Error("upload failed");
-      const { filename } = await res.json() as { filename: string };
-      setIoUploadedFilename(filename);
+      const { files } = await res.json() as { files: string[] };
+      setIoUploadedFilenames(files);
       setIoUploadState("success");
     } catch {
       setIoUploadState("idle");
@@ -579,36 +586,39 @@ export default function InsertionOrderListPage() {
       {/* ── IO Upload Modal ── */}
       <Modal
         opened={ioUploadModalOpen}
-        onClose={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}
+        onClose={resetIoUploadModalList}
         title={`上傳委刊單：${ioUploadOrder?.title ?? ioUploadOrder?.orderNo ?? ""}`}
         centered
       >
         <Stack gap="md">
           {ioUploadState === "success" ? (
             <>
-              <Text size="sm" c="green" fw={500}>✅ 已上傳：{ioUploadedFilename}</Text>
-              <Text size="xs" c="dimmed">委刊單檔名已記錄，可在案件詳細頁中查看。</Text>
-              <Button onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); setIoUploadedFilename(null); }}>
-                關閉
-              </Button>
+              <Stack gap={4}>
+                {ioUploadedFilenames.map((name, i) => (
+                  <Text key={i} size="sm" c="green" fw={500}>✅ {name}</Text>
+                ))}
+              </Stack>
+              <Text size="xs" c="dimmed">
+                已成功上傳 {ioUploadedFilenames.length} 份委刊單，可在案件詳細頁中查看。
+              </Text>
+              <Button onClick={resetIoUploadModalList}>關閉</Button>
             </>
           ) : (
             <>
               <FileInput
-                label="選擇委刊單檔案"
+                label="選擇委刊單檔案（可多選）"
                 placeholder="點擊選擇 PDF / Word 檔案"
                 accept=".pdf,.doc,.docx"
-                value={ioUploadFile}
-                onChange={setIoUploadFile}
+                multiple
+                value={ioUploadFiles}
+                onChange={setIoUploadFiles}
               />
               <Group justify="flex-end">
-                <Button variant="default" onClick={() => { closeIoUploadModal(); setIoUploadState("idle"); }}>
-                  取消
-                </Button>
+                <Button variant="default" onClick={resetIoUploadModalList}>取消</Button>
                 <Button
                   color="orange"
                   loading={ioUploadState === "uploading"}
-                  disabled={!ioUploadFile}
+                  disabled={!ioUploadFiles.length}
                   onClick={() => void handleIoUploadSubmit()}
                 >
                   上傳
