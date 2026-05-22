@@ -16,8 +16,12 @@ import { FOLLOWER_RANGES, getFollowerBase, getPrimaryTags, type SortKey, type So
 
 // ============ Internal helper ============
 
-function withTimeout<T>(p: Promise<T>, fallback: T, ms = 8000): Promise<T> {
-  return Promise.race([p, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+function withTimeout<T>(p: Promise<T>, fallback: T, ms = 15000): Promise<T> {
+  const timer = new Promise<T>((resolve) => setTimeout(() => {
+    console.warn(`[kols.server] withTimeout fired after ${ms}ms — returning fallback`);
+    resolve(fallback);
+  }, ms));
+  return Promise.race([p, timer]);
 }
 
 // ============ Loader ============

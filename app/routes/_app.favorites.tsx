@@ -43,10 +43,13 @@ import {
 
 type SortMode = "rating_desc" | "followers_desc" | "name_asc";
 
-function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 15000): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+    new Promise<T>((resolve) => setTimeout(() => {
+      console.warn(`[favorites] withTimeout fired after ${ms}ms — returning fallback`);
+      resolve(fallback);
+    }, ms)),
   ]);
 }
 

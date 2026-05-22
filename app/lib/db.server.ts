@@ -35,7 +35,7 @@ const client =
   postgres(process.env.DATABASE_URL, {
     max: 10,
     idle_timeout: 20,
-    connect_timeout: 5,
+    connect_timeout: 15,
     max_lifetime: 60 * 10,
     // Required for Supabase pgBouncer (Transaction Mode, port 6543)
     // Also needed when DATABASE_URL uses port 6543

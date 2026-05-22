@@ -385,7 +385,7 @@ async function getFavoriteFolderState() {
     db.select().from(kolFavoriteFoldersTable).catch(() => []),
     db.select().from(kolFavoriteFolderItemsTable).catch(() => []),
     db.select().from(kolFavoriteFolderMemberSharesTable).catch(() => []),
-    getSystemPreferences(),
+    getSystemPreferences().catch(() => ({ favoriteFolders: [] as string[] })),
   ]);
 
   const folderById = new Map(folderRows.map((row) => [row.id, row]));
@@ -422,9 +422,11 @@ async function getFavoriteFolderState() {
   };
 }
 
+const emptyFolderState = { folderNamesByKolId: new Map<string, string[]>(), memberIdsByFolderId: new Map<string, string[]>() };
+
 async function enrichKols(kols: Kol[]): Promise<Kol[]> {
   const [{ folderNamesByKolId }, socialAccountRows, ioRows] = await Promise.all([
-    getFavoriteFolderState(),
+    getFavoriteFolderState().catch(() => emptyFolderState),
     db.select().from(kolSocialAccountsTable).catch(() => []),
     db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
   ]);
