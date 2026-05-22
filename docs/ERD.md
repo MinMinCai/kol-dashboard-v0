@@ -556,12 +556,12 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 |------|------|------|
 | id | text PK | |
 | displayName | varchar(150) NOT NULL | 顯示名稱 |
-| legalName | varchar(150) | 法定名稱 |
+| legalName | varchar(150) | 法定名稱（Schema 保留，目前程式碼未使用） |
 | country / city | varchar(80) | 地區 |
-| primaryLanguage | varchar(40) | 主要語言 |
+| primaryLanguage | varchar(40) | 主要語言（Schema 保留，目前程式碼未使用） |
 | categories | text[] | 內容分類 |
 | contactEmail / contactPhone | varchar | 聯絡資訊 |
-| basePriceMin / basePriceMax | numeric(12,2) | 報價區間 |
+| basePriceMin / basePriceMax | numeric(12,2) | 報價區間（Schema 保留，目前程式碼未使用） |
 | status | varchar(20) | active / inactive，預設 active |
 | notes | text | 內部備註 |
 | industry | varchar(100) | 主要產業 |
@@ -584,8 +584,8 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | paymentMethod | varchar(10) | 付款方式 |
 | gender | varchar(10) | 性別 |
 | age | integer | 年齡 |
-| social | jsonb | `{instagram?, youtube?, tiktok?, facebook?}` 各平台粉絲數 |
-| socialLinks | jsonb | `{instagram?, youtube?, tiktok?, facebook?}` 各平台連結 |
+| social | jsonb | `{instagram?, youtube?, tiktok?, facebook?, threads?}` 各平台粉絲數 |
+| socialLinks | jsonb | `{instagram?, youtube?, tiktok?, facebook?, threads?}` 各平台連結 |
 | contact | jsonb | `{phone?, email?, lineId?, manager?}` |
 | collaborationHistory | jsonb[] | 歷史合作記錄 |
 | priceTrend | jsonb[] | 報價趨勢 |
@@ -723,6 +723,7 @@ USERS (owner)                              TEAM_MEMBERS (demo owner)
 | documentUrl | text | 合約文件 URL |
 | tax / totalWithTax | numeric(12,2) | 稅額 / 含稅總額 |
 | hasDraft / hasOfficial | boolean | 草稿 / 正式合約狀態 |
+| notes | text | 案件說明與內部備註（格式：description 與 `internal:internalNotes` 以換行分隔） |
 | collaborations | jsonb[] | 合作明細清單，每筆物件結構如下：<br>`id` text、`kolId` text、`name` text、`avatarUrl` text、`services` text（合作項目）、`executionDate` date（上線日期）、`authorization` date（授權日期）、`price` numeric（成本未稅）、`clientQuote` numeric（對客戶報價未稅）、`uploadDate` text（舊欄位保留）、`rating` numeric、`totalReach` int、`totalEngagement` int |
 | reports | jsonb[] | 報告清單 |
 | createdAt / updatedAt | timestamp | |
