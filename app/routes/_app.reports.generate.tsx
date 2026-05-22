@@ -450,7 +450,7 @@ export default function ReportManagementPage() {
                       <Text size="sm" c="dimmed">請點擊右上角的「+ 生成新報告」開始生成</Text>
                     </Stack>
                   ) : (
-                    <SimpleGrid cols={hasDraft && hasOfficial ? 2 : 1} spacing="sm">
+                    <SimpleGrid cols={2} spacing="sm">
                       {/* Draft Section */}
                       {hasDraft && (
                         <Card withBorder bg="var(--mantine-color-gray-1)" radius="sm" p="sm">
