@@ -4,3 +4,16 @@
   border: 1px solid var(--mantine-color-blue-3);
   background: var(--mantine-color-blue-light);
 }
+
+.importFileInput {
+  display: none;
+}
+
+.importDropzone {
+  border: 2px dashed var(--mantine-color-blue-3);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--mantine-color-blue-light);
+}

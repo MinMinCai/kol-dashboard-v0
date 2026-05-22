@@ -15,11 +15,12 @@ import {
   TextInput,
   Textarea,
   Title,
+  List,
 } from "@mantine/core";
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
-import { useState } from "react";
-import { IconChevronDown, IconSearch } from "@tabler/icons-react";
+import { useRef, useState } from "react";
+import { IconChevronDown, IconSearch, IconUpload, IconFileSpreadsheet } from "@tabler/icons-react";
 import styles from "./_app.insertion-orders.new.module.css";
 import {
   listBrandCatalog,
@@ -212,6 +213,70 @@ export default function InsertionOrderCreatePage() {
   const [taxRate, setTaxRate] = useState(5);
   const totalWithTax = Math.round(projectQuote * (1 + taxRate / 100));
 
+  /* ── Import IO modal state ── */
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImportFile(file: File) {
+    setImportError(null);
+    setImportSuccess(false);
+    try {
+      const { read, utils } = await import("xlsx");
+      const buffer = await file.arrayBuffer();
+      const wb = read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: Record<string, string>[] = utils.sheet_to_json(ws, { defval: "" });
+
+      if (rows.length === 0) {
+        setImportError("Excel 檔案內容為空，請確認格式正確。");
+        return;
+      }
+
+      // Map basic info from first data row
+      const firstRow = rows[0];
+      if (firstRow["案件名稱"]) setTitleVal(String(firstRow["案件名稱"]));
+      if (firstRow["客戶"]) setClientNameVal(String(firstRow["客戶"]));
+      if (firstRow["外發公司"]) setMcnNameVal(String(firstRow["外發公司"]));
+      if (firstRow["類別"]) setIndustryVal(String(firstRow["類別"]));
+      if (firstRow["上線開始日"]) setStartDate(String(firstRow["上線開始日"]));
+      if (firstRow["上線結束日"]) setEndDate(String(firstRow["上線結束日"]));
+      if (firstRow["專案報價"]) setProjectQuote(Number(firstRow["專案報價"]) || 0);
+      if (firstRow["稅率"]) setTaxRate(Number(firstRow["稅率"]) || 5);
+
+      // Map KOL rows — each row with KOL姓名 becomes a collaboration entry
+      const kolRows = rows.filter((r) => r["KOL姓名"]);
+      if (kolRows.length > 0) {
+        const kolAvatarById = new Map(kols.map((k) => [k.id, k.avatarUrl ?? ""]));
+        const kolIdByName = new Map(
+          kols.map((k) => [k.displayName?.toLowerCase(), k.id])
+        );
+        const newKols: SelectedKolRow[] = kolRows.map((r) => {
+          const name = String(r["KOL姓名"]);
+          const matchedKolId = kolIdByName.get(name.toLowerCase()) ?? `ext_${Math.random().toString(36).slice(2, 9)}`;
+          return {
+            id: `row_${Math.random().toString(36).slice(2, 10)}`,
+            kolId: matchedKolId,
+            name,
+            avatarUrl: kolAvatarById.get(matchedKolId) || "",
+            services: r["合作項目"] ? String(r["合作項目"]).split("+").map((s) => s.trim()).filter(Boolean) : ["待定"],
+            executionDate: String(r["上線日期"] || ""),
+            authorization: String(r["授權日期"] || ""),
+            price: Number(r["成本未稅"] || 0),
+            clientQuote: Number(r["對客戶報價未稅"] || 0),
+            uploadDate: "",
+          };
+        });
+        setSelectedKols(newKols);
+      }
+
+      setImportSuccess(true);
+    } catch {
+      setImportError("解析失敗，請確認檔案格式與欄位名稱正確。");
+    }
+  }
+
   /* ── KOL modal state ── */
   const [kolModalOpen, setKolModalOpen] = useState(false);
   const [kolSearch, setKolSearch] = useState("");
@@ -280,7 +345,17 @@ export default function InsertionOrderCreatePage() {
     <Stack gap="md">
       <Group justify="space-between">
         <Title order={2}>建立執行案件</Title>
-        <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
+        <Group gap="sm">
+          <Button
+            type="button"
+            variant="light"
+            leftSection={<IconFileSpreadsheet size={16} />}
+            onClick={() => { setImportModalOpen(true); setImportError(null); setImportSuccess(false); }}
+          >
+            匯入外部委刊單
+          </Button>
+          <Button component={Link} to="/insertion-orders" variant="default">取消</Button>
+        </Group>
       </Group>
 
       <Card withBorder>
@@ -550,6 +625,66 @@ export default function InsertionOrderCreatePage() {
           </Stack>
         </Form>
       </Card>
+
+      {/* ── Import External IO Modal ── */}
+      <Modal
+        opened={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        title="匯入外部委刊單"
+        size="lg"
+      >
+        <Stack gap="md">
+          <Box>
+            <Text size="sm" fw={500} mb={4}>Excel 欄位格式說明</Text>
+            <Text size="xs" c="dimmed" mb="xs">
+              請確保 Excel 第一列為欄位名稱，以下為支援的欄位（KOL 每位一列）：
+            </Text>
+            <List size="xs" spacing={2}>
+              <List.Item><Text span fw={500}>案件名稱</Text>、<Text span fw={500}>客戶</Text>、<Text span fw={500}>類別</Text>、<Text span fw={500}>外發公司</Text></List.Item>
+              <List.Item><Text span fw={500}>上線開始日</Text>、<Text span fw={500}>上線結束日</Text>（格式：YYYY-MM-DD）</List.Item>
+              <List.Item><Text span fw={500}>專案報價</Text>（未稅數字）、<Text span fw={500}>稅率</Text>（預設 5）</List.Item>
+              <List.Item><Text span fw={500}>KOL姓名</Text>、<Text span fw={500}>合作項目</Text>（用 + 分隔）</List.Item>
+              <List.Item><Text span fw={500}>上線日期</Text>、<Text span fw={500}>授權日期</Text>、<Text span fw={500}>成本未稅</Text>、<Text span fw={500}>對客戶報價未稅</Text></List.Item>
+            </List>
+          </Box>
+
+          <Box
+            className={styles.importDropzone}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <IconUpload size={32} color="var(--mantine-color-blue-6)" />
+            <Text size="sm" mt="xs" c="blue">點擊選擇 Excel 檔案 (.xlsx)</Text>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx"
+              aria-label="匯入外部委刊單 Excel 檔案"
+              className={styles.importFileInput}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImportFile(file);
+                e.target.value = "";
+              }}
+            />
+          </Box>
+
+          {importError && <Alert color="red">{importError}</Alert>}
+          {importSuccess && (
+            <Alert color="green">
+              匯入成功！欄位資料已填入，請確認後送出。
+            </Alert>
+          )}
+
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              onClick={() => setImportModalOpen(false)}
+            >
+              {importSuccess ? "關閉" : "取消"}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
       <Modal
         opened={kolModalOpen}
