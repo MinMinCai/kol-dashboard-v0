@@ -579,24 +579,24 @@ export default function InsertionOrderCreatePage() {
                           />
                           <TextInput
                             label="成本(未稅)"
-                            type="number"
-                            min={0}
-                            step={1000}
-                            value={String(row.price || "")}
-                            onChange={(e) =>
-                              updateKolField(row.id, "price", Number(e.currentTarget.value) || 0)
-                            }
+                            leftSection={<Text size="xs" c="dimmed">NT$</Text>}
+                            value={row.price ? row.price.toLocaleString("zh-TW") : ""}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const raw = e.currentTarget.value.replace(/,/g, "");
+                              updateKolField(row.id, "price", Number(raw) || 0);
+                            }}
                           />
                           <TextInput
                             label="對客戶報價(未稅)"
-                            type="number"
-                            min={0}
-                            step={1000}
+                            leftSection={<Text size="xs" c="dimmed">NT$</Text>}
                             style={{ gridColumn: "1 / -1" }}
-                            value={String(row.clientQuote || "")}
-                            onChange={(e) =>
-                              updateKolField(row.id, "clientQuote", Number(e.currentTarget.value) || 0)
-                            }
+                            value={row.clientQuote ? row.clientQuote.toLocaleString("zh-TW") : ""}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const raw = e.currentTarget.value.replace(/,/g, "");
+                              updateKolField(row.id, "clientQuote", Number(raw) || 0);
+                            }}
                           />
                         </SimpleGrid>
                       </Stack>
