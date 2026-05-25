@@ -53,6 +53,7 @@
     "drizzle-kit": "^0.31.9",
     "json-server": "^1.0.0-beta.3",
     "playwright": "^1.58.2",
+    "supabase": "^2.101.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2"
   }
