@@ -19,7 +19,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconEdit, IconEye, IconPhone, IconTrash } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandThreads, IconBrandTiktok, IconBrandYoutube, IconEdit, IconEye, IconPhone, IconTrash } from "@tabler/icons-react";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigate, useRevalidator, useSubmit, useNavigation } from "@remix-run/react";
 import { useEffect, useState } from "react";
@@ -316,11 +316,13 @@ export default function KolListPage() {
               const youtubeUrl = buildSocialProfileUrl("youtube", kol.socialLinks?.youtube);
               const tiktokUrl = buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok);
               const facebookUrl = buildSocialProfileUrl("facebook", kol.socialLinks?.facebook);
+              const threadsUrl = buildSocialProfileUrl("threads", kol.socialLinks?.threads);
               const socialRows: { icon: React.ReactNode; label: string; count: number; url: string | null; engRate?: number }[] = [
                 { icon: <IconBrandInstagram size={16} />, label: "Instagram", count: kol.social?.instagram ?? 0, url: instagramUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["Instagram"] ?? (kol.social?.instagram ? kol.engagementRate : undefined) },
                 { icon: <IconBrandYoutube size={16} />, label: "YouTube", count: kol.social?.youtube ?? 0, url: youtubeUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["YouTube"] ?? kol.platformMetrics?.audienceMetrics?.["YouTube"]?.engagementRate },
                 { icon: <IconBrandTiktok size={16} />, label: "TikTok", count: kol.social?.tiktok ?? 0, url: tiktokUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["TikTok"] ?? kol.platformMetrics?.audienceMetrics?.["TikTok"]?.engagementRate },
                 { icon: <IconBrandFacebook size={16} />, label: "Facebook", count: kol.social?.facebook ?? 0, url: facebookUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["Facebook"] ?? kol.platformMetrics?.audienceMetrics?.["Facebook"]?.engagementRate },
+                { icon: <IconBrandThreads size={16} />, label: "Threads", count: kol.social?.threads ?? 0, url: threadsUrl, engRate: kol.platformMetrics?.avgEngagementRate?.["Threads"] ?? kol.platformMetrics?.audienceMetrics?.["Threads"]?.engagementRate },
               ].filter((row) => row.count > 0 || row.url);
               return (
                 <Card
@@ -435,6 +437,7 @@ export default function KolListPage() {
                           { icon: <IconBrandYoutube size={18} />, label: "YouTube", url: buildSocialProfileUrl("youtube", kol.socialLinks?.youtube), count: kol.social?.youtube ?? 0 },
                           { icon: <IconBrandTiktok size={18} />, label: "TikTok", url: buildSocialProfileUrl("tiktok", kol.socialLinks?.tiktok), count: kol.social?.tiktok ?? 0 },
                           { icon: <IconBrandFacebook size={18} />, label: "Facebook", url: buildSocialProfileUrl("facebook", kol.socialLinks?.facebook), count: kol.social?.facebook ?? 0 },
+                          { icon: <IconBrandThreads size={18} />, label: "Threads", url: buildSocialProfileUrl("threads", kol.socialLinks?.threads), count: kol.social?.threads ?? 0 },
                         ]
                           .filter((row) => row.count > 0 || row.url)
                           .map((row) =>

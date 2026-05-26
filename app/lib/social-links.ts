@@ -1,4 +1,4 @@
-type SupportedPlatform = "instagram" | "youtube" | "tiktok" | "facebook";
+type SupportedPlatform = "instagram" | "youtube" | "tiktok" | "facebook" | "threads";
 
 function withHttps(value: string): string {
   if (/^https?:\/\//i.test(value)) return value;
@@ -47,11 +47,20 @@ function normalizeFacebook(value: string): string | null {
   return `https://www.facebook.com/${trimHandle(trimmed)}`;
 }
 
+function normalizeThreads(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/threads\.net/i.test(trimmed)) return withHttps(trimmed);
+  if (/\s/.test(trimmed) && !/[/.@]/.test(trimmed)) return null;
+  return `https://www.threads.net/@${trimHandle(trimmed)}`;
+}
+
 export function buildSocialProfileUrl(platform: SupportedPlatform, value?: string | null): string | null {
   if (!value?.trim()) return null;
 
   if (platform === "instagram") return normalizeInstagram(value);
   if (platform === "youtube") return normalizeYoutube(value);
   if (platform === "tiktok") return normalizeTiktok(value);
+  if (platform === "threads") return normalizeThreads(value);
   return normalizeFacebook(value);
 }
