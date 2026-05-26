@@ -627,7 +627,9 @@ export default function KolDetailPage() {
             <Grid gutter="md">
               <Grid.Col span={{ base: 6, md: 2 }}>
                 <Text size="xs" c="dimmed">平均評分</Text>
-                <Text fw={700} size="lg" mt={4}>⭐ {avgRating.toFixed(1)}</Text>
+                <Text fw={700} size="lg" mt={4}>
+                  {avgRating > 0 ? `⭐ ${avgRating.toFixed(1)}` : "⭐ 尚未評價"}
+                </Text>
               </Grid.Col>
               <Grid.Col span={{ base: 6, md: 2 }}>
                 <Text size="xs" c="dimmed">合作次數</Text>
