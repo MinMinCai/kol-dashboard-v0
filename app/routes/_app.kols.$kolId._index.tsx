@@ -785,7 +785,7 @@ export default function KolDetailPage() {
                           </Stack>
                           <Stack align="flex-end" gap={2}>
                             <Text fw={600}>{formatCurrency(item.price)}</Text>
-                            <Text size="sm">⭐ {item.rating.toFixed(1)}</Text>
+                            <Text size="sm">{item.rating >= 0.5 ? `⭐ ${item.rating.toFixed(1)}` : "尚未評價"}</Text>
                           </Stack>
                         </Group>
                         <Text size="sm">服務項目: {item.services}</Text>
