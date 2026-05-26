@@ -107,8 +107,14 @@ export async function loadKolList(request: Request) {
   const safePageNo = Math.min(page, totalPages);
   const pageRows = kols.slice((safePageNo - 1) * pageSize, safePageNo * pageSize).map((kol) => {
     const memberFolders = kolFavsByMember.get(kol.id) ?? [];
+    const history = kol.collaborationHistory ?? [];
+    const rated = history.filter((r) => r.rating >= 0.5);
+    const computedRating = rated.length > 0
+      ? rated.reduce((sum, r) => sum + r.rating, 0) / rated.length
+      : 0;
     return {
       ...kol,
+      rating: computedRating > 0 ? computedRating : (kol.rating && kol.rating >= 0.5 ? kol.rating : 0),
       isFavorite: memberFolders.length > 0,
       favoriteFolders: memberFolders,
       favoriteFolder: memberFolders[0] ?? null,

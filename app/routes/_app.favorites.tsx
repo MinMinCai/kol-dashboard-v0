@@ -104,7 +104,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     );
   });
 
-  const rows = sortRows(searched, sort);
+  const withRecalcRating = searched.map((kol) => {
+    const history = kol.collaborationHistory ?? [];
+    const rated = history.filter((r) => r.rating >= 0.5);
+    const computed = rated.length > 0 ? rated.reduce((sum, r) => sum + r.rating, 0) / rated.length : 0;
+    return { ...kol, rating: computed > 0 ? computed : (kol.rating && kol.rating >= 0.5 ? kol.rating : 0) };
+  });
+  const rows = sortRows(withRecalcRating, sort);
   const folderCounts = allFolders.reduce<Record<string, number>>((acc, folderName) => {
     acc[folderName] = folderName === "全部"
       ? favorites.length
@@ -573,7 +579,7 @@ export default function FavoritesPage() {
               </Box>
 
               <Group justify="space-between" mt="auto" pt="sm" onClick={(e) => e.stopPropagation()}>
-                <Text>⭐ {(kol.rating ?? 0).toFixed(1)}</Text>
+                <Text>{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "尚未評價"}</Text>
                 <Group gap="xs">
                   <Tooltip label="查看詳細" withArrow>
                     <ActionIcon variant="light" color="blue" size="lg" component={Link} to={`/kols/${kol.id}`}>
