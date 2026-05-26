@@ -1,6 +1,107 @@
-# Design System — KOL DB Demo
+# Design System
 
-本文件記錄專案的設計規範，供未來開發維持整體視覺一致性。
+本文件記錄專案完整的設計規範，供新專案進行 SDD（Style-Driven Development）時直接參照或移植。
+
+> **使用說明**：此文件以實際程式碼為基準分析產生，所有模式皆已在 light / dark 兩種模式驗證。新專案可直接複製相關區塊的 CSS token 與元件模式。
+
+---
+
+## 技術棧
+
+| 項目 | 選用 |
+|------|------|
+| UI 框架 | [Mantine v7](https://mantine.dev/) |
+| 樣式方式 | CSS Modules（route-level）+ 全域 `styles.css` |
+| 字型 | Google Fonts — Noto Sans TC |
+| 深色模式 | `defaultColorScheme="auto"`，CSS `light-dark()` |
+| 主題客製 | **零** Mantine theme override，全透過 CSS 變數 |
+
+---
+
+## 新專案架構方針（A + C 策略）
+
+### 原則
+
+**降低 Mantine 接觸面，提高自主掌控度。**
+
+Mantine 只負責「行為複雜、手刻成本高」的元件；視覺樣式與常用組合全部自己掌控。
+
+### 元件分層
+
+| 層級 | 做法 | 範例 |
+|------|------|------|
+| **複雜行為元件** | 直接用 Mantine，少動樣式 | Modal、Select、Toast、DatePicker |
+| **簡單展示元件** | 自己寫 CSS，不依賴 Mantine | Button、Badge、Card |
+| **頁面級組合元件** | 封裝成自己的元件，內部自由選用 | `<StatCard>`、`<PageHeader>`、`<DataTable>` |
+
+### 樣式覆蓋規則
+
+Mantine 元件透過 `className` prop 套用自訂樣式，不使用 Mantine `styles` prop 或 theme override：
+
+```tsx
+// 正確：用 className 接管樣式
+<Paper className={styles.statCard} withBorder radius="md">
+  ...
+</Paper>
+```
+
+```css
+/* statCard.module.css */
+.statCard {
+  background: var(--kol-surface);
+  padding: 20px;
+}
+.statCard:hover {
+  box-shadow: 0 4px 16px rgba(15, 52, 96, 0.1);
+}
+```
+
+### 封裝元件原則
+
+- 封裝元件只暴露**業務語義的 props**，不透傳 Mantine props
+- 樣式細節收在元件內部，呼叫端不需要知道底層用了什麼
+- 元件放在 `app/components/` 統一管理
+
+```tsx
+// 封裝範例
+export function StatCard({ label, value, icon }: StatCardProps) {
+  return (
+    <Paper className={styles.statCard} withBorder radius="md">
+      ...
+    </Paper>
+  );
+}
+
+// 呼叫端只需要這樣
+<StatCard label="總 KOL 數" value={1234} icon={<IconUsers />} />
+```
+
+---
+
+## 全域 CSS 變數
+
+定義於 `styles.css`，覆蓋整個應用程式語義色層。
+
+```css
+:root {
+  --kol-surface:    #ffffff;   /* 卡片、對話框背景 */
+  --kol-chrome:     #fafbfc;   /* Header、Navbar 背景 */
+  --kol-workspace:  #f4f5f7;   /* 主內容區背景 */
+}
+
+[data-mantine-color-scheme="dark"] {
+  --kol-surface:   var(--mantine-color-dark-6);
+  --kol-chrome:    var(--mantine-color-dark-7);
+  --kol-workspace: var(--mantine-color-dark-8);
+}
+```
+
+**AppShell 套用方式：**
+```css
+.header { background: var(--kol-chrome); }
+.navbar  { background: var(--kol-chrome); }
+.main    { background: var(--kol-workspace); }
+```
 
 ---
 
@@ -29,10 +130,11 @@
 | Text | `var(--mantine-color-text)` | 主要文字 |
 | Dimmed | `var(--mantine-color-dimmed)` | 次要文字、說明文字 |
 | Border | `var(--mantine-color-default-border)` | 卡片邊框、分隔線 |
+| Hover BG | `var(--mantine-color-default-hover)` | 統計區塊、行 hover |
 | Surface | `var(--mantine-color-body)` | 頁面背景 |
 | Placeholder | `var(--mantine-color-gray-4)` | 輸入框佔位文字 |
 
-### 平台專用色
+### 平台專用色（Badge）
 
 用於社群平台 Badge，統一以 `variant="light"` 呈現柔和色塊。
 
@@ -43,6 +145,20 @@
 | TikTok | `"violet"` |
 | Facebook | `"blue"` |
 | Twitter / X | `"cyan"` |
+
+### AI / 系統強調色
+
+```css
+/* AI 識別卡片 */
+background: var(--mantine-color-blue-0);                  /* light */
+background: rgba(51, 154, 240, 0.18);                     /* dark */
+border: 1px solid rgba(51, 154, 240, 0.35);               /* dark */
+
+/* AI 理由欄位 */
+background: rgba(51, 154, 240, 0.1);
+border-left: 3px solid #339af0;
+border-radius: 4px;
+```
 
 ---
 
@@ -61,7 +177,7 @@ font-family: "Noto Sans TC", system-ui, sans-serif;
 | Mantine `size` | 對應大小 | 用途 |
 |---------------|---------|------|
 | `xs` | 12px | 標籤、Caption、輔助說明 |
-| `sm` | 14px | 次要文字、表格內容 |
+| `sm` | 14px | 次要文字、表格內容、導覽連結 |
 | `md` | 16px | 預設內文 |
 | `lg` | 18px | 卡片主要內文 |
 | `xl` | 20px | 較大強調文字 |
@@ -71,8 +187,8 @@ font-family: "Noto Sans TC", system-ui, sans-serif;
 | `fw` 值 | 用途 |
 |--------|------|
 | `400` | 一般內文 |
-| `500` | 輕度強調 |
-| `600` | 標籤、欄位 label |
+| `500` | 輕度強調、導覽連結 |
+| `600` | 標籤、欄位 label、active 狀態 |
 | `700` | 標題、重要數值 |
 
 ### 標題層級
@@ -117,6 +233,26 @@ font-family: "Noto Sans TC", system-ui, sans-serif;
 - 連結 / 強調：`c="blue"`
 - 危險提示：`c="red"`
 - 成功提示：`c="green"`
+
+### 預格式化文字（合約、說明、回饋）
+
+```css
+.contractText {
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  padding: 12px;
+  background: var(--mantine-color-default-hover);
+  border-radius: 4px;
+}
+
+.introText,
+.feedbackText {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+}
+```
 
 ---
 
@@ -202,7 +338,7 @@ font-family: "Noto Sans TC", system-ui, sans-serif;
 
 ---
 
-### Badge（Avatar 搭配）
+### Avatar
 
 ```tsx
 <Avatar src={url} size={50} radius="xl" />   // 卡片頭像
@@ -216,7 +352,7 @@ font-family: "Noto Sans TC", system-ui, sans-serif;
 
 | 元件 | 用途 |
 |------|------|
-| `TextInput` | 一般文字輸入 |
+| `TextInput` | 一般文字輸入（height: 36px） |
 | `Textarea` | 多行輸入 |
 | `Select` | 下拉選單 |
 | `FileInput` | 檔案選取 |
@@ -254,12 +390,422 @@ const [opened, { open, close }] = useDisclosure(false);
 
 ---
 
-### 上傳區（`.upload-zone`）
+## 互動元件樣式（CSS）
+
+### KOL 卡片（`.kol-card`）
 
 ```css
-border: 2px dashed var(--mantine-color-default-border);
-border-radius: 14px;
-padding: 28px;
+.kol-card {
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+.kol-card:hover {
+  transform: translateY(-2px);
+  background-color: light-dark(#f0f6ff, var(--mantine-color-dark-5));
+  box-shadow: light-dark(
+    0 12px 24px rgba(15, 23, 42, 0.12),
+    0 12px 24px rgba(0, 0, 0, 0.4)
+  );
+}
+```
+
+### IO 卡片（`.io-card`）
+
+```css
+.io-card {
+  transition: box-shadow 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+.io-card:hover {
+  transform: translateY(-1px);
+  background-color: light-dark(#f8fafc, var(--mantine-color-dark-6));
+  box-shadow: light-dark(
+    0 10px 24px rgba(15, 23, 42, 0.09),
+    0 10px 24px rgba(0, 0, 0, 0.3)
+  );
+}
+```
+
+### 模組卡片（Dashboard）
+
+```css
+.moduleCard {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.moduleCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+```
+
+### 社群連結（`.social-link`）
+
+```css
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mantine-color-blue-6);
+  text-decoration: underline;
+  cursor: pointer;
+  width: fit-content;
+}
+.social-link:hover {
+  color: var(--mantine-color-blue-8);
+}
+```
+
+### 下載連結
+
+```css
+.template-download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--mantine-color-blue-filled);
+  text-decoration: none;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+.template-download-link:hover {
+  background-color: light-dark(var(--mantine-color-blue-light), rgba(34, 139, 230, 0.15));
+  color: light-dark(var(--mantine-color-blue-7), var(--mantine-color-blue-3));
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+```
+
+---
+
+## 狀態樣式
+
+### 選取 / Active 狀態
+
+```css
+/* 卡片選取框 */
+.kolCardSelected {
+  outline: 2px solid var(--mantine-color-blue-filled);
+}
+
+/* 切換按鈕 active */
+.viewOptionActive,
+.filterToggleActive,
+.modalBtnActive {
+  background: var(--mantine-color-blue-filled);
+  color: #ffffff;
+  font-weight: 600;
+}
+```
+
+### 篩選標籤選取
+
+```css
+.tagLabel {
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--mantine-color-default-border);
+  font-size: 13px;
+  transition: all 120ms;
+}
+.tagLabelActive {
+  border-color: var(--mantine-color-blue-filled);
+  background: var(--mantine-color-blue-light);
+  font-weight: 600;
+  color: var(--mantine-color-blue-filled);
+}
+```
+
+### 停用 / Disabled 狀態
+
+```css
+:disabled,
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tab 停用 */
+.tab:disabled {
+  color: var(--mantine-color-gray-5);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 上傳中（等待） */
+.uploadLabelDisabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+```
+
+### 空狀態（Empty State）
+
+```css
+.emptyCell {
+  padding: 32px 0;
+  color: var(--mantine-color-dimmed);
+  text-align: center;
+}
+
+.emptyBox {
+  border: 1px dashed var(--mantine-color-gray-4);
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  color: var(--mantine-color-dimmed);
+}
+```
+
+### 載入 / AI 處理中狀態
+
+```css
+.aiRecognizingCard {
+  background: light-dark(var(--mantine-color-blue-0), rgba(51, 154, 240, 0.18));
+  border: light-dark(none, 1px solid rgba(51, 154, 240, 0.35));
+}
+
+.aiSuccessCard {
+  background: var(--mantine-color-blue-0);
+  opacity: 0.8;
+}
+```
+
+### 我的最愛（Favorite）
+
+```css
+.favoriteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: var(--mantine-color-gray-4);
+}
+.favoriteBtnActive {
+  color: var(--mantine-color-red-filled);
+  text-shadow: 0 0 2px rgba(250, 82, 82, 0.4);
+}
+```
+
+---
+
+## 上傳元件
+
+### 全域上傳區（`.upload-zone`）
+
+```css
+.upload-zone {
+  border: 2px dashed light-dark(#94a3b8, var(--mantine-color-gray-6));
+  border-radius: 14px;
+  padding: 28px;
+  background: light-dark(#f8fafc, var(--mantine-color-dark-7));
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+.upload-zone:hover {
+  border-color: light-dark(#3b82f6, var(--mantine-color-blue-5));
+  background: light-dark(#eff6ff, var(--mantine-color-dark-6));
+}
+```
+
+### 頭像上傳區
+
+```css
+.avatarDropzone {
+  width: 220px;
+  border: 1px dashed #94a3b8;
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+}
+```
+
+### 檔案上傳（卡片內）
+
+```css
+.uploadLabel {
+  padding: 32px;
+  border: 2px dashed var(--mantine-color-blue-4);
+  border-radius: 8px;
+  background-color: var(--mantine-color-blue-light);
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+```
+
+---
+
+## 導覽與 Layout
+
+### Sidebar（深色漸層）
+
+```css
+--kol-sidebar-bg: linear-gradient(
+  135deg,
+  #0f172a 0%,
+  #1e293b 35%,
+  #0f3460 65%,
+  #1a1a2e 100%
+);
+
+.navbar {
+  z-index: 90;
+  background: var(--kol-sidebar-bg) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+```
+
+### 導覽連結
+
+```css
+.navLink {
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid transparent;
+  transition: color 150ms, background 150ms;
+}
+.navLink:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.08);
+}
+.navLinkActive {
+  color: #ffffff !important;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+}
+```
+
+### 主題切換 Toggle
+
+```css
+.themeToggleTrack {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--mantine-color-gray-3);
+  border: 1px solid var(--mantine-color-default-border);
+  transition: background 200ms;
+}
+.themeToggleThumb {
+  position: absolute;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: left 200ms;
+}
+[data-mantine-color-scheme="dark"] .themeToggleThumb {
+  left: 22px;
+}
+```
+
+### Bulk Bar（批量操作列）
+
+```css
+.bulk-bar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  background: light-dark(#ffffff, var(--mantine-color-dark-7));
+  box-shadow: light-dark(
+    0 10px 30px rgba(15, 23, 42, 0.14),
+    0 10px 30px rgba(0, 0, 0, 0.5)
+  );
+}
+```
+
+### 分頁按鈕
+
+```css
+.pageButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: transparent;
+  color: var(--mantine-color-text);
+  font-size: 14px;
+}
+.pageButtonActive {
+  background: var(--mantine-color-blue-filled);
+  color: #ffffff;
+  font-weight: 600;
+}
+```
+
+---
+
+## 登入頁（Login Page）
+
+```css
+/* 左側漸層面板 */
+.leftPanel {
+  flex: 0 0 50%;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 35%, #0f3460 65%, #1a1a2e 100%);
+  padding: 48px;
+}
+
+/* 品牌圖示 */
+.brandIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+/* 版本 Badge */
+.heroBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(59, 130, 246, 0.25);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 20px;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* 功能列表項目 */
+.featureItem {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  backdrop-filter: blur(4px);
+}
+```
+
+---
+
+## Timeline
+
+```css
+.timelineMarker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mantine-color-blue-filled);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.timelineConnector {
+  width: 2px;
+  flex: 1;
+  min-height: 16px;
+  background: var(--mantine-color-default-border);
+  margin-top: 4px;
+}
 ```
 
 ---
@@ -314,57 +860,127 @@ AppShell Navbar：寬度 260px（可收合，200ms ease 過渡）
 | `lg` | 992px | 桌機 |
 | `xl` | 1200px | 大螢幕 |
 
+### 可捲動容器
+
+```css
+.scrollableList {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;   /* 避免內容被捲軸遮住 */
+}
+```
+
+---
+
+## Border Radius 規格
+
+| 值 | 用途 |
+|----|------|
+| `4px` | 精細細節、AI reason block |
+| `6px` | 按鈕、小型表單控件、分頁按鈕 |
+| `8px` | 表單、Dropzone、Tab、對話框 |
+| `10px` | 導覽連結（Mantine `radius-default`） |
+| `12px` | Mantine `radius-md`、Toggle track |
+| `14px` | 全域上傳區 |
+| `16px` | 頭像上傳區 |
+| `18px` | Mantine `radius-lg` |
+| `20px` | Pill 形 Badge |
+| `50%` | 圓形元素（Avatar、Toggle thumb、Timeline marker） |
+
+---
+
+## Z-Index 規格
+
+| 值 | 用途 |
+|----|------|
+| `1` | 相對定位輔助 |
+| `2` | 基礎覆蓋層 |
+| `20` | Bulk Bar（sticky bottom） |
+| `90` | Sidebar Navbar（固定導覽） |
+
+---
+
+## 陰影規格
+
+```css
+/* Toggle / 細節 */
+0 1px 3px rgba(0, 0, 0, 0.15)
+
+/* 卡片 hover（輕） */
+0 4px 12px rgba(15, 23, 42, 0.14)   /* light */
+0 4px 12px rgba(0, 0, 0, 0.5)       /* dark */
+
+/* 卡片 hover（中） */
+0 4px 16px rgba(15, 52, 96, 0.1)    /* light */
+0 4px 16px rgba(0, 0, 0, 0.4)       /* dark */
+
+/* Dashboard 模組卡片 */
+0 8px 24px rgba(0, 0, 0, 0.06)
+
+/* IO 卡片 hover */
+0 10px 24px rgba(15, 23, 42, 0.09)  /* light */
+0 10px 24px rgba(0, 0, 0, 0.3)      /* dark */
+
+/* KOL 卡片 hover */
+0 12px 24px rgba(15, 23, 42, 0.12)  /* light */
+0 12px 24px rgba(0, 0, 0, 0.4)      /* dark */
+
+/* Bulk Bar（sticky） */
+0 10px 30px rgba(15, 23, 42, 0.14)  /* light */
+0 10px 30px rgba(0, 0, 0, 0.5)      /* dark */
+
+/* Dialog / Modal */
+0 10px 24px rgba(0, 0, 0, 0.15)
+```
+
 ---
 
 ## 特效與動畫
 
-### KOL 卡片 hover（`.kol-card`）
+### 過渡時間規格
+
+| 時間 | 用途 |
+|------|------|
+| `120ms ease` | KOL 卡片 hover、篩選標籤 |
+| `140ms ease` | IO 卡片 hover、下載連結 |
+| `150ms ease` | 表單焦點、導覽連結 |
+| `200ms ease` | Dashboard 卡片、Navbar 收合、主題切換 |
+| `300ms` | Toast slide-left |
+
+### Accordion Chevron
 
 ```css
-.kol-card {
-  transition: transform 120ms ease, box-shadow 120ms ease;
+.chevron {
+  display: block;
+  transition: transform 0.2s;
 }
-.kol-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-}
-```
-
-### IO 卡片 hover（`.io-card`）
-
-```css
-.io-card {
-  transition: box-shadow 140ms ease, background-color 140ms ease, transform 140ms ease;
-}
-.io-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.09);
+.chevronExpanded {
+  transform: rotate(180deg);
 }
 ```
 
-### 模組卡片 hover（Dashboard）
+### Pulsing（注意力吸引）
 
 ```css
-transition: transform 200ms ease, box-shadow 200ms ease;
-
-/* hover */
-transform: translateY(-4px);
-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+@keyframes pulse {
+  0%   { transform: scale(1);    opacity: 1;   }
+  50%  { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1);    opacity: 1;   }
+}
+.pulseIcon {
+  animation: pulse 2s infinite;
+}
 ```
 
-### 篩選標籤選取
+### Greeting 文字動畫
 
 ```css
-transition: all 120ms;
-/* 選取後：border-color → blue，font-weight 400 → 600 */
-```
-
-### 上傳區 hover
-
-```css
-.upload-zone:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+@keyframes greetingIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+.greeting {
+  animation: greetingIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
 }
 ```
 
@@ -372,15 +988,6 @@ transition: all 120ms;
 
 ```css
 transition: width 200ms ease, margin 200ms ease, padding 200ms ease;
-```
-
-### Bulk Bar（批量操作列）
-
-```css
-/* 固定於頁面底部，距底 12px */
-position: sticky;
-bottom: 12px;
-box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
 ```
 
 ### Toast 滑入
@@ -403,13 +1010,18 @@ box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
 ### 自適應樣式寫法
 
 ```css
-/* 使用 light-dark() 同時定義兩種模式 */
+/* 優先使用 light-dark() 函式 */
 background: light-dark(#ffffff, var(--mantine-color-dark-7));
 border-color: light-dark(#e2e8f0, #1e293b);
 box-shadow: light-dark(
   0 12px 24px rgba(15, 23, 42, 0.12),
   0 12px 24px rgba(0, 0, 0, 0.4)
 );
+
+/* 若需要 CSS Modules 深色覆蓋，使用 attribute selector */
+[data-mantine-color-scheme="dark"] .myComponent {
+  background-color: #1a2340 !important;
+}
 ```
 
 ### 深色模式層次色
@@ -434,4 +1046,5 @@ box-shadow: light-dark(
 
 - 所有新元件必須在 light / dark 兩種模式下驗證視覺效果
 - 不可使用 hardcode hex 色值，統一使用 Mantine token 或 `light-dark()` 函式
+- CSS Modules 深色覆蓋使用 `[data-mantine-color-scheme="dark"]` selector
 - 圖示顏色會自動繼承 Mantine 主題，無需手動指定
