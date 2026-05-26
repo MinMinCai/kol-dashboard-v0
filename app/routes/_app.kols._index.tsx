@@ -375,7 +375,7 @@ export default function KolListPage() {
                     ))}
                   </Group>
                   <Group justify="space-between" mt="sm">
-                    <Text size="sm">{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "尚未評價"}</Text>
+                    <Text size="sm">{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "⭐ 尚未評價"}</Text>
                     <Text size="xs" c="dimmed">合作 {kol.collaborations ?? 0} 次</Text>
                   </Group>
                   <Group mt="auto" pt="sm" gap="xs" justify="center" onClick={(e) => e.stopPropagation()}>
@@ -476,7 +476,7 @@ export default function KolListPage() {
                         ))}
                       </Group>
                     </Table.Td>
-                    <Table.Td>{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "尚未評價"}</Table.Td>
+                    <Table.Td>{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "⭐ 尚未評價"}</Table.Td>
                     <Table.Td>{kol.collaborations ?? 0}</Table.Td>
                     <Table.Td>
                       <Group gap={4}>

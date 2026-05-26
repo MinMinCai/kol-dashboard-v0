@@ -579,7 +579,7 @@ export default function FavoritesPage() {
               </Box>
 
               <Group justify="space-between" mt="auto" pt="sm" onClick={(e) => e.stopPropagation()}>
-                <Text>{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "尚未評價"}</Text>
+                <Text>{(kol.rating ?? 0) > 0 ? `⭐ ${kol.rating!.toFixed(1)}` : "⭐ 尚未評價"}</Text>
                 <Group gap="xs">
                   <Tooltip label="查看詳細" withArrow>
                     <ActionIcon variant="light" color="blue" size="lg" component={Link} to={`/kols/${kol.id}`}>
