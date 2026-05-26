@@ -452,11 +452,7 @@ export default function InsertionOrderDetailPage() {
     insertionOrder.totalEngagement ??
     collaborations.reduce((sum: number, c) => sum + (c.totalEngagement ?? 0), 0);
   const avgRating =
-    insertionOrder.avgRating ??
-    (collaborations.length > 0
-      ? collaborations.reduce((sum: number, c) => sum + (c.rating ?? 0), 0) /
-      collaborations.length
-      : 0);
+    (insertionOrder.avgRating ?? (() => { const rated = collaborations.filter((c) => (c.rating ?? 0) >= 0.5); return rated.length > 0 ? rated.reduce((sum: number, c) => sum + (c.rating ?? 0), 0) / rated.length : 0; })());
   const avgEngagementRate = insertionOrder.avgEngagementRate ?? 0;
 
   // Chart Data

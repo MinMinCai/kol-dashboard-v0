@@ -56,7 +56,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const kol = await getKol(kolId);
   const history = kol?.collaborationHistory ?? [];
-  const rating = history.length > 0 ? history.reduce((s, r) => s + r.rating, 0) / history.length : 0;
+  const ratedHistory = history.filter((r) => r.rating >= 0.5);
+  const rating = ratedHistory.length > 0 ? ratedHistory.reduce((s, r) => s + r.rating, 0) / ratedHistory.length : 0;
   const collaborations = history.length;
 
   const avatarUrl = String(formData.get("avatarUrl") ?? "").trim();

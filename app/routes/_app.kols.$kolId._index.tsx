@@ -545,10 +545,7 @@ export default function KolDetailPage() {
       ? Math.round(history.reduce((sum, row) => sum + row.price, 0) / history.length)
       : 0);
   const avgRating =
-    kol.rating ??
-    (history.length > 0
-      ? history.reduce((sum, row) => sum + row.rating, 0) / history.length
-      : 0);
+    (kol.rating ?? (() => { const rated = history.filter((r) => r.rating >= 0.5); return rated.length > 0 ? rated.reduce((sum, r) => sum + r.rating, 0) / rated.length : 0; })());
   const collabCount = kol.collaborations ?? history.length;
   const stats = kol.performanceStats ?? {};
   const platformPerf = stats.platformPerformance ?? {};
