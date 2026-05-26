@@ -101,7 +101,10 @@
       "Bash(node scripts/seed.ts)",
       "Bash(DATABASE_URL=\"postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres\" npx tsx scripts/seed.ts)",
       "Bash(DATABASE_URL=\"postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres\" npx drizzle-kit migrate)",
-      "Bash(DATABASE_URL=postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres npx tsx -e ' *)"
+      "Bash(DATABASE_URL=postgresql://postgres.hplfqumpqijtntmnrvkk:hiiisupabasedev@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres npx tsx -e ' *)",
+      "Bash(npx remix *)",
+      "Bash(npx vite *)",
+      "Bash(node -e \"const { drizzle } = require\\('drizzle-orm/better-sqlite3'\\); const Database = require\\('better-sqlite3'\\); const db = new Database\\('./db/kol.db'\\); const rows = db.prepare\\('SELECT COUNT\\(*\\) as cnt FROM kols'\\).get\\(\\); console.log\\('KOL count:', rows.cnt\\);\")"
     ]
   }
 }
