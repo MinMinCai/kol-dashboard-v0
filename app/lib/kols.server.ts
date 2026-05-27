@@ -21,12 +21,30 @@ function withTimeout<T>(p: Promise<T>, fallback: T, ms = 15000): Promise<T> {
     console.warn(`[kols.server] withTimeout fired after ${ms}ms — returning fallback`);
     resolve(fallback);
   }, ms));
+  // Attach a no-op catch so that if the timer wins first, a later rejection from p
+  // doesn't become an unhandled promise rejection (which can crash the Node process).
+  p.catch(() => {});
   return Promise.race([p, timer]);
 }
 
 // ============ Loader ============
 
 export async function loadKolList(request: Request) {
+  try {
+  return await _loadKolList(request);
+  } catch (err) {
+    console.error("[kols.server] loadKolList unexpected error:", err);
+    return {
+      deleted: false, pageRows: [], total: 0, totalPages: 1, page: 1, pageSize: 8,
+      view: "card" as const, sortKey: "followers" as const, sortOrder: "desc" as const,
+      showFilters: false, followerRanges: [], industries: [], tags: [],
+      minRating: 0, maxRating: 5, q: "", allIndustries: [], allTags: [], folders: [],
+      activeFilterCount: 0,
+    };
+  }
+}
+
+async function _loadKolList(request: Request) {
   const url = new URL(request.url);
   const sp = url.searchParams;
 

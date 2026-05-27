@@ -101,6 +101,7 @@ function buildCandidateFromKol(kol: FolderKol, folderName: string): ImportRow {
 const numericInputWidth = 110;
 
 function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  promise.catch(() => {});
   return Promise.race([
     promise,
     new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
@@ -108,9 +109,10 @@ function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T>
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  try {
   const [allKols, savedFolders, currentMember] = await Promise.all([
-    withTimeout(listKols(), [] as Kol[]),
-    withTimeout(listFavoriteFolders(), [] as string[]),
+    withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
+    withTimeout(listFavoriteFolders(), [] as string[]).catch(() => [] as string[]),
     getCurrentMember(request).catch(() => null),
   ]);
   const favorites = allKols.filter((k) => k.isFavorite);
@@ -149,6 +151,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     allKolOptions,
     currentMember: currentMember ? { id: currentMember.id, name: currentMember.name, group: currentMember.group } : null,
   });
+  } catch (err) {
+    console.error("[proposals.new] loader unexpected error:", err);
+    return json({
+      folders: [] as string[],
+      folderKols: {} as Record<string, FolderKol[]>,
+      allKolOptions: [] as { value: string; label: string; followers: number | undefined; averagePrice: number | undefined; rating: number | undefined; engagementRate: number | undefined; realFollowerRatio: number | undefined }[],
+      currentMember: null as { id: string; name: string; group: string | null } | null,
+    });
+  }
 }
 
 export async function action({ request }: ActionFunctionArgs) {

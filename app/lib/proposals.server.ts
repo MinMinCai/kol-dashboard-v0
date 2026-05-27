@@ -13,6 +13,7 @@ import { notifyProposalUpdated } from "./notifications.server";
 // ============ Internal helpers ============
 
 function withTimeout<T,>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  promise.catch(() => {});
   return Promise.race([
     promise,
     new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
@@ -31,9 +32,9 @@ function parseOptionalNumber(value: FormDataEntryValue | null): number | undefin
 
 export async function loadProposalDetail(proposalId: string) {
   const [proposal, candidates, allKols] = await Promise.all([
-    withTimeout(getProposal(proposalId), null),
-    withTimeout(listProposalKols(proposalId), []),
-    withTimeout(listKols(), []),
+    withTimeout(getProposal(proposalId), null).catch(() => null),
+    withTimeout(listProposalKols(proposalId), []).catch(() => []),
+    withTimeout(listKols(), []).catch(() => []),
   ]);
 
   if (!proposal) throw new Response("Not Found", { status: 404 });

@@ -33,17 +33,14 @@ declare global {
 const client =
   global.__dbClient ??
   postgres(process.env.DATABASE_URL, {
-    max: 10,
-    idle_timeout: 20,
-    connect_timeout: 15,
-    max_lifetime: 60 * 10,
+    max: 5,
+    idle_timeout: 60,
+    connect_timeout: 10,
+    max_lifetime: 60 * 30,
     // Required for Supabase pgBouncer (Transaction Mode, port 6543)
-    // Also needed when DATABASE_URL uses port 6543
     prepare: false,
     connection: {
       application_name: "kol-db-demo",
-      // 8s server-side cancel — actually frees the connection when a query stalls,
-      // unlike a JS-side Promise.race which leaves the query running.
       statement_timeout: 8000,
     },
   });
