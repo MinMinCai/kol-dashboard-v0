@@ -33,7 +33,7 @@ declare global {
 const client =
   global.__dbClient ??
   postgres(process.env.DATABASE_URL, {
-    max: 5,
+    max: 10,
     idle_timeout: 60,
     connect_timeout: 10,
     max_lifetime: 60 * 30,

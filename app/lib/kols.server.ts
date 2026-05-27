@@ -1,13 +1,10 @@
 import { json, redirect } from "@remix-run/node";
 import {
   addKolToFavoriteFolder,
+  batchLoadForKolList,
   clearKolFavorites,
   deleteKol,
   getKol,
-  getKolFavoritesForMember,
-  listFavoriteFolders,
-  listKols,
-  listTagCatalog,
   replaceKolFavoriteFolders,
   type Kol,
 } from "./mock-api.server";
@@ -64,12 +61,17 @@ async function _loadKolList(request: Request) {
 
   const currentMember = await getCurrentMember(request).catch(() => null);
 
-  const [allKols, folders, tagCatalog, kolFavsByMember] = await Promise.all([
-    withTimeout(listKols(), [] as Kol[]).catch(() => [] as Kol[]),
-    withTimeout(listFavoriteFolders(currentMember?.id), [] as string[]).catch(() => [] as string[]),
-    withTimeout(listTagCatalog(), [] as { name: string }[]).catch(() => [] as { name: string }[]),
-    withTimeout(getKolFavoritesForMember(currentMember?.id), new Map<string, string[]>()).catch(() => new Map<string, string[]>()),
-  ]);
+  const emptyBatch = {
+    allKols: [] as Kol[],
+    folders: [] as string[],
+    tagCatalog: [] as { name: string }[],
+    kolFavsByMember: new Map<string, string[]>(),
+  };
+  const { allKols, folders, tagCatalog, kolFavsByMember } = await withTimeout(
+    batchLoadForKolList(currentMember?.id),
+    emptyBatch,
+    15000,
+  ).catch(() => emptyBatch);
 
   let kols = allKols;
 

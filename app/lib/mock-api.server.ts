@@ -1254,6 +1254,176 @@ export async function listTagCatalog(): Promise<TagCatalogItem[]> {
   }
 }
 
+/**
+ * Consolidated loader for the KOL list page.
+ * Fires all required DB queries in a single Promise.all instead of the previous
+ * pattern where getFavoriteFolderState() was called 3 separate times (12 duplicate queries).
+ */
+export async function batchLoadForKolList(memberId: string | null | undefined): Promise<{
+  allKols: Kol[];
+  folders: string[];
+  tagCatalog: TagCatalogItem[];
+  kolFavsByMember: Map<string, string[]>;
+}> {
+  const [
+    kolRows,
+    folderRows,
+    itemRows,
+    shareRows,
+    prefsRows,
+    socialAccountRows,
+    ioRows,
+    tagCatalogRows,
+  ] = await Promise.all([
+    db.select().from(kolsTable).catch(() => [] as (typeof kolsTable.$inferSelect)[]),
+    db.select().from(kolFavoriteFoldersTable).catch(() => []),
+    db.select().from(kolFavoriteFolderItemsTable).catch(() => []),
+    db.select().from(kolFavoriteFolderMemberSharesTable).catch(() => []),
+    db.select().from(systemPreferencesTable).where(eq(systemPreferencesTable.id, "default")).limit(1).catch(() => []),
+    db.select().from(kolSocialAccountsTable).catch(() => []),
+    db.select({ id: ioTable.id, collaborations: ioTable.collaborations }).from(ioTable).catch(() => []),
+    db.select().from(tagCatalogTable).catch(() => []),
+  ]);
+
+  // ─── Folder state ────────────────────────────────────────────────────────────
+  const folderById = new Map(folderRows.map((r) => [r.id, r]));
+  const prefsFolderNames: string[] = (prefsRows[0]?.favoriteFolders ?? []) as string[];
+  const allFolderNameSet = new Set([...prefsFolderNames, ...folderRows.map((r) => r.name)]);
+
+  const folderNamesByKolId = new Map<string, string[]>();
+  for (const item of itemRows) {
+    const folder = folderById.get(item.folderId);
+    if (!folder) continue;
+    const current = folderNamesByKolId.get(item.kolId) ?? [];
+    if (!current.includes(folder.name)) current.push(folder.name);
+    folderNamesByKolId.set(item.kolId, current);
+  }
+
+  const memberIdsByFolderId = new Map<string, string[]>();
+  for (const share of shareRows) {
+    const current = memberIdsByFolderId.get(share.folderId) ?? [];
+    if (!current.includes(share.memberId)) current.push(share.memberId);
+    memberIdsByFolderId.set(share.folderId, current);
+  }
+
+  // ─── Folders list visible/writable to current member ─────────────────────────
+  const writable = new Set<string>();
+  for (const name of allFolderNameSet) {
+    const row = folderRows.find((r) => r.name === name);
+    if (!row || !row.ownerMemberId || row.ownerMemberId === memberId) {
+      writable.add(name);
+    } else if (memberId) {
+      const sharedWith = memberIdsByFolderId.get(row.id) ?? [];
+      if (sharedWith.includes(memberId)) writable.add(name);
+    }
+  }
+  const folders = Array.from(writable).sort((a, b) => a.localeCompare(b, "zh-TW"));
+
+  // ─── KOL favorites visible to this member ────────────────────────────────────
+  const visibleFolderIds = new Set<string>();
+  for (const row of folderRows) {
+    if (!row.ownerMemberId) {
+      visibleFolderIds.add(row.id);
+    } else if (memberId && row.ownerMemberId === memberId) {
+      visibleFolderIds.add(row.id);
+    } else if (memberId) {
+      const sharedWith = memberIdsByFolderId.get(row.id) ?? [];
+      if (sharedWith.includes(memberId)) visibleFolderIds.add(row.id);
+    } else {
+      visibleFolderIds.add(row.id);
+    }
+  }
+
+  const kolFavsByMember = new Map<string, string[]>();
+  for (const item of itemRows) {
+    if (!visibleFolderIds.has(item.folderId)) continue;
+    const folder = folderById.get(item.folderId);
+    if (!folder) continue;
+    const existing = kolFavsByMember.get(item.kolId) ?? [];
+    if (!existing.includes(folder.name)) existing.push(folder.name);
+    kolFavsByMember.set(item.kolId, existing);
+  }
+
+  // ─── Social links ─────────────────────────────────────────────────────────────
+  const socialLinksByKolId = new Map<string, NonNullable<Kol["socialLinks"]>>();
+  for (const row of socialAccountRows) {
+    const platformKey = row.platform.toLowerCase() as keyof NonNullable<Kol["socialLinks"]>;
+    if (!["instagram", "youtube", "tiktok", "facebook", "threads"].includes(platformKey)) continue;
+    const current = socialLinksByKolId.get(row.kolId) ?? {};
+    if (row.profileUrl) current[platformKey] = row.profileUrl;
+    socialLinksByKolId.set(row.kolId, current);
+  }
+
+  // ─── Collab counts + metrics ──────────────────────────────────────────────────
+  const collabCountByKolId = new Map<string, number>();
+  const metricsMap = new Map<string, Map<string, KolCollabMetrics>>();
+  for (const row of ioRows) {
+    const collabs = (row.collaborations as OrderKolCollaboration[] | null) ?? [];
+    const kolIdsInOrder = new Set<string>();
+    for (const c of collabs) {
+      const kid = c.kolId ?? c.id;
+      if (kid) kolIdsInOrder.add(kid);
+      if (kid && row.id && c.performanceItems?.length) {
+        let postViews = 0, postLikes = 0, postComments = 0, storyViews = 0, storyLikes = 0;
+        for (const item of c.performanceItems) {
+          const m = item.metrics as OrderPerformanceMetrics | undefined;
+          if (!m) continue;
+          const isStory = /限動|story/i.test(item.title ?? "");
+          if (isStory) {
+            storyViews += m.views ?? m.impressions ?? m.reach ?? 0;
+            storyLikes += m.likes ?? 0;
+          } else {
+            postViews += m.views ?? m.impressions ?? m.reach ?? 0;
+            postLikes += m.likes ?? 0;
+            postComments += m.comments ?? 0;
+          }
+        }
+        const kolMetrics: KolCollabMetrics = {};
+        if (postViews) kolMetrics.postViews = postViews;
+        if (postLikes) kolMetrics.postLikes = postLikes;
+        if (postComments) kolMetrics.postComments = postComments;
+        if (storyViews) kolMetrics.storyViews = storyViews;
+        if (storyLikes) kolMetrics.storyLikes = storyLikes;
+        if (!metricsMap.has(row.id)) metricsMap.set(row.id, new Map());
+        metricsMap.get(row.id)!.set(kid, kolMetrics);
+      }
+    }
+    for (const kid of kolIdsInOrder) {
+      collabCountByKolId.set(kid, (collabCountByKolId.get(kid) ?? 0) + 1);
+    }
+  }
+
+  // ─── Assemble KOLs ───────────────────────────────────────────────────────────
+  const allKols: Kol[] = kolRows.map((row) => {
+    const kol = rowToKol(row);
+    const linkedFolders = folderNamesByKolId.get(kol.id) ?? [];
+    const accountSocialLinks = socialLinksByKolId.get(kol.id) ?? {};
+    const mergedFolders = Array.from(new Set([
+      ...linkedFolders,
+      ...(kol.favoriteFolder ? [kol.favoriteFolder] : []),
+      ...(kol.favoriteFolders ?? []),
+    ]));
+    const enrichedHistory = (kol.collaborationHistory ?? []).map((item) => {
+      if (!item.orderId || item.metrics) return item;
+      const derived = metricsMap.get(item.orderId)?.get(kol.id);
+      return derived ? { ...item, metrics: derived } : item;
+    });
+    return {
+      ...kol,
+      collaborations: collabCountByKolId.get(kol.id) ?? 0,
+      collaborationHistory: enrichedHistory,
+      isFavorite: Boolean(kol.isFavorite || mergedFolders.length > 0),
+      favoriteFolders: mergedFolders,
+      favoriteFolder: mergedFolders[0] ?? kol.favoriteFolder,
+      socialLinks: { ...accountSocialLinks, ...(kol.socialLinks ?? {}) },
+    };
+  });
+
+  const tagCatalog: TagCatalogItem[] = tagCatalogRows.map((r) => ({ id: r.id, name: r.name }));
+
+  return { allKols, folders, tagCatalog, kolFavsByMember };
+}
+
 export async function addTagCatalog(data: Omit<TagCatalogItem, "id">): Promise<TagCatalogItem> {
   const rows = await db.insert(tagCatalogTable).values({ id: crypto.randomUUID(), name: data.name }).returning();
   return rows[0];
