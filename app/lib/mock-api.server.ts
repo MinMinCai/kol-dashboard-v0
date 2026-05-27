@@ -1448,6 +1448,12 @@ export async function deleteTagCatalog(id: string | number): Promise<boolean> {
 
 // ─── Brand Catalog ────────────────────────────────────────────────────────────
 
+/** Minimal query — only id + avatarUrl. Use instead of listKols() when only avatars are needed. */
+export async function listKolAvatars(): Promise<{ id: string; avatarUrl: string }[]> {
+  const rows = await db.select({ id: kolsTable.id, avatarUrl: kolsTable.avatarUrl }).from(kolsTable).catch(() => []);
+  return rows.map((r) => ({ id: r.id, avatarUrl: r.avatarUrl ?? "" }));
+}
+
 export async function listBrandCatalog(): Promise<BrandCatalogItem[]> {
   try {
     return await db.select().from(brandCatalogTable);

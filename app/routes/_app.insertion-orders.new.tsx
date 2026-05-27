@@ -27,6 +27,7 @@ import {
   listIndustryCatalog,
   listInsertionOrders,
   listKols,
+  listKolAvatars,
   listTeamMembers,
   createInsertionOrder,
   getProposal,
@@ -48,11 +49,13 @@ type SelectedKolRow = {
 };
 
 function withTimeout<T>(promise: Promise<T>, fallback: T, ms = 8000): Promise<T> {
+  promise.catch(() => {});
   const timeout = new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms));
   return Promise.race([promise, timeout]).catch(() => fallback);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  try {
   const url = new URL(request.url);
   const fromProposalId = url.searchParams.get("fromProposalId");
 
@@ -95,6 +98,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const industries = Array.from(new Set([...catalogIndustries, ...kolIndustries])) as string[];
 
   return json({ kols, salesOwners, kolManagers, brands, industries, proposalData });
+  } catch (err) {
+    console.error("[insertion-orders.new] loader error:", err);
+    return json({ kols: [] as Kol[], salesOwners: [] as string[], kolManagers: [] as string[], brands: [] as string[], industries: [] as string[], proposalData: null });
+  }
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -127,8 +134,8 @@ export async function action({ request }: ActionFunctionArgs) {
   // omit avatarUrl when rows are pre-filled from a proposal (proposal
   // candidates do not persist `kolAvatarUrl`), so we look it up by kolId here
   // to ensure the new order always carries the correct avatar.
-  const allKolsForAvatar = await listKols();
-  const avatarByKolId = new Map(allKolsForAvatar.map((k) => [k.id, k.avatarUrl ?? ""]));
+  const allKolsForAvatar = await withTimeout(listKolAvatars(), []);
+  const avatarByKolId = new Map(allKolsForAvatar.map((k) => [k.id, k.avatarUrl]));
 
   // Keep the manual project quote entered by the user
   const docFile = formData.get("documentUrl") as File;
@@ -182,7 +189,13 @@ export async function action({ request }: ActionFunctionArgs) {
     notes: [description, internalNotes && `internal:${internalNotes}`].filter(Boolean).join("\n"),
   };
 
-  const created = await createInsertionOrder(payload);
+  let created;
+  try {
+    created = await createInsertionOrder(payload);
+  } catch (err) {
+    console.error("[insertion-orders.new] createInsertionOrder error:", err);
+    return json({ error: "建立案件失敗，請稍後再試" }, { status: 500 });
+  }
   return redirect(`/insertion-orders/${created.id}`);
 }
 
