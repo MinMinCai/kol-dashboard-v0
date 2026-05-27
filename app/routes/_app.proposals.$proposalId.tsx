@@ -27,10 +27,11 @@ import styles from "./_app.proposals.$proposalId.module.css";
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData, useNavigation, useRevalidator, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { listProposalPermissions, setProposalPermissions, type Kol } from "~/lib/mock-api.server";
+import { listProposalPermissions, setProposalPermissions, type Kol, type ProposalKol } from "~/lib/mock-api.server";
 import { handleProposalAction, loadProposalDetail } from "~/lib/proposals.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
-import { getProposalAccessLevel, DEPARTMENTS, type ProposalAccessLevel } from "~/lib/proposal-permissions.server";
+import { getProposalAccessLevel, type ProposalAccessLevel } from "~/lib/proposal-permissions.server";
+import { DEPARTMENTS } from "~/lib/departments";
 import { IconTrash, IconBulb, IconCheck, IconX, IconArrowLeft, IconBell, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 // ============ Loader & Action ============
@@ -83,8 +84,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function ProposalDetailPage() {
   // ============ Loader Data & Hooks ============
-  const { proposal, candidates, allKols, currentMember, accessLevel, permissions } = useLoaderData<typeof loader>();
-  /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成 Kol[] 供後續安全存取 */
+  const { proposal, candidates: rawCandidates, allKols, currentMember, accessLevel, permissions } = useLoaderData<typeof loader>();
+  /** Loader JSON 型別可能將陣列元素標成可為 null；收斂成非 null 型別供後續安全存取 */
+  const candidates = useMemo(
+    () => (rawCandidates ?? []).filter((item): item is ProposalKol => item != null),
+    [rawCandidates],
+  );
   const kols = useMemo(
     () => (allKols ?? []).filter((item): item is Kol => item != null),
     [allKols],

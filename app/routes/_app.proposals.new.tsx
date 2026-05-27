@@ -29,7 +29,7 @@ import {
   type Kol,
 } from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
-import { DEPARTMENTS } from "~/lib/proposal-permissions.server";
+import { DEPARTMENTS } from "~/lib/departments";
 
 type FolderKol = Pick<
   Kol,

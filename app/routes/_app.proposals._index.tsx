@@ -28,7 +28,8 @@ import {
   updateProposal,
 } from "~/lib/mock-api.server";
 import { getCurrentMember } from "~/lib/demo-identity.server";
-import { getProposalAccessLevel, DEPARTMENTS } from "~/lib/proposal-permissions.server";
+import { getProposalAccessLevel } from "~/lib/proposal-permissions.server";
+import { DEPARTMENTS } from "~/lib/departments";
 import styles from "./_app.proposals._index.module.css";
 
 // ─── constants ────────────────────────────────────────────────────────────────

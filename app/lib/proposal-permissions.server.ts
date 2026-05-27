@@ -2,6 +2,8 @@ import { type Proposal, type ProposalPermission, type TeamMember } from "./mock-
 
 export type ProposalAccessLevel = "creator" | "edit" | "view" | "none";
 
+export { DEPARTMENTS, type Department } from "./departments";
+
 /**
  * Resolve what access the current member has to a proposal.
  *
@@ -32,5 +34,3 @@ export function getProposalAccessLevel(
   return deptPerm.permissionLevel;
 }
 
-export const DEPARTMENTS = ["AE", "KOL", "Tech", "Media", "其他"] as const;
-export type Department = (typeof DEPARTMENTS)[number];
